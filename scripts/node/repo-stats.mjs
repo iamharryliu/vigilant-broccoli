@@ -27,9 +27,6 @@ const TARGETS = [
       `Proud maintainer of [vigilant-broccoli](${REPO_URL}) supporting **${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**.`,
   },
 ];
-const RESUME_PATH = 'notes/personal/career/resume.json';
-const RESUME_COUNTS =
-  /(\*\*)?\d+ applications\1, (\*\*)?\d+ API services\2, (\*\*)?\d+ Docker images\3 and (\*\*)?\d+ npm packages\4/;
 const MARKER_START = '<!-- managed:repo-stats:start -->';
 const MARKER_END = '<!-- managed:repo-stats:end -->';
 const CHECK_FLAG = '--check';
@@ -138,37 +135,10 @@ const withStats = (content, line, path) => {
   return `${content.slice(0, start + MARKER_START.length)}\n\n${line}\n\n${content.slice(end)}`;
 };
 
-const withResumeStats = (
-  content,
-  { applications, services, images, packages },
+const REWRITES = TARGETS.map(({ path, template }) => ({
   path,
-) => {
-  if (!RESUME_COUNTS.test(content)) {
-    throw new Error(`${path}: no repo-stats counts bullet found`);
-  }
-  return content.replace(
-    RESUME_COUNTS,
-    (
-      _match,
-      applicationsMarker = '',
-      servicesMarker = '',
-      imagesMarker = '',
-      packagesMarker = '',
-    ) =>
-      `${applicationsMarker}${applications} applications${applicationsMarker}, ${servicesMarker}${services} API services${servicesMarker}, ${imagesMarker}${images} Docker images${imagesMarker} and ${packagesMarker}${packages} npm packages${packagesMarker}`,
-  );
-};
-
-const REWRITES = [
-  ...TARGETS.map(({ path, template }) => ({
-    path,
-    rewrite: (content, stats) => withStats(content, template(stats), path),
-  })),
-  {
-    path: RESUME_PATH,
-    rewrite: (content, stats) => withResumeStats(content, stats, RESUME_PATH),
-  },
-];
+  rewrite: (content, stats) => withStats(content, template(stats), path),
+}));
 
 const check = process.argv.includes(CHECK_FLAG);
 const stats = computeStats();
