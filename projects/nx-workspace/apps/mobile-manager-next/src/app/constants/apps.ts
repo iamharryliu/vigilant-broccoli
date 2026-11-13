@@ -7,6 +7,7 @@ import {
   FolderGit2,
   GitPullRequest,
   GitBranch,
+  Instagram,
   Play,
   Rocket,
   Workflow,
@@ -23,6 +24,14 @@ export type AppEntry = {
 };
 
 const LEISURE_APPS: AppEntry[] = [
+  {
+    label: 'Instagram',
+    webUrl: 'https://www.instagram.com',
+    iosUrl: 'instagram://',
+    androidPackage: 'com.instagram.android',
+    tileColor: 'bg-pink-600',
+    icon: Instagram,
+  },
   {
     label: 'Spotify',
     webUrl: 'https://open.spotify.com',
