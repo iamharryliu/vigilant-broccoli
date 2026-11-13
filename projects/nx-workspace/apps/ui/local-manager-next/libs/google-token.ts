@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import {
@@ -23,7 +22,7 @@ export const storeGoogleRefreshToken = (
   storeRefreshToken({ supabase: supabaseAdmin, userEmail, refreshToken });
 
 export const getGoogleAccessTokenForRequest = async (
-  request: NextRequest,
+  request: Request,
 ): Promise<string> => {
   const userEmail = await getUserEmail(request);
   if (!userEmail) throw unauthorizedError();

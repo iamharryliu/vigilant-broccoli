@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import {
   AUTHORIZATION_HEADER,
@@ -31,7 +31,7 @@ const forbidden = (message: string) =>
   );
 
 export const requireAuth = async (
-  request: NextRequest,
+  request: Request,
 ): Promise<{ userEmail: string } | NextResponse> => {
   const authHeader = request.headers.get(AUTHORIZATION_HEADER) ?? '';
   if (!authHeader.startsWith(BEARER_PREFIX)) {
@@ -53,7 +53,7 @@ export const requireAuth = async (
 // Google access outlives the ~1 hour provider_token; a missing or revoked one
 // returns GOOGLE_TOKEN_EXPIRED for the client's reconnect flow.
 export const requireGoogleAuth = async (
-  request: NextRequest,
+  request: Request,
 ): Promise<{ userEmail: string; googleToken: string } | NextResponse> => {
   const auth = await requireAuth(request);
   if (auth instanceof NextResponse) return auth;

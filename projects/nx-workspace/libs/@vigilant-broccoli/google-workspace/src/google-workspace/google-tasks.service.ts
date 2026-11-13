@@ -17,15 +17,47 @@ const mapTask = (t: tasks_v1.Schema$Task): GoogleTask => ({
   position: t.position ?? undefined,
 });
 
+const mapTaskList = (l: tasks_v1.Schema$TaskList): GoogleTaskList => ({
+  id: l.id ?? '',
+  title: l.title ?? '',
+});
+
 export const listTaskLists = async (
   accessToken: string,
 ): Promise<GoogleTaskList[]> => {
   const client = createClient(accessToken);
   const res = await client.tasklists.list({ maxResults: 100 });
-  return (res.data.items ?? []).map(l => ({
-    id: l.id ?? '',
-    title: l.title ?? '',
-  }));
+  return (res.data.items ?? []).map(mapTaskList);
+};
+
+export const createTaskList = async (
+  accessToken: string,
+  title: string,
+): Promise<GoogleTaskList> => {
+  const client = createClient(accessToken);
+  const res = await client.tasklists.insert({ requestBody: { title } });
+  return mapTaskList(res.data);
+};
+
+export const renameTaskList = async (
+  accessToken: string,
+  taskListId: string,
+  title: string,
+): Promise<GoogleTaskList> => {
+  const client = createClient(accessToken);
+  const res = await client.tasklists.patch({
+    tasklist: taskListId,
+    requestBody: { title },
+  });
+  return mapTaskList(res.data);
+};
+
+export const deleteTaskList = async (
+  accessToken: string,
+  taskListId: string,
+): Promise<void> => {
+  const client = createClient(accessToken);
+  await client.tasklists.delete({ tasklist: taskListId });
 };
 
 export const listTasks = async (

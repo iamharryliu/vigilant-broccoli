@@ -64,6 +64,9 @@
       "@vigilant-broccoli/react-lib-higher-level/chat-room-consts": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/chat-room/chat-room.consts.ts"
       ],
+      "@vigilant-broccoli/react-lib-higher-level/google-tasks-server": [
+        "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/google-tasks.server.ts"
+      ],
       "@vigilant-broccoli/react-lib-higher-level/notepad-server": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/notepad-store.server.ts"
       ],

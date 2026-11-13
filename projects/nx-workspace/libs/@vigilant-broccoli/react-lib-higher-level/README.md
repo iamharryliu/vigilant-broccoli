@@ -25,9 +25,11 @@ Composed React components built on `react-lib`: CRUD list management, tasks, qui
   - `@supabase/supabase-js`
   - `lucide-react`
   - `socket.io-client`
+  - `zod`
 - Internal libs
   - `common-js`
   - `github-workspace-js`
+  - `google-workspace`
   - `react-lib`
   - `realtime`
   - `security-news`
