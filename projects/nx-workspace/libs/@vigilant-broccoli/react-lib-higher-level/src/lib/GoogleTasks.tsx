@@ -61,6 +61,9 @@ export interface GoogleTasksAuthAdapter {
 }
 
 const STORAGE_KEY_SELECTED_TASK_LIST = 'google-tasks-selected-list-id';
+// Google Tasks accepts this alias for the default list, but listed task lists
+// only carry real ids; the API returns the default list first.
+const DEFAULT_TASK_LIST_ID = '@default';
 
 const TASKS_TITLE = 'Tasks';
 const SIGN_IN_GOOGLE_LABEL = 'Sign in with Google';
@@ -345,6 +348,7 @@ const TaskHeader = memo(
     sortMode,
     onSortChange,
     showSelector,
+    taskListsLoading,
   }: {
     taskLists: TaskList[];
     selectedTaskListId: string;
@@ -352,20 +356,22 @@ const TaskHeader = memo(
     sortMode: SortMode;
     onSortChange: (value: SortMode) => void;
     showSelector: boolean;
+    taskListsLoading: boolean;
   }) => {
-    const selectedTaskList = taskLists.find(
-      list => list.id === selectedTaskListId,
-    );
+    const selectedTaskList =
+      selectedTaskListId === DEFAULT_TASK_LIST_ID
+        ? taskLists[0]
+        : taskLists.find(list => list.id === selectedTaskListId);
 
     return (
       <div className="flex flex-col gap-3">
         <div className="flex justify-between items-center">
-          {selectedTaskList ? (
-            <Text size="5" weight="bold">
-              {selectedTaskList.title}
-            </Text>
-          ) : (
+          {taskListsLoading ? (
             <div className="animate-pulse bg-muted h-8 w-32 rounded" />
+          ) : (
+            <Text size="5" weight="bold">
+              {selectedTaskList?.title ?? TASKS_TITLE}
+            </Text>
           )}
           <div className="flex gap-2 items-center">
             <Text size="2" color="gray">
@@ -383,7 +389,7 @@ const TaskHeader = memo(
         {showSelector && taskLists.length > 0 && (
           <div className="flex gap-2 items-center">
             <Select
-              value={taskLists.find(l => l.id === selectedTaskListId)}
+              value={selectedTaskList}
               onValueChange={list => onTaskListChange(list.id)}
               options={taskLists}
               optionIdentifier="id"
@@ -637,17 +643,21 @@ export const GoogleTasksComponent = ({
 }) => {
   const { authFetch, useAuthStatus, signInWithGoogle } = auth;
   const status = useAuthStatus();
-  const { taskLists, authError: titleAuthError } = useTaskLists(
-    status,
-    authFetch,
-  );
+  const {
+    taskLists,
+    authError: titleAuthError,
+    loading: taskListsLoading,
+  } = useTaskLists(status, authFetch);
 
   const [selectedTaskListId, setSelectedTaskListId] = useState<string>(() => {
     if (propTaskListId) return propTaskListId;
     if (typeof window !== 'undefined') {
-      return localStorage.getItem(STORAGE_KEY_SELECTED_TASK_LIST) || '@default';
+      return (
+        localStorage.getItem(STORAGE_KEY_SELECTED_TASK_LIST) ||
+        DEFAULT_TASK_LIST_ID
+      );
     }
-    return '@default';
+    return DEFAULT_TASK_LIST_ID;
   });
 
   const taskListId = propTaskListId || selectedTaskListId;
@@ -887,6 +897,7 @@ export const GoogleTasksComponent = ({
         sortMode={sortMode}
         onSortChange={handleSortChange}
         showSelector={showSelector && !propTaskListId}
+        taskListsLoading={taskListsLoading}
       />
 
       <AddTaskForm
