@@ -13,6 +13,7 @@ const mapTask = (t: tasks_v1.Schema$Task): GoogleTask => ({
   notes: t.notes ?? undefined,
   due: t.due ?? undefined,
   updated: t.updated ?? undefined,
+  completed: t.completed ?? undefined,
   status: (t.status as GoogleTask['status']) ?? 'needsAction',
   position: t.position ?? undefined,
 });
@@ -22,12 +23,39 @@ const mapTaskList = (l: tasks_v1.Schema$TaskList): GoogleTaskList => ({
   title: l.title ?? '',
 });
 
+// The API caps each page at 100 items for both tasks and task lists.
+const MAX_PAGE_SIZE = 100;
+// Partial response limited to what mapTask reads, so each page stays small.
+const TASK_LIST_FIELDS =
+  'nextPageToken,items(id,title,notes,due,updated,completed,status,position)';
+
+const listAllPages = async <T>(
+  fetchPage: (
+    pageToken?: string,
+  ) => Promise<{ items?: T[]; nextPageToken?: string | null }>,
+): Promise<T[]> => {
+  const items: T[] = [];
+  let pageToken: string | undefined;
+  do {
+    const page = await fetchPage(pageToken);
+    items.push(...(page.items ?? []));
+    pageToken = page.nextPageToken ?? undefined;
+  } while (pageToken);
+  return items;
+};
+
 export const listTaskLists = async (
   accessToken: string,
 ): Promise<GoogleTaskList[]> => {
   const client = createClient(accessToken);
-  const res = await client.tasklists.list({ maxResults: 100 });
-  return (res.data.items ?? []).map(mapTaskList);
+  const taskLists = await listAllPages(async pageToken => {
+    const res = await client.tasklists.list({
+      maxResults: MAX_PAGE_SIZE,
+      pageToken,
+    });
+    return res.data;
+  });
+  return taskLists.map(mapTaskList);
 };
 
 export const createTaskList = async (
@@ -64,15 +92,27 @@ export const listTasks = async (
   accessToken: string,
   taskListId = '@default',
   showCompleted = false,
+  // RFC 3339 completion-date bounds; only meaningful with `showCompleted`.
+  {
+    completedMin,
+    completedMax,
+  }: { completedMin?: string; completedMax?: string } = {},
 ): Promise<GoogleTask[]> => {
   const client = createClient(accessToken);
-  const res = await client.tasks.list({
-    tasklist: taskListId,
-    showCompleted,
-    showHidden: showCompleted,
-    maxResults: 100,
+  const tasks = await listAllPages(async pageToken => {
+    const res = await client.tasks.list({
+      tasklist: taskListId,
+      showCompleted,
+      showHidden: showCompleted,
+      completedMin,
+      completedMax,
+      maxResults: MAX_PAGE_SIZE,
+      pageToken,
+      fields: TASK_LIST_FIELDS,
+    });
+    return res.data;
   });
-  return (res.data.items ?? [])
+  return tasks
     .sort((a, b) => (a.position ?? '').localeCompare(b.position ?? ''))
     .map(mapTask);
 };

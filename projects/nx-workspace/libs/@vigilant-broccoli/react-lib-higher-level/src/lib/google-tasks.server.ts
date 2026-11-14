@@ -18,6 +18,14 @@ const DEFAULT_TASK_LIST_ID = '@default';
 const TASK_LIST_ID_PARAM = 'taskListId';
 const TASK_ID_PARAM = 'taskId';
 const INCLUDE_ACTIVE_COUNTS_PARAM = 'includeActiveCounts';
+// Omitting it returns active and completed tasks together.
+const TASK_STATUS_PARAM = 'status';
+const TASK_STATUS_FILTER = {
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+} as const;
+const COMPLETED_MIN_PARAM = 'completedMin';
+const COMPLETED_MAX_PARAM = 'completedMax';
 
 // Returns the caller's Google access token, or the Response to send instead
 // (401 for a missing session or Google token, which the client's reconnect
@@ -129,8 +137,23 @@ export const createGoogleTasksRouteHandlers = (
       GET: route('Failed to fetch tasks', async (accessToken, request) => {
         const taskListId =
           searchParam(request, TASK_LIST_ID_PARAM) ?? DEFAULT_TASK_LIST_ID;
-        const tasks = await listTasks(accessToken, taskListId, true);
-        return Response.json({ tasks });
+        const statusFilter = searchParam(request, TASK_STATUS_PARAM);
+        if (statusFilter === TASK_STATUS_FILTER.ACTIVE) {
+          return Response.json({
+            tasks: await listTasks(accessToken, taskListId),
+          });
+        }
+        const tasks = await listTasks(accessToken, taskListId, true, {
+          completedMin: searchParam(request, COMPLETED_MIN_PARAM) ?? undefined,
+          completedMax: searchParam(request, COMPLETED_MAX_PARAM) ?? undefined,
+        });
+        // Google has no completed-only filter, so drop active tasks here.
+        return Response.json({
+          tasks:
+            statusFilter === TASK_STATUS_FILTER.COMPLETED
+              ? tasks.filter(t => t.status === 'completed')
+              : tasks,
+        });
       }),
       POST: route('Failed to create task', async (accessToken, request) => {
         const body = await request.json();

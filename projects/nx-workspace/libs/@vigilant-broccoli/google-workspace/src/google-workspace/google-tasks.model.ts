@@ -4,6 +4,7 @@ export interface GoogleTask {
   notes?: string;
   due?: string;
   updated?: string;
+  completed?: string;
   status: 'needsAction' | 'completed';
   position?: string;
 }

@@ -64,6 +64,12 @@ export interface CheckListProps {
   editCompleted?: boolean;
   storageKeyPrefix?: string;
   completedSectionId?: string;
+  /** Rendered after the completed rows, e.g. a control to load older ones. */
+  completedFooter?: ReactNode;
+  /** Shows Completed with a skeleton count and rows while its items load. */
+  completedLoading?: boolean;
+  /** Muted text after the Completed count, e.g. the range it covers. */
+  completedHint?: string;
   enableDragDrop?: boolean;
   /**
    * Standalone reordering: enables the drag handles, wraps the list in its own
@@ -204,6 +210,9 @@ export const CheckList = memo(
     editCompleted,
     storageKeyPrefix,
     completedSectionId,
+    completedFooter,
+    completedLoading,
+    completedHint,
     enableDragDrop,
     onReorder,
     listId,
@@ -316,6 +325,9 @@ export const CheckList = memo(
               editCompleted={editCompleted}
               storageKeyPrefix={resolvedStorageKeyPrefix}
               completedSectionId={resolvedCompletedSectionId}
+              completedFooter={completedFooter}
+              completedLoading={completedLoading}
+              completedHint={completedHint}
               emptyLabel={
                 typeof emptyLabel === 'string' ? (
                   <Text size="2" color="gray">
