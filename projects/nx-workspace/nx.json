@@ -125,7 +125,7 @@
   "generators": {
     "@nx/react": {
       "application": {
-        "babel": true,
+        "babel": false,
         "style": "css",
         "linter": "eslint",
         "bundler": "vite"
