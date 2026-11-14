@@ -23,6 +23,9 @@ import {
 const MISSING_PROVIDER_ERROR =
   'useAuth must be used within its matching AuthProvider';
 
+const resolveOption = (option: string | (() => string)): string =>
+  typeof option === 'function' ? option() : option;
+
 // Resolve the user-supplied `next` param against the current origin and
 // return a redirect target built ONLY from the parsed URL's path components —
 // never the raw input. Anything that resolves to a different origin (absolute
@@ -100,8 +103,8 @@ export function createSupabaseAuth(
   const getSupabase = (): SupabaseClient => {
     if (!_supabase) {
       _supabase = createClient(
-        supabaseUrl,
-        supabaseKey,
+        resolveOption(supabaseUrl),
+        resolveOption(supabaseKey),
         storageKey ? { auth: { storageKey } } : undefined,
       );
     }

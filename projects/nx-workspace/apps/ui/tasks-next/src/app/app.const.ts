@@ -19,3 +19,8 @@ export const ROUTE = {
 export const API_ENDPOINT = {
   GOOGLE_TOKEN: '/api/auth/google-token',
 } as const;
+
+export const RUNTIME_CONFIG = {
+  PATH: '/runtime-config.js',
+  GLOBAL: '__TASKS_RUNTIME_CONFIG__',
+} as const;

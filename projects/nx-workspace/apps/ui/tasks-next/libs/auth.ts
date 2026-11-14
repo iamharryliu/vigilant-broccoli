@@ -8,6 +8,10 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINT, ROUTE } from '../src/app/app.const';
 import {
+  getSupabasePublishableKey,
+  getSupabaseUrl,
+} from './client-runtime-config';
+import {
   POPUP_STORAGE_KEY,
   STORAGE_KEY,
   isSignInPopup,
@@ -46,8 +50,8 @@ export const {
   authFetch,
   setSession,
 } = createSupabaseAuth({
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string,
+  supabaseUrl: getSupabaseUrl,
+  supabaseKey: getSupabasePublishableKey,
   googleScopes: GOOGLE_SCOPES,
   googleQueryParams: GOOGLE_QUERY_PARAMS,
   offlineAccess: true,

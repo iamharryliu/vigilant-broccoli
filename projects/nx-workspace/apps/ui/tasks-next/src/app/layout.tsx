@@ -1,6 +1,12 @@
 import './global.css';
 import type { Metadata, Viewport } from 'next';
-import { APP_DESCRIPTION, APP_NAME, PAGE_TITLE } from './app.const';
+import Script from 'next/script';
+import {
+  APP_DESCRIPTION,
+  APP_NAME,
+  PAGE_TITLE,
+  RUNTIME_CONFIG,
+} from './app.const';
 import { RootProviders } from './components/RootProviders';
 
 const DEFAULT_TITLE = `${PAGE_TITLE.HOME} | ${APP_NAME}`;
@@ -35,6 +41,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased bg-background text-foreground">
         <RootProviders>{children}</RootProviders>
+        <Script src={RUNTIME_CONFIG.PATH} strategy="beforeInteractive" />
       </body>
     </html>
   );

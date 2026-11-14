@@ -3,20 +3,17 @@ import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
 } from '@vigilant-broccoli/common-js';
+import { getSupabasePublishableKey, getSupabaseUrl } from './runtime-config';
 
 // Stateless verifier: it must not own a stored session (see the Supabase auth
 // pattern's single-session-owner rule).
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
-    },
+const supabase = createClient(getSupabaseUrl(), getSupabasePublishableKey(), {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false,
   },
-);
+});
 
 export const getUserEmail = async (
   request: Request,
