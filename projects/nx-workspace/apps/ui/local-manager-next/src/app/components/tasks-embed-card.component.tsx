@@ -13,11 +13,15 @@ const TASKS_FRAME_TITLE = 'Tasks';
 const TASKS_FRAME_SANDBOX =
   'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox';
 
+// The frame is chrome-less, so the border lives here to match the calendar
+// panel's theme colours.
 export const TasksCard = () => (
-  <iframe
-    src={new URL(TASKS_EMBED_PATH, TASKS_URL).toString()}
-    title={TASKS_FRAME_TITLE}
-    sandbox={TASKS_FRAME_SANDBOX}
-    className="h-full w-full rounded-lg border-0"
-  />
+  <div className="h-full overflow-hidden rounded-lg border border-gray-300 dark:border-gray-700">
+    <iframe
+      src={new URL(TASKS_EMBED_PATH, TASKS_URL).toString()}
+      title={TASKS_FRAME_TITLE}
+      sandbox={TASKS_FRAME_SANDBOX}
+      className="h-full w-full border-0"
+    />
+  </div>
 );
