@@ -24,5 +24,5 @@
 ## Consumers
 
 - `local-manager-next`'s home page frames `tasks.harryliu.dev/embed` inside a bordered wrapper matching its calendar panel; the build-time `NEXT_PUBLIC_TASKS_URL` points it at another instance.
-- `mobile-manager-next`'s Tasks tab (`/?tab=Tasks`) frames it edge to edge like the other tabs; the same build-time `NEXT_PUBLIC_TASKS_URL` override applies.
+- `mobile-manager-next`'s Tasks tab (`/?tab=Tasks`) frames it inside a bordered wrapper matching its Calendar tab frame; the same build-time `NEXT_PUBLIC_TASKS_URL` override applies.
 - Local testing: `localhost:4000/auth/callback` and `localhost:3000` are on the Supabase redirect allow-list, so run this app on port 4000 when the manager holds 3000.
