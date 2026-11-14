@@ -50,14 +50,20 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "deploy-container": {
+      "dependsOn": ["build"],
+      "command": "docker buildx build --platform linux/amd64 -f apps/ui/tasks-next/Dockerfile -t iamharryliu/tasks-next:latest -t iamharryliu/tasks-next:${COMMIT_SHA:-latest} --push ."
+    },
     "deploy": {
       "executor": "nx:run-commands",
+      "dependsOn": ["deploy-container"],
       "options": {
         "command": "VERCEL_PROJECT_ID=staging-tasks-next VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts tasks-next staging"
       }
     },
     "deploy:production": {
       "executor": "nx:run-commands",
+      "dependsOn": ["deploy-container"],
       "options": {
         "command": "VERCEL_PROJECT_ID=production-tasks-next VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts tasks-next production"
       }

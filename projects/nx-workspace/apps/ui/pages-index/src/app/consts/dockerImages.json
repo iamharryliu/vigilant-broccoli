@@ -46,6 +46,11 @@
       "descriptionKey": "DOCKER_IMAGES_PAGE.SOCKET_SERVER_SOCKETIO.DESCRIPTION"
     },
     {
+      "slug": "tasks-next",
+      "readmePath": "projects/nx-workspace/apps/ui/tasks-next/docs/features/self-hosting.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.TASKS_NEXT.DESCRIPTION"
+    },
+    {
       "slug": "utilities-ui",
       "readmePath": "projects/nx-workspace/apps/ui/utilities-ui/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.UTILITIES_UI.DESCRIPTION"

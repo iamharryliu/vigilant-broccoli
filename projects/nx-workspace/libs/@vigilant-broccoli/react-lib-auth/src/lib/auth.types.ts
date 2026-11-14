@@ -4,8 +4,10 @@ export interface ProviderRefreshToken {
 }
 
 export interface CreateSupabaseAuthOptions {
-  supabaseUrl: string;
-  supabaseKey: string;
+  // A getter defers the read to the first client use, for config loaded at
+  // runtime rather than inlined at build time.
+  supabaseUrl: string | (() => string);
+  supabaseKey: string | (() => string);
   googleScopes?: string;
   // Request Google offline access so sign-in also returns a long-lived
   // provider_refresh_token, enabling server-side access-token refresh.

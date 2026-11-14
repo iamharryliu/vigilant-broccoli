@@ -4,6 +4,8 @@ import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
 import SUPABASE_PUBLIC from '../libs/@vigilant-broccoli/infrastructure/src/lib/supabase-public.json' with { type: 'json' };
+import LOCAL_MANAGER from '../libs/@vigilant-broccoli/infrastructure/src/lib/local-manager-origins.json' with { type: 'json' };
+import MOBILE_MANAGER from '../libs/@vigilant-broccoli/infrastructure/src/lib/mobile-manager-origins.json' with { type: 'json' };
 
 const STAGING = 'staging';
 const PRODUCTION = 'production';
@@ -21,6 +23,7 @@ const BUILD_LOCK_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/.vercel-deploy-lock`;
 const STANDALONE_OUTPUT_PROJECTS = new Set([
   'employee-handler-ui',
   'job-hunt-next',
+  'tasks-next',
 ]);
 
 const BUILD_LOCK_TIMEOUT_MS = 20 * 60 * 1000;
@@ -307,11 +310,11 @@ async function main() {
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: SUPABASE_PUBLIC.publishableKey,
   };
 
-  // employee-handler-ui reads these unprefixed (see libs/supabase.ts) so its
-  // Docker image isn't locked to one Supabase project at build time — same
-  // values, different key names than the other apps below, which still read
-  // process.env.NEXT_PUBLIC_SUPABASE_* directly in client bundles.
-  const EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS = {
+  // employee-handler-ui and tasks-next read these unprefixed at runtime so
+  // their Docker images aren't locked to one Supabase project at build time —
+  // same values, different key names than the other apps below, which still
+  // read process.env.NEXT_PUBLIC_SUPABASE_* directly in client bundles.
+  const RUNTIME_SUPABASE_SECRETS = {
     SUPABASE_URL: SUPABASE_PUBLIC_SECRETS.NEXT_PUBLIC_SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY:
       SUPABASE_PUBLIC_SECRETS.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
@@ -346,7 +349,7 @@ async function main() {
     },
     'employee-handler-ui': {
       hardcodedSecrets: {
-        ...EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS,
+        ...RUNTIME_SUPABASE_SECRETS,
         ...(environment === DEMO && { DEMO_MODE: 'true' }),
       },
       envExamplePath: 'apps/ui/employee-handler-ui/.env.example',
@@ -385,7 +388,15 @@ async function main() {
       ),
     },
     'tasks-next': {
-      hardcodedSecrets: SUPABASE_PUBLIC_SECRETS,
+      hardcodedSecrets: {
+        ...RUNTIME_SUPABASE_SECRETS,
+        // The same manager origins gate the weather embed's messaging.
+        TASKS_FRAME_ANCESTORS: [
+          LOCAL_MANAGER.url,
+          ...LOCAL_MANAGER.loopbackOrigins,
+          ...MOBILE_MANAGER.origins,
+        ].join(' '),
+      },
       envExamplePath: 'apps/ui/tasks-next/.env.example',
       settings: NX_VERCEL_SETTINGS(
         'tasks-next',

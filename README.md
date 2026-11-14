@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **27 applications**, **7 API services**, **13 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **27 applications**, **7 API services**, **14 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -152,6 +152,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [`iamharryliu/media-service`](https://hub.docker.com/r/iamharryliu/media-service) | [Media Service](./projects/nx-workspace/apps/api/media-service) | `deploy-container` target | Fly.io (staging, production) |
 | [`iamharryliu/office-presence-service`](https://hub.docker.com/r/iamharryliu/office-presence-service) | [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | `deploy-container` target | Fly.io (demo) |
 | [`iamharryliu/socket-server-socketio`](https://hub.docker.com/r/iamharryliu/socket-server-socketio) | [Socket Server (Socket.IO)](./projects/nx-workspace/apps/socket-server-socketio) | `deploy-container` target | OCI VM, updated by Watchtower |
+| [`iamharryliu/tasks-next`](https://hub.docker.com/r/iamharryliu/tasks-next) | [Tasks](./projects/nx-workspace/apps/ui/tasks-next) | `deploy-container` target | None; published for self-hosting |
 | [`iamharryliu/utilities-ui`](https://hub.docker.com/r/iamharryliu/utilities-ui) | [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui) | `deploy-container` target | None; published for self-hosting |
 | [`iamharryliu/vb-code-server`](https://hub.docker.com/r/iamharryliu/vb-code-server) | [code-server](./infrastructure/code-server) | `deploy-code-server-image` workflow | OCI code-server VM, pulled every 15 minutes |
 | [`iamharryliu/vb-express`](https://hub.docker.com/r/iamharryliu/vb-express) | [VB Express](./projects/nx-workspace/apps/api/vb-express) | `deploy-container` target | Fly.io (staging, production) |

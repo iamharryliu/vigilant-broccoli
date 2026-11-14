@@ -301,6 +301,9 @@
     "SOCKET_SERVER_SOCKETIO": {
       "DESCRIPTION": "Publish/subscribe server over Socket.IO and Server-Sent Events."
     },
+    "TASKS_NEXT": {
+      "DESCRIPTION": "Google Tasks as a standalone page or an embeddable widget, signed in through Supabase."
+    },
     "UTILITIES_UI": {
       "DESCRIPTION": "Searchable page of everyday utilities, served by nginx."
     },
