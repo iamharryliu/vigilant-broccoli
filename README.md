@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **27 applications**, **7 API services**, **14 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **30 applications**, **7 API services**, **14 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 

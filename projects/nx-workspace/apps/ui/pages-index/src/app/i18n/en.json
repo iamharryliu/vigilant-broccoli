@@ -94,6 +94,19 @@
     },
     "SECTION_APPS": "Apps",
     "SECTION_DEMO": "Demo",
+    "SECTION_PRIVATE": "Private",
+    "CHAT": {
+      "TITLE": "Chat",
+      "DESCRIPTION": "Owner-only chatbot with knowledge base search and voice replies."
+    },
+    "LOCAL_MANAGER": {
+      "TITLE": "Local Manager",
+      "DESCRIPTION": "Local machine management dashboard with calendar, notepad and quick links."
+    },
+    "MOBILE_MANAGER": {
+      "TITLE": "Mobile Manager",
+      "DESCRIPTION": "Owner-only mobile dashboard with calendar, tasks, notepad, weather and quick links."
+    },
     "HARRY_LIU": {
       "TITLE": "harryliu.dev",
       "DESCRIPTION": "Personal website."
