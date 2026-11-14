@@ -130,4 +130,3 @@ Every UI application with a public URL appears as a card in `apps/ui/pages-index
 4. Web Applications card in `WebApplicationsPage.tsx`, plus the Upptime and quick-links entries above.
 5. Theme follows the system via `<ThemeProvider>` unless told otherwise (above).
 6. Apple home screen PNG and link via the framework convention above.
-7. Commit a `.env.example` (or `.env.local.example`) listing every env var the app reads, link it from the README `## Environment` section per [app-readme-pattern.md](../../app-readme-pattern.md#apps-and-publishable-libs), and point the Vault-wrapped `serve` target at it (reference: tasks-next, `scripts/fetch-secrets.ts --env-file apps/ui/tasks-next/.env.example`).
