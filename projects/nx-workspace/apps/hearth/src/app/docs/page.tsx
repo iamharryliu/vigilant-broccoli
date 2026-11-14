@@ -12,8 +12,8 @@ import {
   DialogContent,
   DialogTitle,
   cn,
+  EllipsisCTA,
 } from '@vigilant-broccoli/react-lib';
-import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';

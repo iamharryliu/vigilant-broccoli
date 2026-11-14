@@ -13,8 +13,8 @@ import {
   DialogContent,
   DialogTitle,
   DialogClose,
+  EllipsisCTA,
 } from '@vigilant-broccoli/react-lib';
-import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   EisenhowerQuadrant,
   getEisenhowerQuadrant,

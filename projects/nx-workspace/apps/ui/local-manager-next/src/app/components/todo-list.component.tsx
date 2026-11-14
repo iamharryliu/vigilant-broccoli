@@ -15,9 +15,9 @@ import {
   Select,
   Text,
   Textarea,
+  EllipsisCTA,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
-import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   CONTENT_TYPE_HEADER,
   HTTP_METHOD,

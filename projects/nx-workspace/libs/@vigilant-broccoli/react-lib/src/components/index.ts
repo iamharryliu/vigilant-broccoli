@@ -16,6 +16,7 @@ export * from './CopyButton';
 export * from './DownloadButton';
 export * from './ContextMenu';
 export * from './DropdownMenu';
+export * from './EllipsisCTA';
 export * from './CopyPastable';
 export * from './Select';
 export * from './SegmentedControl';

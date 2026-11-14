@@ -28,11 +28,9 @@ import {
   DialogContent,
   DialogTitle,
   cn,
-} from '@vigilant-broccoli/react-lib';
-import {
   EllipsisAction,
   EllipsisCTA,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, LeisureActivity } from '../../../lib/types';
 import {
   CalendarEventForm,

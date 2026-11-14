@@ -11,8 +11,8 @@ import {
   DialogContent,
   DialogTitle,
   cn,
+  EllipsisCTA,
 } from '@vigilant-broccoli/react-lib';
-import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { CalendarEvent, Meal } from '../../../lib/types';
 import { MealForm, MealFormData } from './MealForm';
 

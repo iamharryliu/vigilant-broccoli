@@ -13,6 +13,7 @@ import { cn } from '../utils/cn';
 import { Checkbox } from './Checkbox';
 import { groupCompletedByDay } from './checklist-groups.utils';
 import { CollapsibleList } from './CollapsibleList';
+import { EllipsisAction, EllipsisCTA } from './EllipsisCTA';
 import { Input } from './Input';
 import { Text } from './Text';
 import { Textarea } from './Textarea';
@@ -28,6 +29,8 @@ const EDITOR = {
 } as const;
 
 const DEFAULT_COMPLETED_SECTION_ID = 'completed';
+
+const DEFAULT_DELETE_LABEL = 'Delete';
 
 const COMPLETION_DURATION = 400;
 const ENTER_DURATION = 300;
@@ -116,6 +119,16 @@ export interface CheckListBaseProps<
   activeFooter?: ReactNode;
   /** Rendered under the title, above `renderItemMeta`. */
   renderItemDetails?: (item: T) => ReactNode;
+  /**
+   * Adds a confirmed Delete entry to the row's trailing ellipsis menu. The
+   * menu renders only for rows with at least one action.
+   */
+  onDeleteItem?: (item: T) => void | Promise<void>;
+  /** Limits Delete to some rows; every row is deletable when omitted. */
+  canDeleteItem?: (item: T) => boolean;
+  deleteLabel?: string;
+  /** Extra ellipsis menu entries, listed above Delete. */
+  itemActions?: (item: T) => EllipsisAction[];
 }
 
 const DefaultRowFrame = ({
@@ -234,6 +247,10 @@ export const CheckListBase = <T extends CheckListBaseItem>({
   wrapActiveItems,
   activeFooter,
   renderItemDetails,
+  onDeleteItem,
+  canDeleteItem,
+  deleteLabel = DEFAULT_DELETE_LABEL,
+  itemActions,
 }: CheckListBaseProps<T>) => {
   const Frame = (rowFrame ?? DefaultRowFrame) as ComponentType<
     CheckListRowFrameProps<T>
@@ -416,6 +433,20 @@ export const CheckListBase = <T extends CheckListBaseItem>({
       />
     );
 
+  const getRowActions = (item: T): EllipsisAction[] => [
+    ...(itemActions?.(item) ?? []),
+    ...(onDeleteItem && (canDeleteItem?.(item) ?? true)
+      ? [
+          {
+            label: deleteLabel,
+            color: 'red' as const,
+            onSelect: () => onDeleteItem(item),
+            confirm: { confirmLabel: deleteLabel },
+          },
+        ]
+      : []),
+  ];
+
   const renderRow = (
     presentationItem: T,
     isActive: boolean,
@@ -427,6 +458,7 @@ export const CheckListBase = <T extends CheckListBaseItem>({
     const key = keyOf(item);
     const isEditing = editingItemId === item.id;
     const canEdit = editCompleted || !item.checked;
+    const actions = getRowActions(item);
     return (
       <div
         key={key}
@@ -495,6 +527,11 @@ export const CheckListBase = <T extends CheckListBaseItem>({
                 {renderItemMeta?.(item)}
               </div>
               {renderItemAccessory?.(item)}
+              {actions.length > 0 && (
+                <div className="shrink-0">
+                  <EllipsisCTA actions={actions} disabled={item.isRemoving} />
+                </div>
+              )}
             </div>
           </Frame>
         </div>

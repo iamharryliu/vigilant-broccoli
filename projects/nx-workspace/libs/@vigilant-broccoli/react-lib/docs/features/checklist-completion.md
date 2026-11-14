@@ -21,3 +21,4 @@
 - Mount the list after the first load (`CheckList`'s `loading`, or render a skeleton) so loaded rows are not treated as additions; later refetches can keep it mounted.
 - Keep ids stable across completion, or set `transitionFromId` on the replacement item, including when rolling back.
 - Update optimistically, set `isRemoving` on the row while its write is pending (the checkbox is disabled and the toggle should be ignored), and restore the original state when the write fails.
+- Expose row deletion through `onDeleteItem` (the ellipsis menu's confirmed Delete), applying the same `isRemoving` and rollback rules.

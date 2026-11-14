@@ -6,8 +6,8 @@ import {
   ButtonList,
   StatusCardListItem,
   Text,
+  EllipsisCTA,
 } from '@vigilant-broccoli/react-lib';
-import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { CLOUDFLARE_ACCOUNT_LINK } from '@vigilant-broccoli/private-infrastructure';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';

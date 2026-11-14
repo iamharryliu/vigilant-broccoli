@@ -5,7 +5,6 @@ import {
   Button,
   CheckList,
   CheckListItem,
-  IconButton,
   Input,
   useRefetchOnFocus,
 } from '@vigilant-broccoli/react-lib';
@@ -181,15 +180,8 @@ export const TasksPage = () => {
           size="3"
           storageKeyPrefix={STORAGE_KEY_PREFIX}
           emptyLabel={t('TASKS.EMPTY')}
-          renderItemAccessory={item => (
-            <IconButton
-              icon="trash"
-              aria-label={t('TASKS.DELETE')}
-              variant="ghost"
-              disabled={IS_DEMO || item.isRemoving}
-              onClick={() => remove(item.id)}
-            />
-          )}
+          deleteLabel={t('TASKS.DELETE')}
+          onDeleteItem={IS_DEMO ? undefined : item => remove(item.id)}
         />
       </div>
     </div>

@@ -20,18 +20,15 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 import {
   Button,
-  DropdownMenu,
   CheckList,
   CheckListItem as BaseChecklistItem,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
-  IconButton,
   Input,
   Text,
   Dialog,
   DialogContent,
   DialogTitle,
   cn,
-  DeleteItemConfirmationDialog,
   useRefetchOnFocus,
 } from '@vigilant-broccoli/react-lib';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
@@ -46,7 +43,6 @@ import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 import { assertOk, usePendingWrites } from '../hooks/use-pending-writes';
 import { ChecklistSkeleton } from './ChecklistSkeleton';
 
-const DELETE_LABEL = 'Delete';
 const LOADING_LABEL = 'Loading items';
 const ADD_TO_CALENDAR_LABEL = 'Add to calendar';
 const EVENT_DIALOG_TITLE = 'Add to calendar';
@@ -88,7 +84,6 @@ export function Checklist({
   const [newItem, setNewItem] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [calendarItem, setCalendarItem] = useState<ChecklistItem | null>(null);
 
   const token = session?.access_token ?? '';
@@ -265,30 +260,13 @@ export function Checklist({
     setEditingName('');
   };
 
-  const renderItemAccessory = (item: BaseChecklistItem) => (
-    <div onClick={e => e.stopPropagation()}>
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <IconButton icon="ellipsis-vertical" variant="ghost" />
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content>
-          <DropdownMenu.Item
-            onSelect={() =>
-              setCalendarItem(items.find(i => i.id === item.id) ?? null)
-            }
-          >
-            {ADD_TO_CALENDAR_LABEL}
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            color="red"
-            onSelect={() => setPendingDeleteId(item.id)}
-          >
-            {DELETE_LABEL}
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
-    </div>
-  );
+  const itemActions = (item: BaseChecklistItem) => [
+    {
+      label: ADD_TO_CALENDAR_LABEL,
+      onSelect: () =>
+        setCalendarItem(items.find(i => i.id === item.id) ?? null),
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-3">
@@ -337,22 +315,11 @@ export function Checklist({
                 </Text>
               </div>
             }
-            renderItemAccessory={renderItemAccessory}
+            itemActions={itemActions}
+            onDeleteItem={item => handleDelete(item.id)}
           />
         )}
       </DndContext>
-
-      <DeleteItemConfirmationDialog
-        open={pendingDeleteId !== null}
-        onOpenChange={open => {
-          if (!open) setPendingDeleteId(null);
-        }}
-        confirmLabel={DELETE_LABEL}
-        deleteItem={async () => {
-          if (pendingDeleteId) await handleDelete(pendingDeleteId);
-          setPendingDeleteId(null);
-        }}
-      />
 
       <Dialog
         open={calendarItem !== null}

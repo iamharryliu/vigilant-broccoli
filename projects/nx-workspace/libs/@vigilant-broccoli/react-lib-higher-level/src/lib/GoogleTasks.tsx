@@ -214,6 +214,27 @@ const useTasks = (
     }
   };
 
+  const setTaskRemoving = (taskId: string, isRemoving: boolean) =>
+    setTasks(prevTasks =>
+      prevTasks.map(t => (t.id === taskId ? { ...t, isRemoving } : t)),
+    );
+
+  const deleteTask = async (taskId: string) => {
+    setTaskRemoving(taskId, true);
+    try {
+      const params = new URLSearchParams({ taskListId, taskId });
+      const response = await authFetch(`${TASKS_ENDPOINT}?${params}`, {
+        method: HTTP_METHOD.DELETE,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to delete task');
+      setTasks(prevTasks => prevTasks.filter(t => t.id !== taskId));
+    } catch (err) {
+      setTaskRemoving(taskId, false);
+      setError(handleApiError(err, 'Failed to delete task'));
+    }
+  };
+
   const moveTask = async (taskId: string, previousTaskId: string | null) => {
     try {
       const response = await authFetch(TASKS_MOVE_ENDPOINT, {
@@ -243,6 +264,7 @@ const useTasks = (
     createTask,
     toggleTaskComplete,
     updateTask,
+    deleteTask,
     moveTask,
     setTasks,
   };
@@ -638,6 +660,7 @@ export const GoogleTasksComponent = ({
     createTask,
     toggleTaskComplete,
     updateTask,
+    deleteTask,
     moveTask,
     setTasks,
   } = useTasks(taskListId, authFetch);
@@ -784,6 +807,11 @@ export const GoogleTasksComponent = ({
     [tasks, toggleTaskComplete],
   );
 
+  const handleDeleteItem = useCallback(
+    (item: CheckListItem) => deleteTask(item.id),
+    [deleteTask],
+  );
+
   const rawChecklistItems: CheckListItem[] = useMemo(
     () =>
       tasks.map(t => ({
@@ -893,6 +921,7 @@ export const GoogleTasksComponent = ({
           listId={taskListId}
           dragOverItem={dragOverTask}
           emptyLabel="No tasks to display"
+          onDeleteItem={handleDeleteItem}
           renderItemAccessory={renderItemAccessory}
           renderItemMeta={renderItemMeta}
           itemClassName={itemClassName}

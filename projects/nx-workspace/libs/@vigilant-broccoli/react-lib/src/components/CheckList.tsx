@@ -21,6 +21,7 @@ import {
   CheckListRowFrameProps,
   CheckListRowVariant,
 } from './CheckListBase';
+import { EllipsisAction } from './EllipsisCTA';
 import { Text } from './Text';
 
 const DRAG_OPACITY = {
@@ -76,6 +77,10 @@ export interface CheckListProps {
   renderItemAccessory?: (item: CheckListItem) => ReactNode;
   renderItemMeta?: (item: CheckListItem) => ReactNode;
   itemClassName?: (item: CheckListItem) => string;
+  onDeleteItem?: (item: CheckListItem) => void | Promise<void>;
+  canDeleteItem?: (item: CheckListItem) => boolean;
+  deleteLabel?: string;
+  itemActions?: (item: CheckListItem) => EllipsisAction[];
 }
 
 const renderItemDetails = (item: CheckListItem) => (
@@ -207,6 +212,10 @@ export const CheckList = memo(
     renderItemAccessory,
     renderItemMeta,
     itemClassName,
+    onDeleteItem,
+    canDeleteItem,
+    deleteLabel,
+    itemActions,
   }: CheckListProps) => {
     const { setNodeRef, isOver } = useDroppable({
       id: listId || DEFAULT_LIST_ID,
@@ -320,6 +329,10 @@ export const CheckList = memo(
               renderItemMeta={renderItemMeta}
               renderItemDetails={renderItemDetails}
               itemClassName={itemClassName}
+              onDeleteItem={onDeleteItem}
+              canDeleteItem={canDeleteItem}
+              deleteLabel={deleteLabel}
+              itemActions={itemActions}
               rowFrame={rowFrame}
               wrapActiveItems={(rows, activeIds) => (
                 <SortableContext
