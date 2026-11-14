@@ -24,6 +24,7 @@ import {
   CheckList,
   CheckListItem,
   Select,
+  Skeleton,
   SpeechToTextToggleButton,
   Text,
   Textarea,
@@ -35,6 +36,26 @@ const TASKS_ENDPOINT = '/api/tasks';
 const TASKS_LISTS_ENDPOINT = '/api/tasks/lists';
 const TASKS_MOVE_ENDPOINT = '/api/tasks/move';
 const TASKS_PARSE_TEXT_ENDPOINT = '/api/tasks/parse-text';
+const TASK_STATUS_FILTER = {
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+} as const;
+type TaskStatusFilter =
+  (typeof TASK_STATUS_FILTER)[keyof typeof TASK_STATUS_FILTER];
+const DAY_MS = 24 * 60 * 60 * 1000;
+// Completed tasks load this many days at a time: first load, then per scroll.
+const COMPLETED_BATCH_DAYS = 30;
+// Past this many days, the next scroll loads the rest of the history at once.
+const BATCHED_COMPLETED_DAYS = 90;
+const RETRY_OLDER_COMPLETED_LABEL = 'Retry loading older completed tasks';
+// Starts loading slightly before the end of Completed is actually reached.
+const OLDER_COMPLETED_PREFETCH_MARGIN = '200px';
+const OLDER_COMPLETED_SKELETON_ROWS = 3;
+
+const daysBetween = (from: string, to: string) =>
+  Math.round((new Date(to).getTime() - new Date(from).getTime()) / DAY_MS);
+const getCompletedHint = (loadedSince: string) =>
+  `last ${daysBetween(loadedSince, new Date().toISOString())} days`;
 
 interface Task {
   id: string;
@@ -42,9 +63,12 @@ interface Task {
   notes?: string;
   due?: string;
   updated?: string;
+  completed?: string;
   status: 'needsAction' | 'completed';
   isRemoving?: boolean;
 }
+
+const completionTime = (task: Task) => task.completed ?? task.updated ?? '';
 
 interface TaskList {
   id: string;
@@ -90,24 +114,153 @@ const useTasks = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const loadedTaskListId = useRef<string | null>(null);
+  // Responses for a list that is no longer selected are dropped.
+  const currentTaskListId = useRef(taskListId);
+  useEffect(() => {
+    currentTaskListId.current = taskListId;
+  }, [taskListId]);
+  // Start of the recent completed window, fixed per list load. Refetches only
+  // cover this window; older completed tasks load in batches while scrolling.
+  const recentCompletedSince = useRef('');
+  // Oldest completion date loaded so far; the next batch ends here. The ref
+  // serves async loads, the state the header hint.
+  const olderBatchEnd = useRef('');
+  const [completedLoadedSince, setCompletedLoadedSince] = useState('');
+  const [hasOlderCompleted, setHasOlderCompleted] = useState(false);
+  const [loadingOlderCompleted, setLoadingOlderCompleted] = useState(false);
+  // Stops scroll-triggered retries after a failure until the user asks again.
+  const [olderCompletedFailed, setOlderCompletedFailed] = useState(false);
+  const [completedLoading, setCompletedLoading] = useState(false);
+
+  const fetchTasksByStatus = async (
+    status: TaskStatusFilter,
+    completedRange: Record<string, string> = {},
+  ): Promise<Task[]> => {
+    const params = new URLSearchParams({
+      taskListId,
+      status,
+      ...completedRange,
+    });
+    const response = await authFetch(`${TASKS_ENDPOINT}?${params}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Failed to fetch tasks');
+    return data.tasks;
+  };
 
   // Only the first load of a list shows the skeleton; refetching the list
   // already on screen keeps it visible so background refreshes don't flash.
+  // A first load renders active tasks as soon as they arrive, and limits
+  // completed tasks to recent ones, because that history can span many pages.
   const fetchTasks = async () => {
-    if (loadedTaskListId.current !== taskListId) setLoading(true);
+    const requestedListId = taskListId;
+    const isStale = () => currentTaskListId.current !== requestedListId;
+    const isFirstLoad = loadedTaskListId.current !== requestedListId;
+    if (isFirstLoad) {
+      setLoading(true);
+      recentCompletedSince.current = new Date(
+        Date.now() - COMPLETED_BATCH_DAYS * DAY_MS,
+      ).toISOString();
+      olderBatchEnd.current = recentCompletedSince.current;
+      setCompletedLoadedSince(recentCompletedSince.current);
+      setHasOlderCompleted(true);
+      setOlderCompletedFailed(false);
+    }
+    const windowStart = recentCompletedSince.current;
     setError(null);
     try {
-      const response = await authFetch(
-        `${TASKS_ENDPOINT}?taskListId=${taskListId}`,
+      const completedRequest = fetchTasksByStatus(
+        TASK_STATUS_FILTER.COMPLETED,
+        { completedMin: windowStart },
       );
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to fetch tasks');
-      setTasks(data.tasks);
-      loadedTaskListId.current = taskListId;
+      // Handled by the await below; prevents an unhandled rejection when the
+      // active request fails first.
+      completedRequest.catch(() => undefined);
+      const activeTasks = await fetchTasksByStatus(TASK_STATUS_FILTER.ACTIVE);
+      if (isStale()) return;
+      if (isFirstLoad) {
+        setTasks(activeTasks);
+        setCompletedLoading(true);
+        setLoading(false);
+      }
+      const completedTasks = await completedRequest;
+      if (isStale()) return;
+      if (isFirstLoad) {
+        // Keep edits made while completed tasks were loading.
+        appendTasks(completedTasks);
+      } else {
+        const fetchedIds = new Set(
+          [...activeTasks, ...completedTasks].map(t => t.id),
+        );
+        // Older completed tasks are outside the refetched window, so keep the
+        // ones already loaded instead of fetching the full history again.
+        setTasks(prevTasks => [
+          ...activeTasks,
+          ...completedTasks,
+          ...prevTasks.filter(
+            t =>
+              t.status === 'completed' &&
+              completionTime(t) < windowStart &&
+              !fetchedIds.has(t.id),
+          ),
+        ]);
+      }
+      loadedTaskListId.current = requestedListId;
     } catch (err) {
-      setError(handleApiError(err, 'Failed to fetch tasks'));
+      if (!isStale()) setError(handleApiError(err, 'Failed to fetch tasks'));
     } finally {
-      setLoading(false);
+      if (!isStale()) {
+        setLoading(false);
+        setCompletedLoading(false);
+      }
+    }
+  };
+
+  const appendTasks = (newTasks: Task[]) =>
+    setTasks(prevTasks => {
+      const shownIds = new Set(prevTasks.map(t => t.id));
+      return [...prevTasks, ...newTasks.filter(t => !shownIds.has(t.id))];
+    });
+
+  // Loads the 30 days before the oldest loaded date until 90 days are loaded,
+  // then everything older in one request, since Google cannot report how far
+  // back the history goes.
+  // Triggered by scrolling, so concurrent calls are dropped rather than queued.
+  const loadingOlderRequest = useRef(false);
+  const loadOlderCompleted = async () => {
+    if (loadingOlderRequest.current) return;
+    loadingOlderRequest.current = true;
+    const requestedListId = taskListId;
+    const completedMax = olderBatchEnd.current;
+    const loadedDays =
+      COMPLETED_BATCH_DAYS +
+      daysBetween(completedMax, recentCompletedSince.current);
+    const completedMin =
+      loadedDays >= BATCHED_COMPLETED_DAYS
+        ? undefined
+        : new Date(
+            new Date(completedMax).getTime() - COMPLETED_BATCH_DAYS * DAY_MS,
+          ).toISOString();
+    setLoadingOlderCompleted(true);
+    setOlderCompletedFailed(false);
+    try {
+      const olderTasks = await fetchTasksByStatus(
+        TASK_STATUS_FILTER.COMPLETED,
+        completedMin ? { completedMin, completedMax } : { completedMax },
+      );
+      if (currentTaskListId.current !== requestedListId) return;
+      appendTasks(olderTasks);
+      if (completedMin) {
+        olderBatchEnd.current = completedMin;
+        setCompletedLoadedSince(completedMin);
+      } else {
+        setHasOlderCompleted(false);
+      }
+    } catch (err) {
+      setOlderCompletedFailed(true);
+      setError(handleApiError(err, 'Failed to fetch older completed tasks'));
+    } finally {
+      loadingOlderRequest.current = false;
+      setLoadingOlderCompleted(false);
     }
   };
 
@@ -144,7 +297,8 @@ const useTasks = (
       originalStatus === 'completed' ? 'needsAction' : 'completed';
 
     // The shared checklist owns visual timing; this flag only guards persistence.
-    // `updated` moves to now so the row lands in Completed's Today group at once.
+    // `completed` moves to now so the row lands in Completed's Today group at once.
+    const now = new Date().toISOString();
     setTasks(prevTasks =>
       prevTasks.map(t =>
         t.id === task.id
@@ -152,7 +306,8 @@ const useTasks = (
               ...t,
               status: nextStatus,
               isRemoving: true,
-              updated: new Date().toISOString(),
+              updated: now,
+              completed: nextStatus === 'completed' ? now : undefined,
             }
           : t,
       ),
@@ -177,7 +332,11 @@ const useTasks = (
                 ...t,
                 status: nextStatus,
                 isRemoving: false,
-                updated: data.task?.updated ?? new Date().toISOString(),
+                updated: data.task?.updated ?? now,
+                completed:
+                  nextStatus === 'completed'
+                    ? (data.task?.completed ?? now)
+                    : undefined,
               }
             : t,
         ),
@@ -191,6 +350,7 @@ const useTasks = (
                 status: originalStatus,
                 isRemoving: false,
                 updated: task.updated,
+                completed: task.completed,
               }
             : t,
         ),
@@ -270,6 +430,12 @@ const useTasks = (
     deleteTask,
     moveTask,
     setTasks,
+    hasOlderCompleted,
+    completedLoadedSince,
+    loadingOlderCompleted,
+    olderCompletedFailed,
+    loadOlderCompleted,
+    completedLoading,
   };
 };
 
@@ -555,6 +721,61 @@ const AddTaskForm = memo(
 
 AddTaskForm.displayName = 'AddTaskForm';
 
+// Loads older completed tasks once the end of the Completed section scrolls
+// into view. The section's content mounts only while it is open, so a
+// collapsed section never triggers the load. Observing again after each batch
+// chains the next one while the end is still visible, since an observer only
+// reports changes.
+const OlderCompletedLoader = ({
+  loading,
+  failed,
+  onLoad,
+}: {
+  loading: boolean;
+  failed: boolean;
+  onLoad: () => void;
+}) => {
+  const sentinel = useRef<HTMLDivElement>(null);
+  const latestOnLoad = useRef(onLoad);
+  useEffect(() => {
+    latestOnLoad.current = onLoad;
+  });
+
+  useEffect(() => {
+    const node = sentinel.current;
+    if (!node || failed || loading) return;
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries.some(entry => entry.isIntersecting)) latestOnLoad.current();
+      },
+      { rootMargin: OLDER_COMPLETED_PREFETCH_MARGIN },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [failed, loading]);
+
+  if (failed) {
+    return (
+      <Button variant="ghost" size="sm" className="self-start" onClick={onLoad}>
+        {RETRY_OLDER_COMPLETED_LABEL}
+      </Button>
+    );
+  }
+
+  return (
+    <div
+      ref={sentinel}
+      className="flex flex-col gap-2 min-h-px"
+      aria-busy={loading}
+    >
+      {loading &&
+        Array.from({ length: OLDER_COMPLETED_SKELETON_ROWS }).map((_, i) => (
+          <Skeleton key={i} className="h-8 w-full" />
+        ))}
+    </div>
+  );
+};
+
 const UnauthenticatedView = memo(
   ({ signInWithGoogle }: { signInWithGoogle: () => Promise<void> }) => (
     <Card className="w-full">
@@ -673,6 +894,12 @@ export const GoogleTasksComponent = ({
     deleteTask,
     moveTask,
     setTasks,
+    hasOlderCompleted,
+    completedLoadedSince,
+    loadingOlderCompleted,
+    olderCompletedFailed,
+    loadOlderCompleted,
+    completedLoading,
   } = useTasks(taskListId, authFetch);
   const isControlledSort = controlledSortMode !== undefined;
   const [localSortMode, setLocalSortMode] = useSortModeStorage(
@@ -831,6 +1058,7 @@ export const GoogleTasksComponent = ({
         notes: t.notes,
         due: t.due,
         updatedAt: t.updated,
+        completedAt: t.completed,
         isRemoving: t.isRemoving,
       })),
     [tasks],
@@ -936,6 +1164,21 @@ export const GoogleTasksComponent = ({
           renderItemAccessory={renderItemAccessory}
           renderItemMeta={renderItemMeta}
           itemClassName={itemClassName}
+          completedLoading={completedLoading}
+          completedHint={
+            hasOlderCompleted
+              ? getCompletedHint(completedLoadedSince)
+              : undefined
+          }
+          completedFooter={
+            !hasOlderCompleted || loading || completedLoading ? undefined : (
+              <OlderCompletedLoader
+                loading={loadingOlderCompleted}
+                failed={olderCompletedFailed}
+                onLoad={loadOlderCompleted}
+              />
+            )
+          }
         />
       </div>
     </div>

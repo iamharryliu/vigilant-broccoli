@@ -15,6 +15,7 @@ import { groupCompletedByDay } from './checklist-groups.utils';
 import { CollapsibleList } from './CollapsibleList';
 import { EllipsisAction, EllipsisCTA } from './EllipsisCTA';
 import { Input } from './Input';
+import { Skeleton } from './Skeleton';
 import { Text } from './Text';
 import { Textarea } from './Textarea';
 
@@ -29,6 +30,8 @@ const EDITOR = {
 } as const;
 
 const DEFAULT_COMPLETED_SECTION_ID = 'completed';
+const COMPLETED_LABEL = 'Completed';
+const COMPLETED_SKELETON_ROWS = 3;
 
 const DEFAULT_DELETE_LABEL = 'Delete';
 
@@ -117,6 +120,12 @@ export interface CheckListBaseProps<
   wrapActiveItems?: (rows: ReactNode, activeIds: string[]) => ReactNode;
   /** Rendered after the active rows, e.g. a drag placeholder. */
   activeFooter?: ReactNode;
+  /** Rendered after the completed rows; keeps Completed visible when empty. */
+  completedFooter?: ReactNode;
+  /** Shows Completed with a skeleton count and rows while its items load. */
+  completedLoading?: boolean;
+  /** Muted text after the Completed count, e.g. the range it covers. */
+  completedHint?: string;
   /** Rendered under the title, above `renderItemMeta`. */
   renderItemDetails?: (item: T) => ReactNode;
   /**
@@ -224,6 +233,13 @@ const BODY_CLASS = {
   [ROW_VARIANT.DENSE]: 'items-center gap-3',
 } as const;
 
+// Card rows align to the top, so the 36px menu trigger is pulled up to center
+// on the title's first 20px line instead of hanging below it and growing the row.
+const ROW_MENU_CLASS = {
+  [ROW_VARIANT.CARD]: 'shrink-0 -my-2',
+  [ROW_VARIANT.DENSE]: 'shrink-0',
+} as const;
+
 export const CheckListBase = <T extends CheckListBaseItem>({
   items,
   editingItemId = null,
@@ -246,6 +262,9 @@ export const CheckListBase = <T extends CheckListBaseItem>({
   rowFrame,
   wrapActiveItems,
   activeFooter,
+  completedFooter,
+  completedLoading = false,
+  completedHint,
   renderItemDetails,
   onDeleteItem,
   canDeleteItem,
@@ -404,6 +423,7 @@ export const CheckListBase = <T extends CheckListBaseItem>({
     presentationItems.filter(item => item.checked),
   );
   const completedCount = items.filter(item => item.checked).length;
+  const completedTitle = `${COMPLETED_LABEL} (${completedCount})`;
 
   const handleEditKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !(editor === EDITOR.TEXTAREA && e.shiftKey)) {
@@ -528,7 +548,7 @@ export const CheckListBase = <T extends CheckListBaseItem>({
               </div>
               {renderItemAccessory?.(item)}
               {actions.length > 0 && (
-                <div className="shrink-0">
+                <div className={ROW_MENU_CLASS[rowVariant]}>
                   <EllipsisCTA actions={actions} disabled={item.isRemoving} />
                 </div>
               )}
@@ -566,15 +586,40 @@ export const CheckListBase = <T extends CheckListBaseItem>({
             activeItems.map(item => item.id),
           )
         : activeRows}
-      {completedGroups.length > 0 && (
+      {(completedGroups.length > 0 || completedFooter || completedLoading) && (
         <CollapsibleList
           storageKeyPrefix={storageKeyPrefix}
           onOpenChange={(_, open) => setPopulating(open)}
           items={[
             {
               id: completedSectionId,
-              title: `Completed (${completedCount})`,
-              content: (
+              title: completedTitle,
+              titleContent:
+                completedLoading || completedHint ? (
+                  <span
+                    className="flex items-center gap-2 text-sm"
+                    aria-busy={completedLoading || undefined}
+                  >
+                    <span className="font-bold">
+                      {completedLoading ? COMPLETED_LABEL : completedTitle}
+                    </span>
+                    {completedLoading && <Skeleton className="h-4 w-6" />}
+                    {completedHint && (
+                      <span className="text-muted-foreground">
+                        · {completedHint}
+                      </span>
+                    )}
+                  </span>
+                ) : undefined,
+              content: completedLoading ? (
+                <div className="flex flex-col gap-2">
+                  {Array.from({ length: COMPLETED_SKELETON_ROWS }).map(
+                    (_, i) => (
+                      <Skeleton key={i} className="h-8 w-full" />
+                    ),
+                  )}
+                </div>
+              ) : (
                 <div className="flex flex-col gap-3">
                   {completedGroups.map(({ key, label, items: groupItems }) => {
                     const offset = populateOffsets.get(key) ?? 0;
@@ -608,6 +653,7 @@ export const CheckListBase = <T extends CheckListBaseItem>({
                       </div>
                     );
                   })}
+                  {completedFooter}
                 </div>
               ),
             },
