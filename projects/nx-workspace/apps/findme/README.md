@@ -5,6 +5,7 @@ Real-time location sharing for friends and family.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -21,3 +22,7 @@ Real-time location sharing for friends and family.
   - `realtime`
 - Cloud services
   - Supabase
+
+## Environment
+
+- [.env.example](./.env.example)

@@ -5,6 +5,7 @@ Bomberman-style water balloon battles on desktop, plus a landscape-only handheld
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -22,3 +23,7 @@ Bomberman-style water balloon battles on desktop, plus a landscape-only handheld
   - `react-lib-auth`
 - Cloud services
   - Supabase
+
+## Environment
+
+- [.env.example](./.env.example)

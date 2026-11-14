@@ -5,6 +5,7 @@ Publish/subscribe server over Socket.IO and Server-Sent Events.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -16,3 +17,7 @@ Publish/subscribe server over Socket.IO and Server-Sent Events.
 - Internal libs
   - `common-js`
   - `common-node`
+
+## Environment
+
+- [.env.example](./.env.example)

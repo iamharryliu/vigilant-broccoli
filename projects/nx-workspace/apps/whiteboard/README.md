@@ -5,6 +5,7 @@ Collaborative drawing and brainstorming canvas.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -17,3 +18,7 @@ Collaborative drawing and brainstorming canvas.
   - `realtime`
 - Cloud services
   - Supabase
+
+## Environment
+
+- [.env.example](./.env.example)
