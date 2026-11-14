@@ -5,8 +5,9 @@
 ## Exports
 
 - `CRUDItemList` — main list component
-- `EllipsisCTA` — reusable ellipsis popover with Update + Delete (confirmed through react-lib's `DeleteItemConfirmationDialog`)
 - `CRUDFormProps<T>` — form component prop type
+
+Row menus use react-lib's `EllipsisCTA` (see [ellipsis-cta.md](../../../react-lib/docs/features/ellipsis-cta.md)).
 
 ## CRUDItemList Props
 
@@ -24,11 +25,6 @@
 - `copy` — override titles/labels
 - `deleteConfirmation` — `{ title, description }` override for the delete confirmation dialog
 - `HeaderComponent`, `FooterComponent` — optional slots
-
-## EllipsisCTA Props
-
-- `onUpdate` — called when Update is clicked (opens dialog in parent)
-- `onDelete` — called after delete confirmation
 
 ## Behaviour
 

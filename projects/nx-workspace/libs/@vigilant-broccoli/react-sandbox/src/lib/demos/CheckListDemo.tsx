@@ -156,6 +156,14 @@ export const CheckListDemo = () => {
     });
   }, []);
 
+  const handleDelete = useCallback((item: CheckListItem) => {
+    setItems(prev => prev.filter(i => i.id !== item.id));
+  }, []);
+
+  const handleDenseDelete = useCallback((item: CheckListBaseItem) => {
+    setDenseItems(prev => prev.filter(i => i.id !== item.id));
+  }, []);
+
   const handleDenseToggle = useCallback((item: CheckListBaseItem) => {
     setDenseItems(prev =>
       prev.map(i =>
@@ -267,6 +275,7 @@ export const CheckListDemo = () => {
         onReorder={enableDragDrop ? handleReorder : undefined}
         listId={LIST_ID}
         emptyLabel={EMPTY_LABEL}
+        onDeleteItem={handleDelete}
         renderItemAccessory={renderItemAccessory}
         renderItemMeta={renderItemMeta}
         itemClassName={itemClassName}
@@ -296,6 +305,7 @@ export const CheckListDemo = () => {
         size="3"
         editCompleted={false}
         storageKeyPrefix="checklist-demo-dense"
+        onDeleteItem={handleDenseDelete}
         emptyLabel={
           <Text size="3" color="gray">
             {DENSE_EMPTY_LABEL}

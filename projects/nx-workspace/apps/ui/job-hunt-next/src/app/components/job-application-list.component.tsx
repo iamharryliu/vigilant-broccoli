@@ -29,6 +29,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  EllipsisAction,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import {
@@ -37,10 +38,7 @@ import {
 } from './application-brief.component';
 import { CoverLetterTab } from './cover-letter-tab.component';
 import { applicationResumeSource, ResumeTab } from './resume-tab.component';
-import {
-  CRUDItemList,
-  EllipsisAction,
-} from '@vigilant-broccoli/react-lib-higher-level';
+import { CRUDItemList } from '@vigilant-broccoli/react-lib-higher-level';
 import { EXPAND_LATEST, EXPAND_PARAM } from '../app.const';
 import {
   APPLICATION_STATUS,

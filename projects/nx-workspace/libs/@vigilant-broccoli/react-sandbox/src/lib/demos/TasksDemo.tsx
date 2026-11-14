@@ -81,6 +81,7 @@ const MOCK_TRANSCRIPT =
 
 const DEFAULT_TASK_LIST_ID = '@default';
 const TASK_LIST_ID_PARAM = 'taskListId';
+const TASK_ID_PARAM = 'taskId';
 const TRANSCRIPT_SEPARATOR = '>';
 
 const MOCK_TASK_LISTS = [
@@ -266,6 +267,17 @@ const handleUpdateTask = async ({ store, init }: RouteContext) => {
   return jsonResponse({ task: target });
 };
 
+const handleDeleteTask = async ({ store, url }: RouteContext) => {
+  await delay(LATENCY_MS.WRITE);
+  const taskListId =
+    url.searchParams.get(TASK_LIST_ID_PARAM) ?? DEFAULT_TASK_LIST_ID;
+  const taskId = url.searchParams.get(TASK_ID_PARAM);
+  const tasks = toTaskList(store, taskListId);
+  if (!tasks.some(task => task.id === taskId)) return notFoundResponse();
+  store[taskListId] = tasks.filter(task => task.id !== taskId);
+  return jsonResponse({ success: true });
+};
+
 const handleMoveTask = async ({ store, init }: RouteContext) => {
   await delay(LATENCY_MS.WRITE);
   const { taskListId, taskId, previous } = parseBody(init);
@@ -293,12 +305,14 @@ const ROUTE_HANDLERS: Record<
   [routeKey(HTTP_METHOD.GET, ENDPOINT.TASKS)]: handleGetTasks,
   [routeKey(HTTP_METHOD.POST, ENDPOINT.TASKS)]: handleCreateTask,
   [routeKey(HTTP_METHOD.PATCH, ENDPOINT.TASKS)]: handleUpdateTask,
+  [routeKey(HTTP_METHOD.DELETE, ENDPOINT.TASKS)]: handleDeleteTask,
   [routeKey(HTTP_METHOD.POST, ENDPOINT.MOVE)]: handleMoveTask,
 };
 
 const WRITE_ROUTE_KEYS = new Set([
   routeKey(HTTP_METHOD.POST, ENDPOINT.TASKS),
   routeKey(HTTP_METHOD.PATCH, ENDPOINT.TASKS),
+  routeKey(HTTP_METHOD.DELETE, ENDPOINT.TASKS),
   routeKey(HTTP_METHOD.POST, ENDPOINT.MOVE),
 ]);
 

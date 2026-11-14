@@ -11,11 +11,9 @@ import {
   TabsList,
   TabsTrigger,
   Text,
-} from '@vigilant-broccoli/react-lib';
-import {
   EllipsisCTA,
   type EllipsisAction,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { Card } from '@vigilant-broccoli/react-lib';
 import {

@@ -74,7 +74,7 @@ Never add GitHub Actions repo secrets; remove unused ones. Only `GCP_SERVICE_ACC
 
 Read [ui-app-pattern.md](./docs/app-development/ui/ui-app-pattern.md) before UI app work; it links the deployment and auth patterns.
 
-Build task and checklist UIs on react-lib's `CheckList` and follow its [completion contract](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/checklist-completion.md#consumer-contract): mount after first load, stable ids or `transitionFromId`, optimistic updates with `isRemoving` while pending, rollback on failure.
+Build task and checklist UIs on react-lib's `CheckList` and follow its [completion contract](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/checklist-completion.md#consumer-contract): mount after first load, stable ids or `transitionFromId`, optimistic updates with `isRemoving` while pending, rollback on failure, and row deletion through the ellipsis menu (`onDeleteItem`, extra commands in `itemActions`).
 
 ### API
 

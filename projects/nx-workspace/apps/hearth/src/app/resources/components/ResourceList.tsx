@@ -11,8 +11,8 @@ import {
   DialogContent,
   DialogTitle,
   cn,
+  EllipsisCTA,
 } from '@vigilant-broccoli/react-lib';
-import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { Resource, ResourceBooking } from '../../../lib/types';
 import { ResourceForm, ResourceFormData } from './ResourceForm';
 

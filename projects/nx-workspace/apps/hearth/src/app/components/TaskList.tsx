@@ -17,8 +17,6 @@ import {
   Button,
   CheckList,
   CheckListItem,
-  DropdownMenu,
-  IconButton,
   Input,
   Progress,
   Skeleton,
@@ -47,7 +45,6 @@ import {
 } from './tasks.utils';
 
 const ASSIGN_LABEL = 'Assign';
-const DELETE_LABEL = 'Delete';
 const ACCEPTED_STATUS = 'accepted';
 const LOADING_LABEL = 'Loading tasks';
 
@@ -484,37 +481,16 @@ export function TaskList() {
   const renderItemAccessory = (item: CheckListItem) => {
     const assignedUserId = getAssignedUserId(item.id);
     const assignee = members.find(member => member.userId === assignedUserId);
-    return (
-      <div
-        className="flex shrink-0 items-center gap-2"
-        onClick={e => e.stopPropagation()}
-      >
-        {assignee && (
-          <Badge variant="soft" size="1" className="max-w-32 truncate">
-            {getAssigneeLabel(assignee)}
-          </Badge>
-        )}
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <IconButton icon="ellipsis-vertical" variant="ghost" />
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content>
-            <DropdownMenu.Item onSelect={() => setAssigningItem(item)}>
-              {ASSIGN_LABEL}
-            </DropdownMenu.Item>
-            {isOneOff(item.id) && (
-              <DropdownMenu.Item
-                color="red"
-                onSelect={() => handleDeleteOneOff(item.id)}
-              >
-                {DELETE_LABEL}
-              </DropdownMenu.Item>
-            )}
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
-      </div>
-    );
+    return assignee ? (
+      <Badge variant="soft" size="1" className="max-w-32 shrink-0 truncate">
+        {getAssigneeLabel(assignee)}
+      </Badge>
+    ) : null;
   };
+
+  const itemActions = (item: CheckListItem) => [
+    { label: ASSIGN_LABEL, onSelect: () => setAssigningItem(item) },
+  ];
 
   if (!homeId) return null;
 
@@ -581,6 +557,10 @@ export function TaskList() {
             storageKeyPrefix="recurring-tasks"
             emptyLabel="No tasks due today"
             renderItemAccessory={renderItemAccessory}
+            itemActions={itemActions}
+            // Recurring tasks are deleted from the manager dialog.
+            canDeleteItem={item => isOneOff(item.id)}
+            onDeleteItem={item => handleDeleteOneOff(item.id)}
           />
         )}
       </DndContext>
