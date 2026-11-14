@@ -63,4 +63,4 @@ Existing projects pick the protection up on their next staging deploy.
 ## New app checklist (Vercel-side)
 
 1. `deploy` / `deploy:production` target pair in `project.json`.
-2. Entry in `projectConfigs` in `scripts/deploy-vercel.ts`.
+2. Entry in `projectConfigs` in `scripts/deploy-vercel.ts`. Set `envExamplePath` only when the app's example file lists keys to pull from Vault ([why](../../../infrastructure/secret-management.md#local-config-files)).

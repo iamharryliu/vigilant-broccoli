@@ -5,6 +5,7 @@ Google Tasks as a standalone page, or embedded in any site at `/embed`.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -25,3 +26,7 @@ Google Tasks as a standalone page, or embedded in any site at `/embed`.
 - Cloud services
   - Google Tasks API
   - Supabase
+
+## Environment
+
+- [.env.example](./.env.example)

@@ -5,6 +5,7 @@ A gravity-flipping arcade runner with local play and online rooms for two to fou
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -19,3 +20,7 @@ A gravity-flipping arcade runner with local play and online rooms for two to fou
   - `react-lib`
 - Cloud services
   - Supabase
+
+## Environment
+
+- [.env.example](./.env.example)
