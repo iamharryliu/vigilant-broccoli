@@ -63,4 +63,4 @@ Existing projects pick the protection up on their next staging deploy.
 ## New app checklist (Vercel-side)
 
 1. `deploy` / `deploy:production` target pair in `project.json`.
-2. Entry in `projectConfigs` in `scripts/deploy-vercel.ts`.
+2. Entry in `projectConfigs` in `scripts/deploy-vercel.ts`. Set `envExamplePath` only when the app's example file lists keys to pull from Vault. An example file kept only for docs or local dev (the Supabase-only ones for balloono, gravity-guy, findme and whiteboard) has no `envExamplePath`, since that would make its keys required in Vault.

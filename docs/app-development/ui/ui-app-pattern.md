@@ -119,7 +119,7 @@ Every UI application with a public URL appears as a card in `apps/ui/pages-index
 ## Local dev
 
 - Mock backends live under `apps/api/mock/*` (e.g. `mock-employee-handler-service`) — prefer extending a mock over pointing a local UI at live services.
-- Running against real secrets: the app's `serve` target (Vault-wrapped).
+- Running against real secrets: the app's `serve` target (Vault-wrapped). The app's committed example file is the key list `serve` pulls from Vault, so add a newly read variable there in the same change.
 - Every UI app's local dev server defaults to port 3000 (Vite `server.port`, or Next's own unset-port default) — API services default to 3001 (see [fly-service-pattern.md](../api/deployment/fly-service-pattern.md#local-dev)). Since only one app on each side can hold its default port at a time, a new UI app should follow this default rather than picking its own — reach for a `PORT`/`--port` override only for genuinely concurrent local multi-service dev (e.g. Playwright driving two apps at once).
 
 ## New UI app checklist (app-side)
@@ -130,3 +130,4 @@ Every UI application with a public URL appears as a card in `apps/ui/pages-index
 4. Web Applications card in `WebApplicationsPage.tsx`, plus the Upptime and quick-links entries above.
 5. Theme follows the system via `<ThemeProvider>` unless told otherwise (above).
 6. Apple home screen PNG and link via the framework convention above.
+7. Commit a `.env.example` (or `.env.local.example`) listing every env var the app reads, link it from the README `## Environment` section per [app-readme-pattern.md](../../app-readme-pattern.md#apps-and-publishable-libs), and point the Vault-wrapped `serve` target at it (reference: tasks-next, `scripts/fetch-secrets.ts --env-file apps/ui/tasks-next/.env.example`).
