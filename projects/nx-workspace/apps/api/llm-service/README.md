@@ -9,7 +9,7 @@
 
 - Language - TypeScript
 - Framework - Fastify
-- Build Tool - webpack
+- Build Tool - esbuild
 - Internal libs
   - `common-js`
   - `common-node`

@@ -11,7 +11,7 @@ Image and file processing service for resizing, re-encoding and stripping EXIF.
 
 - Language - TypeScript
 - Framework - Fastify
-- Build Tool - webpack
+- Build Tool - esbuild
 - External libs
   - sharp
 - Internal libs
