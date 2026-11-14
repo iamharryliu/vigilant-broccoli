@@ -26,7 +26,12 @@ export const WeatherBadgeList = ({
   className?: string;
 }) =>
   badges.length > 0 ? (
-    <ul className={cn('flex flex-wrap justify-center gap-2', className)}>
+    <ul
+      className={cn(
+        'flex flex-wrap content-start items-center justify-center gap-2',
+        className,
+      )}
+    >
       {badges.map(({ key, icon, label }) => (
         <li
           key={key}

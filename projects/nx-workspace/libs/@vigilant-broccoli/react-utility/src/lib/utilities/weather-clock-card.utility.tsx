@@ -206,7 +206,8 @@ const WeatherDetails = ({ weather }: WeatherDetailsProps) => {
           hasBadges ? BADGES_EXPANDED_CLASS : BADGES_COLLAPSED_CLASS,
         )}
       >
-        <div className="flex min-h-0 justify-center overflow-hidden">
+        {/* items-start: a grid row left taller (e.g. after a hidden-tab relayout) must not stretch the pills. */}
+        <div className="flex min-h-0 items-start justify-center overflow-hidden">
           {hasBadges && <WeatherBadgeList badges={badges} />}
         </div>
       </div>
