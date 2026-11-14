@@ -19,8 +19,10 @@
 - Embedders should sandbox the frame without `allow-top-navigation`, so a compromised tasks-next cannot redirect them: `allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox` (the sign-in popup needs the last two).
 - Staging is behind Vercel Authentication and cannot be framed.
 - The frame does not report its height or sync its theme; embedders give it a fixed size.
+- `/embed` renders the bare list with no padding or card border (`wrapInCard={false}`), so it fills the frame and embedders draw any frame border themselves in their own theme. `/` keeps the card.
 
 ## Consumers
 
-- `local-manager-next`'s home page frames `tasks.harryliu.dev/embed`; the build-time `NEXT_PUBLIC_TASKS_URL` points it at another instance.
+- `local-manager-next`'s home page frames `tasks.harryliu.dev/embed` inside a bordered wrapper matching its calendar panel; the build-time `NEXT_PUBLIC_TASKS_URL` points it at another instance.
+- `mobile-manager-next`'s Tasks tab (`/?tab=Tasks`) frames it edge to edge like the other tabs; the same build-time `NEXT_PUBLIC_TASKS_URL` override applies.
 - Local testing: `localhost:4000/auth/callback` and `localhost:3000` are on the Supabase redirect allow-list, so run this app on port 4000 when the manager holds 3000.

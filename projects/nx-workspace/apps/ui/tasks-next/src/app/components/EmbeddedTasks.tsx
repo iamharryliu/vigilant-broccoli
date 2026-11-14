@@ -9,9 +9,11 @@ export function EmbeddedTasks() {
   useEffect(() => listenForPopupSession(tokens => void setSession(tokens)), []);
 
   return (
-    <main className="h-dvh p-2">
+    <main className="h-dvh">
+      {/* Embedders draw the frame: a border here would use this page's theme, not theirs. */}
       <GoogleTasksComponent
         auth={embedTasksAuth}
+        wrapInCard={false}
         enableDragDrop
         enableVoiceInput={false}
       />
