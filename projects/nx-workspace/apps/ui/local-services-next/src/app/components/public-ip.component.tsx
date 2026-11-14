@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
-import { InfoCircledIcon } from '@radix-ui/react-icons';
+import { Info } from 'lucide-react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 import { usePollingInterval } from '../hooks/usePollingInterval';
@@ -274,9 +274,8 @@ export const PublicIpComponent = () => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <InfoCircledIcon
-                    width="16"
-                    height="16"
+                  <Info
+                    size={16}
                     style={{ cursor: 'help', color: 'var(--gray-10)' }}
                   />
                 </TooltipTrigger>

@@ -2,7 +2,7 @@
 
 import { Button, Text, Badge } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
-import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 
@@ -136,7 +136,11 @@ export const DjMusicComponent = () => {
             </Badge>
           )}
         </div>
-        {playlistsExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        {playlistsExpanded ? (
+          <ChevronUp size={15} />
+        ) : (
+          <ChevronDown size={15} />
+        )}
       </Button>
 
       {playlistsExpanded && (

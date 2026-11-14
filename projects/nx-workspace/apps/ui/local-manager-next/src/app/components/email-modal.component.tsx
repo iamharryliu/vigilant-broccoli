@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
-import { EnvelopeClosedIcon } from '@radix-ui/react-icons';
+import { Mail } from 'lucide-react';
 import { EmailMessageForm } from './EmailMessageForm';
 
 type EmailModalComponentProps = {
@@ -30,7 +30,7 @@ export const EmailModalComponent = ({
       {externalOpen === undefined && (
         <DialogTrigger asChild>
           <Button size="icon" variant="secondary" aria-label="Send email">
-            <EnvelopeClosedIcon />
+            <Mail size={15} />
           </Button>
         </DialogTrigger>
       )}

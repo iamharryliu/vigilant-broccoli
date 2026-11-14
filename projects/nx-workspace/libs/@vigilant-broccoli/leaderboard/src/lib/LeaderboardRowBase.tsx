@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { Placement } from './Placement';
 
 export const LeaderboardRowBase = ({

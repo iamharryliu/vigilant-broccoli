@@ -5,8 +5,8 @@
   "sideEffects": false,
   "dependencies": {
     "@vigilant-broccoli/react-lib": "workspace:*",
-    "framer-motion": "^12.23.12",
     "lucide-react": "^0.513.0",
+    "motion": "^12.43.0",
     "react": "19.2.7",
     "react-dom": "19.2.7"
   }

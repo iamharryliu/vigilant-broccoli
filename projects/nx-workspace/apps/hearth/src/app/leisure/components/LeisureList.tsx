@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { DragHandleDots2Icon } from '@radix-ui/react-icons';
+import { GripVertical } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -450,7 +450,7 @@ function SortableActivityRow({
           onPointerDown={event => event.stopPropagation()}
           onClick={event => event.stopPropagation()}
         >
-          <DragHandleDots2Icon />
+          <GripVertical size={15} />
         </button>
       )}
       {children}

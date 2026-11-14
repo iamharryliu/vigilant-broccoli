@@ -1,5 +1,5 @@
 import { LinkCard } from '@vigilant-broccoli/react-lib';
-import { GitHubLogoIcon, HomeIcon } from '@radix-ui/react-icons';
+import { ExternalLink, House } from 'lucide-react';
 
 export const LinkCardDemo = () => (
   <ul className="grid gap-4">
@@ -8,7 +8,7 @@ export const LinkCardDemo = () => (
         href="#link-card"
         title="Internal link"
         description="Hover to see the card lift slightly and its border and shadow strengthen."
-        icon={<HomeIcon />}
+        icon={<House size={15} />}
       />
     </li>
     <li>
@@ -17,7 +17,7 @@ export const LinkCardDemo = () => (
         external
         title="External link"
         description="Opens in a new tab with noopener noreferrer."
-        icon={<GitHubLogoIcon />}
+        icon={<ExternalLink size={15} />}
       />
     </li>
   </ul>

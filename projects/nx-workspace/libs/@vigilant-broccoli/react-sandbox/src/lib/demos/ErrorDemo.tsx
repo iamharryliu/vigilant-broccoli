@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { InfoCircledIcon } from '@radix-ui/react-icons';
+import { Info } from 'lucide-react';
 import {
   Button,
   Callout,
@@ -30,7 +30,7 @@ export const ErrorDemo = () => {
       {showAlert && (
         <Callout color="red">
           <CalloutIcon>
-            <InfoCircledIcon />
+            <Info size={15} />
           </CalloutIcon>
           <CalloutText>Error demo notification!</CalloutText>
         </Callout>

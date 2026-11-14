@@ -10,7 +10,7 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { CRUDFormProps } from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
-import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
+import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { useAuth } from '../providers/auth-provider';
 import { sortTags } from './where-is-tags';
 

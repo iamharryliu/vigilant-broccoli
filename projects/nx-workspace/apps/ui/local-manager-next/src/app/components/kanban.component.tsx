@@ -46,7 +46,6 @@ import {
 } from '@dnd-kit/core';
 import { SortableContext, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import {
   Menu,
   Pencil,
@@ -56,6 +55,7 @@ import {
   ChevronRight,
   ArrowUp,
   ArrowDown,
+  GripVertical,
 } from 'lucide-react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
@@ -532,7 +532,10 @@ const SortableLane = ({
               : 'cursor-grab active:cursor-grabbing'
           }`}
         >
-          <DragHandleDots2Icon className="opacity-40 hover:opacity-70 flex-shrink-0" />
+          <GripVertical
+            size={15}
+            className="opacity-40 hover:opacity-70 flex-shrink-0"
+          />
           <Text size="3" weight="bold">
             {taskList?.title ? (
               taskList.title
@@ -586,7 +589,7 @@ const TaskDragOverlay = ({
     >
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <DragHandleDots2Icon className="opacity-60 flex-shrink-0" />
+          <GripVertical size={15} className="opacity-60 flex-shrink-0" />
           <Text size="2" weight="medium" className="line-clamp-2">
             {task.title}
           </Text>
@@ -618,7 +621,7 @@ const LaneDragOverlay = ({ title }: { title: string }) => (
     className={`${OVERLAY_CLASSES.BASE} ${OVERLAY_CLASSES.LIGHT} ${OVERLAY_CLASSES.DARK} p-3 w-80 rotate-1`}
   >
     <div className="flex items-center gap-2">
-      <DragHandleDots2Icon className="opacity-60 flex-shrink-0" />
+      <GripVertical size={15} className="opacity-60 flex-shrink-0" />
       <Text size="3" weight="bold">
         {title ? title : <Skeleton className="w-32 h-5" />}
       </Text>
