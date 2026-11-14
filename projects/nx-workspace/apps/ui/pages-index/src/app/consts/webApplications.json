@@ -152,13 +152,6 @@
       "stagingHref": "https://staging-whiteboard.harryliu.dev/"
     },
     {
-      "id": "web-terminal",
-      "href": "https://shell.harryliu.dev/",
-      "titleKey": "WEB_APPLICATIONS_PAGE.WEB_TERMINAL.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.WEB_TERMINAL.DESCRIPTION",
-      "readmePath": "infrastructure/code-server/README.md"
-    },
-    {
       "id": "bookmarks",
       "href": "https://bookmarks.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.TITLE",
@@ -211,6 +204,38 @@
       "titleKey": "WEB_APPLICATIONS_PAGE.OFFICE_PRESENCE.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.OFFICE_PRESENCE.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/office-presence-ui/README.md"
+    }
+  ],
+  "private": [
+    {
+      "id": "chat",
+      "href": "https://chat.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.CHAT.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.CHAT.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/chat/README.md",
+      "stagingHref": "https://staging-chat.harryliu.dev/"
+    },
+    {
+      "id": "local-manager",
+      "href": "https://manager.vigilant-broccoli.app/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.LOCAL_MANAGER.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.LOCAL_MANAGER.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/local-manager-next/README.md"
+    },
+    {
+      "id": "mobile-manager",
+      "href": "https://manager.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.MOBILE_MANAGER.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.MOBILE_MANAGER.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/mobile-manager-next/README.md",
+      "stagingHref": "https://staging-manager.harryliu.dev/"
+    },
+    {
+      "id": "web-terminal",
+      "href": "https://shell.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.WEB_TERMINAL.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WEB_TERMINAL.DESCRIPTION",
+      "readmePath": "infrastructure/code-server/README.md"
     }
   ]
 }

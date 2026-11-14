@@ -16,6 +16,7 @@ export function WebApplicationReadmePage() {
   const app = [
     ...WEB_APPLICATIONS.applications,
     ...WEB_APPLICATIONS.demos,
+    ...WEB_APPLICATIONS.private,
   ].find(entry => entry.id === id);
 
   if (

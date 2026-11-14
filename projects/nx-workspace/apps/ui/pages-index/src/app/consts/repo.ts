@@ -29,7 +29,11 @@ const SERVED_README_ROUTES = new Map<string, string>([
     ({ readmePath, slug }) =>
       [readmePath, `${DOCKER_IMAGES_ROUTE}/${slug}`] as const,
   ),
-  ...[...WEB_APPLICATIONS.applications, ...WEB_APPLICATIONS.demos].map(
+  ...[
+    ...WEB_APPLICATIONS.applications,
+    ...WEB_APPLICATIONS.demos,
+    ...WEB_APPLICATIONS.private,
+  ].map(
     ({ readmePath, id }) => [readmePath, toWebApplicationRoute(id)] as const,
   ),
 ]);

@@ -17,7 +17,10 @@ import {
   LayoutGrid,
   type LucideIcon,
   MapPin,
+  MessageSquare,
+  Monitor,
   PenTool,
+  Smartphone,
   User,
   Users,
   Wrench,
@@ -50,6 +53,7 @@ const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   bookmarks: Bookmark,
   calendars: CalendarDays,
   career: Briefcase,
+  chat: MessageSquare,
   'context-md': Bot,
   'cloud-8-skate': Bike,
   'component-library': LayoutGrid,
@@ -60,6 +64,8 @@ const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   'gravity-guy-staging': Gamepad2,
   'harry-liu': User,
   hearth: Home,
+  'local-manager': Monitor,
+  'mobile-manager': Smartphone,
   pomodoro: Timer,
   tasks: CheckSquare,
   utilities: Wrench,
@@ -117,12 +123,21 @@ export function WebApplicationsPage() {
         </CardGrid>
       </section>
 
-      <section>
+      <section className="mb-12">
         <SectionHeading>
           {t('WEB_APPLICATIONS_PAGE.SECTION_DEMO')}
         </SectionHeading>
         <CardGrid>
           <ApplicationCards entries={WEB_APPLICATIONS.demos} />
+        </CardGrid>
+      </section>
+
+      <section>
+        <SectionHeading>
+          {t('WEB_APPLICATIONS_PAGE.SECTION_PRIVATE')}
+        </SectionHeading>
+        <CardGrid>
+          <ApplicationCards entries={WEB_APPLICATIONS.private} />
         </CardGrid>
       </section>
     </main>
