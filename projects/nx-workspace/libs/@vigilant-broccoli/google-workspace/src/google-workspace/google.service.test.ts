@@ -1,15 +1,14 @@
+import type { Mock } from 'vitest';
 import { GoogleService } from './google.service';
 import { getDateInISOFormat } from './gam.api';
 import { ShellUtils } from '@vigilant-broccoli/common-node';
 import { runGamReadCommand } from './google.utils';
 
-jest.mock('@vigilant-broccoli/common-node');
-jest.mock('./google.utils', () => {
-  return {
-    ...jest.requireActual('./google.utils'),
-    runGamReadCommand: jest.fn(),
-  };
-});
+vi.mock('@vigilant-broccoli/common-node');
+vi.mock('./google.utils', async () => ({
+  ...(await vi.importActual<typeof import('./google.utils')>('./google.utils')),
+  runGamReadCommand: vi.fn(),
+}));
 
 const MOCK = {
   NUMBER_OF_MONTHS_OF_RETENTION: 6,
@@ -25,7 +24,7 @@ describe('google.service', () => {
     );
     const mockDriveFileList =
       'Owner,id\nowner@example.com,12345\nowner@example.com,67890';
-    (ShellUtils.runUpdateShellCommand as jest.Mock).mockResolvedValue(
+    (ShellUtils.runUpdateShellCommand as Mock).mockResolvedValue(
       mockDriveFileList,
     );
     const getDriveFilesCommand = `gam user ${

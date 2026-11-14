@@ -1,16 +1,17 @@
 import { RecurrenceRule } from './google.consts';
 
+// Date-only strings parse as UTC midnight, so local getters would shift the day west of UTC.
 function formatDate(dateStr: string) {
   const date = new Date(dateStr);
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
+  const yyyy = date.getUTCFullYear();
+  const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(date.getUTCDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
 }
 
 function addOneDay(dateStr: string) {
   const date = new Date(dateStr);
-  date.setDate(date.getDate() + 1);
+  date.setUTCDate(date.getUTCDate() + 1);
   return date.toISOString();
 }
 

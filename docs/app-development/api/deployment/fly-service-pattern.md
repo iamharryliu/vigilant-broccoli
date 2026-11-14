@@ -41,7 +41,7 @@ Every service's `PORT` fallback (used when `nx serve` runs with no `PORT` set) d
 **Build shape:**
 
 - **Bundled** (`@nx/esbuild:esbuild`, `bundle: true, thirdParty: true`): single `main.js`, no Dockerfile install.
-- **Pruned** (`@nx/webpack:webpack` + `prune-lockfile` + `copy-workspace-modules`): `main.js` + `package.json` + `pnpm-lock.yaml` + `workspace_modules/`, Dockerfile runs `pnpm install --frozen-lockfile --prod`. Pick only when bundling is impractical.
+- **Pruned** (`@nx/esbuild:esbuild` without `thirdParty` + `prune-lockfile` + `copy-workspace-modules`): `main.js` + `package.json` + `pnpm-lock.yaml` + `workspace_modules/`, Dockerfile runs `pnpm install --frozen-lockfile --prod`. Pick only when bundling is impractical.
 
 **Image delivery:** every service uses the Docker Hub roundtrip: `deploy-container` runs `docker buildx ... --push iamharryliu/<svc>` (tags `latest` and `${COMMIT_SHA}`), then `deploy` runs `flyctl deploy --image iamharryliu/<svc>:${COMMIT_SHA}`.
 

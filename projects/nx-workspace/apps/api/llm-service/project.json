@@ -6,10 +6,35 @@
   "tags": [],
   "targets": {
     "build": {
-      "outputs": ["{workspaceRoot}/dist/apps/api/llm-service"],
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/api/llm-service",
+        "format": ["cjs"],
+        "bundle": true,
+        "main": "apps/api/llm-service/src/main.ts",
+        "tsConfig": "apps/api/llm-service/tsconfig.app.json",
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
       "configurations": {
-        "development": {}
+        "development": {},
+        "production": {
+          "generateLockfile": true,
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
       }
     },
     "prune-lockfile": {

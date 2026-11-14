@@ -83,13 +83,6 @@
         }
       ]
     },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/ui/local-manager-next"],
-      "options": {
-        "jestConfig": "apps/ui/local-manager-next/jest.config.ts"
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "dependsOn": [

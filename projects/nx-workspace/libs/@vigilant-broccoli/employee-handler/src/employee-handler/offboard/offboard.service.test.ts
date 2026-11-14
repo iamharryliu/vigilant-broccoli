@@ -1,12 +1,13 @@
+import type { Mock } from 'vitest';
 import { EMPLOYEE_HANDLER_CONFIG_MOCK } from '../mocks/config.mock';
 import { OffboardHandler } from './offboard.service';
 import { OffboardUtilities } from '../employee-handler.models';
 
-jest.mock('../mocks/config.mock', () => ({
+vi.mock('../mocks/config.mock', () => ({
   EMPLOYEE_HANDLER_CONFIG_MOCK: {
     offboardUtilities: {
-      fetchInactiveEmployees: jest.fn(),
-      processInactiveEmployees: jest.fn(),
+      fetchInactiveEmployees: vi.fn(),
+      processInactiveEmployees: vi.fn(),
     } as OffboardUtilities,
   },
 }));
@@ -17,7 +18,7 @@ describe('manualOffboardEmails', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should log a warning and return if no emails are provided', async () => {
@@ -35,7 +36,7 @@ describe('manualOffboardEmails', () => {
     mockProcessArgv(emails);
     (
       EMPLOYEE_HANDLER_CONFIG_MOCK.offboardUtilities
-        .fetchInactiveEmployees as jest.Mock
+        .fetchInactiveEmployees as Mock
     ).mockResolvedValueOnce(true);
 
     await OffboardHandler.manualOffboardEmails(EMPLOYEE_HANDLER_CONFIG_MOCK);
@@ -51,7 +52,7 @@ describe('manualOffboardEmails', () => {
     mockProcessArgv(emails);
     (
       EMPLOYEE_HANDLER_CONFIG_MOCK.offboardUtilities
-        .processInactiveEmployees as jest.Mock
+        .processInactiveEmployees as Mock
     ).mockRejectedValueOnce(error);
 
     await expect(

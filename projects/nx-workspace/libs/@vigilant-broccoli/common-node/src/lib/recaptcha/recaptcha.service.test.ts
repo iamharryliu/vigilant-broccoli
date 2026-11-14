@@ -1,10 +1,11 @@
+import type { Mock } from 'vitest';
 import { getEnvironmentVariable } from '../utils';
 import { RecaptchaService } from './recaptcha.service';
 
-global.fetch = jest.fn();
-jest.mock('@vigilant-broccoli/common-node', () => ({
+global.fetch = vi.fn();
+vi.mock('@vigilant-broccoli/common-node', () => ({
   logger: {
-    error: jest.fn(),
+    error: vi.fn(),
   },
 }));
 
@@ -16,7 +17,7 @@ describe('RecaptchaService', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('constructor', () => {
@@ -27,8 +28,8 @@ describe('RecaptchaService', () => {
 
   describe('isTrustedRequest', () => {
     it('should return true for valid token', async () => {
-      (fetch as jest.Mock).mockResolvedValue({
-        json: jest.fn().mockResolvedValue({ score: 0.5 }),
+      (fetch as Mock).mockResolvedValue({
+        json: vi.fn().mockResolvedValue({ score: 0.5 }),
       });
       const token = 'valid_token';
       const result = await recaptchaService.isTrustedRequest(token);
@@ -44,8 +45,8 @@ describe('RecaptchaService', () => {
     });
 
     it('should return false for invalid token', async () => {
-      (fetch as jest.Mock).mockResolvedValue({
-        json: jest.fn().mockResolvedValue({ score: 0.2 }),
+      (fetch as Mock).mockResolvedValue({
+        json: vi.fn().mockResolvedValue({ score: 0.2 }),
       });
       const token = 'invalid_token';
       const result = await recaptchaService.isTrustedRequest(token);
