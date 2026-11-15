@@ -10,7 +10,7 @@ Employee lifecycle automation — onboarding, offboarding, signatures, data sync
 
 - Language - TypeScript
 - External libs
-  - `express`
+  - `fastify`
   - `nodemailer`
   - `zod`
 - Internal libs

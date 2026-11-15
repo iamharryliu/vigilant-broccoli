@@ -1,7 +1,6 @@
-import { createServer as createHttpServer } from 'http';
-import { createServer as createHttpsServer } from 'https';
+import { ServerResponse } from 'http';
 import { readFileSync } from 'fs';
-import express, { Request, Response } from 'express';
+import Fastify, { FastifyRequest } from 'fastify';
 import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
 import {
@@ -26,7 +25,6 @@ import {
 const DEFAULT_PORT = '3000';
 const DEFAULT_HOST = '0.0.0.0';
 const STATUS_OK = 'ok';
-const PUBLISH_BODY_LIMIT = '64kb';
 const PUBLISH_MAX_BYTES = 64 * 1024;
 const DEFAULT_USER_PUBLISH_APPS = 'chat-demo';
 const USER_PUBLISH_APPS_SEPARATOR = ',';
@@ -107,15 +105,15 @@ const log = (event: string, data: Record<string, unknown> = {}) => {
   console.log(JSON.stringify({ ts: new Date().toISOString(), event, ...data }));
 };
 
-const sseRooms = new Map<string, Set<Response>>();
+const sseRooms = new Map<string, Set<ServerResponse>>();
 
-const addSseClient = (room: string, res: Response) => {
-  const clients = sseRooms.get(room) ?? new Set<Response>();
+const addSseClient = (room: string, res: ServerResponse) => {
+  const clients = sseRooms.get(room) ?? new Set<ServerResponse>();
   clients.add(res);
   sseRooms.set(room, clients);
 };
 
-const removeSseClient = (room: string, res: Response) => {
+const removeSseClient = (room: string, res: ServerResponse) => {
   const clients = sseRooms.get(room);
   if (!clients) return;
   clients.delete(res);
@@ -176,35 +174,46 @@ const isClientRateLimited = (socket: Socket) => {
   return socket.data.rateWindowCount > CLIENT_PUBLISH_MAX_PER_WINDOW;
 };
 
-const bearerToken = (req: Request) => {
-  const header = req.headers.authorization;
+const bearerToken = (request: FastifyRequest) => {
+  const header = request.headers.authorization;
   return header?.startsWith(BEARER_PREFIX)
     ? header.slice(BEARER_PREFIX.length)
     : undefined;
 };
 
-const app = express();
-app.get(SOCKET_SERVER_PATHS.HEALTH, (_req, res) => {
-  res.status(HTTP_STATUS_CODES.OK).json({ status: STATUS_OK });
+const tlsEnabled = Boolean(TLS_CERT_PATH && TLS_KEY_PATH);
+// A null `https` makes Fastify create a plain HTTP server.
+const app = Fastify({
+  https:
+    TLS_CERT_PATH && TLS_KEY_PATH
+      ? { cert: readFileSync(TLS_CERT_PATH), key: readFileSync(TLS_KEY_PATH) }
+      : null,
 });
 
-app.get(SOCKET_SERVER_PATHS.EVENTS, (req, res) => {
-  const parsed = subscriptionSchema.safeParse(req.query);
+app.get(SOCKET_SERVER_PATHS.HEALTH, (_request, reply) => {
+  reply.code(HTTP_STATUS_CODES.OK).send({ status: STATUS_OK });
+});
+
+app.get(SOCKET_SERVER_PATHS.EVENTS, (request, reply) => {
+  const parsed = subscriptionSchema.safeParse(request.query);
   if (!parsed.success) {
     log(LOG.SSE_SUBSCRIBE_INVALID, { issues: parsed.error.issues });
-    res
-      .status(HTTP_STATUS_CODES.BAD_REQUEST)
-      .json({ code: PUBLISH_ERROR_CODES.INVALID, issues: parsed.error.issues });
+    reply
+      .code(HTTP_STATUS_CODES.BAD_REQUEST)
+      .send({ code: PUBLISH_ERROR_CODES.INVALID, issues: parsed.error.issues });
     return;
   }
   const room = roomFor(parsed.data.app, parsed.data.receiverId);
+  // Hijacked so Fastify neither serializes nor ends the long-lived stream.
+  reply.hijack();
+  const res = reply.raw;
   res.writeHead(HTTP_STATUS_CODES.OK, SSE_HEADERS);
   res.flushHeaders();
   res.write(SSE_CONNECTED_FRAME);
   addSseClient(room, res);
   log(LOG.SSE_CONNECT, { room, clients: sseRooms.get(room)?.size });
 
-  req.on(REQUEST_CLOSE_EVENT, () => {
+  request.raw.on(REQUEST_CLOSE_EVENT, () => {
     removeSseClient(room, res);
     log(LOG.SSE_DISCONNECT, { room });
   });
@@ -212,15 +221,15 @@ app.get(SOCKET_SERVER_PATHS.EVENTS, (req, res) => {
 
 app.post(
   SOCKET_SERVER_PATHS.PUBLISH,
-  express.json({ limit: PUBLISH_BODY_LIMIT }),
-  (req, res) => {
-    const reply = (status: number, result: PublishAck) =>
-      res.status(status).json(result);
+  { bodyLimit: PUBLISH_MAX_BYTES },
+  (request, reply) => {
+    const respond = (status: number, result: PublishAck) =>
+      reply.code(status).send(result);
 
-    const token = bearerToken(req);
+    const token = bearerToken(request);
     if (!isSender(token)) {
       log(LOG.PUBLISH_FORBIDDEN, { transport: TRANSPORT.HTTP });
-      reply(
+      respond(
         token === undefined
           ? HTTP_STATUS_CODES.UNAUTHORIZED
           : HTTP_STATUS_CODES.FORBIDDEN,
@@ -228,13 +237,13 @@ app.post(
       );
       return;
     }
-    const parsed = publishSchema.safeParse(req.body);
+    const parsed = publishSchema.safeParse(request.body);
     if (!parsed.success) {
       log(LOG.PUBLISH_INVALID, {
         transport: TRANSPORT.HTTP,
         issues: parsed.error.issues,
       });
-      reply(HTTP_STATUS_CODES.BAD_REQUEST, {
+      respond(HTTP_STATUS_CODES.BAD_REQUEST, {
         ok: false,
         code: PUBLISH_ERROR_CODES.INVALID,
         issues: parsed.error.issues,
@@ -242,23 +251,11 @@ app.post(
       return;
     }
     const receivers = fanOut(parsed.data, TRANSPORT.HTTP);
-    reply(HTTP_STATUS_CODES.OK, { ok: true, receivers });
+    respond(HTTP_STATUS_CODES.OK, { ok: true, receivers });
   },
 );
 
-const buildServer = () => {
-  if (TLS_CERT_PATH && TLS_KEY_PATH) {
-    return createHttpsServer(
-      { cert: readFileSync(TLS_CERT_PATH), key: readFileSync(TLS_KEY_PATH) },
-      app,
-    );
-  }
-  return createHttpServer(app);
-};
-
-const tlsEnabled = Boolean(TLS_CERT_PATH && TLS_KEY_PATH);
-const httpServer = buildServer();
-const io = new Server(httpServer, {
+const io = new Server(app.server, {
   cors: { origin: '*' },
   maxHttpBufferSize: PUBLISH_MAX_BYTES,
 });
@@ -388,11 +385,14 @@ io.on(SOCKET_EVENTS.CONNECTION, socket => {
   });
 });
 
-httpServer.listen(PORT, HOST, () => {
+const start = async () => {
+  await app.listen({ port: PORT, host: HOST });
   log(LOG.LISTENING, {
     host: HOST,
     port: PORT,
     tls: tlsEnabled,
     senderAuth: Boolean(SENDER_TOKEN),
   });
-});
+};
+
+start();

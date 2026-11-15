@@ -10,7 +10,7 @@ Publish/subscribe server over Socket.IO and Server-Sent Events.
 ## Stack
 
 - Language - TypeScript
-- Framework - Express + Socket.IO
+- Framework - Fastify + Socket.IO
 - Build Tool - esbuild
 - External libs
   - Zod
