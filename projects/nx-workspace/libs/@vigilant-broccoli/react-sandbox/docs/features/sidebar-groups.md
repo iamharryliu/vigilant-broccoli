@@ -7,9 +7,12 @@ The sandbox sidebar has one group per `@vigilant-broccoli` React lib, labelled w
 | Group | Entries |
 | --- | --- |
 | `react-lib` | Foundational controls and surfaces: alert dialog, avatars, badge, buttons, card, checkbox, checklist, collapsible list, error handling, input, link card, notepad, scroll timeline, segmented control, select, status card list, switch, tabs, toaster, tooltip, typography. |
-| `react-lib-higher-level` | CRUD lists, quick links, tasks and Mobile Home. |
+| `react-lib-higher-level` | Mobile Home. |
+| `react-lib-quick-links` | Quick links dialog and panel. |
 | `docs-explorer` | Docs explorer. |
 | `react-lib-calendar` | Calendar list view and its loading skeleton, with sample events. |
+| `react-lib-crud-list` | CRUD lists with and without images. |
+| `react-lib-tasks` | Tasks against an in-memory tasks API. |
 | `react-lib-auth` | Google sign-in page with a stubbed handler; `createSupabaseAuth` is never called. |
 | `react-lib-media` | Audio button, GitHub Actions badges, image filmstrip and carousel dialog (local placeholder images). |
 | `leaderboard` | Empty, group and user leaderboards. |
@@ -21,5 +24,5 @@ The sandbox sidebar has one group per `@vigilant-broccoli` React lib, labelled w
 - An entry belongs to the lib exporting the component it mainly showcases (check the demo's imports). Ids never change, so stored selections survive regrouping.
 - Mobile Home sits under `react-lib-higher-level`, which owns its `TabbedView` shell; its `CalendarAgenda` comes from `react-lib-calendar`.
 - Docs Explorer sits under `docs-explorer`, which exports `DocsExplorer`. The demo itself lives only in react-sandbox (a link plus the feature doc), so it is the closest-lib choice.
-- Notepad sits under `react-lib` (`SyncedTextEditor`); Tasks and Quick Links sit under `react-lib-higher-level`.
+- Notepad sits under `react-lib` (`SyncedTextEditor`); Tasks sits under `react-lib-tasks` and Quick Links under `react-lib-quick-links`.
 - Adding a lib means adding it to `LIB` (declaration order is sidebar order) with a distinct lucide icon in `LIB_ICON`, and its source glob to the component-library `tailwind.config.js`.

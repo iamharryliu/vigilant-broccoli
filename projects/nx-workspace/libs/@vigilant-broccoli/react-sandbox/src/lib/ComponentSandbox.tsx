@@ -7,6 +7,9 @@ import {
   Image as ImageIcon,
   KeyRound,
   Layers,
+  Link2,
+  List,
+  ListChecks,
   Menu,
   Moon,
   Music,
@@ -107,8 +110,11 @@ const PACKAGE_SCOPE = '@vigilant-broccoli/';
 const LIB = {
   REACT_LIB: 'react-lib',
   HIGHER_LEVEL: 'react-lib-higher-level',
+  QUICK_LINKS: 'react-lib-quick-links',
   DOCS_EXPLORER: 'docs-explorer',
   CALENDAR: 'react-lib-calendar',
+  CRUD_LIST: 'react-lib-crud-list',
+  TASKS: 'react-lib-tasks',
   AUTH: 'react-lib-auth',
   MEDIA: 'react-lib-media',
   LEADERBOARD: 'leaderboard',
@@ -119,8 +125,11 @@ type Lib = (typeof LIB)[keyof typeof LIB];
 const LIB_ICON = {
   [LIB.REACT_LIB]: Blocks,
   [LIB.HIGHER_LEVEL]: Layers,
+  [LIB.QUICK_LINKS]: Link2,
   [LIB.DOCS_EXPLORER]: FileText,
   [LIB.CALENDAR]: CalendarDays,
+  [LIB.CRUD_LIST]: List,
+  [LIB.TASKS]: ListChecks,
   [LIB.AUTH]: KeyRound,
   [LIB.MEDIA]: ImageIcon,
   [LIB.LEADERBOARD]: Trophy,
@@ -268,7 +277,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'CRUD List Management',
     description:
       'List and card layouts for create/read/update/delete management, with optional images, ellipsis menus and full-width thumbnails.',
-    lib: LIB.HIGHER_LEVEL,
+    lib: LIB.CRUD_LIST,
     content: <CRUDListSection />,
   },
   {
@@ -480,7 +489,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'Quick Links',
     description:
       'Fuzzy-searchable link launcher, as a command dialog and as an inline panel.',
-    lib: LIB.HIGHER_LEVEL,
+    lib: LIB.QUICK_LINKS,
     content: <QuickLinksDemo />,
   },
   {
@@ -495,7 +504,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'Tasks',
     description:
       'Runs the shared tasks component against an in-memory tasks API with simulated latency. Voice input calls the mocked transcription and parse endpoints.',
-    lib: LIB.HIGHER_LEVEL,
+    lib: LIB.TASKS,
     content: <TasksDemo />,
   },
   {
@@ -509,7 +518,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     id: 'mobile-home',
     label: 'Mobile Home',
     description:
-      'The mobile-manager-next home page inside an iPhone-sized frame: the top bar with a menu button that opens the sidebar drawer, and the pinned layout where each tab panel scrolls on its own. The tab shell, agenda, event calendars list, tasks, quick links and sidebar are the real react-lib-higher-level components fed with sample data; the Create calendar event dialog and task voice input are mocked.',
+      'The mobile-manager-next home page inside an iPhone-sized frame: the top bar with a menu button that opens the sidebar drawer, and the pinned layout where each tab panel scrolls on its own. The tab shell, agenda, event calendars list, tasks, quick links and sidebar are the real shared components fed with sample data; the Create calendar event dialog and task voice input are mocked.',
     lib: LIB.HIGHER_LEVEL,
     content: <MobileHomeDemo />,
   },

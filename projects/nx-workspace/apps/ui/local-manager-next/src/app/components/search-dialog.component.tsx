@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { QuickLinksDialog } from '@vigilant-broccoli/react-lib-higher-level';
+import { QuickLinksDialog } from '@vigilant-broccoli/react-lib-quick-links';
 import { QUICK_LINKS } from '../constants/quick-links';
 import { toEmbedRoute } from '@vigilant-broccoli/common-js';
 import { isDesktopEmbedEnvironment } from '../utils/embed.utils';

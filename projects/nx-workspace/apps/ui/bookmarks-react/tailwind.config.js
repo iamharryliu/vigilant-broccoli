@@ -24,6 +24,10 @@ module.exports = {
     ),
     join(
       __dirname,
+      '../../../libs/@vigilant-broccoli/react-lib-quick-links/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
       '../../../libs/@vigilant-broccoli/common-js/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
     join(

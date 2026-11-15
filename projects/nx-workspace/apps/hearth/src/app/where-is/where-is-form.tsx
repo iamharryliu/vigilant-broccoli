@@ -16,7 +16,7 @@ import {
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
-import { CRUDFormProps } from '@vigilant-broccoli/react-lib-higher-level';
+import { CRUDFormProps } from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import {
   DndContext,

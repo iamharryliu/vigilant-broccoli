@@ -14,7 +14,7 @@ import {
 import {
   CRUDFormProps,
   CRUDItemList,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE, VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import { useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';

@@ -21,7 +21,7 @@ import {
   GoogleTasksComponent,
   SortMode,
   SORT_MODE,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib-tasks';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { CreateTasksDialogTrigger } from './create-tasks-dialog.component';
 import { useEffect, useState, useCallback } from 'react';

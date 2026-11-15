@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { GoogleTasksComponent } from '@vigilant-broccoli/react-lib-higher-level';
+import { GoogleTasksComponent } from '@vigilant-broccoli/react-lib-tasks';
 import { embedTasksAuth, setSession } from '../../../libs/auth';
 import { listenForPopupSession } from '../../../libs/sign-in-popup';
 

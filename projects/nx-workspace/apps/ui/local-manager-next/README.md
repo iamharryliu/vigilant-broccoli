@@ -42,8 +42,11 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - `react-lib`
   - `react-lib-auth`
   - `react-lib-calendar`
+  - `react-lib-crud-list`
   - `react-lib-higher-level`
   - `react-lib-media`
+  - `react-lib-quick-links`
+  - `react-lib-tasks`
   - `react-utility`
   - `realtime`
   - `resume`

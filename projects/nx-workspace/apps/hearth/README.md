@@ -30,6 +30,7 @@ Shared life for homes, communes, and communities.
   - `react-lib`
   - `react-lib-auth`
   - `react-lib-calendar`
+  - `react-lib-crud-list`
   - `react-lib-higher-level`
   - `react-lib-media`
   - `realtime`

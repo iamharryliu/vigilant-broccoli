@@ -23,6 +23,18 @@ module.exports = {
     ),
     join(
       __dirname,
+      '../../../libs/@vigilant-broccoli/react-lib-crud-list/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
+      '../../../libs/@vigilant-broccoli/react-lib-quick-links/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
+      '../../../libs/@vigilant-broccoli/react-lib-tasks/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
       '../../../libs/@vigilant-broccoli/docs-explorer/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
     join(
