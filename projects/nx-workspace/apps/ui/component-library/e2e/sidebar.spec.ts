@@ -3,22 +3,87 @@ import { test, expect } from '@playwright/test';
 const MOBILE_VIEWPORT = { width: 390, height: 844 };
 const DESKTOP_VIEWPORT = { width: 1280, height: 800 };
 const OPEN_MENU_LABEL = 'Open menu';
+// A bare URL lands on the Components overview, so tests that need an active
+// group start on a react-lib entry instead.
+const ENTRY_URL = '/alert-dialog';
+const LEGACY_ENTRY_URL = '/#alert-dialog';
+const AVATAR_LABEL = 'Avatar';
+const OVERVIEW_HEADING = 'Components';
+// The last section, so it starts below the fold.
+const UTILITIES_SECTION_HEADING = '@vigilant-broccoli/react-utility';
+const UTILITIES_SECTION_ID = 'vigilant-broccoli-react-utility';
 // Top-level groups: every lib nests under the scope group, which holds the
-// default selection; Settings is the other top-level group.
+// ENTRY_URL selection; Settings is the other top-level group.
 const COMPONENTS_GROUP_LABEL = '@vigilant-broccoli';
 const UTILITIES_GROUP_LABEL = 'react-utility';
+const COLLAPSED_PADDING = '56px';
 const EXPANDED_PADDING = '240px';
 const ALARM_LABEL = 'Alarm';
 const SETTINGS_GROUP_LABEL = 'Settings';
-const ICON_MODE_OFF_LABEL = 'Icons: Off';
 
-test.describe('component-library Sidebar (icon-less nav)', () => {
-  test.use({ viewport: MOBILE_VIEWPORT });
+test.describe('component-library landing page', () => {
+  test.use({ viewport: DESKTOP_VIEWPORT });
 
-  test('an icon-less group never collapses on close/hover-out', async ({
+  test('a bare URL lands on the Components overview', async ({ page }) => {
+    await page.goto('/');
+
+    await expect(
+      page.getByRole('heading', { name: OVERVIEW_HEADING, exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: COMPONENTS_GROUP_LABEL, exact: true }),
+    ).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('overview links navigate by path and back returns to the overview', async ({
     page,
   }) => {
     await page.goto('/');
+
+    await page.getByRole('link', { name: AVATAR_LABEL, exact: true }).click();
+    await expect(page).toHaveURL(/\/avatar$/);
+    await expect(
+      page.getByRole('heading', { name: AVATAR_LABEL, exact: true }),
+    ).toBeVisible();
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/$/);
+    await expect(
+      page.getByRole('heading', { name: OVERVIEW_HEADING, exact: true }),
+    ).toBeVisible();
+  });
+
+  test('section headings link to their section', async ({ page }) => {
+    await page.goto('/');
+
+    const heading = page.getByRole('link', {
+      name: UTILITIES_SECTION_HEADING,
+      exact: true,
+    });
+    await heading.click();
+    await expect(page).toHaveURL(new RegExp(`#${UTILITIES_SECTION_ID}$`));
+    await expect(heading).toBeInViewport();
+
+    await page.reload();
+    await expect(
+      page.getByRole('link', { name: UTILITIES_SECTION_HEADING, exact: true }),
+    ).toBeInViewport();
+  });
+
+  test('a legacy hash link redirects to the entry path', async ({ page }) => {
+    await page.goto(LEGACY_ENTRY_URL);
+
+    await expect(page).toHaveURL(new RegExp(`${ENTRY_URL}$`));
+  });
+});
+
+test.describe('component-library Sidebar (mobile drawer)', () => {
+  test.use({ viewport: MOBILE_VIEWPORT });
+
+  test('keeps a manually expanded group open after the drawer closes and reopens', async ({
+    page,
+  }) => {
+    await page.goto(ENTRY_URL);
 
     const menuButton = page.getByRole('button', { name: OPEN_MENU_LABEL });
     const aside = page.locator('aside');
@@ -27,9 +92,6 @@ test.describe('component-library Sidebar (icon-less nav)', () => {
       exact: true,
     });
 
-    // The sandbox loads with the "@vigilant-broccoli" group open by default
-    // (selectedId defaults to its first entry) - expand "Settings" instead,
-    // without selecting anything in it, so defaultOpenId never changes.
     await menuButton.click();
     await settingsToggle.click();
     await expect(settingsToggle).toHaveAttribute('aria-expanded', 'true');
@@ -41,18 +103,19 @@ test.describe('component-library Sidebar (icon-less nav)', () => {
     await page.mouse.click(350, 100);
     await expect(aside).toHaveClass(/max-md:-translate-x-full/);
 
-    // None of the Sidebar/react-utility items in this app carry an `icon`, so
-    // `canCollapse` is false and `forceExpanded` is permanently true (see
-    // libs/@vigilant-broccoli/react-lib/docs/features/sidebar.md) - a
-    // collapsed icon-only rail would be entirely blank. That means the
-    // mouseleave-collapse guard never even runs here, unlike hearth's
-    // icon-bearing nav (apps/hearth/e2e/sidebar.spec.ts), where this same
-    // dispatch is the actual regression case for the isNarrowViewport fix.
+    // Simulate the spurious mouseleave Chrome can dispatch on the aside when
+    // page content changes under a stationary pointer during navigation
+    // (see the fix in libs/@vigilant-broccoli/react-lib-higher-level
+    // Sidebar.tsx). React's onMouseLeave is synthesized from the bubbling
+    // native "mouseout" event, not a native "mouseleave" listener, so that's
+    // what has to be dispatched here for the handler to actually fire. Every
+    // item carries an icon, so canCollapse is true and forceExpanded tracks
+    // mobileOpen - this dispatch exercises the regression case the
+    // isNarrowViewport guard fixes.
     await aside.dispatchEvent('mouseout', {
       relatedTarget: null,
       bubbles: true,
     });
-    await expect(settingsToggle).toHaveAttribute('aria-expanded', 'true');
 
     await menuButton.click();
     await expect(settingsToggle).toHaveAttribute('aria-expanded', 'true');
@@ -61,7 +124,7 @@ test.describe('component-library Sidebar (icon-less nav)', () => {
   test('selecting an item in a different nested group auto-expands that group', async ({
     page,
   }) => {
-    await page.goto('/');
+    await page.goto(ENTRY_URL);
 
     const menuButton = page.getByRole('button', { name: OPEN_MENU_LABEL });
     const utilitiesToggle = page.getByRole('button', {
@@ -69,8 +132,8 @@ test.describe('component-library Sidebar (icon-less nav)', () => {
       exact: true,
     });
 
-    // The nested "react-lib" group holds the default selection, so it is
-    // open; react-utility starts collapsed.
+    // The nested "react-lib" group holds the ENTRY_URL selection, so
+    // react-utility starts collapsed.
     await menuButton.click();
     await expect(utilitiesToggle).toHaveAttribute('aria-expanded', 'false');
 
@@ -85,96 +148,13 @@ test.describe('component-library Sidebar (icon-less nav)', () => {
   });
 });
 
-test.describe('component-library Sidebar (icon-less nav, desktop)', () => {
+test.describe('component-library Sidebar (desktop rail hover)', () => {
   test.use({ viewport: DESKTOP_VIEWPORT });
-
-  test('content padding stays fixed regardless of hover, since there is no rail to collapse to', async ({
-    page,
-  }) => {
-    await page.goto('/');
-
-    const content = page.locator('div.h-full.overflow-y-auto');
-    await expect(content).toHaveCSS('padding-left', EXPANDED_PADDING);
-
-    await page
-      .getByRole('button', { name: COMPONENTS_GROUP_LABEL, exact: true })
-      .hover();
-    await expect(content).toHaveCSS('padding-left', EXPANDED_PADDING);
-  });
-});
-
-test.describe('component-library Sidebar (icon-bearing nav, via Settings > Icons toggle)', () => {
-  test.use({ viewport: MOBILE_VIEWPORT });
-
-  test('keeps a manually expanded group open after the drawer closes and reopens', async ({
-    page,
-  }) => {
-    await page.goto('/');
-
-    const menuButton = page.getByRole('button', { name: OPEN_MENU_LABEL });
-    const aside = page.locator('aside');
-    const settingsToggle = page.getByRole('button', {
-      name: SETTINGS_GROUP_LABEL,
-      exact: true,
-    });
-
-    // Flip every sidebar item to icon-bearing via Settings > Icons - this is
-    // what makes canCollapse/forceExpanded in Sidebar.tsx behave like a real
-    // icon-bearing nav (e.g. hearth's), instead of the permanently-expanded
-    // icon-less case covered above. Toggling closes the drawer as a side
-    // effect (every item click does), so reopen before continuing.
-    await menuButton.click();
-    await settingsToggle.click();
-    await page.getByRole('button', { name: ICON_MODE_OFF_LABEL }).click();
-    await menuButton.click();
-
-    // Settings may still be open from the Icons toggle above.
-    if ((await settingsToggle.getAttribute('aria-expanded')) !== 'true') {
-      await settingsToggle.click();
-    }
-    await expect(settingsToggle).toHaveAttribute('aria-expanded', 'true');
-
-    // Tap the backdrop (outside the 256px-wide drawer) rather than the
-    // hamburger button - the open drawer visually covers the hamburger, so a
-    // real user closes via backdrop tap, and clicking the covered button
-    // would just hang waiting for it to become clickable.
-    await page.mouse.click(350, 100);
-    await expect(aside).toHaveClass(/max-md:-translate-x-full/);
-
-    // Simulate the spurious mouseleave Chrome can dispatch on the aside when
-    // page content changes under a stationary pointer during navigation
-    // (see the fix in libs/@vigilant-broccoli/react-lib Sidebar.tsx). React's
-    // onMouseLeave is synthesized from the bubbling native "mouseout" event,
-    // not a native "mouseleave" listener, so that's what has to be dispatched
-    // here for the handler to actually fire. With icons on, canCollapse is
-    // true and forceExpanded correctly tracks mobileOpen, so - unlike the
-    // icon-less test above - this dispatch exercises the actual regression
-    // case the isNarrowViewport guard fixes.
-    await aside.dispatchEvent('mouseout', {
-      relatedTarget: null,
-      bubbles: true,
-    });
-
-    await menuButton.click();
-    await expect(settingsToggle).toHaveAttribute('aria-expanded', 'true');
-  });
-});
-
-test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)', () => {
-  test.use({ viewport: DESKTOP_VIEWPORT });
-
-  const enableIconMode = async (page: import('@playwright/test').Page) => {
-    // Sidebar starts fully expanded (icon-less); flip to icon-bearing so the
-    // desktop rail actually collapses to icon-width when not hovered.
-    await page.getByRole('button', { name: SETTINGS_GROUP_LABEL }).click();
-    await page.getByRole('button', { name: ICON_MODE_OFF_LABEL }).click();
-  };
 
   test("hovering a group opens that group, not the active selection's group", async ({
     page,
   }) => {
-    await page.goto('/');
-    await enableIconMode(page);
+    await page.goto(ENTRY_URL);
     await page.mouse.move(900, 400);
 
     const componentsToggle = page.getByRole('button', {
@@ -186,9 +166,9 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
       exact: true,
     });
 
-    // "@vigilant-broccoli" is the active group (selectedId defaults to
-    // ALL_ENTRIES[0], an alert-dialog/react-lib entry) - hovering "Settings"
-    // directly should open Settings, not the active group.
+    // "@vigilant-broccoli" is the active group (ENTRY_URL selects an
+    // alert-dialog/react-lib entry) - hovering "Settings" directly should
+    // open Settings, not the active group.
     await settingsToggle.hover();
     await expect(settingsToggle).toHaveAttribute('aria-expanded', 'true');
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
@@ -197,8 +177,7 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
   test('moving the pointer between group icons switches which group is open', async ({
     page,
   }) => {
-    await page.goto('/');
-    await enableIconMode(page);
+    await page.goto(ENTRY_URL);
     await page.mouse.move(900, 400);
 
     const componentsToggle = page.getByRole('button', {
@@ -221,8 +200,7 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
   test('content padding shifts to match the collapsed/hovered rail width', async ({
     page,
   }) => {
-    await page.goto('/');
-    await enableIconMode(page);
+    await page.goto(ENTRY_URL);
     await page.mouse.move(900, 400);
 
     // The content wrapper is a `peer-hover` sibling of the sidebar (which
@@ -230,7 +208,7 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
     // (md:w-14 collapsed, md:hover:w-60 expanded) rather than staying
     // statically padded for the expanded width.
     const content = page.locator('div.h-full.overflow-y-auto');
-    await expect(content).toHaveCSS('padding-left', '56px');
+    await expect(content).toHaveCSS('padding-left', COLLAPSED_PADDING);
 
     await page
       .getByRole('button', { name: COMPONENTS_GROUP_LABEL, exact: true })
@@ -238,14 +216,11 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
     await expect(content).toHaveCSS('padding-left', EXPANDED_PADDING);
   });
 
-  test('does not expand any group on reload until one is hovered', async ({
+  test('does not expand any group on load until one is hovered', async ({
     page,
   }) => {
-    await page.goto('/');
-    await enableIconMode(page);
+    await page.goto(ENTRY_URL);
     await page.mouse.move(900, 400);
-
-    await page.reload();
 
     const componentsToggle = page.getByRole('button', {
       name: COMPONENTS_GROUP_LABEL,
@@ -262,8 +237,8 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
     // the forceExpanded-gated useState initializer in Sidebar.tsx.
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
 
-    // Hovering opens whichever group is under the pointer, same as the
-    // non-reload case - not necessarily the active one.
+    // Hovering opens whichever group is under the pointer, not necessarily
+    // the active one.
     await settingsToggle.hover();
     await expect(settingsToggle).toHaveAttribute('aria-expanded', 'true');
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');

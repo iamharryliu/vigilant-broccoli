@@ -12,7 +12,7 @@ Composed React components built on `react-lib`: the sidebar, tabbed view, search
 
 | Component | Demo |
 | --- | --- |
-| Mobile Home | [View](https://components.harryliu.dev/#mobile-home) |
+| Mobile Home | [View](https://components.harryliu.dev/mobile-home) |
 
 ## Features
 

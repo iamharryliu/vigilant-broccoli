@@ -1,6 +1,6 @@
 # Sidebar groups
 
-The sandbox sidebar nests one group per React lib, labelled with the lib name and ordered from low-level to high-level, under a single top-level `@vigilant-broccoli` group. The desktop sidebar is widened to `md:w-60` (content padded to match) so the longest lib and entry names fit. A top-level "Components" item (`#components`) opens an overview listing every entry in a three-column grid, sectioned by scoped package name (`@vigilant-broccoli/<lib>`) in sidebar order.
+The sandbox sidebar nests one group per React lib, labelled with the lib name and ordered from low-level to high-level, under a single top-level `@vigilant-broccoli` group. Every item has an icon, so the desktop sidebar is an icon rail that expands on hover to `md:w-60` (content padding tracks it) so the longest lib and entry names fit. Each entry is served at `/<entry id>`; legacy `/#<entry id>` links are redirected to that path. A top-level "Components" item (`/`, also the fallback for unknown paths) opens an overview listing every entry in a three-column grid, sectioned by scoped package name (`@vigilant-broccoli/<lib>`) in sidebar order. Each section heading links to `/#vigilant-broccoli-<lib>`; the prefix keeps section ids from matching entry ids such as `docs-explorer`.
 
 ## Groups
 
