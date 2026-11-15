@@ -1,6 +1,6 @@
 # Sidebar groups
 
-The sandbox sidebar has one group per `@vigilant-broccoli` React lib, labelled with the scoped package name (`@vigilant-broccoli/<lib>`) and ordered from low-level to high-level. The desktop sidebar is widened to `md:w-80` (content padded to match) so the longest package name fits.
+The sandbox sidebar has one group per `@vigilant-broccoli` React lib, labelled with the scoped package name (`@vigilant-broccoli/<lib>`) and ordered from low-level to high-level. The desktop sidebar is widened to `md:w-80` (content padded to match) so the longest package name fits. A top-level "Components" item (`#components`) opens an overview listing every entry in a three-column grid, sectioned by lib in sidebar order.
 
 ## Groups
 

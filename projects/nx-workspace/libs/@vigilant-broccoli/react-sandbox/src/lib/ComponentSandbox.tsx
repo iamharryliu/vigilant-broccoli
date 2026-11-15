@@ -7,6 +7,7 @@ import {
   Image as ImageIcon,
   KeyRound,
   Layers,
+  LayoutGrid,
   Link2,
   List,
   ListChecks,
@@ -94,6 +95,9 @@ const CRUD_SWITCH_LABEL = {
 } as const;
 
 const SELECTED_ID_STORAGE_KEY = 'component-sandbox-selected-id';
+// Not an entry id, so it can share the selection state, hash and storage key.
+const OVERVIEW_ID = 'components';
+const OVERVIEW_LABEL = 'Components';
 const ICON_MODE_STORAGE_KEY = 'component-sandbox-icon-mode';
 
 const SETTINGS_LABEL = {
@@ -564,6 +568,10 @@ const ALL_ENTRIES: SandboxEntry[] = [
 ];
 
 const ENTRY_STAGE_CLASS = 'flex flex-col gap-3 mt-2';
+const OVERVIEW_GRID_CLASS =
+  'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3';
+const OVERVIEW_LINK_CLASS =
+  'text-base font-medium text-gray-900 underline-offset-4 hover:underline dark:text-gray-100';
 
 const SIDEBAR_POSITION_CLASS = 'fixed top-0 left-0 bottom-0 z-30 peer';
 const CONTENT_WRAPPER_BASE_CLASS =
@@ -606,8 +614,15 @@ const buildSidebarItems = ({
   selectedId,
   onSelect,
   iconMode,
-}: BuildSidebarItemsArgs): SidebarCTA[] =>
-  Object.values(LIB)
+}: BuildSidebarItemsArgs): SidebarCTA[] => [
+  {
+    id: OVERVIEW_ID,
+    label: OVERVIEW_LABEL,
+    icon: iconMode ? LayoutGrid : undefined,
+    isActive: selectedId === OVERVIEW_ID,
+    onClick: () => onSelect(OVERVIEW_ID),
+  },
+  ...Object.values(LIB)
     .map(lib => ({
       lib,
       items: entries.filter(entry => entry.lib === lib),
@@ -623,7 +638,8 @@ const buildSidebarItems = ({
         isActive: entry.id === selectedId,
         onClick: () => onSelect(entry.id),
       })),
-    }));
+    })),
+];
 
 type BuildSettingsGroupArgs = {
   dark: boolean;
@@ -681,6 +697,46 @@ const SandboxEntryFrame = ({ entry }: { entry: SandboxEntry }) => (
   </section>
 );
 
+interface SandboxOverviewProps {
+  entries: SandboxEntry[];
+  onSelect: (id: string) => void;
+}
+
+const SandboxOverview = ({ entries, onSelect }: SandboxOverviewProps) => (
+  <div className="flex flex-col gap-10">
+    <Heading size="7">{OVERVIEW_LABEL}</Heading>
+    {Object.values(LIB).map(lib => {
+      const libEntries = entries
+        .filter(entry => entry.lib === lib)
+        .sort((a, b) => a.label.localeCompare(b.label));
+      if (libEntries.length === 0) return null;
+      return (
+        <section key={lib} className="flex flex-col gap-4">
+          <Heading size="4" className="border-b border-border pb-2">
+            {`${PACKAGE_SCOPE}${lib}`}
+          </Heading>
+          <ul className={OVERVIEW_GRID_CLASS}>
+            {libEntries.map(entry => (
+              <li key={entry.id}>
+                <a
+                  href={`#${entry.id}`}
+                  onClick={event => {
+                    event.preventDefault();
+                    onSelect(entry.id);
+                  }}
+                  className={OVERVIEW_LINK_CLASS}
+                >
+                  {entry.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+    })}
+  </div>
+);
+
 interface SandboxTopbarProps {
   title: string;
   onMenuClick: () => void;
@@ -713,19 +769,35 @@ interface SandboxBodyProps {
 
 // The URL hash (`/#crud-list`) is the shareable deep link to an entry and wins
 // over the remembered selection, so READMEs can link straight to a component.
+const isSelectableId = (id: string | null): id is string =>
+  id === OVERVIEW_ID || ALL_ENTRIES.some(entry => entry.id === id);
+
 const readHashSelectedId = () => {
   const hashId = window.location.hash.slice(1);
-  return ALL_ENTRIES.find(entry => entry.id === hashId)?.id;
+  return isSelectableId(hashId) ? hashId : undefined;
 };
 
 const readStoredSelectedId = () => {
   const saved = localStorage.getItem(SELECTED_ID_STORAGE_KEY);
   return (
-    readHashSelectedId() ??
-    (ALL_ENTRIES.some(entry => entry.id === saved)
-      ? (saved as string)
-      : ALL_ENTRIES[0].id)
+    readHashSelectedId() ?? (isSelectableId(saved) ? saved : ALL_ENTRIES[0].id)
   );
+};
+
+const resolveSelection = (entries: SandboxEntry[], selectedId: string) => {
+  if (selectedId === OVERVIEW_ID) {
+    return {
+      selectedEntry: undefined,
+      selectedLabel: OVERVIEW_LABEL,
+      openGroupId: null,
+    };
+  }
+  const entry = entries.find(e => e.id === selectedId) ?? entries[0];
+  return {
+    selectedEntry: entry,
+    selectedLabel: entry.label,
+    openGroupId: entry.lib,
+  };
 };
 
 const readStoredIconMode = () =>
@@ -781,20 +853,24 @@ const SandboxBody = ({
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  const selectedEntry =
-    entries.find(entry => entry.id === selectedId) ?? entries[0];
+  const { selectedEntry, selectedLabel, openGroupId } = resolveSelection(
+    entries,
+    selectedId,
+  );
+
+  const selectId = (id: string) => {
+    setSelectedId(id);
+    window.location.hash = id;
+    localStorage.setItem(SELECTED_ID_STORAGE_KEY, id);
+    setSidebarOpen(false);
+  };
 
   const items = useMemo(
     () => [
       ...buildSidebarItems({
         entries,
         selectedId,
-        onSelect: id => {
-          setSelectedId(id);
-          window.location.hash = id;
-          localStorage.setItem(SELECTED_ID_STORAGE_KEY, id);
-          setSidebarOpen(false);
-        },
+        onSelect: selectId,
         iconMode,
       }),
       buildSettingsGroup({
@@ -814,7 +890,7 @@ const SandboxBody = ({
   return (
     <div className="h-full">
       {siteName && (
-        <SandboxDocumentTitle title={`${selectedEntry.label} | ${siteName}`} />
+        <SandboxDocumentTitle title={`${selectedLabel} | ${siteName}`} />
       )}
       <Sidebar
         items={items}
@@ -822,10 +898,10 @@ const SandboxBody = ({
         className={`${SIDEBAR_POSITION_CLASS} ${iconMode ? SIDEBAR_COLLAPSIBLE_WIDTH_CLASS : SIDEBAR_FIXED_WIDTH_CLASS}`}
         mobileOpen={sidebarOpen}
         onMobileClose={() => setSidebarOpen(false)}
-        defaultOpenId={selectedEntry.lib}
+        defaultOpenId={openGroupId}
       />
       <SandboxTopbar
-        title={title ?? selectedEntry.label}
+        title={title ?? selectedLabel}
         onMenuClick={() => setSidebarOpen(open => !open)}
       />
       <div
@@ -842,7 +918,11 @@ const SandboxBody = ({
               {subtitle}
             </Text>
           )}
-          <SandboxEntryFrame entry={selectedEntry} />
+          {selectedEntry ? (
+            <SandboxEntryFrame entry={selectedEntry} />
+          ) : (
+            <SandboxOverview entries={entries} onSelect={selectId} />
+          )}
         </div>
       </div>
     </div>
