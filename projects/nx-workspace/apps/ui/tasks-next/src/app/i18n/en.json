@@ -5,8 +5,45 @@
   },
   "AUTH": {
     "SIGN_OUT": "Sign out",
+    "SIGN_IN": "Sign in",
     "SIGNING_IN": "Signing you in...",
     "REDIRECTING": "Redirecting to Google...",
     "HANDOFF_FAILED": "Sign-in couldn't return to the page. Close this window and try again."
+  },
+  "LOCAL_MODE": {
+    "ENTER": "Switch to local mode",
+    "LEAVE": "Leave local mode"
+  },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "SIGNED_OUT": "Sign in to manage your settings.",
+    "EXPORT": {
+      "TITLE": "Export task lists",
+      "DESCRIPTION": "Download the selected lists, including completed tasks, as JSON.",
+      "SELECT_ALL": "Select all",
+      "CLEAR_ALL": "Clear all",
+      "SUBMIT": "Export",
+      "EXPORTING": "Exporting...",
+      "LOADING": "Loading task lists...",
+      "EMPTY": "No task lists found.",
+      "LOAD_FAILED": "Couldn't load your task lists.",
+      "FAILED": "Export failed. Try again."
+    },
+    "TASK_LISTS": {
+      "TITLE": "Task lists",
+      "NEW_PLACEHOLDER": "New list name",
+      "CREATE": "Add list",
+      "RENAME": "Rename list",
+      "DELETE": "Delete list",
+      "DEFAULT_UNDELETABLE": "The default list can't be deleted",
+      "DELETE_TITLE": "Delete task list",
+      "DELETE_DESCRIPTION": "Delete \"{title}\" and all of its tasks? This can't be undone.",
+      "FAILED": "Couldn't update your task lists. Try again."
+    },
+    "ACCOUNT": {
+      "TITLE": "Account",
+      "LOCAL_MODE": "You're using Tasks without signing in, so your tasks are saved only in this browser. Signing in switches to your Google Tasks; local tasks stay here.",
+      "LOCAL_MODE_SIGNED_IN": "You're in local mode, so tasks are saved only in this browser. You're still signed in to Google; leaving local mode returns to your Google Tasks."
+    }
   }
 }

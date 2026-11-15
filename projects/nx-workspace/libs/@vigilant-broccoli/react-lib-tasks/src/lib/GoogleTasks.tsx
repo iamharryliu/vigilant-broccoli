@@ -23,6 +23,7 @@ import {
   CardSkeleton,
   CheckList,
   CheckListItem,
+  GoogleSigninButton,
   Select,
   Skeleton,
   SpeechToTextToggleButton,
@@ -84,14 +85,13 @@ export interface GoogleTasksAuthAdapter {
   signInWithGoogle: () => Promise<void>;
 }
 
-const STORAGE_KEY_SELECTED_TASK_LIST = 'google-tasks-selected-list-id';
+export const STORAGE_KEY_SELECTED_TASK_LIST = 'google-tasks-selected-list-id';
 // Google Tasks accepts this alias for the default list, but listed task lists
 // only carry real ids; the API returns the default list first.
 const DEFAULT_TASK_LIST_ID = '@default';
 
 const TASKS_TITLE = 'Tasks';
-const SIGN_IN_GOOGLE_LABEL = 'Sign in with Google';
-const SIGN_IN_GOOGLE_DESCRIPTION = 'Sign in to view your Google Tasks';
+const USE_LOCALLY_LABEL = 'Continue without signing in';
 const RECONNECT_GOOGLE_LABEL = 'Reconnect Google';
 const RECONNECT_GOOGLE_DESCRIPTION =
   'Your Google access expired. Reconnect to load your tasks — you stay signed in.';
@@ -777,24 +777,24 @@ const OlderCompletedLoader = ({
 };
 
 const UnauthenticatedView = memo(
-  ({ signInWithGoogle }: { signInWithGoogle: () => Promise<void> }) => (
+  ({
+    signInWithGoogle,
+    onUseLocally,
+  }: {
+    signInWithGoogle: () => Promise<void>;
+    onUseLocally?: () => void;
+  }) => (
     <Card className="w-full">
       <div className="flex flex-col gap-3 p-4">
-        <div className="flex justify-between items-center">
-          <Text size="5" weight="bold">
-            {TASKS_TITLE}
-          </Text>
-          <Button
-            onClick={async () => {
-              await signInWithGoogle();
-            }}
-          >
-            {SIGN_IN_GOOGLE_LABEL}
-          </Button>
-        </div>
-        <Text size="2" color="gray">
-          {SIGN_IN_GOOGLE_DESCRIPTION}
+        <Text size="5" weight="bold">
+          {TASKS_TITLE}
         </Text>
+        <GoogleSigninButton onClick={() => void signInWithGoogle()} />
+        {onUseLocally && (
+          <Button variant="ghost" className="w-full" onClick={onUseLocally}>
+            {USE_LOCALLY_LABEL}
+          </Button>
+        )}
       </div>
     </Card>
   ),
@@ -847,6 +847,7 @@ export const GoogleTasksComponent = ({
   wrapInCard = true,
   addTaskActions,
   enableVoiceInput = true,
+  onUseLocally,
 }: {
   auth: GoogleTasksAuthAdapter;
   taskListId?: string;
@@ -861,6 +862,9 @@ export const GoogleTasksComponent = ({
   addTaskActions?: ReactNode;
   // Voice input needs the app's /api/speech-to-text and /api/tasks/parse-text.
   enableVoiceInput?: boolean;
+  // Shows a signed-out option to switch the app to a local adapter, e.g. one
+  // from createLocalTasksAdapter.
+  onUseLocally?: () => void;
 }) => {
   const { authFetch, useAuthStatus, signInWithGoogle } = auth;
   const status = useAuthStatus();
@@ -939,6 +943,18 @@ export const GoogleTasksComponent = ({
       localStorage.setItem(STORAGE_KEY_SELECTED_TASK_LIST, selectedTaskListId);
     }
   }, [selectedTaskListId, propTaskListId]);
+
+  // A remembered list can be gone (deleted, or from another adapter's lists),
+  // and Google rejects unknown ids, so fall back to the default list.
+  useEffect(() => {
+    if (propTaskListId || taskListsLoading || taskLists.length === 0) return;
+    if (
+      selectedTaskListId !== DEFAULT_TASK_LIST_ID &&
+      !taskLists.some(list => list.id === selectedTaskListId)
+    ) {
+      setSelectedTaskListId(DEFAULT_TASK_LIST_ID);
+    }
+  }, [propTaskListId, taskListsLoading, taskLists, selectedTaskListId]);
 
   useEffect(() => {
     if (status === 'authenticated') fetchTasks();
@@ -1110,7 +1126,12 @@ export const GoogleTasksComponent = ({
 
   if (status === 'loading') return <CardSkeleton showTitleSkeleton rows={5} />;
   if (status === 'unauthenticated')
-    return <UnauthenticatedView signInWithGoogle={signInWithGoogle} />;
+    return (
+      <UnauthenticatedView
+        signInWithGoogle={signInWithGoogle}
+        onUseLocally={onUseLocally}
+      />
+    );
   if (hasGoogleAuthError)
     return <GoogleReconnectView signInWithGoogle={signInWithGoogle} />;
 

@@ -8,16 +8,20 @@ export const PAGE_TITLE = {
   EMBED: 'Embedded Tasks',
   LOGIN: 'Sign In',
   AUTH_CALLBACK: 'Signing In',
+  SETTINGS: 'Settings',
 } as const;
 
 export const ROUTE = {
   HOME: '/',
   LOGIN: '/login',
   AUTH_CALLBACK: '/auth/callback',
+  SETTINGS: '/settings',
 } as const;
 
 export const API_ENDPOINT = {
   GOOGLE_TOKEN: '/api/auth/google-token',
+  TASKS: '/api/tasks',
+  TASK_LISTS: '/api/tasks/lists',
 } as const;
 
 export const RUNTIME_CONFIG = {
