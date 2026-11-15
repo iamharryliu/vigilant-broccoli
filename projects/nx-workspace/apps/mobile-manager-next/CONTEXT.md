@@ -10,7 +10,7 @@
 
 ### Google access ends independently of the Supabase session
 
-Google access ends on its own (revoked or missing refresh token), so the hand-written `src/app/providers/auth-provider.tsx` must follow the [Supabase auth pattern](../../../../docs/app-development/ui/auth/supabase-auth-pattern.md#client-side): request offline access, hand the Google refresh token to `/api/auth/google-token`, and reconnect Google without signing out of Supabase. The Tasks tab (`/?tab=Tasks`) frames tasks-next, which keeps its own session, so the agenda is the Google-backed view that depends on this provider.
+Google access ends on its own (revoked or missing refresh token), so the hand-written `src/app/providers/auth-provider.tsx` must follow the [Supabase auth pattern](../../../../docs/app-development/ui/auth/supabase-auth-pattern.md#client-side): request offline access, hand the Google refresh token to `/api/auth/google-token`, and reconnect Google without signing out of Supabase. The agenda depends on this provider, and so does the Tasks tab (`/?tab=Tasks`): it frames tasks-next's `/embed?session=parent`, which borrows this provider's access token and forwards its Reconnect Google to `signInWithGoogle` ([parent session](../ui/tasks-next/docs/features/embed.md#parent-session)).
 
 ### The phone agenda's scrollbar must stay hidden
 

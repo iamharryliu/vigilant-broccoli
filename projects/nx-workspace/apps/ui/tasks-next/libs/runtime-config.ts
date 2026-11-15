@@ -12,6 +12,9 @@ const FRAME_ANCESTORS_ENV = 'TASKS_FRAME_ANCESTORS';
 export interface ClientRuntimeConfig {
   supabaseUrl: string;
   supabasePublishableKey: string;
+  // The embedders the CSP allows, which are also the only parents /embed
+  // accepts a shared session from.
+  frameAncestors: string[];
 }
 
 export { getSupabaseUrl };
@@ -19,11 +22,12 @@ export { getSupabaseUrl };
 export const getSupabasePublishableKey = (): string =>
   process.env[SUPABASE_PUBLISHABLE_KEY_ENV] || SUPABASE_PUBLISHABLE_KEY;
 
-export const getClientRuntimeConfig = (): ClientRuntimeConfig => ({
-  supabaseUrl: getSupabaseUrl(),
-  supabasePublishableKey: getSupabasePublishableKey(),
-});
-
 // Space- or comma-separated origins allowed to frame the app besides itself.
 export const getFrameAncestors = (): string[] =>
   (process.env[FRAME_ANCESTORS_ENV] ?? '').split(/[\s,]+/).filter(Boolean);
+
+export const getClientRuntimeConfig = (): ClientRuntimeConfig => ({
+  supabaseUrl: getSupabaseUrl(),
+  supabasePublishableKey: getSupabasePublishableKey(),
+  frameAncestors: getFrameAncestors(),
+});

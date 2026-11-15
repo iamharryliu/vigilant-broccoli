@@ -12,6 +12,13 @@
 - Google's and Supabase's sign-in hops send COOP only as report-only. Do not add a `Cross-Origin-Opener-Policy` header to this app.
 - Sign-in requests only the Tasks scope with `include_granted_scopes`, because the stored Google refresh token is shared per email with the manager apps, which also need Calendar.
 
+## Parent session
+
+- `/embed?session=parent` (`EMBED_SESSION` in `common-js`) skips the frame's own session and borrows the embedding page's Supabase session, which works because every app shares one Supabase project. The adapter is `createParentSessionAuth` from `react-lib-auth`, wired in `libs/parent-session.ts`; the embedder uses `useEmbedSessionProvider`.
+- Before every API call the frame posts a request to its parent and sends the returned access token as the Bearer header; the parent also pushes a token on each sign-in, refresh and sign-out, which drives the frame's signed-in state. The frame's Sign in and Reconnect Google post a sign-in request instead, and the parent runs its own Google sign-in.
+- Only access tokens cross. Handing over the refresh token would leave two clients refreshing one rotating token, and Supabase's reuse detection can then revoke the session in both apps; the parent stays the single session owner.
+- The frame accepts a parent only if its origin (from `location.ancestorOrigins`, else the referrer) is in `TASKS_FRAME_ANCESTORS`, exposed to the browser as `frameAncestors` in `/runtime-config.js`, plus any `localhost`/`127.0.0.1` port in dev. It posts only to that origin and checks `event.source` is its parent. The parent answers only its own frame's window at the tasks origin. A parent that never answers leaves the frame signed out after five seconds.
+
 ## Framing
 
 - `src/proxy.ts` sends `Content-Security-Policy: frame-ancestors` with `'self'` and the origins in `TASKS_FRAME_ANCESTORS`, so other sites cannot frame a (possibly signed-in) task list to clickjack it. `deploy-vercel.ts` sets it to the manager origins from `infrastructure`'s `local-manager-origins.json` and `mobile-manager-origins.json`; a new embedder needs its origin added there. Same-site `*.harryliu.dev` pages are not trusted by default. Dev also allows any `localhost`/`127.0.0.1` port.
@@ -24,5 +31,5 @@
 ## Consumers
 
 - `local-manager-next`'s home page frames `tasks.harryliu.dev/embed` inside a bordered wrapper matching its calendar panel; the build-time `NEXT_PUBLIC_TASKS_URL` points it at another instance.
-- `mobile-manager-next`'s Tasks tab (`/?tab=Tasks`) frames it inside a bordered wrapper matching its Calendar tab frame; the same build-time `NEXT_PUBLIC_TASKS_URL` override applies.
+- `mobile-manager-next`'s Tasks tab (`/?tab=Tasks`) frames `/embed?session=parent` inside a bordered wrapper matching its Calendar tab frame, so the tab uses the manager's session ([Parent session](#parent-session)); the same build-time `NEXT_PUBLIC_TASKS_URL` override applies.
 - Local testing: `localhost:4000/auth/callback` and `localhost:3000` are on the Supabase redirect allow-list, so run this app on port 4000 when the manager holds 3000.
