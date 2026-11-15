@@ -203,9 +203,11 @@ jobs:
       - name: Setup Cloud SDK
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
 
-      # The dump goes into stock postgres, not a Supabase image: the roles it
-      # grants to are created up front, and everything Supabase-specific
-      # (auth/storage/extension objects) is allowed to fail. What's verified is
+      # The dump goes into postgres with pgvector, not a Supabase image: public
+      # tables such as knowledge_chunks have vector columns, so stock postgres
+      # cannot create them. The roles it grants to are created up front, and
+      # everything else Supabase-specific (auth/storage objects) is allowed to
+      # fail. What's verified is
       # the part a restore exists for — every public table in the dump comes
       # back with exactly the row count the dump carries.
       - name: Restore into a throwaway PostgreSQL
@@ -218,7 +220,7 @@ jobs:
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y -qq postgresql-client
-          docker run -d --name pg-restore-test -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:17 > /dev/null
+          docker run -d --name pg-restore-test -e POSTGRES_PASSWORD=postgres -p 5432:5432 pgvector/pgvector:pg17 > /dev/null
           for _ in $(seq 1 30); do
             pg_isready -h localhost -q && break
             sleep 2
@@ -232,7 +234,7 @@ jobs:
           gcloud storage cp "$LATEST" supabase-backup.sql.gz
           gunzip -c supabase-backup.sql.gz > dump.sql
           psql -q -v ON_ERROR_STOP=0 -f dump.sql > /dev/null 2> restore.log || true
-          echo "psql reported $(grep -c '^ERROR' restore.log || true) errors (Supabase-specific objects are expected to fail here)"
+          echo "psql reported $(grep -c 'ERROR:' restore.log || true) errors (Supabase-specific objects are expected to fail here)"
 
           awk '
             $1 == "COPY" && $2 ~ /^public\./ { table = substr($2, 8); gsub(/"/, "", table); rows = 0; inblock = 1; next }
