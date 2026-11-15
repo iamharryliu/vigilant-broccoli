@@ -12,7 +12,13 @@ iptables -F
 ipset destroy $IPSET_NAME 2>/dev/null || true
 ipset create $IPSET_NAME hash:net
 
-for cidr in $(curl -fsSL https://api.github.com/meta | jq -r '(.web + .api + .git)[]' | grep -v ':'); do
+# Unauthenticated /meta shares the host IP's 60-per-hour rate limit, so on a
+# busy Actions runner it can 403. A failure inside the loop's command
+# substitution would not trip `set -e`, silently allowing no GitHub CIDRs.
+META_AUTH=()
+[ -n "${GH_TOKEN:-}" ] && META_AUTH=(-H "Authorization: Bearer $GH_TOKEN")
+GITHUB_CIDRS=$(curl -fsSL "${META_AUTH[@]}" https://api.github.com/meta | jq -r '(.web + .api + .git)[]' | grep -v ':')
+for cidr in $GITHUB_CIDRS; do
   ipset add $IPSET_NAME "$cidr" -exist
 done
 
