@@ -134,6 +134,7 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
           FormComponent={WhereIsFormComponent as never}
           submitHandler={handleUpdate as never}
           copy={WHERE_IS_COPY}
+          showCloseButton
         />
 
         {item.description && (

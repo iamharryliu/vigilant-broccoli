@@ -19,7 +19,7 @@ Household storage inventory — record storage areas by hand or from photos, AI 
 - Shared with accepted home members — full CRUD access
 - Only a title is required; photos are optional, up to 10 per item (max 10MB each, max 50MB total)
 - Create: Submit and Suggest tags are separate form actions; the header X closes the dialog without saving
-- Update: the header X behaves like Done
+- Update: the header X, Escape and overlay clicks behave like Done through the dialog's close guard
 - Update autosaves with no Save button: title and description after an 800ms pause, tags and photo changes immediately; saves are serialized, photo controls lock while one runs, a pending edit is flushed when the dialog closes, Done waits for the save and stays open if it fails, and leaving the page with unsaved changes prompts the browser's warning
 - Update photos reorder by drag and drop (mouse, long-press on touch, keyboard); the order persists to `where_is_images.sort_order`
 - Removing a photo asks for confirmation first

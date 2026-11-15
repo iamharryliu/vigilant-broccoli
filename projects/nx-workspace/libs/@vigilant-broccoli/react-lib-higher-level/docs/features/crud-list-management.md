@@ -5,7 +5,8 @@
 ## Exports
 
 - `CRUDItemList` — main list component
-- `CRUDFormProps<T>` — form component prop type
+- `CRUDItemFormDialog` — the create/update dialog, usable on its own; `showCloseButton` adds an X inline with the title
+- `CRUDFormProps<T>` — form component prop type: `submitHandler` saves and closes, `saveHandler` saves without closing (autosave), `registerCloseGuard` registers an async guard the dialog awaits before closing
 
 Row menus use react-lib's `EllipsisCTA` (see [ellipsis-cta.md](../../../react-lib/docs/features/ellipsis-cta.md)).
 
@@ -14,7 +15,7 @@ Row menus use react-lib's `EllipsisCTA` (see [ellipsis-cta.md](../../../react-li
 - `items`, `setItems` — list state
 - `FormComponent` — used for create + update dialogs
 - `ListItemComponent` — renders each row; receives `item`, `items`, `ellipsis`
-- `createItem`, `updateItem`, `deleteItem` — async handlers
+- `createItem`, `updateItem`, `deleteItem` — async handlers; `updateItem` may resolve with the saved item, which replaces the row
 - `createItemFormDefaultValues` — enables create button in header
 - `ExpandedComponent` — makes each row expandable: clicking the row toggles an animated panel below it rendering `<ExpandedComponent item />`, with a chevron beside the ellipsis; the ellipsis stays in the header row and is not pushed by the panel. The panel mounts on first expand and stays mounted so it can animate closed
 - `defaultExpandedIds` — ids expanded on first render (read once, so mount the list after `items` load)
@@ -23,6 +24,7 @@ Row menus use react-lib's `EllipsisCTA` (see [ellipsis-cta.md](../../../react-li
 - `showEllipsis` — defaults `true`; hides ellipsis when `false`
 - `itemActions` — extra ellipsis entries; without `FormComponent` the menu holds only these (read-only list)
 - `copy` — override titles/labels
+- `showDialogCloseButton` — passes `showCloseButton` to the create and update dialogs
 - `deleteConfirmation` — `{ title, description }` override for the delete confirmation dialog
 - `HeaderComponent`, `FooterComponent` — optional slots
 
@@ -30,4 +32,5 @@ Row menus use react-lib's `EllipsisCTA` (see [ellipsis-cta.md](../../../react-li
 
 - Ellipsis popover closes when update dialog opens (uncontrolled Radix pattern)
 - Delete always goes through confirmation dialog with loading state
+- Every dialog close (header X, Escape, overlay click) awaits the form's close guard when one is registered; the dialog stays open if it resolves `false`, and the X is disabled while it runs. `onCancel` closes without the guard
 - `stopPropagation` on ellipsis wrapper prevents triggering `onItemClick`

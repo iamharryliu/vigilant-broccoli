@@ -4,6 +4,8 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useCallback,
+  useRef,
   useState,
 } from 'react';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
@@ -20,6 +22,7 @@ import {
   EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Heading,
+  IconButton,
   StackedImages,
 } from '@vigilant-broccoli/react-lib';
 
@@ -74,8 +77,11 @@ export type CRUDFormProps<T> = {
   submitHandler: CRUDFormSubmitHandler<T>;
   // Saves without closing the dialog, for forms that autosave.
   saveHandler?: CRUDFormSubmitHandler<T>;
+  // The dialog awaits the registered guard before any close and stays open when it resolves false.
+  registerCloseGuard?: (guard: CloseGuard | null) => void;
   onCancel?: () => void;
 };
+type CloseGuard = () => Promise<boolean>;
 type CRUDFormComponent<T> = ComponentType<CRUDFormProps<T>>;
 
 type ListItemComponentProps<T> = ComponentType<{
@@ -107,6 +113,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   getItemImages,
   getItemTitle,
   fullWidthImage = false,
+  showDialogCloseButton,
 }: {
   items: T[];
   setItems: Dispatch<SetStateAction<T[]>>;
@@ -131,6 +138,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   getItemImages?: (item: T) => string[] | undefined;
   getItemTitle?: (item: T) => string;
   fullWidthImage?: boolean;
+  showDialogCloseButton?: boolean;
 }) => {
   const [expandedIds, setExpandedIds] = useState<Set<T['id']>>(
     () => new Set(defaultExpandedIds),
@@ -185,6 +193,7 @@ export const CRUDItemList = <T extends CRUDItem>({
           extraActions={itemActions?.(item)}
           updateLabel={updateLabel}
           deleteConfirmation={deleteConfirmation}
+          showDialogCloseButton={showDialogCloseButton}
         />
       </div>
     ) : itemActions ? (
@@ -278,6 +287,7 @@ export const CRUDItemList = <T extends CRUDItem>({
             FormComponent={FormComponent}
             submitHandler={submitHandler}
             copy={copy}
+            showCloseButton={showDialogCloseButton}
           />
         )}
       </div>
@@ -325,6 +335,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   extraActions,
   updateLabel = DEFAULT_UPDATE_LABEL,
   deleteConfirmation,
+  showDialogCloseButton,
 }: {
   item: T;
   FormComponent: CRUDFormComponent<T>;
@@ -334,6 +345,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   extraActions?: EllipsisAction[];
   updateLabel?: string;
   deleteConfirmation?: { title?: string; description?: string };
+  showDialogCloseButton?: boolean;
 }) => {
   const [updateOpen, setUpdateOpen] = useState(false);
   const hasExtraActions = Boolean(extraActions?.length);
@@ -370,6 +382,7 @@ const EllipsisOptions = <T extends CRUDItem>({
         FormComponent={UpdateFormComponent}
         submitHandler={formSubmitHandler}
         copy={copy}
+        showCloseButton={showDialogCloseButton}
       />
     </>
   );
@@ -377,6 +390,7 @@ const EllipsisOptions = <T extends CRUDItem>({
 
 const DEFAULT_DELETE_LABEL = 'Delete';
 const DEFAULT_UPDATE_LABEL = 'Update';
+const CLOSE_LABEL = 'Close';
 
 export const CRUDItemFormDialog = <T,>({
   formType,
@@ -386,6 +400,7 @@ export const CRUDItemFormDialog = <T,>({
   copy,
   open,
   onOpenChange,
+  showCloseButton = false,
 }: {
   formType: FormType;
   initialFormValues: T;
@@ -394,16 +409,40 @@ export const CRUDItemFormDialog = <T,>({
   copy: ListManagementCopy;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  showCloseButton?: boolean;
 }) => {
   const [internalOpen, setInternalOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const closeGuardRef = useRef<CloseGuard | null>(null);
   const isControlled = open !== undefined;
   const setOpen = isControlled ? onOpenChange : setInternalOpen;
+  const registerCloseGuard = useCallback((guard: CloseGuard | null) => {
+    closeGuardRef.current = guard;
+  }, []);
   async function dialogSubmitHandler(item: T, formType: FormType) {
     await submitHandler(item, formType);
     setOpen?.(false);
   }
+  // Covers the header X, Escape and overlay clicks alike.
+  async function requestClose() {
+    const guard = closeGuardRef.current;
+    if (guard) {
+      setClosing(true);
+      try {
+        if (!(await guard())) return;
+      } finally {
+        setClosing(false);
+      }
+    }
+    setOpen?.(false);
+  }
+  const handleOpenChange = (next: boolean) =>
+    next ? setOpen?.(true) : requestClose();
   return (
-    <Dialog open={isControlled ? open : internalOpen} onOpenChange={setOpen}>
+    <Dialog
+      open={isControlled ? open : internalOpen}
+      onOpenChange={handleOpenChange}
+    >
       {!isControlled && (
         <DialogTrigger asChild>
           <Button variant="ghost">
@@ -419,9 +458,21 @@ export const CRUDItemFormDialog = <T,>({
         )}
         onCloseAutoFocus={e => e.preventDefault()}
       >
-        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
-          {copy[formType].TITLE}
-        </DialogTitle>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <DialogTitle className="text-xl font-bold leading-7 tracking-normal">
+            {copy[formType].TITLE}
+          </DialogTitle>
+          {showCloseButton && (
+            <IconButton
+              variant="ghost"
+              icon="x"
+              aria-label={CLOSE_LABEL}
+              onClick={requestClose}
+              disabled={closing}
+              className="shrink-0"
+            />
+          )}
+        </div>
         <DialogDescription className="text-base">
           {copy[formType].DESCRIPTION}
         </DialogDescription>
@@ -430,6 +481,7 @@ export const CRUDItemFormDialog = <T,>({
           initialFormValues={initialFormValues}
           submitHandler={dialogSubmitHandler}
           saveHandler={submitHandler}
+          registerCloseGuard={registerCloseGuard}
           onCancel={() => setOpen?.(false)}
         />
       </DialogContent>

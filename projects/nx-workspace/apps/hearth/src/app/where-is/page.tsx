@@ -214,6 +214,7 @@ function WhereIsPageContent() {
           getItemImages={(item: { imageUrls?: string[] }) => item.imageUrls}
           getItemTitle={(item: { title: string }) => item.title}
           onItemClick={onItemClick}
+          showDialogCloseButton
         />
       </>
     );

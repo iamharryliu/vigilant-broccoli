@@ -12,7 +12,6 @@ import {
   Button,
   Checkbox,
   DeleteItemConfirmationDialog,
-  IconButton,
   Input,
   Text,
   Textarea,
@@ -59,7 +58,6 @@ const LABEL = {
   CANCEL: 'Cancel',
   CHOOSE_PHOTOS: 'Choose Photos',
   CLEAR_ALL: 'Clear all',
-  CLOSE: 'Close',
   DISMISS: 'Dismiss',
   DONE: 'Done',
   NO_NEW_TAGS: 'No new tags suggested.',
@@ -422,6 +420,7 @@ export const WhereIsFormComponent = ({
   initialFormValues,
   submitHandler,
   saveHandler,
+  registerCloseGuard,
   onCancel,
 }: CRUDFormProps<WhereIsFormValues>) => {
   const session = useAuth();
@@ -520,15 +519,25 @@ export const WhereIsFormComponent = ({
   }, []);
 
   // Waits for the save so a failure stays visible instead of surfacing after the dialog closes.
+  const flushBeforeClose = useCallback(async () => {
+    await runSave();
+    return !hasUnsavedChanges(latestRef.current);
+  }, [runSave]);
+
   const handleDone = async () => {
     setClosing(true);
     try {
-      await runSave();
+      if (await flushBeforeClose()) onCancel?.();
     } finally {
       setClosing(false);
     }
-    if (!hasUnsavedChanges(latestRef.current)) onCancel?.();
   };
+
+  useEffect(() => {
+    if (!isUpdate || !registerCloseGuard) return;
+    registerCloseGuard(flushBeforeClose);
+    return () => registerCloseGuard(null);
+  }, [isUpdate, registerCloseGuard, flushBeforeClose]);
 
   useEffect(() => {
     if (!isUpdate) return;
@@ -809,18 +818,6 @@ export const WhereIsFormComponent = ({
             {submitting ? LABEL.SUBMITTING : LABEL.SUBMIT}
           </Button>
         </div>
-      )}
-
-      {onCancel && (
-        // Absolute to the fixed DialogContent, aligned with the dialog title row.
-        <IconButton
-          variant="ghost"
-          icon="x"
-          aria-label={LABEL.CLOSE}
-          onClick={isUpdate ? handleDone : onCancel}
-          disabled={closing || submitting}
-          className="absolute right-4 top-5"
-        />
       )}
 
       <DeleteItemConfirmationDialog
