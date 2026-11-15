@@ -284,15 +284,23 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const { id, title, description, tags, removedImageKeys, newImages } =
-    (await request.json()) as {
-      id: string;
-      title: string;
-      description: string;
-      tags: string[];
-      removedImageKeys: string[];
-      newImages: StagedImageRef[];
-    };
+  const {
+    id,
+    title,
+    description,
+    tags,
+    removedImageKeys,
+    imageKeyOrder,
+    newImages,
+  } = (await request.json()) as {
+    id: string;
+    title: string;
+    description: string;
+    tags: string[];
+    removedImageKeys: string[];
+    imageKeyOrder?: string[];
+    newImages: StagedImageRef[];
+  };
   const supabase = createServerClient(getBearerToken(request));
 
   const { error } = await supabase
@@ -325,6 +333,26 @@ export async function PATCH(request: NextRequest) {
           toRemove.map(img => img.id),
         );
       await Promise.allSettled(toRemove.map(img => deleteImage(img.r2_key)));
+    }
+  }
+
+  if (imageKeyOrder?.length) {
+    // Scoped by item_id so a key from another item is never touched.
+    const results = await Promise.all(
+      imageKeyOrder.map((r2Key, sortOrder) =>
+        supabase
+          .from('where_is_images')
+          .update({ sort_order: sortOrder })
+          .eq('item_id', id)
+          .eq('r2_key', r2Key),
+      ),
+    );
+    const orderError = results.find(r => r.error)?.error;
+    if (orderError) {
+      return Response.json(
+        { error: orderError.message },
+        { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+      );
     }
   }
 
