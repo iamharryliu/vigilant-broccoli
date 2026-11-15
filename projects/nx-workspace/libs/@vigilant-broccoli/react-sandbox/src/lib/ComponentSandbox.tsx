@@ -920,6 +920,7 @@ const SandboxBody = ({
         mobileOpen={sidebarOpen}
         onMobileClose={() => setSidebarOpen(false)}
         defaultOpenId={openGroupId}
+        expandOn="click"
       />
       <SandboxTopbar
         title={title ?? selectedLabel}

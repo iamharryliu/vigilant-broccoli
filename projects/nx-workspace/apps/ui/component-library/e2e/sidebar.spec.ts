@@ -148,10 +148,12 @@ test.describe('component-library Sidebar (mobile drawer)', () => {
   });
 });
 
-test.describe('component-library Sidebar (desktop rail hover)', () => {
+// The sandbox passes expandOn="click": hovering widens the rail, but only a
+// click opens a group.
+test.describe('component-library Sidebar (desktop rail, click to expand)', () => {
   test.use({ viewport: DESKTOP_VIEWPORT });
 
-  test("hovering a group opens that group, not the active selection's group", async ({
+  test("hovering leaves a group closed; clicking opens that group, not the active selection's group", async ({
     page,
   }) => {
     await page.goto(ENTRY_URL);
@@ -166,15 +168,18 @@ test.describe('component-library Sidebar (desktop rail hover)', () => {
       exact: true,
     });
 
-    // "@vigilant-broccoli" is the active group (ENTRY_URL selects an
-    // alert-dialog/react-lib entry) - hovering "Settings" directly should
-    // open Settings, not the active group.
     await settingsToggle.hover();
+    await expect(settingsToggle).toHaveAttribute('aria-expanded', 'false');
+
+    // "@vigilant-broccoli" is the active group (ENTRY_URL selects an
+    // alert-dialog/react-lib entry) - clicking "Settings" should open
+    // Settings, not the active group.
+    await settingsToggle.click();
     await expect(settingsToggle).toHaveAttribute('aria-expanded', 'true');
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
   });
 
-  test('moving the pointer between group icons switches which group is open', async ({
+  test('clicking another group switches which group is open', async ({
     page,
   }) => {
     await page.goto(ENTRY_URL);
@@ -189,10 +194,10 @@ test.describe('component-library Sidebar (desktop rail hover)', () => {
       exact: true,
     });
 
-    await settingsToggle.hover();
+    await settingsToggle.click();
     await expect(settingsToggle).toHaveAttribute('aria-expanded', 'true');
 
-    await componentsToggle.hover();
+    await componentsToggle.click();
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'true');
     await expect(settingsToggle).toHaveAttribute('aria-expanded', 'false');
   });
@@ -216,7 +221,7 @@ test.describe('component-library Sidebar (desktop rail hover)', () => {
     await expect(content).toHaveCSS('padding-left', EXPANDED_PADDING);
   });
 
-  test('does not expand any group on load until one is hovered', async ({
+  test('does not expand any group on load until one is clicked', async ({
     page,
   }) => {
     await page.goto(ENTRY_URL);
@@ -237,9 +242,8 @@ test.describe('component-library Sidebar (desktop rail hover)', () => {
     // the forceExpanded-gated useState initializer in Sidebar.tsx.
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
 
-    // Hovering opens whichever group is under the pointer, not necessarily
-    // the active one.
-    await settingsToggle.hover();
+    // Clicking opens the clicked group, not necessarily the active one.
+    await settingsToggle.click();
     await expect(settingsToggle).toHaveAttribute('aria-expanded', 'true');
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
   });

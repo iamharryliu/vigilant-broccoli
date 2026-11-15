@@ -46,7 +46,12 @@ export type SidebarProps = {
   onMobileClose?: () => void;
   mobileBreakpoint?: SidebarMobileBreakpoint;
   defaultOpenId?: string | null;
+  expandOn?: SidebarExpandTrigger;
 };
+
+// What opens a group on a collapsed desktop rail: hovering its row, or only
+// clicking it. Drawers and always-expanded sidebars are click-only either way.
+export type SidebarExpandTrigger = 'hover' | 'click';
 
 const ICON_SIZE = 18;
 const CHEVRON_SIZE = 14;
@@ -235,6 +240,7 @@ export const Sidebar = ({
   onMobileClose,
   mobileBreakpoint = 'md',
   defaultOpenId = null,
+  expandOn = 'hover',
 }: SidebarProps) => {
   const breakpoint = BREAKPOINTS[mobileBreakpoint];
   const isMobileAware = mobileOpen !== undefined;
@@ -382,10 +388,12 @@ export const Sidebar = ({
               // *that* group - not whatever the active selection's group is
               // - and hovering a plain (non-group) row should close
               // whichever group was previously open, since attention has
-              // moved elsewhere. Mobile drawers and always-expanded
+              // moved elsewhere. With expandOn 'click', groups only open on
+              // click. Mobile drawers and always-expanded
               // (icon-less) sidebars have no hover-collapse concept, so this
               // is a no-op there.
-              const canHoverSwitch = !forceExpanded && !isNarrowViewport;
+              const canHoverSwitch =
+                expandOn === 'hover' && !forceExpanded && !isNarrowViewport;
               if (item.children && item.children.length > 0) {
                 const isOpen = openId === itemKey;
                 return (
