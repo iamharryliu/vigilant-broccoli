@@ -60,14 +60,20 @@ const DEFAULT_COPY = {
 };
 
 type CreateItem<T> = (item: T) => Promise<T>;
-type UpdateItem<T> = (item: T) => Promise<void>;
+// An update may resolve with the saved item so autosaving forms can adopt server-assigned fields.
+type UpdateItem<T> = (item: T) => Promise<T | void>;
 type DeleteItem = (id: string | number) => Promise<void>;
 
-type CRUDFormSubmitHandler<T> = (item: T, formType: FormType) => Promise<void>;
+type CRUDFormSubmitHandler<T> = (
+  item: T,
+  formType: FormType,
+) => Promise<T | void>;
 export type CRUDFormProps<T> = {
   formType: FormType;
   initialFormValues: T;
   submitHandler: CRUDFormSubmitHandler<T>;
+  // Saves without closing the dialog, for forms that autosave.
+  saveHandler?: CRUDFormSubmitHandler<T>;
   onCancel?: () => void;
 };
 type CRUDFormComponent<T> = ComponentType<CRUDFormProps<T>>;
@@ -153,8 +159,9 @@ export const CRUDItemList = <T extends CRUDItem>({
       setItems(prev => [...prev, newItem]);
     }
     if (formType === FORM_TYPE.UPDATE && updateItem) {
-      await updateItem(item);
-      setItems(prev => prev.map(x => (x.id === item.id ? item : x)));
+      const saved = (await updateItem(item)) ?? item;
+      setItems(prev => prev.map(x => (x.id === item.id ? saved : x)));
+      return saved;
     }
   }
   async function handleDelete(id: string | number) {
@@ -422,6 +429,7 @@ export const CRUDItemFormDialog = <T,>({
           formType={formType}
           initialFormValues={initialFormValues}
           submitHandler={dialogSubmitHandler}
+          saveHandler={submitHandler}
           onCancel={() => setOpen?.(false)}
         />
       </DialogContent>
