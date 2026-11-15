@@ -1,6 +1,7 @@
 # Physics
 
 - [Waves](../physics/waves/waves.md)
+- [Energy Cycle and Conversion](./energy-cycle.md)
 
 # Four Fundamental Forces
 
