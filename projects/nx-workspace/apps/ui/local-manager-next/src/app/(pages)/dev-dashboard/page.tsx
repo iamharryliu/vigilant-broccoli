@@ -7,7 +7,6 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@vigilant-broccoli/react-lib';
-import { GithubRepoActionStatusBadges } from '../../components/github-actions-status.component';
 import { GithubTeamManager } from '../../components/github-manager.component';
 import { FeatureSandboxPage } from '../../components/pages/FeatureSandboxPage';
 import { ApiKeysComponent } from '../../components/api-keys.component';
@@ -20,7 +19,6 @@ const TAB = {
   LOCAL: 'local',
   CLOUD: 'cloud',
   TEAM_MANAGEMENT: 'team-management',
-  CI_MANAGEMENT: 'ci-management',
   TEXT_TOOLS: 'text-tools',
   API_KEYS: 'api-keys',
   TODO: 'todo',
@@ -39,8 +37,6 @@ const CLOUD_SERVICES_PATH = '/dev-dashboard/cloud';
 
 // Static Pages app; its _headers frame-ancestors allows only the manager origin.
 const TEXT_TOOLS_URL = VB_APP_URL.TEXT_TOOLS.URL;
-
-const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
 
 const isTab = (value: string | null): value is Tab =>
   Object.values(TAB).includes(value as Tab);
@@ -70,7 +66,6 @@ export default function Page() {
         <TabsTrigger value={TAB.LOCAL}>Local</TabsTrigger>
         <TabsTrigger value={TAB.CLOUD}>Cloud Services</TabsTrigger>
         <TabsTrigger value={TAB.TEAM_MANAGEMENT}>Team Management</TabsTrigger>
-        <TabsTrigger value={TAB.CI_MANAGEMENT}>CI Management</TabsTrigger>
         <TabsTrigger value={TAB.TEXT_TOOLS}>Text Tools</TabsTrigger>
         <TabsTrigger value={TAB.API_KEYS}>API Keys</TabsTrigger>
         <TabsTrigger value={TAB.TODO}>Todo</TabsTrigger>
@@ -93,11 +88,6 @@ export default function Page() {
       <TabsContent value={TAB.TEAM_MANAGEMENT} className="pt-4 flex-1 min-h-0">
         <div className="grid grid-cols-3 gap-4">
           <GithubTeamManager />
-        </div>
-      </TabsContent>
-      <TabsContent value={TAB.CI_MANAGEMENT} className="pt-4 flex-1 min-h-0">
-        <div className="grid grid-cols-3 gap-4">
-          <GithubRepoActionStatusBadges repoUrl={REPO_URL} />
         </div>
       </TabsContent>
       <TabsContent value={TAB.TEXT_TOOLS} className="pt-4 flex-1 min-h-0">
