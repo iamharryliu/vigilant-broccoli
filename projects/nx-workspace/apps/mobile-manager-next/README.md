@@ -1,6 +1,6 @@
 # Mobile Manager Next
 
-Mobile dashboard with calendar, tasks, notepad, weather and quick links including Agentic workflows.
+Mobile dashboard with calendar, tasks, notepad, weather, language learning and quick links including Agentic workflows.
 
 ## Table of Contents
 
@@ -29,6 +29,7 @@ Mobile dashboard with calendar, tasks, notepad, weather and quick links includin
   - `react-lib-auth`
   - `react-lib-calendar`
   - `react-lib-higher-level`
+  - `react-lib-media`
   - `realtime`
   - `security-news`
 - Cloud services

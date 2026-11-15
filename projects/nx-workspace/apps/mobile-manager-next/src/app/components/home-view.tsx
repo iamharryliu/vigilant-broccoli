@@ -7,6 +7,7 @@ import {
   CalendarDays,
   CalendarPlus,
   CloudSun,
+  GraduationCap,
   ShieldAlert,
   Link2,
   ListTodo,
@@ -64,6 +65,14 @@ const WeatherView = dynamic(
 
 const SecurityNewsView = dynamic(
   () => import('./security-news-view').then(module => module.SecurityNewsView),
+  { ssr: false },
+);
+
+const LanguageLearningView = dynamic(
+  () =>
+    import('./language-learning-view').then(
+      module => module.LanguageLearningView,
+    ),
   { ssr: false },
 );
 
@@ -406,6 +415,12 @@ export const HomeView = () => {
       label: CALENDAR_TAB.SECURITY_NEWS,
       icon: <ShieldAlert size={TAB_ICON_SIZE} />,
       content: <SecurityNewsView />,
+    },
+    {
+      value: CALENDAR_TAB.LANGUAGE_LEARNING,
+      label: CALENDAR_TAB.LANGUAGE_LEARNING,
+      icon: <GraduationCap size={TAB_ICON_SIZE} />,
+      content: <LanguageLearningView />,
     },
   ];
 
