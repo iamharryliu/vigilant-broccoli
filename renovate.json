@@ -5,11 +5,7 @@
   "packageRules": [
     {
       "groupName": "next",
-      "matchPackageNames": [
-        "next",
-        "eslint-config-next",
-        "@next/eslint-plugin-next"
-      ]
+      "matchPackageNames": ["next", "@next/eslint-plugin-next"]
     },
     {
       "matchUpdateTypes": ["major"],

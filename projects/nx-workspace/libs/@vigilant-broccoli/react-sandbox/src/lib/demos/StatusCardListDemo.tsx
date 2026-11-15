@@ -8,7 +8,7 @@ import {
   StatusCardList,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import { TrashIcon, ExternalLinkIcon } from '@radix-ui/react-icons';
+import { ExternalLink, Trash2 } from 'lucide-react';
 
 export const StatusCardListDemo = () => {
   const { t } = useTranslation();
@@ -38,7 +38,7 @@ export const StatusCardListDemo = () => {
               ),
               actions: (
                 <Button size="icon" variant="ghost" title="Open">
-                  <ExternalLinkIcon />
+                  <ExternalLink size={15} />
                 </Button>
               ),
             },
@@ -60,7 +60,7 @@ export const StatusCardListDemo = () => {
               ),
               actions: (
                 <Button size="icon" variant="ghost" title="Open">
-                  <ExternalLinkIcon />
+                  <ExternalLink size={15} />
                 </Button>
               ),
               children: (
@@ -82,7 +82,7 @@ export const StatusCardListDemo = () => {
               ),
               actions: (
                 <Button size="icon" variant="destructive" title="Delete">
-                  <TrashIcon />
+                  <Trash2 size={15} />
                 </Button>
               ),
               children: (

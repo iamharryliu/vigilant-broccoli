@@ -13,7 +13,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { DragHandleDots2Icon } from '@radix-ui/react-icons';
+import { GripVertical } from 'lucide-react';
 import {
   CheckListBase,
   CheckListBaseItem,
@@ -150,7 +150,7 @@ const SortableRowFrame = ({
           aria-label={`${DRAG_HANDLE_LABEL_PREFIX}${item.title}`}
           className="cursor-grab touch-none active:cursor-grabbing opacity-50 hover:opacity-100 transition-opacity"
         >
-          <DragHandleDots2Icon />
+          <GripVertical size={15} />
         </div>
       )}
       {children}

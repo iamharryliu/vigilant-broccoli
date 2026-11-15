@@ -14,9 +14,9 @@ Shared life for homes, communes, and communities.
 - Build Tool - Next.js
 - External libs
   - dnd-kit
-  - Framer Motion
   - FullCalendar
   - lucide-react
+  - Motion
   - react-day-picker
   - react-markdown
   - recharts

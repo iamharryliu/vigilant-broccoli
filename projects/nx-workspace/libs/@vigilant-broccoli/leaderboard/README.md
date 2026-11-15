@@ -20,7 +20,7 @@ User and team leaderboards with sortable metrics, period switching and animated 
 - Language - TypeScript
 - Framework - React
 - External libs
-  - Framer Motion
   - `lucide-react`
+  - Motion
 - Internal libs
   - `react-lib`

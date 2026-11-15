@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { BaseLeaderboard } from './BaseLeaderboard';
 import { LeaderboardSkeleton } from './LeaderboardSkeleton';
 import { LeaderboardCellSkeleton } from './Skeleton';

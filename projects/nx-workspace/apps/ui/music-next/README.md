@@ -13,7 +13,7 @@ DJ music downloads and Rekordbox launcher, metronome and Spotify playlist relati
 - Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - Radix Icons
+  - lucide-react
   - Tailwind CSS
 - Internal libs
   - `@harry/private`
