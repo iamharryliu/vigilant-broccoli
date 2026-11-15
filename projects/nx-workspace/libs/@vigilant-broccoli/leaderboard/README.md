@@ -11,9 +11,9 @@ User and team leaderboards with sortable metrics, period switching and animated 
 
 | Component | Demo |
 | --- | --- |
-| Empty Leaderboard | [View](https://components.harryliu.dev/#empty-leaderboard) |
-| Group Leaderboard | [View](https://components.harryliu.dev/#group-leaderboard) |
-| User Leaderboard | [View](https://components.harryliu.dev/#user-leaderboard) |
+| Empty Leaderboard | [View](https://components.harryliu.dev/empty-leaderboard) |
+| Group Leaderboard | [View](https://components.harryliu.dev/group-leaderboard) |
+| User Leaderboard | [View](https://components.harryliu.dev/user-leaderboard) |
 
 ## Stack
 

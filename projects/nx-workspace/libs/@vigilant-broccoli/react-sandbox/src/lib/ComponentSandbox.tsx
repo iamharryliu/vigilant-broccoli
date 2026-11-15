@@ -1,18 +1,19 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { MouseEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 import {
   Blocks,
   CalendarDays,
-  Eye,
   FileText,
   Image as ImageIcon,
   KeyRound,
   Layers,
+  LayoutGrid,
   Link2,
   List,
   ListChecks,
   Menu,
   Moon,
   Music,
+  Package,
   Settings as SettingsIcon,
   Sun,
   Trophy,
@@ -93,18 +94,18 @@ const CRUD_SWITCH_LABEL = {
   FULL_WIDTH_IMAGE: 'Full-width image',
 } as const;
 
-const SELECTED_ID_STORAGE_KEY = 'component-sandbox-selected-id';
-const ICON_MODE_STORAGE_KEY = 'component-sandbox-icon-mode';
+// Not an entry id, so it can share the selection state; served at `/`.
+const OVERVIEW_ID = 'components';
+const OVERVIEW_LABEL = 'Components';
 
 const SETTINGS_LABEL = {
   GROUP: 'Settings',
   DARK_MODE_ON: 'Light Mode',
   DARK_MODE_OFF: 'Dark Mode',
-  ICON_MODE_ON: 'Icons: On',
-  ICON_MODE_OFF: 'Icons: Off',
 } as const;
 
-const PACKAGE_SCOPE = '@vigilant-broccoli/';
+const PACKAGE_SCOPE_GROUP_ID = '@vigilant-broccoli';
+const PACKAGE_SCOPE = `${PACKAGE_SCOPE_GROUP_ID}/`;
 
 // Declaration order is sidebar order: low-level libs first.
 const LIB = {
@@ -472,7 +473,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     id: 'docs-explorer',
     label: 'Docs Explorer',
     description:
-      'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site and shows what it looks like there.',
+      'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site.',
     lib: LIB.DOCS_EXPLORER,
     content: <DocsExplorerDemo />,
   },
@@ -564,18 +565,27 @@ const ALL_ENTRIES: SandboxEntry[] = [
 ];
 
 const ENTRY_STAGE_CLASS = 'flex flex-col gap-3 mt-2';
+const OVERVIEW_GRID_CLASS =
+  'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3';
+const SECTION_ID_PREFIX = 'vigilant-broccoli-';
+// The mobile topbar is fixed over the scroll container, so leave room for it.
+const OVERVIEW_SECTION_CLASS =
+  'flex flex-col gap-4 scroll-mt-16 md:scroll-mt-6';
+const OVERVIEW_SECTION_LINK_CLASS = 'underline-offset-4 hover:underline';
+const OVERVIEW_LINK_CLASS =
+  'text-base font-medium text-gray-900 underline-offset-4 hover:underline dark:text-gray-100';
 
 const SIDEBAR_POSITION_CLASS = 'fixed top-0 left-0 bottom-0 z-30 peer';
 const CONTENT_WRAPPER_BASE_CLASS =
   'h-full overflow-y-auto pt-12 md:pt-0 pl-0 transition-[padding] duration-200';
-// In icon mode the sidebar itself collapses to an icon rail and only
-// expands to full width on hover (see canCollapse in Sidebar.tsx) - the
-// content needs the matching peer-hover pair to shift with it instead of
-// staying padded for the expanded width. Icon-less mode has no rail to
-// collapse to (the sidebar is always full width), so the content stays
-// statically padded to match.
-const CONTENT_WRAPPER_COLLAPSIBLE_CLASS = 'md:pl-14 md:peer-hover:pl-48';
-const CONTENT_WRAPPER_FIXED_CLASS = 'md:pl-48';
+// Every item carries an icon, so the desktop sidebar collapses to an icon
+// rail and only expands to full width on hover (see canCollapse in
+// Sidebar.tsx) - the content needs the matching peer-hover pair to shift with
+// it instead of staying padded for the expanded width.
+const CONTENT_WRAPPER_RAIL_CLASS = 'md:pl-14 md:peer-hover:pl-60';
+// Overrides Sidebar's default md:hover:w-48 expanded width (merged via cn's
+// tailwind-merge) so the longest lib and entry names fit without clipping.
+const SIDEBAR_EXPANDED_WIDTH_CLASS = 'md:hover:w-60';
 const TOPBAR_CLASS =
   'md:hidden fixed top-0 left-0 right-0 z-10 flex h-12 items-center gap-3 border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-950';
 const MENU_BUTTON_CLASS =
@@ -594,16 +604,14 @@ type BuildSidebarItemsArgs = {
   entries: SandboxEntry[];
   selectedId: string;
   onSelect: (id: string) => void;
-  iconMode: boolean;
 };
 
 const buildSidebarItems = ({
   entries,
   selectedId,
   onSelect,
-  iconMode,
-}: BuildSidebarItemsArgs): SidebarCTA[] =>
-  Object.values(LIB)
+}: BuildSidebarItemsArgs): SidebarCTA[] => {
+  const libGroups = Object.values(LIB)
     .map(lib => ({
       lib,
       items: entries.filter(entry => entry.lib === lib),
@@ -612,7 +620,7 @@ const buildSidebarItems = ({
     .map(group => ({
       id: group.lib,
       label: group.lib,
-      icon: iconMode ? LIB_ICON[group.lib] : undefined,
+      icon: LIB_ICON[group.lib],
       isActive: group.items.some(entry => entry.id === selectedId),
       children: group.items.map(entry => ({
         label: entry.label,
@@ -620,45 +628,43 @@ const buildSidebarItems = ({
         onClick: () => onSelect(entry.id),
       })),
     }));
+  return [
+    {
+      id: OVERVIEW_ID,
+      label: OVERVIEW_LABEL,
+      icon: LayoutGrid,
+      isActive: selectedId === OVERVIEW_ID,
+      onClick: () => onSelect(OVERVIEW_ID),
+    },
+    {
+      id: PACKAGE_SCOPE_GROUP_ID,
+      label: PACKAGE_SCOPE_GROUP_ID,
+      icon: Package,
+      isActive: libGroups.some(group => group.isActive),
+      children: libGroups,
+    },
+  ];
+};
 
 type BuildSettingsGroupArgs = {
   dark: boolean;
-  onToggleDark?: () => void;
-  iconMode: boolean;
-  onToggleIconMode: () => void;
+  onToggleDark: () => void;
 };
 
 // Kept separate from buildSidebarItems - these are app-chrome toggles, not
-// browsable demo content. Icons here are still gated by iconMode (not always
-// on) so toggling it off leaves every item in the sidebar icon-less, which
-// is what canCollapse/forceExpanded in Sidebar.tsx keys off of.
+// browsable demo content.
 const buildSettingsGroup = ({
   dark,
   onToggleDark,
-  iconMode,
-  onToggleIconMode,
 }: BuildSettingsGroupArgs): SidebarCTA => ({
   id: 'settings',
   label: SETTINGS_LABEL.GROUP,
-  icon: iconMode ? SettingsIcon : undefined,
+  icon: SettingsIcon,
   children: [
-    ...(onToggleDark
-      ? [
-          {
-            label: dark
-              ? SETTINGS_LABEL.DARK_MODE_ON
-              : SETTINGS_LABEL.DARK_MODE_OFF,
-            icon: iconMode ? (dark ? Sun : Moon) : undefined,
-            onClick: onToggleDark,
-          },
-        ]
-      : []),
     {
-      label: iconMode
-        ? SETTINGS_LABEL.ICON_MODE_ON
-        : SETTINGS_LABEL.ICON_MODE_OFF,
-      icon: iconMode ? Eye : undefined,
-      onClick: onToggleIconMode,
+      label: dark ? SETTINGS_LABEL.DARK_MODE_ON : SETTINGS_LABEL.DARK_MODE_OFF,
+      icon: dark ? Sun : Moon,
+      onClick: onToggleDark,
     },
   ],
 });
@@ -672,13 +678,83 @@ const SandboxEntryFrame = ({ entry }: { entry: SandboxEntry }) => (
       <Text size="2" color="gray">
         {entry.description}
       </Text>
-      <Text size="1" color="gray">
-        Import from <code>{`${PACKAGE_SCOPE}${entry.lib}`}</code>
-      </Text>
     </header>
     <div className={ENTRY_STAGE_CLASS}>{entry.content}</div>
   </section>
 );
+
+interface SandboxOverviewProps {
+  entries: SandboxEntry[];
+  onSelect: (id: string) => void;
+}
+
+// Prefixed because a bare lib name can equal an entry id (`docs-explorer`),
+// which redirectLegacyHash would treat as an entry link.
+const sectionIdFor = (lib: Lib) => `${SECTION_ID_PREFIX}${lib}`;
+
+const SandboxOverview = ({ entries, onSelect }: SandboxOverviewProps) => {
+  // The sections render after the browser's own fragment scroll on load.
+  useEffect(() => {
+    const hashId = window.location.hash.slice(1);
+    if (hashId) document.getElementById(hashId)?.scrollIntoView();
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-10">
+      <Heading size="7">{OVERVIEW_LABEL}</Heading>
+      {Object.values(LIB).map(lib => (
+        <SandboxOverviewSection
+          key={lib}
+          lib={lib}
+          entries={entries}
+          onSelect={onSelect}
+        />
+      ))}
+    </div>
+  );
+};
+
+interface SandboxOverviewSectionProps extends SandboxOverviewProps {
+  lib: Lib;
+}
+
+const SandboxOverviewSection = ({
+  lib,
+  entries,
+  onSelect,
+}: SandboxOverviewSectionProps) => {
+  const libEntries = entries
+    .filter(entry => entry.lib === lib)
+    .sort((a, b) => a.label.localeCompare(b.label));
+  if (libEntries.length === 0) return null;
+  const sectionId = sectionIdFor(lib);
+  return (
+    <section id={sectionId} className={OVERVIEW_SECTION_CLASS}>
+      <Heading size="4" className="border-b border-border pb-2">
+        <a href={`#${sectionId}`} className={OVERVIEW_SECTION_LINK_CLASS}>
+          {`${PACKAGE_SCOPE}${lib}`}
+        </a>
+      </Heading>
+      <ul className={OVERVIEW_GRID_CLASS}>
+        {libEntries.map(entry => (
+          <li key={entry.id}>
+            <a
+              href={pathFor(entry.id)}
+              onClick={event => {
+                if (!isPlainLeftClick(event)) return;
+                event.preventDefault();
+                onSelect(entry.id);
+              }}
+              className={OVERVIEW_LINK_CLASS}
+            >
+              {entry.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+};
 
 interface SandboxTopbarProps {
   title: string;
@@ -710,25 +786,54 @@ interface SandboxBodyProps {
   showThemeToggle: boolean;
 }
 
-// The URL hash (`/#crud-list`) is the shareable deep link to an entry and wins
-// over the remembered selection, so READMEs can link straight to a component.
-const readHashSelectedId = () => {
+// Each entry lives at `/<entry id>` (e.g. `/crud-list`) so READMEs can link
+// straight to a component; `/` is the overview. Unknown paths fall back to the
+// overview because Cloudflare Pages serves index.html for them (no 404.html).
+const isSelectableId = (id: string | null): id is string =>
+  id === OVERVIEW_ID || ALL_ENTRIES.some(entry => entry.id === id);
+
+const pathFor = (id: string) => (id === OVERVIEW_ID ? '/' : `/${id}`);
+
+const readPathSelectedId = () => {
+  const pathId = window.location.pathname.replace(/^\/|\/$/g, '');
+  return isSelectableId(pathId) ? pathId : OVERVIEW_ID;
+};
+
+// Links published before path navigation (READMEs on npm) use `/#<entry id>`.
+const redirectLegacyHash = () => {
   const hashId = window.location.hash.slice(1);
-  return ALL_ENTRIES.find(entry => entry.id === hashId)?.id;
+  if (isSelectableId(hashId)) {
+    window.history.replaceState(null, '', pathFor(hashId));
+  }
 };
 
-const readStoredSelectedId = () => {
-  const saved = localStorage.getItem(SELECTED_ID_STORAGE_KEY);
-  return (
-    readHashSelectedId() ??
-    (ALL_ENTRIES.some(entry => entry.id === saved)
-      ? (saved as string)
-      : ALL_ENTRIES[0].id)
-  );
+const readInitialSelectedId = () => {
+  redirectLegacyHash();
+  return readPathSelectedId();
 };
 
-const readStoredIconMode = () =>
-  localStorage.getItem(ICON_MODE_STORAGE_KEY) === 'true';
+const isPlainLeftClick = (event: MouseEvent<HTMLAnchorElement>) =>
+  event.button === 0 &&
+  !event.metaKey &&
+  !event.ctrlKey &&
+  !event.shiftKey &&
+  !event.altKey;
+
+const resolveSelection = (entries: SandboxEntry[], selectedId: string) => {
+  if (selectedId === OVERVIEW_ID) {
+    return {
+      selectedEntry: undefined,
+      selectedLabel: OVERVIEW_LABEL,
+      openGroupId: null,
+    };
+  }
+  const entry = entries.find(e => e.id === selectedId) ?? entries[0];
+  return {
+    selectedEntry: entry,
+    selectedLabel: entry.label,
+    openGroupId: PACKAGE_SCOPE_GROUP_ID,
+  };
+};
 
 const SandboxDocumentTitle = ({ title }: { title: string }) => {
   useDocumentTitle(title);
@@ -767,68 +872,62 @@ const SandboxBody = ({
       ),
     [translateSandbox],
   );
-  const [selectedId, setSelectedId] = useState(readStoredSelectedId);
-  const [iconMode, setIconMode] = useState(readStoredIconMode);
+  const [selectedId, setSelectedId] = useState(readInitialSelectedId);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const onHashChange = () => {
-      const hashId = readHashSelectedId();
-      if (hashId) setSelectedId(hashId);
-    };
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    const onPopState = () => setSelectedId(readPathSelectedId());
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  const selectedEntry =
-    entries.find(entry => entry.id === selectedId) ?? entries[0];
+  const { selectedEntry, selectedLabel, openGroupId } = resolveSelection(
+    entries,
+    selectedId,
+  );
+
+  const selectId = (id: string) => {
+    setSelectedId(id);
+    if (window.location.pathname !== pathFor(id)) {
+      window.history.pushState(null, '', pathFor(id));
+    }
+    setSidebarOpen(false);
+  };
 
   const items = useMemo(
     () => [
       ...buildSidebarItems({
         entries,
         selectedId,
-        onSelect: id => {
-          setSelectedId(id);
-          window.location.hash = id;
-          localStorage.setItem(SELECTED_ID_STORAGE_KEY, id);
-          setSidebarOpen(false);
-        },
-        iconMode,
+        onSelect: selectId,
       }),
-      buildSettingsGroup({
-        dark,
-        onToggleDark: showThemeToggle ? () => setDark(!dark) : undefined,
-        iconMode,
-        onToggleIconMode: () => {
-          const next = !iconMode;
-          setIconMode(next);
-          localStorage.setItem(ICON_MODE_STORAGE_KEY, String(next));
-        },
-      }),
+      ...(showThemeToggle
+        ? [buildSettingsGroup({ dark, onToggleDark: () => setDark(!dark) })]
+        : []),
     ],
-    [entries, selectedId, iconMode, dark, showThemeToggle, setDark],
+    [entries, selectedId, dark, showThemeToggle, setDark],
   );
 
   return (
     <div className="h-full">
       {siteName && (
-        <SandboxDocumentTitle title={`${selectedEntry.label} | ${siteName}`} />
+        <SandboxDocumentTitle title={`${selectedLabel} | ${siteName}`} />
       )}
       <Sidebar
         items={items}
         searchable
-        className={SIDEBAR_POSITION_CLASS}
+        className={`${SIDEBAR_POSITION_CLASS} ${SIDEBAR_EXPANDED_WIDTH_CLASS}`}
         mobileOpen={sidebarOpen}
         onMobileClose={() => setSidebarOpen(false)}
-        defaultOpenId={selectedEntry.lib}
+        defaultOpenId={openGroupId}
+        expandOn="click"
       />
       <SandboxTopbar
-        title={title ?? selectedEntry.label}
+        title={title ?? selectedLabel}
         onMenuClick={() => setSidebarOpen(open => !open)}
       />
       <div
-        className={`${CONTENT_WRAPPER_BASE_CLASS} ${iconMode ? CONTENT_WRAPPER_COLLAPSIBLE_CLASS : CONTENT_WRAPPER_FIXED_CLASS}`}
+        className={`${CONTENT_WRAPPER_BASE_CLASS} ${CONTENT_WRAPPER_RAIL_CLASS}`}
       >
         <div className="p-6 max-w-4xl">
           {title && (
@@ -841,7 +940,11 @@ const SandboxBody = ({
               {subtitle}
             </Text>
           )}
-          <SandboxEntryFrame entry={selectedEntry} />
+          {selectedEntry ? (
+            <SandboxEntryFrame entry={selectedEntry} />
+          ) : (
+            <SandboxOverview entries={entries} onSelect={selectId} />
+          )}
         </div>
       </div>
     </div>

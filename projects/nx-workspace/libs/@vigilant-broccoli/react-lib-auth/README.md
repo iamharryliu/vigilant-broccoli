@@ -11,7 +11,7 @@ Supabase auth provider factory and Google sign-in page for React apps.
 
 | Component | Demo |
 | --- | --- |
-| Google Sign-In Page | [View](https://components.harryliu.dev/#google-sign-in-page) |
+| Google Sign-In Page | [View](https://components.harryliu.dev/google-sign-in-page) |
 
 ## Stack
 

@@ -1,6 +1,6 @@
 # Sidebar groups
 
-The sandbox sidebar has one group per `@vigilant-broccoli` React lib, labelled with the lib name and ordered from low-level to high-level. Each entry shows an "Import from" line naming its package.
+The sandbox sidebar nests one group per React lib, labelled with the lib name and ordered from low-level to high-level, under a single top-level `@vigilant-broccoli` group. Every item has an icon, so the desktop sidebar is an icon rail that expands on hover to `md:w-60` (content padding tracks it) so the longest lib and entry names fit. Each entry is served at `/<entry id>`; legacy `/#<entry id>` links are redirected to that path. A top-level "Components" item (`/`, also the fallback for unknown paths) opens an overview listing every entry in a three-column grid, sectioned by scoped package name (`@vigilant-broccoli/<lib>`) in sidebar order. Each section heading links to `/#vigilant-broccoli-<lib>`; the prefix keeps section ids from matching entry ids such as `docs-explorer`.
 
 ## Groups
 
@@ -23,6 +23,6 @@ The sandbox sidebar has one group per `@vigilant-broccoli` React lib, labelled w
 
 - An entry belongs to the lib exporting the component it mainly showcases (check the demo's imports). Ids never change, so stored selections survive regrouping.
 - Mobile Home sits under `react-lib-higher-level`, which owns its `TabbedView` shell; its `CalendarAgenda` comes from `react-lib-calendar`.
-- Docs Explorer sits under `docs-explorer`, which exports `DocsExplorer`. The demo itself lives only in react-sandbox (a link plus the feature doc), so it is the closest-lib choice.
+- Docs Explorer sits under `docs-explorer`, which exports `DocsExplorer`. The demo itself lives only in react-sandbox (a link to docs.harryliu.dev), so it is the closest-lib choice.
 - Notepad sits under `react-lib` (`SyncedTextEditor`); Tasks sits under `react-lib-tasks` and Quick Links under `react-lib-quick-links`.
 - Adding a lib means adding it to `LIB` (declaration order is sidebar order) with a distinct lucide icon in `LIB_ICON`, and its source glob to the component-library `tailwind.config.js`.

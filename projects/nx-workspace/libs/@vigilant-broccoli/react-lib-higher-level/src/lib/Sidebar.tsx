@@ -46,7 +46,12 @@ export type SidebarProps = {
   onMobileClose?: () => void;
   mobileBreakpoint?: SidebarMobileBreakpoint;
   defaultOpenId?: string | null;
+  expandOn?: SidebarExpandTrigger;
 };
+
+// What opens a group on a collapsed desktop rail: hovering its row, or only
+// clicking it. Drawers and always-expanded sidebars are click-only either way.
+export type SidebarExpandTrigger = 'hover' | 'click';
 
 const ICON_SIZE = 18;
 const CHEVRON_SIZE = 14;
@@ -235,6 +240,7 @@ export const Sidebar = ({
   onMobileClose,
   mobileBreakpoint = 'md',
   defaultOpenId = null,
+  expandOn = 'hover',
 }: SidebarProps) => {
   const breakpoint = BREAKPOINTS[mobileBreakpoint];
   const isMobileAware = mobileOpen !== undefined;
@@ -382,10 +388,12 @@ export const Sidebar = ({
               // *that* group - not whatever the active selection's group is
               // - and hovering a plain (non-group) row should close
               // whichever group was previously open, since attention has
-              // moved elsewhere. Mobile drawers and always-expanded
+              // moved elsewhere. With expandOn 'click', groups only open on
+              // click. Mobile drawers and always-expanded
               // (icon-less) sidebars have no hover-collapse concept, so this
               // is a no-op there.
-              const canHoverSwitch = !forceExpanded && !isNarrowViewport;
+              const canHoverSwitch =
+                expandOn === 'hover' && !forceExpanded && !isNarrowViewport;
               if (item.children && item.children.length > 0) {
                 const isOpen = openId === itemKey;
                 return (
@@ -502,6 +510,19 @@ type NestedItemProps = {
   forceExpanded?: boolean;
 };
 
+const itemKeyFor = (item: SidebarCTA, idx: number) =>
+  item.id ?? item.href ?? `${item.label}-${idx}`;
+
+const findActiveChildGroupKey = (item: SidebarCTA): string | null => {
+  const idx =
+    item.children?.findIndex(
+      child => child.isActive && (child.children?.length ?? 0) > 0,
+    ) ?? -1;
+  return idx === -1 || !item.children
+    ? null
+    : itemKeyFor(item.children[idx], idx);
+};
+
 const NestedItem = ({
   item,
   isOpen,
@@ -512,7 +533,15 @@ const NestedItem = ({
   onNavigate,
   forceExpanded = false,
 }: NestedItemProps) => {
-  const [openChildId, setOpenChildId] = useState<string | null>(null);
+  const activeChildGroupKey = findActiveChildGroupKey(item);
+  const [openChildId, setOpenChildId] = useState<string | null>(
+    activeChildGroupKey,
+  );
+  // Nested levels have no defaultOpenId, so follow the active selection into
+  // whichever child group now contains it.
+  useEffect(() => {
+    if (activeChildGroupKey !== null) setOpenChildId(activeChildGroupKey);
+  }, [activeChildGroupKey]);
   const Icon = item.icon;
   const labelClass = cn(
     'whitespace-nowrap overflow-hidden text-left transition-all duration-150',
@@ -560,8 +589,7 @@ const NestedItem = ({
         <div className="overflow-hidden">
           <div className="flex flex-col gap-1 mt-1 ml-3 pb-1">
             {item.children?.map((child, idx) => {
-              const childKey =
-                child.id ?? child.href ?? `${child.label}-${idx}`;
+              const childKey = itemKeyFor(child, idx);
               if (child.children && child.children.length > 0) {
                 return (
                   <NestedItem

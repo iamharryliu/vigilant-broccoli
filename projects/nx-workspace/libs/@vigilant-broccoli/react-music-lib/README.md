@@ -11,7 +11,7 @@ Music practice components for React apps.
 
 | Component | Demo |
 | --- | --- |
-| Metronome | [View](https://components.harryliu.dev/#metronome) |
+| Metronome | [View](https://components.harryliu.dev/metronome) |
 
 ## Stack
 
