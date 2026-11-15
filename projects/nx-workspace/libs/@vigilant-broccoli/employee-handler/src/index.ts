@@ -11,7 +11,7 @@ export * from './employee-handler/leave-sync/leave-sync.service';
 export * from './employee-handler/leave-sync/file-leave-store';
 export * from './employee-handler/active-maintenance/signatures.const';
 export * from './employee-handler/signature-templates/signature-templates.store';
-export * from './express/employee-handler-express';
+export * from './fastify/employee-handler-fastify';
 export {
   EMPLOYEE_HANDLER_CONFIG_MOCK,
   MOCK_DEFAULT_TEMPLATES,

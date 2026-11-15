@@ -1,12 +1,6 @@
 import fs from 'fs';
 import { z } from 'zod/v4';
-import express, {
-  Application,
-  NextFunction,
-  Request,
-  Response,
-  Router,
-} from 'express';
+import Fastify, { FastifyInstance, FastifyReply, HTTPMethods } from 'fastify';
 import { EmployeeHandlerConfig } from '../employee-handler/employee-handler.models';
 import { EmployeeHandlerService } from '../employee-handler/employee-handler.service';
 import { ZIPPED_GENERATED_SIGNATURES_FILEPATH } from '../employee-handler/active-maintenance/signatures.const';
@@ -27,6 +21,7 @@ import {
   API_KEY_HEADER,
   HTTP_STATUS_CODES,
   CONTENT_TYPE_HEADER,
+  JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
 
 export type EmployeeHandlerAppOptions = {
@@ -35,6 +30,8 @@ export type EmployeeHandlerAppOptions = {
 };
 
 const OPENAPI_PATH = '/openapi.json';
+const BODY_LIMIT_BYTES = 1024 * 1024;
+const POISONING_ACTION = 'error';
 const ERROR_UNAUTHORIZED = 'Unauthorized';
 const ZIP_FILENAME_HEADER = 'attachment; filename="signatures.zip"';
 const ERROR_ZIP_FAILED = 'Failed to generate signatures zip';
@@ -43,12 +40,13 @@ const CONTENT_DISPOSITION_HEADER = 'Content-Disposition';
 type HandlerArgs<Id extends EmployeeHandlerRouteId> = {
   body: EmployeeHandlerRouteBody<Id>;
   params: Record<string, string>;
-  res: Response;
+  reply: FastifyReply;
 };
 
+// A handler that sends its own response returns the reply it sent on.
 type RouteHandler<Id extends EmployeeHandlerRouteId> = (
   args: HandlerArgs<Id>,
-) => Promise<EmployeeHandlerRouteResponse<Id> | void>;
+) => Promise<EmployeeHandlerRouteResponse<Id> | FastifyReply | void>;
 
 type RouteHandlers = { [Id in EmployeeHandlerRouteId]: RouteHandler<Id> };
 
@@ -58,7 +56,7 @@ const formatIssues = (error: z.ZodError): string =>
     .join(', ');
 
 const mountRoute = <Id extends EmployeeHandlerRouteId>(
-  router: Router,
+  app: FastifyInstance,
   id: Id,
   handler: RouteHandler<Id>,
 ) => {
@@ -68,36 +66,27 @@ const mountRoute = <Id extends EmployeeHandlerRouteId>(
     status: number;
     body?: z.ZodType;
   } = EMPLOYEE_HANDLER_ROUTES[id];
-  const method = route.method.toLowerCase() as
-    'get' | 'post' | 'patch' | 'delete';
-  router[method](
-    route.path,
-    (req: Request, res: Response, next: NextFunction) => {
+  app.route({
+    method: route.method as HTTPMethods,
+    url: `${API_BASE_PATH}${route.path}`,
+    handler: async (request, reply) => {
       const parsed = route.body
-        ? route.body.safeParse(req.body ?? {})
+        ? route.body.safeParse(request.body ?? {})
         : undefined;
       if (parsed && !parsed.success) {
-        res
-          .status(HTTP_STATUS_CODES.BAD_REQUEST)
-          .json({ error: formatIssues(parsed.error) });
-        return;
+        return reply
+          .code(HTTP_STATUS_CODES.BAD_REQUEST)
+          .send({ error: formatIssues(parsed.error) });
       }
-      handler({
+      const result = await handler({
         body: parsed?.data as EmployeeHandlerRouteBody<Id>,
-        params: req.params as Record<string, string>,
-        res,
-      })
-        .then(result => {
-          if (res.headersSent || res.writableEnded) return;
-          if (result === undefined) {
-            res.status(route.status).end();
-            return;
-          }
-          res.status(route.status).json(result);
-        })
-        .catch(next);
+        params: request.params as Record<string, string>,
+        reply,
+      });
+      if (result === reply) return reply;
+      return reply.code(route.status).send(result);
     },
-  );
+  });
 };
 
 const createHandlers = (
@@ -106,9 +95,8 @@ const createHandlers = (
 ): RouteHandlers => {
   const { onboardUtilities, activeMaintenanceUtilities, offboardUtilities } =
     config;
-  const notFound = (res: Response) => {
-    res.status(HTTP_STATUS_CODES.INVALID_PATH).end();
-  };
+  const notFound = (reply: FastifyReply) =>
+    reply.code(HTTP_STATUS_CODES.INVALID_PATH).send();
   return {
     employeesIncoming: async () => ({
       employees: await onboardUtilities.fetchIncomingEmployees(),
@@ -119,10 +107,10 @@ const createHandlers = (
     employeesInactive: async () => ({
       employees: await offboardUtilities.fetchInactiveEmployees(),
     }),
-    employeesMetadata: async ({ body, res }) => {
+    employeesMetadata: async ({ body, reply }) => {
       const { email, ...updates } = body;
       const employee = await config.updateEmployeeMetadata?.(email, updates);
-      if (!employee) return notFound(res);
+      if (!employee) return notFound(reply);
       return { employee } as EmployeeHandlerRouteResponse<'employeesMetadata'>;
     },
     absences: async () => ({
@@ -165,27 +153,27 @@ const createHandlers = (
       EmployeeHandlerService.updateEmailSignatures(config),
     signatureEmailZipped: ({ body }) =>
       EmployeeHandlerService.emailZippedSignatures(config, body.emails),
-    signatureDownloadZipped: async ({ res }) => {
+    signatureDownloadZipped: async ({ reply }) => {
       await EmployeeHandlerService.generateLocalSignatures(config);
       if (!fs.existsSync(ZIPPED_GENERATED_SIGNATURES_FILEPATH)) {
-        res
-          .status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .json({ error: ERROR_ZIP_FAILED });
-        return;
+        return reply
+          .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+          .send({ error: ERROR_ZIP_FAILED });
       }
-      res.setHeader(CONTENT_DISPOSITION_HEADER, ZIP_FILENAME_HEADER);
-      res.setHeader(CONTENT_TYPE_HEADER, ZIP_CONTENT_TYPE);
-      fs.createReadStream(ZIPPED_GENERATED_SIGNATURES_FILEPATH).pipe(res);
+      return reply
+        .header(CONTENT_DISPOSITION_HEADER, ZIP_FILENAME_HEADER)
+        .header(CONTENT_TYPE_HEADER, ZIP_CONTENT_TYPE)
+        .send(fs.createReadStream(ZIPPED_GENERATED_SIGNATURES_FILEPATH));
     },
     signatureTemplatesList: async () => ({ templates: store.list() }),
     signatureTemplatesCreate: async ({ body }) => store.create(body),
-    signatureTemplatesUpdate: async ({ body, params, res }) => {
+    signatureTemplatesUpdate: async ({ body, params, reply }) => {
       const updated = store.update(params.id, body);
-      if (!updated) return notFound(res);
+      if (!updated) return notFound(reply);
       return updated;
     },
-    signatureTemplatesDelete: async ({ params, res }) => {
-      if (!store.delete(params.id)) notFound(res);
+    signatureTemplatesDelete: async ({ params, reply }) => {
+      if (!store.delete(params.id)) return notFound(reply);
     },
   };
 };
@@ -193,39 +181,49 @@ const createHandlers = (
 export const createEmployeeHandlerApp = (
   config: EmployeeHandlerConfig,
   options: EmployeeHandlerAppOptions = {},
-): Application => {
+): FastifyInstance => {
   const { apiKey, defaultTemplates = [] } = options;
   const store = createSignatureTemplatesStore(defaultTemplates);
 
-  const app = express();
-  app.use(express.json({ limit: '1mb' }));
+  // Trailing slashes are ignored, as Express's router did.
+  const app = Fastify({
+    bodyLimit: BODY_LIMIT_BYTES,
+    routerOptions: { ignoreTrailingSlash: true },
+  });
+
+  // Fastify rejects an empty JSON body with 400; Express's json() let bodyless routes run.
+  const parseJson = app.getDefaultJsonParser(
+    POISONING_ACTION,
+    POISONING_ACTION,
+  );
+  app.removeContentTypeParser(JSON_CONTENT_TYPE);
+  app.addContentTypeParser(
+    JSON_CONTENT_TYPE,
+    { parseAs: 'string' },
+    (request, body: string, done) =>
+      body === '' ? done(null, undefined) : parseJson(request, body, done),
+  );
 
   if (apiKey) {
-    app.use((req, res, next) => {
-      if (req.headers[API_KEY_HEADER] !== apiKey) {
-        res
-          .status(HTTP_STATUS_CODES.UNAUTHORIZED)
-          .json({ error: ERROR_UNAUTHORIZED });
-        return;
+    app.addHook('onRequest', async (request, reply) => {
+      if (request.headers[API_KEY_HEADER] !== apiKey) {
+        return reply
+          .code(HTTP_STATUS_CODES.UNAUTHORIZED)
+          .send({ error: ERROR_UNAUTHORIZED });
       }
-      next();
     });
   }
 
-  const api = Router();
-  api.get(OPENAPI_PATH, (_req, res) => {
-    res.json(createEmployeeHandlerOpenApiSpec());
-  });
+  app.get(`${API_BASE_PATH}${OPENAPI_PATH}`, async () =>
+    createEmployeeHandlerOpenApiSpec(),
+  );
 
   const handlers = createHandlers(config, store);
   (Object.keys(handlers) as EmployeeHandlerRouteId[]).forEach(id =>
-    mountRoute(api, id, handlers[id] as RouteHandler<typeof id>),
+    mountRoute(app, id, handlers[id] as RouteHandler<typeof id>),
   );
 
-  app.use(API_BASE_PATH, api);
-  app.get('/', (_req, res) => {
-    res.json({ status: 'ok' });
-  });
+  app.get('/', async () => ({ status: 'ok' }));
 
   return app;
 };

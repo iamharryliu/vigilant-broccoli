@@ -13,6 +13,9 @@ const app = createEmployeeHandlerApp(EMPLOYEE_HANDLER_CONFIG_MOCK, {
   defaultTemplates: MOCK_DEFAULT_TEMPLATES,
 });
 
-app.listen(PORT, HOST, () => {
+const start = async () => {
+  await app.listen({ port: PORT, host: HOST });
   console.log(`[ ready ] http://${HOST}:${PORT}`);
-});
+};
+
+start();
