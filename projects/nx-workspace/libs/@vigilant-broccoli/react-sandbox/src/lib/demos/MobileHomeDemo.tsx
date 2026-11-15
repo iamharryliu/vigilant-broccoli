@@ -26,12 +26,14 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { WeatherClockCardUtilityContent } from '@vigilant-broccoli/react-utility';
 import {
-  CreateTasksDialog,
-  GoogleTasksComponent,
-  QuickLinksPanel,
   Sidebar,
   type SidebarCTA,
 } from '@vigilant-broccoli/react-lib-higher-level';
+import {
+  CreateTasksDialog,
+  GoogleTasksComponent,
+} from '@vigilant-broccoli/react-lib-tasks';
+import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-quick-links';
 import {
   CalendarAgenda,
   EventCalendarsList,

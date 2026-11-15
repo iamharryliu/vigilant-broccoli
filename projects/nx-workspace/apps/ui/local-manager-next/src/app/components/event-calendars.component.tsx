@@ -28,7 +28,7 @@ import {
 import {
   CRUDFormProps,
   CRUDItemList,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ManagedCalendarBookmarkletLink } from './managed-calendar-bookmarklet-link.component';

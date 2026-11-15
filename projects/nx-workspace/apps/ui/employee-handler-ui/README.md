@@ -20,6 +20,7 @@
   - `employee-handler`
   - `react-lib`
   - `react-lib-auth`
+  - `react-lib-crud-list`
   - `react-lib-higher-level`
 - Cloud services
   - Google APIs

@@ -1,4 +1,4 @@
-import { createGoogleTasksRouteHandlers } from '@vigilant-broccoli/react-lib-higher-level/google-tasks-server';
+import { createGoogleTasksRouteHandlers } from '@vigilant-broccoli/react-lib-tasks/google-tasks-server';
 import { requireGoogleAuth } from './api-auth';
 
 export const googleTasksRoutes = createGoogleTasksRouteHandlers(

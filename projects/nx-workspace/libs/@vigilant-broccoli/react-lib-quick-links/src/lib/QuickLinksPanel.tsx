@@ -11,7 +11,7 @@ import {
   type SearchableListGroup,
   type SearchableListItem,
   type SearchableListView,
-} from './SearchableList';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { WINDOW_OPEN_FEATURES } from '@vigilant-broccoli/react-lib';
 import { useQuickLinkFavorites } from './useQuickLinkFavorites';
 

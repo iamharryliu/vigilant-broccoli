@@ -39,7 +39,7 @@ import {
   TabbedView,
   TabbedViewTab,
 } from '@vigilant-broccoli/react-lib-higher-level';
-import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-higher-level';
+import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-quick-links';
 import { CalendarVoiceInput } from './calendar-voice-input';
 import { GoogleTasksView } from './google-tasks-view';
 import { NotepadEditor } from './notepad-editor';

@@ -22,7 +22,7 @@ Google Tasks as a standalone page, or embedded in any site at `/embed`.
   - `infrastructure`
   - `react-lib`
   - `react-lib-auth`
-  - `react-lib-higher-level`
+  - `react-lib-tasks`
 - Cloud services
   - Google Tasks API
   - Supabase

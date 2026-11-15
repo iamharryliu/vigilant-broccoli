@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@vigilant-broccoli/react-lib';
-import { GoogleTasksComponent } from '@vigilant-broccoli/react-lib-higher-level';
+import { GoogleTasksComponent } from '@vigilant-broccoli/react-lib-tasks';
 import { signOut, tasksAuth, useAuthStatus } from '../../../libs/auth';
 import { useTranslation } from '../i18n';
 

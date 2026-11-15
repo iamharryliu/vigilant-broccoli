@@ -5,7 +5,7 @@
 - Standalone task list component for quick task management
 - Requires Google OAuth session
 - API routes resolve the Google access token server-side from the stored refresh token (`libs/google-token.ts` over `@vigilant-broccoli/react-lib-auth/google-token-server`); the client holds no Google token, and a missing or revoked token shows the Reconnect Google card
-- The `/api/tasks/**` handlers come from `createGoogleTasksRouteHandlers` in `@vigilant-broccoli/react-lib-higher-level/google-tasks-server`, shared with mobile-manager-next; each app only supplies its token resolver in `libs/google-tasks-routes.ts`
+- The `/api/tasks/**` handlers come from `createGoogleTasksRouteHandlers` in `@vigilant-broccoli/react-lib-tasks/google-tasks-server`, shared with mobile-manager-next; each app only supplies its token resolver in `libs/google-tasks-routes.ts`
 - The home page's task card frames tasks-next's `/embed` (`tasks-embed-card.component.tsx`, `VB_APP_URL.TASKS`, overridden by the build-time `NEXT_PUBLIC_TASKS_URL`); Kanban and the chatbot stay native. See [tasks-next Embed](../../../tasks-next/docs/features/embed.md)
 
 ## Task Creation

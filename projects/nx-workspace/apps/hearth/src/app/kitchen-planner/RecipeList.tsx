@@ -17,7 +17,7 @@ import {
 import {
   CRUDItemFormDialog,
   CRUDItemList,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib-crud-list';
 import {
   createSearchParamUrlSync,
   DocsExplorer,

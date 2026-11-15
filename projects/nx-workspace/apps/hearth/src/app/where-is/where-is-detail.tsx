@@ -18,7 +18,7 @@ import {
   ImageCarouselDialog,
   ImageFilmstrip,
 } from '@vigilant-broccoli/react-lib-media';
-import { CRUDItemFormDialog } from '@vigilant-broccoli/react-lib-higher-level';
+import { CRUDItemFormDialog } from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { WhereIsItem } from '../../lib/types';
