@@ -472,7 +472,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     id: 'docs-explorer',
     label: 'Docs Explorer',
     description:
-      'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site and shows what it looks like there.',
+      'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site.',
     lib: LIB.DOCS_EXPLORER,
     content: <DocsExplorerDemo />,
   },
@@ -574,8 +574,12 @@ const CONTENT_WRAPPER_BASE_CLASS =
 // staying padded for the expanded width. Icon-less mode has no rail to
 // collapse to (the sidebar is always full width), so the content stays
 // statically padded to match.
-const CONTENT_WRAPPER_COLLAPSIBLE_CLASS = 'md:pl-14 md:peer-hover:pl-48';
-const CONTENT_WRAPPER_FIXED_CLASS = 'md:pl-48';
+const CONTENT_WRAPPER_COLLAPSIBLE_CLASS = 'md:pl-14 md:peer-hover:pl-80';
+const CONTENT_WRAPPER_FIXED_CLASS = 'md:pl-80';
+// Overrides Sidebar's default md:w-48 desktop width (merged via cn's
+// tailwind-merge) so full scoped package names fit without clipping.
+const SIDEBAR_COLLAPSIBLE_WIDTH_CLASS = 'md:hover:w-80';
+const SIDEBAR_FIXED_WIDTH_CLASS = 'md:w-80';
 const TOPBAR_CLASS =
   'md:hidden fixed top-0 left-0 right-0 z-10 flex h-12 items-center gap-3 border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-950';
 const MENU_BUTTON_CLASS =
@@ -611,7 +615,7 @@ const buildSidebarItems = ({
     .filter(group => group.items.length > 0)
     .map(group => ({
       id: group.lib,
-      label: group.lib,
+      label: `${PACKAGE_SCOPE}${group.lib}`,
       icon: iconMode ? LIB_ICON[group.lib] : undefined,
       isActive: group.items.some(entry => entry.id === selectedId),
       children: group.items.map(entry => ({
@@ -671,9 +675,6 @@ const SandboxEntryFrame = ({ entry }: { entry: SandboxEntry }) => (
       </Heading>
       <Text size="2" color="gray">
         {entry.description}
-      </Text>
-      <Text size="1" color="gray">
-        Import from <code>{`${PACKAGE_SCOPE}${entry.lib}`}</code>
       </Text>
     </header>
     <div className={ENTRY_STAGE_CLASS}>{entry.content}</div>
@@ -818,7 +819,7 @@ const SandboxBody = ({
       <Sidebar
         items={items}
         searchable
-        className={SIDEBAR_POSITION_CLASS}
+        className={`${SIDEBAR_POSITION_CLASS} ${iconMode ? SIDEBAR_COLLAPSIBLE_WIDTH_CLASS : SIDEBAR_FIXED_WIDTH_CLASS}`}
         mobileOpen={sidebarOpen}
         onMobileClose={() => setSidebarOpen(false)}
         defaultOpenId={selectedEntry.lib}

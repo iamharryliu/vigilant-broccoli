@@ -3,8 +3,9 @@ import { test, expect } from '@playwright/test';
 const MOBILE_VIEWPORT = { width: 390, height: 844 };
 const DESKTOP_VIEWPORT = { width: 1280, height: 800 };
 const OPEN_MENU_LABEL = 'Open menu';
-const COMPONENTS_GROUP_LABEL = 'react-lib';
-const UTILITIES_GROUP_LABEL = 'react-utility';
+const COMPONENTS_GROUP_LABEL = '@vigilant-broccoli/react-lib';
+const UTILITIES_GROUP_LABEL = '@vigilant-broccoli/react-utility';
+const EXPANDED_PADDING = '320px';
 const ALARM_LABEL = 'Alarm';
 const SETTINGS_GROUP_LABEL = 'Settings';
 const ICON_MODE_OFF_LABEL = 'Icons: Off';
@@ -90,12 +91,12 @@ test.describe('component-library Sidebar (icon-less nav, desktop)', () => {
     await page.goto('/');
 
     const content = page.locator('div.h-full.overflow-y-auto');
-    await expect(content).toHaveCSS('padding-left', '192px');
+    await expect(content).toHaveCSS('padding-left', EXPANDED_PADDING);
 
     await page
       .getByRole('button', { name: COMPONENTS_GROUP_LABEL, exact: true })
       .hover();
-    await expect(content).toHaveCSS('padding-left', '192px');
+    await expect(content).toHaveCSS('padding-left', EXPANDED_PADDING);
   });
 });
 
@@ -221,7 +222,7 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
 
     // The content wrapper is a `peer-hover` sibling of the sidebar (which
     // carries the `peer` class) - it should track the rail's own width
-    // (md:w-14 collapsed, md:hover:w-48 expanded) rather than staying
+    // (md:w-14 collapsed, md:hover:w-80 expanded) rather than staying
     // statically padded for the expanded width.
     const content = page.locator('div.h-full.overflow-y-auto');
     await expect(content).toHaveCSS('padding-left', '56px');
@@ -229,7 +230,7 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
     await page
       .getByRole('button', { name: COMPONENTS_GROUP_LABEL, exact: true })
       .hover();
-    await expect(content).toHaveCSS('padding-left', '192px');
+    await expect(content).toHaveCSS('padding-left', EXPANDED_PADDING);
   });
 
   test('does not expand any group on reload until one is hovered', async ({
