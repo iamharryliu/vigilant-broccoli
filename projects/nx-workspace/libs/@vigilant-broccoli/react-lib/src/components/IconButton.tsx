@@ -31,6 +31,7 @@ import {
   Square,
   Sun,
   Trash,
+  VenetianMask,
   Waypoints,
   X,
   type LucideIcon,
@@ -73,6 +74,7 @@ export const ICON_BUTTON_ICONS = {
   bot: Bot,
   help: CircleHelp,
   settings: Settings,
+  incognito: VenetianMask,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconButtonIcon = keyof typeof ICON_BUTTON_ICONS;
@@ -114,6 +116,7 @@ const ICON_BUTTON_DEFAULT_LABELS = {
   bot: 'Assistant',
   help: 'Help',
   settings: 'Settings',
+  incognito: 'Incognito',
 } as const satisfies Record<IconButtonIcon, string>;
 
 const DEFAULT_ICON_SIZE = 16;
