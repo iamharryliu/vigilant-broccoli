@@ -13,7 +13,7 @@
 
 ### A `react-lib` component renders unstyled in an app that never scanned it
 
-When an app starts importing an internal UI lib, add its `src/**` glob to the app's Tailwind `content`. Classes used only by that lib otherwise disappear silently from the CSS; build and lint still pass. This affected `react-lib`'s Sidebar in `personal-website-react`.
+When an app starts importing an internal UI lib, add its `src/**` glob to the app's Tailwind `content`. Classes used only by that lib otherwise disappear silently from the CSS; build and lint still pass.
 
 ### The three link surfaces share one section structure and drift silently
 
