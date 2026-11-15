@@ -5,7 +5,6 @@
 - [Spanish](./spanish/spanish.md)
 - [Interesting Words](./interesting-words.md)
 - [Language Lingo](./language-lingo.md)
-- [Grammatical Terms](./grammatical-terms.md)
 
 ## Online Learning Options
 

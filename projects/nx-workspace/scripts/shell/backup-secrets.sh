@@ -111,7 +111,7 @@ upsert_chunked_note "$VAULT_FOLDER_NAME" "$NOTES" "$VAULT_FOLDER_ID"
 backup_csv_to_bitwarden "$HOME/Desktop/Passwords.csv" "apple-passwords"
 backup_csv_to_bitwarden "$HOME/Desktop/Chrome Passwords.csv" "chrome-passwords"
 
-# Export Bitwarden vault (encrypted, now includes vault secrets)
+# Export Bitwarden vault (encrypted)
 BITWARDEN_BACKUP_DIR="$HOME/resilio-sync/backup/bitwarden"
 bw export --password "$BITWARDEN_PASSWORD" --format encrypted_json --output "$BITWARDEN_BACKUP_DIR/bitwarden-backup-$TIMESTAMP.json"
 echo "✓ Bitwarden vault exported (encrypted)"

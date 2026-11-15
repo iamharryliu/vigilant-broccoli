@@ -16,10 +16,8 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@vigilant-broccoli/react-lib';
-import {
-  QuickLinksPanel,
-  SearchableListRow,
-} from '@vigilant-broccoli/react-lib-higher-level';
+import { SearchableListRow } from '@vigilant-broccoli/react-lib-higher-level';
+import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-quick-links';
 import { I18nProvider, useTranslation } from './i18n';
 import { usePageTitle } from './use-page-title';
 import { parseBookmarks, TAB, useBookmarks } from './use-bookmarks';

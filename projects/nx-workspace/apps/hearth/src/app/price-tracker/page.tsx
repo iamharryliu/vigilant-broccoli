@@ -6,7 +6,7 @@ import { Badge, Button, Input, Text } from '@vigilant-broccoli/react-lib';
 import {
   CRUDFormProps,
   CRUDItemList,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';

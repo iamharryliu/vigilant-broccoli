@@ -1,35 +1,36 @@
 # React Lib Higher Level
 
-Composed React components built on `react-lib`: CRUD list management, tasks, quick links, the notepad and the chat room.
+Composed React components built on `react-lib`: the sidebar, tabbed view, searchable list, notepad, chat room, preview deployments, security news and weather embed.
 
 ## Table of Contents
 
 - [Components](#components)
+- [Features](#features)
 - [Stack](#stack)
 
 ## Components
 
 | Component | Demo |
 | --- | --- |
-| CRUD List Management | [View](https://components.harryliu.dev/#crud-list) |
 | Mobile Home | [View](https://components.harryliu.dev/#mobile-home) |
-| Quick Links | [View](https://components.harryliu.dev/#quick-links) |
-| Tasks | [View](https://components.harryliu.dev/#tasks) |
+
+## Features
+
+- [Chat Room](./docs/features/chat-room.md)
+- [Searchable List](./docs/features/searchable-list.md)
+- [Sidebar](./docs/features/sidebar.md)
 
 ## Stack
 
 - Language - TypeScript
 - Framework - React
 - External libs
-  - `@dnd-kit/core`
   - `@supabase/supabase-js`
   - `lucide-react`
   - `socket.io-client`
-  - `zod`
 - Internal libs
   - `common-js`
   - `github-workspace-js`
-  - `google-workspace`
   - `react-lib`
   - `realtime`
   - `security-news`

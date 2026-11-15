@@ -1,5 +1,5 @@
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { type ShellExecuteHandler } from '@vigilant-broccoli/react-lib-higher-level';
+import { type ShellExecuteHandler } from '@vigilant-broccoli/react-lib-quick-links';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 

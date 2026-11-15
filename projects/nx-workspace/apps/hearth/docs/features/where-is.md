@@ -18,12 +18,15 @@ Household storage inventory — record storage areas by hand or from photos, AI 
 - Tied to a home — dropdown selector always shown, home persisted in `?home=` query param, defaults to first home, redirects to `/homes` if none
 - Shared with accepted home members — full CRUD access
 - Only a title is required; photos are optional, up to 10 per item (max 10MB each, max 50MB total)
-- Save and Analyze are separate form actions; Cancel closes the create or update dialog without saving
+- Create: Submit and Suggest tags are separate form actions; the header X closes the dialog without saving
+- Update: the header X, Escape and overlay clicks behave like Done through the dialog's close guard
+- Update autosaves with no Save button: title and description after an 800ms pause, tags and photo changes immediately; saves are serialized, photo controls lock while one runs, a pending edit is flushed when the dialog closes, Done waits for the save and stays open if it fails, and leaving the page with unsaved changes prompts the browser's warning
+- Update photos reorder by drag and drop (mouse, long-press on touch, keyboard); the order persists to `where_is_images.sort_order`
+- Removing a photo asks for confirmation first
 - Image processing — resize to 1920px max, convert to JPEG, strip EXIF
-- AI suggests tags from images on demand, via a separate action from saving; it merges into existing tags and never touches the user-entered description
+- AI suggests tags from images on demand via a Suggest tags badge at the end of the tag list (create analyzes the new photos, update re-analyzes stored plus new ones); suggestions not already on the item appear as a checklist with Select all / Clear all, and only confirmed tags are added; it never touches the user-entered description
 - Fuzzy search across title, description, tags
 - Tags display alphabetically and animate when added or removed in the form
-- Update title, description, and tags inline
 - Delete removes DB rows + R2 objects
 - Export all items to JSON (includes base64 images)
 - Import from export JSON into any home
@@ -48,7 +51,7 @@ Household storage inventory — record storage areas by hand or from photos, AI 
 - `GET /api/where-is?homeId=` — list items for a home
 - `POST /api/where-is/upload-url` — mint presigned staging upload URLs for the browser
 - `POST /api/where-is` — create item + upload images
-- `PATCH /api/where-is` — update title, description, tags
+- `PATCH /api/where-is` — update title, description, tags; delete `removedImageKeys`, rewrite photo order from `imageKeyOrder` (scoped to the item), append `newImages`
 - `DELETE /api/where-is` — delete item + R2 images
 - `POST /api/where-is/analyze` — AI tag suggestions from images
 - `POST /api/where-is/reanalyze` — AI tag suggestions from an item's stored images plus any newly added ones

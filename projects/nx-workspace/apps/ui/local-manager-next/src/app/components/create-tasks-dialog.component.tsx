@@ -1,7 +1,7 @@
 'use client';
 
 import { IconButton } from '@vigilant-broccoli/react-lib';
-import { CreateTasksDialog } from '@vigilant-broccoli/react-lib-higher-level';
+import { CreateTasksDialog } from '@vigilant-broccoli/react-lib-tasks';
 import { googleTasksAuth } from '../../../libs/auth';
 import { TaskVoiceButton } from './task-voice-button.component';
 

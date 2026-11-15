@@ -6,7 +6,7 @@ import { Button, Select, Switch, Text } from '@vigilant-broccoli/react-lib';
 import {
   GoogleTasksAuthAdapter,
   GoogleTasksComponent,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib-tasks';
 
 const AUTH_STATUS = {
   LOADING: 'loading',

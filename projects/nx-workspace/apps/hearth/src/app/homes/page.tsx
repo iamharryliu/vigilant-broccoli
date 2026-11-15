@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   CRUDItemList,
   CRUDFormProps,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../libs/supabase';

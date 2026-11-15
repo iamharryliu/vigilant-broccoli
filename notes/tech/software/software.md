@@ -24,6 +24,7 @@
   - [Software Architecture Patterns](./software-architecture-patterns.md)
 - [Tools](./tools/software-tools.md)
 - [Software Services](./software-services.md)
+  - [Translation Services](./translation-services.md)
 - [OS](./os/os.md)
 - [Open Source](./open-source.md)
 - [Software Products](./software-products.md)

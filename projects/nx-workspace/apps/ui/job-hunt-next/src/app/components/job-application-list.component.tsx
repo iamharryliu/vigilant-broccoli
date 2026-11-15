@@ -38,7 +38,7 @@ import {
 } from './application-brief.component';
 import { CoverLetterTab } from './cover-letter-tab.component';
 import { applicationResumeSource, ResumeTab } from './resume-tab.component';
-import { CRUDItemList } from '@vigilant-broccoli/react-lib-higher-level';
+import { CRUDItemList } from '@vigilant-broccoli/react-lib-crud-list';
 import { EXPAND_LATEST, EXPAND_PARAM } from '../app.const';
 import {
   APPLICATION_STATUS,

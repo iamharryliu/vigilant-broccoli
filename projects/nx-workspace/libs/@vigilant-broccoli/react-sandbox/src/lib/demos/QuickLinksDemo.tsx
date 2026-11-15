@@ -6,7 +6,7 @@ import {
   QuickLinksDialog,
   QuickLinksPanel,
   type ShellExecuteHandler,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib-quick-links';
 import { toast, Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import {
   CLAUDE_LINK,

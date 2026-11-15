@@ -1,6 +1,6 @@
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { GOOGLE_TOKEN_EXPIRED } from '@vigilant-broccoli/google-workspace';
-import { createGoogleTasksRouteHandlers } from '@vigilant-broccoli/react-lib-higher-level/google-tasks-server';
+import { createGoogleTasksRouteHandlers } from '@vigilant-broccoli/react-lib-tasks/google-tasks-server';
 import { getStoredGoogleAccessToken } from './google-token';
 import { getUserEmail } from './server-auth';
 

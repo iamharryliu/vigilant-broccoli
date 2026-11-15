@@ -31,5 +31,5 @@ Send a multipart upload with a `file` part and `x-api-key: <token>` to `POST /ap
 ## Nuances
 
 - With `SHARED_APP_TOKEN` unset, every `/api/*` request returns 500 `Unauthorized`.
-- Uploads are capped at 20 MB; each endpoint also enforces its own limit (10 MB for images, 20 MB for documents).
+- Uploads are capped at 20 MB; image and document endpoints also enforce their own limit (10 MB for images, 20 MB for documents), while the `llm-image` endpoints check neither type nor size beyond the 20 MB cap.
 - CORS has no allowed origins, so browsers on any origin are blocked; server-to-server calls are unaffected.

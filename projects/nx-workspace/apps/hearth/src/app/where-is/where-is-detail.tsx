@@ -18,24 +18,26 @@ import {
   ImageCarouselDialog,
   ImageFilmstrip,
 } from '@vigilant-broccoli/react-lib-media';
-import { CRUDItemFormDialog } from '@vigilant-broccoli/react-lib-higher-level';
+import { CRUDItemFormDialog } from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { WhereIsItem } from '../../lib/types';
 import { ROUTES } from '../../lib/routes';
 import { WhereIsFormComponent, WhereIsFormValues } from './where-is-form';
 import { WhereIsLabel } from './where-is-label';
-import { throwIfNotOk, uploadPreviewImages } from './upload-images';
 import { sortTags } from './where-is-tags';
-
-const WHERE_IS_ENDPOINT = '/api/where-is';
+import {
+  saveWhereIsUpdate,
+  toWhereIsFormValues,
+  WHERE_IS_ENDPOINT,
+} from './save-where-is';
 
 const WHERE_IS_COPY = {
   LIST: { TITLE: 'Storage Areas', EMPTY_MESSAGE: '' },
   [FORM_TYPE.CREATE]: { TITLE: 'Add Storage Area', DESCRIPTION: '' },
   [FORM_TYPE.UPDATE]: {
     TITLE: 'Update Storage Area',
-    DESCRIPTION: 'Edit the title, description, and tags.',
+    DESCRIPTION: '',
   },
 };
 
@@ -64,36 +66,14 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
   }, [id, session?.access_token]);
 
   const handleUpdate = async (form: WhereIsFormValues) => {
-    const removedImageKeys = (item?.imageKeys ?? []).filter(
-      key => !(form.imageKeys ?? []).includes(key),
+    const updated = await saveWhereIsUpdate(
+      form,
+      item?.imageKeys ?? [],
+      session?.access_token ?? '',
     );
-    const accessToken = session?.access_token ?? '';
-    const newImages = await uploadPreviewImages(form.images, accessToken);
-
-    const saveRes = await fetch(WHERE_IS_ENDPOINT, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        id: form.id,
-        title: form.title,
-        description: form.description,
-        tags: form.tags,
-        removedImageKeys,
-        newImages,
-      }),
-    });
-    await throwIfNotOk(saveRes);
-
-    const res = await fetch(`${WHERE_IS_ENDPOINT}?id=${form.id}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    await throwIfNotOk(res);
-    const updated: WhereIsItem = await res.json();
     setItem(updated);
     onUpdated?.(updated);
+    return toWhereIsFormValues(updated);
   };
 
   const handleDelete = async () => {
@@ -111,15 +91,7 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
 
   if (!item) return null;
 
-  const formValues: WhereIsFormValues = {
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    tags: item.tags,
-    images: [],
-    imageUrls: item.imageUrls,
-    imageKeys: item.imageKeys,
-  };
+  const formValues = toWhereIsFormValues(item);
 
   return (
     <div className="space-y-6">
@@ -162,6 +134,7 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
           FormComponent={WhereIsFormComponent as never}
           submitHandler={handleUpdate as never}
           copy={WHERE_IS_COPY}
+          showCloseButton
         />
 
         {item.description && (

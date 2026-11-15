@@ -1,5 +1,16 @@
 # Philosophy
 
+## Table of Contents
+
+- [Philosophy Lingo](#philosophy-lingo)
+- [Alain de Botton’s The Consolations of Philosophy](#alain-de-bottons-the-consolations-of-philosophy)
+
+## Philosophy Lingo
+
+| Term | Meaning |
+| --- | --- |
+| **Hedonism** | Pleasure is the goal of human life. |
+
 ## Alain de Botton’s The Consolations of Philosophy
 
 - [Philosophy: A Guide to Happiness - Alain de Botton (2000) (The Consolations of Philosophy)](https://www.youtube.com/playlist?list=PLez3PPtnpncT7-pMCkOZaeiEWiM-jYU-E)
@@ -12,8 +23,3 @@
 | **Inadequacy** | **Montaigne** | Accept your humanity and imperfection. Self-knowledge and self-acceptance make life more bearable. |
 | **A Broken Heart** | **Schopenhauer** | Love is often driven by nature’s reproductive agenda, not rational choice. Understanding this can reduce bitterness when relationships fail. |
 | **Difficulties** | **Nietzsche** | Suffering can be a source of growth and meaning. “What doesn’t kill you makes you stronger” — embrace hardship as part of self-overcoming. |
-
-## Philosophy Lingo
-
-- Hedonism - Pleasure is the goal of human life.
-- Accept not wanting to chasing highs or escaping pain.

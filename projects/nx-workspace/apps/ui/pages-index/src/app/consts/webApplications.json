@@ -29,7 +29,8 @@
       "href": "https://cloud8skate.com/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CLOUD_8_SKATE.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.CLOUD_8_SKATE.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/cloud-8-skate-react/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/cloud-8-skate-react/README.md",
+      "stagingHref": "https://staging.cloud8skate.com/"
     },
     {
       "id": "component-library",

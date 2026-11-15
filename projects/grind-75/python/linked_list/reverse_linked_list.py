@@ -9,10 +9,4 @@ class Solution:
             current.next = prev
             prev = current
 
-        # while head:
-        #     nxt = head.next
-        #     head.next = prev
-        #     prev = head
-        #     head = nxt
-
         return prev

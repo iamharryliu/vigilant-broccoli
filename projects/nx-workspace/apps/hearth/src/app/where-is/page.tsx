@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Input, Text, Badge, cn } from '@vigilant-broccoli/react-lib';
-import { CRUDItemList } from '@vigilant-broccoli/react-lib-higher-level';
+import { CRUDItemList } from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -16,12 +16,15 @@ import {
 } from './where-is-form';
 import { throwIfNotOk, uploadPreviewImages } from './upload-images';
 import { sortTags } from './where-is-tags';
+import {
+  saveWhereIsUpdate,
+  toWhereIsFormValues,
+  WHERE_IS_ENDPOINT,
+} from './save-where-is';
 import { WhereIsDetailPanel } from './where-is-detail-panel';
 import { useMobileReady } from '../../lib/use-mobile-view';
 import { WhereIsDetailPageContent } from './WhereIsDetailPageContent';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
-
-const WHERE_IS_ENDPOINT = '/api/where-is';
 
 const DEFAULT_FORM: WhereIsFormValues = {
   id: '',
@@ -40,7 +43,7 @@ const COPY = {
   },
   [FORM_TYPE.UPDATE]: {
     TITLE: 'Update Storage Area',
-    DESCRIPTION: 'Edit the title, description, and tags.',
+    DESCRIPTION: '',
   },
 };
 
@@ -138,30 +141,15 @@ function WhereIsPageContent() {
     } as WhereIsFormValues & Pick<WhereIsItem, 'imageUrls' | 'imageKeys'>;
   };
 
-  const updateItem = async (form: WhereIsFormValues): Promise<void> => {
-    const original = items.find(i => i.id === form.id);
-    const removedImageKeys = (original?.imageKeys ?? []).filter(
-      key => !(form.imageKeys ?? []).includes(key),
+  const updateItem = async (
+    form: WhereIsFormValues,
+  ): Promise<WhereIsFormValues> => {
+    const updated = await saveWhereIsUpdate(
+      form,
+      items.find(i => i.id === form.id)?.imageKeys ?? [],
+      session?.access_token ?? '',
     );
-    const accessToken = session?.access_token ?? '';
-    const newImages = await uploadPreviewImages(form.images, accessToken);
-
-    const saveRes = await fetch(WHERE_IS_ENDPOINT, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        id: form.id,
-        title: form.title,
-        description: form.description,
-        tags: form.tags,
-        removedImageKeys,
-        newImages,
-      }),
-    });
-    await throwIfNotOk(saveRes);
+    return { ...form, ...toWhereIsFormValues(updated) };
   };
 
   const deleteItem = async (id: string | number) => {
@@ -226,6 +214,7 @@ function WhereIsPageContent() {
           getItemImages={(item: { imageUrls?: string[] }) => item.imageUrls}
           getItemTitle={(item: { title: string }) => item.title}
           onItemClick={onItemClick}
+          showDialogCloseButton
         />
       </>
     );

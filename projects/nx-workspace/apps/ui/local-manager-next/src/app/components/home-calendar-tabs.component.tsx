@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CalendarDays, Link2, Rows3, StickyNote } from 'lucide-react';
 import {
-  QuickLinksPanel,
   TabbedView,
   type TabbedViewTab,
 } from '@vigilant-broccoli/react-lib-higher-level';
+import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-quick-links';
 import { PersonalCalendarComponent } from './personal-calendar.component';
 import { EventCalendarsComponent } from './event-calendars.component';
 import { NotepadEditorComponent } from './notepad-editor.component';

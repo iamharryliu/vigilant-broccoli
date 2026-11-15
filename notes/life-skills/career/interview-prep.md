@@ -33,6 +33,7 @@
 ## What I Care About
 
 - Delivery and feeling my work matters.
+  - Having ownership over my deliverables, from decisions through to shipping and follow-up.
 - Opportunities to develop in my career, and it does not just have to be tech-wise.
 - Autonomy and Ownership or Strong Leadership and being a nail to a hammer
   - Autonomy and ownership

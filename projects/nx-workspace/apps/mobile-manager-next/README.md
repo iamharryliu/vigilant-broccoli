@@ -13,6 +13,7 @@ Mobile dashboard with calendar, tasks, notepad, weather, language learning and q
 - Framework - Next.js
 - Build Tool - Next.js
 - External libs
+  - lucide-react
   - Zod
 - Internal libs
   - `@harry/personal`
@@ -30,6 +31,8 @@ Mobile dashboard with calendar, tasks, notepad, weather, language learning and q
   - `react-lib-calendar`
   - `react-lib-higher-level`
   - `react-lib-media`
+  - `react-lib-quick-links`
+  - `react-lib-tasks`
   - `realtime`
   - `security-news`
 - Cloud services
