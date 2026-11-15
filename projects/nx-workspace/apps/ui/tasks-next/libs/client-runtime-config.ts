@@ -14,3 +14,4 @@ const readConfig = (): ClientRuntimeConfig => {
 export const getSupabaseUrl = () => readConfig().supabaseUrl;
 export const getSupabasePublishableKey = () =>
   readConfig().supabasePublishableKey;
+export const getFrameAncestors = () => readConfig().frameAncestors;
