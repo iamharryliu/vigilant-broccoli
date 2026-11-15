@@ -502,6 +502,19 @@ type NestedItemProps = {
   forceExpanded?: boolean;
 };
 
+const itemKeyFor = (item: SidebarCTA, idx: number) =>
+  item.id ?? item.href ?? `${item.label}-${idx}`;
+
+const findActiveChildGroupKey = (item: SidebarCTA): string | null => {
+  const idx =
+    item.children?.findIndex(
+      child => child.isActive && (child.children?.length ?? 0) > 0,
+    ) ?? -1;
+  return idx === -1 || !item.children
+    ? null
+    : itemKeyFor(item.children[idx], idx);
+};
+
 const NestedItem = ({
   item,
   isOpen,
@@ -512,7 +525,15 @@ const NestedItem = ({
   onNavigate,
   forceExpanded = false,
 }: NestedItemProps) => {
-  const [openChildId, setOpenChildId] = useState<string | null>(null);
+  const activeChildGroupKey = findActiveChildGroupKey(item);
+  const [openChildId, setOpenChildId] = useState<string | null>(
+    activeChildGroupKey,
+  );
+  // Nested levels have no defaultOpenId, so follow the active selection into
+  // whichever child group now contains it.
+  useEffect(() => {
+    if (activeChildGroupKey !== null) setOpenChildId(activeChildGroupKey);
+  }, [activeChildGroupKey]);
   const Icon = item.icon;
   const labelClass = cn(
     'whitespace-nowrap overflow-hidden text-left transition-all duration-150',
@@ -560,8 +581,7 @@ const NestedItem = ({
         <div className="overflow-hidden">
           <div className="flex flex-col gap-1 mt-1 ml-3 pb-1">
             {item.children?.map((child, idx) => {
-              const childKey =
-                child.id ?? child.href ?? `${child.label}-${idx}`;
+              const childKey = itemKeyFor(child, idx);
               if (child.children && child.children.length > 0) {
                 return (
                   <NestedItem

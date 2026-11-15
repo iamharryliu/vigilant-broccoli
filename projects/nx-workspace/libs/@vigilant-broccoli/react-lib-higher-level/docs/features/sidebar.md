@@ -23,6 +23,7 @@
 - An item with `children` renders as a toggle button + collapsible list, one group open at a time per nesting level (`openId` at the top level, a separate `openChildId` per parent for deeper nesting), keyed by `id` ?? `href` ?? `label`
 - `defaultOpenId` only seeds/re-applies the open group **while the sidebar is already fully expanded** (`forceExpanded`: mobile drawer open, or icon-less always-expanded) — a collapsed desktop rail stays closed (on mount _and_ on any later `defaultOpenId` change) until hovered, so the active group never renders "open" (active styling and all) before the user interacts with it. `forceExpanded` is read inside the re-sync effect rather than listed as its dependency, so a drawer merely opening/closing (without `defaultOpenId` itself changing) can't retrigger it and stomp a manually-expanded _different_ group — see #471's regression test. On a collapsed desktop rail specifically, `defaultOpenId` plays no role at all once mounted — see hover interaction below
 - Otherwise (fully expanded), a consumer that recomputes `defaultOpenId` from its own selection state (e.g. "open the group containing the active item") gets it re-expanded automatically without extra wiring
+- Deeper levels have no `defaultOpenId`: each parent opens (on mount and whenever it changes) the child group marked `isActive`, so a consumer marking the active path gets every level expanded
 - Group toggle buttons carry `aria-expanded`
 - Icon-less items/groups always show their label (no icon to fall back to when collapsed)
 

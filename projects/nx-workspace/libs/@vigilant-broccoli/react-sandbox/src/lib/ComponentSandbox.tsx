@@ -14,6 +14,7 @@ import {
   Menu,
   Moon,
   Music,
+  Package,
   Settings as SettingsIcon,
   Sun,
   Trophy,
@@ -108,7 +109,8 @@ const SETTINGS_LABEL = {
   ICON_MODE_OFF: 'Icons: Off',
 } as const;
 
-const PACKAGE_SCOPE = '@vigilant-broccoli/';
+const PACKAGE_SCOPE_GROUP_ID = '@vigilant-broccoli';
+const PACKAGE_SCOPE = `${PACKAGE_SCOPE_GROUP_ID}/`;
 
 // Declaration order is sidebar order: low-level libs first.
 const LIB = {
@@ -582,12 +584,12 @@ const CONTENT_WRAPPER_BASE_CLASS =
 // staying padded for the expanded width. Icon-less mode has no rail to
 // collapse to (the sidebar is always full width), so the content stays
 // statically padded to match.
-const CONTENT_WRAPPER_COLLAPSIBLE_CLASS = 'md:pl-14 md:peer-hover:pl-80';
-const CONTENT_WRAPPER_FIXED_CLASS = 'md:pl-80';
+const CONTENT_WRAPPER_COLLAPSIBLE_CLASS = 'md:pl-14 md:peer-hover:pl-60';
+const CONTENT_WRAPPER_FIXED_CLASS = 'md:pl-60';
 // Overrides Sidebar's default md:w-48 desktop width (merged via cn's
-// tailwind-merge) so full scoped package names fit without clipping.
-const SIDEBAR_COLLAPSIBLE_WIDTH_CLASS = 'md:hover:w-80';
-const SIDEBAR_FIXED_WIDTH_CLASS = 'md:w-80';
+// tailwind-merge) so the longest lib and entry names fit without clipping.
+const SIDEBAR_COLLAPSIBLE_WIDTH_CLASS = 'md:hover:w-60';
+const SIDEBAR_FIXED_WIDTH_CLASS = 'md:w-60';
 const TOPBAR_CLASS =
   'md:hidden fixed top-0 left-0 right-0 z-10 flex h-12 items-center gap-3 border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-950';
 const MENU_BUTTON_CLASS =
@@ -614,15 +616,8 @@ const buildSidebarItems = ({
   selectedId,
   onSelect,
   iconMode,
-}: BuildSidebarItemsArgs): SidebarCTA[] => [
-  {
-    id: OVERVIEW_ID,
-    label: OVERVIEW_LABEL,
-    icon: iconMode ? LayoutGrid : undefined,
-    isActive: selectedId === OVERVIEW_ID,
-    onClick: () => onSelect(OVERVIEW_ID),
-  },
-  ...Object.values(LIB)
+}: BuildSidebarItemsArgs): SidebarCTA[] => {
+  const libGroups = Object.values(LIB)
     .map(lib => ({
       lib,
       items: entries.filter(entry => entry.lib === lib),
@@ -630,7 +625,7 @@ const buildSidebarItems = ({
     .filter(group => group.items.length > 0)
     .map(group => ({
       id: group.lib,
-      label: `${PACKAGE_SCOPE}${group.lib}`,
+      label: group.lib,
       icon: iconMode ? LIB_ICON[group.lib] : undefined,
       isActive: group.items.some(entry => entry.id === selectedId),
       children: group.items.map(entry => ({
@@ -638,8 +633,24 @@ const buildSidebarItems = ({
         isActive: entry.id === selectedId,
         onClick: () => onSelect(entry.id),
       })),
-    })),
-];
+    }));
+  return [
+    {
+      id: OVERVIEW_ID,
+      label: OVERVIEW_LABEL,
+      icon: iconMode ? LayoutGrid : undefined,
+      isActive: selectedId === OVERVIEW_ID,
+      onClick: () => onSelect(OVERVIEW_ID),
+    },
+    {
+      id: PACKAGE_SCOPE_GROUP_ID,
+      label: PACKAGE_SCOPE_GROUP_ID,
+      icon: iconMode ? Package : undefined,
+      isActive: libGroups.some(group => group.isActive),
+      children: libGroups,
+    },
+  ];
+};
 
 type BuildSettingsGroupArgs = {
   dark: boolean;
@@ -796,7 +807,7 @@ const resolveSelection = (entries: SandboxEntry[], selectedId: string) => {
   return {
     selectedEntry: entry,
     selectedLabel: entry.label,
-    openGroupId: entry.lib,
+    openGroupId: PACKAGE_SCOPE_GROUP_ID,
   };
 };
 
