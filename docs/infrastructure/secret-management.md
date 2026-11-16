@@ -16,6 +16,7 @@ Source of truth for where every credential lives, how CI and local tooling reach
   - [Tier 0 — GCP Secret Manager (root of trust)](#tier-0--gcp-secret-manager-root-of-trust)
 - [Terraform GitHub token](#terraform-github-token)
 - [PR preview deploy credentials](#pr-preview-deploy-credentials)
+- [PR security review credentials](#pr-security-review-credentials)
 
 ## Local config files
 
@@ -74,7 +75,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `AGENT_GH_APP_ID` / `AGENT_GH_APP_PRIVATE_KEY` | Vault `kv/data/secrets` | Agent sandbox GitHub App; mints 1-hour repo-scoped installation tokens (`GH_TOKEN`). Also used by code-server and the non-agent PR crons `cron-dependency-pin-drift` and `cron-prune-orphaned-services`. |
 | `ANTHROPIC_API_KEY` | Vault `kv/data/secrets` → Fly | Claude API key for `llm-service`. |
 | `BETTER_AUTH_SECRET` | Vault `kv/data/secrets` → Fly | Signs `vb-express` Better Auth sessions and encrypts its stored Google OAuth tokens; rotating it signs every user out and makes them sign in with Google again. |
-| `CLAUDE_CODE_OAUTH_TOKEN` | Vault `kv/data/secrets` | Long-lived `claude setup-token` login for agent containers, the `cron-agentic-pr-create-fix-failing-actions` triage job, the code-server VM and the job-hunt-next container. |
+| `CLAUDE_CODE_OAUTH_TOKEN` | Vault `kv/data/secrets` | Long-lived `claude setup-token` login for agent containers, the `cron-agentic-pr-create-fix-failing-actions` triage job, the `ci-pr-security-review` review job, the code-server VM and the job-hunt-next container. |
 | `CLOUDFLARE_ACCOUNT_ID` | Vault `kv/data/secrets` | Cloudflare account id for Pages deploys and preview cleanup; `deploy-demo-apps` and `manual-deploy-app` also export it as `CLOUDFLARE_ID`. |
 | `CLOUDFLARE_API_TOKEN` | Vault `kv/data/secrets`; Bitwarden backup (local Terraform env) | Cloudflare provider token for Terraform. |
 | `CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS` | Vault `kv/data/secrets`, mirrored to `kv/data/deploy-preview` | Publishes Cloudflare Pages deploys, including PR previews. Account-level `Pages:Edit`. |
@@ -239,3 +240,11 @@ Keep this PAT separate from the Upptime sync App, whose Contents and Workflows r
 - **No `@ref` pin, by design**: the rotate and code-server roles pin `job_workflow_ref` to `@refs/heads/main`, which previews cannot do — a PR run's ref is `refs/pull/<n>/merge`, so the glob has to stay `deploy-preview.yml@*`. The compensating control is that the identity is worth nothing beyond the Vault tunnel credentials and those two Cloudflare keys.
 - `cron-cleanup-preview-deployments.yml` keeps the shared `github-actions-role`: its scheduled runs, push to `main`, and dispatches against `main` satisfy both the shared provider's main/production ref condition and the role's `refs/heads/main` binding. A dispatch against another ref is refused, as would be a `pull_request: closed` trigger; closed PR previews therefore wait for the daily sweep or a dispatch on `main`.
 - **Accepted residual risk: the one credential this exposes is production-capable.** A Pages API token carries account-level `Pages:Edit` and cannot be scoped to a project, so `CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS` can publish to `production-harryliu-dev-react` (which serves harryliu.dev), `production-docs-md` and `production-cloud-8-skate-react`. The deploy step builds PR-authored code with it in the job environment, so build-time execution reaches it without editing the workflow at all. Accepted deliberately — only the owner opens PRs here, and GitHub withholds secrets and `id-token` from fork `pull_request` runs, so the vector needs same-repo push access, which in practice means an agent-authored PR (the agent-sandbox/code-server GitHub App can push branches). Tracked as `355a82` in [TODO.md](../../TODO.md); the fix is to build on `pull_request` without secrets and publish from a `workflow_run` job running `main`’s YAML, or to move the `preview-*` projects to a second Cloudflare account.
+
+## PR security review credentials
+
+`ci-pr-security-review.yml` reads `CLAUDE_CODE_OAUTH_TOKEN` (review job) and `SHARED_APP_TOKEN` plus `FLY_API_TOKEN` (email job) from `kv/data/secrets` through the shared `GCP_WORKLOAD_IDENTITY_PROVIDER`/`GCP_SERVICE_ACCOUNT` pair and `github-actions-role`. That is safe only because of its trigger:
+
+- **`workflow_run`, never `pull_request` or `pull_request_target`.** A `workflow_run` run executes the workflow file from the default branch, and its OIDC `ref` claim is `refs/heads/main`, which satisfies the shared provider's main/production condition and the role's binding without widening either. A `pull_request` run would execute the PR branch's copy of the reviewer, which a malicious PR could edit to skip itself or print the token; the shared provider refuses that ref anyway.
+- **The PR is data, never code.** The jobs check out `main` only (`persist-credentials: false`), fetch the PR and its diff with `GITHUB_TOKEN` through the API (the diff is pinned to the head SHA by `compare/main...<sha>`), and run nothing from the PR.
+- **Each credential stays in its own job.** The review job holds `CLAUDE_CODE_OAUTH_TOKEN` and runs Claude in an allowlisted environment (`env -i` with `PATH`, `HOME` and the OAuth token) from the `main` checkout, so the GitHub token, the OIDC request token and the Google credential file stay out of its reach. The verdict is redacted of the OAuth token value and token-shaped strings before it is posted. Only the email job, which reads the parsed verdict, holds `SHARED_APP_TOKEN` and `FLY_API_TOKEN`; only the report job holds a writing `GITHUB_TOKEN` (`pull-requests: write`).
