@@ -28,6 +28,8 @@ The search field at the top is on every page and searches all pages by name and 
 
 Each control is in the bar or the menu, never both. The menu closes with ✕, `Esc`, or by choosing an item.
 
+The **Text size** row under the search field shrinks (A−) or enlarges (A+) the terminal text by 1px, from 8px to 20px, without closing the menu. Smaller text fits more columns and rows. The size is remembered in this browser; until it is changed, phones start at 11px and wider screens at 14px.
+
 ### Claude page
 
 Built-in commands type the command and press Enter. The `-claude` skills only type it, so arguments can be added first.
