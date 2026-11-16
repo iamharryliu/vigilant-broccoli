@@ -1,18 +1,15 @@
-# Software Portability
+# Software Deployment
 
 ## Table of Contents
 
-- [Portability Options](#portability-options)
-- [Runtimes vs VMs](#runtimes-vs-vms)
-- [Diagrams](#diagrams)
-  - [Portable Bytecode](#portable-bytecode)
-  - [Native Recompilation](#native-recompilation)
-  - [Interpreted Source](#interpreted-source)
-  - [Containers](#containers)
-  - [Virtual Machines](#virtual-machines)
-  - [Web Platform](#web-platform)
+- [Portability](#portability)
+  - [Portability Options](#portability-options)
+  - [Runtimes vs VMs](#runtimes-vs-vms)
+  - [Diagrams](#diagrams)
 
-## Portability Options
+## Portability
+
+### Portability Options
 
 | Option | What travels | What the target must provide | Examples |
 | --- | --- | --- | --- |
@@ -23,7 +20,7 @@
 | Virtual machine images | Whole OS, apps and config | A hypervisor on a matching CPU | VMware, VirtualBox, cloud AMIs |
 | Web platform | HTML, CSS and JavaScript | A browser | Web apps, PWAs |
 
-## Runtimes vs VMs
+### Runtimes vs VMs
 
 | Aspect | Language runtime (JVM, CLR, Node.js) | Virtual machine (hypervisor) |
 | --- | --- | --- |
@@ -37,9 +34,9 @@
 
 The JVM is called a "virtual machine" but is a process VM: it emulates an abstract instruction set, not a computer. A system VM emulates hardware. Containers sit between the two: they share the host kernel, so they are lighter than VMs but only portable across the same kernel type.
 
-## Diagrams
+### Diagrams
 
-### Portable Bytecode
+#### Portable Bytecode
 
 Languages: Java, Kotlin, Scala (JVM); C#, F#, VB.NET (CLR); Rust, C, C++, Go and others via WebAssembly.
 
@@ -53,7 +50,7 @@ flowchart LR
     BC --> RW["Runtime on Windows x86"] --> W["Windows x86"]
 ```
 
-### Native Recompilation
+#### Native Recompilation
 
 Languages: C, C++, Rust, Go, Swift, Zig.
 
@@ -66,7 +63,7 @@ flowchart LR
     Src --> C3["Compiler for Windows x86"] --> B3["Windows binary"]
 ```
 
-### Interpreted Source
+#### Interpreted Source
 
 Languages: Python, Ruby, PHP, Perl, JavaScript (Node.js), Lua.
 
@@ -79,7 +76,7 @@ flowchart LR
     Src --> I3["Interpreter + deps on Windows"]
 ```
 
-### Containers
+#### Containers
 
 Languages: any; the image bundles the runtime or binary, so the language does not matter.
 
@@ -93,7 +90,7 @@ flowchart TB
     E2 --> K2["Linux kernel on host B"]
 ```
 
-### Virtual Machines
+#### Virtual Machines
 
 Languages: any; the whole OS image travels, so the language does not matter.
 
@@ -106,7 +103,7 @@ flowchart TB
     HV --> G2["Guest OS 2<br/>own kernel + apps"]
 ```
 
-### Web Platform
+#### Web Platform
 
 Languages: JavaScript, TypeScript (transpiled), HTML, CSS; WebAssembly targets such as Rust, C and C++.
 

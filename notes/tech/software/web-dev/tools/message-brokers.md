@@ -1,5 +1,12 @@
 # Message Brokers
 
+## Table of Contents
+
+- [Brokers](#brokers)
+- [Kafka vs RabbitMQ](#kafka-vs-rabbitmq)
+
+## Brokers
+
 | Tool | Description | Pros | Cons | When to use |
 | :-- | :-- | :-- | :-- | :-- |
 | Amazon SQS | Fully managed queue service on AWS with standard and FIFO queues. | No servers to run; scales automatically; pay per request; simple API. | AWS lock-in; no replay; limited routing; FIFO throughput is capped. | Decoupling workers on AWS when you want a queue with zero operations. |
@@ -9,3 +16,12 @@
 | NATS | Lightweight, very fast messaging system; JetStream adds persistence and replay. | Tiny single binary; low latency; simple; request/reply built in. | Core NATS is fire-and-forget; persistence needs JetStream; smaller ecosystem. | Low-latency service-to-service messaging and request/reply between microservices. |
 | RabbitMQ | Traditional AMQP broker that routes messages through exchanges into queues. | Flexible routing; acknowledgements and retries; dead-letter queues; easy to start. | Messages are removed once consumed (no replay); lower throughput than Kafka. | Task queues, background jobs and work distribution with complex routing rules. |
 | Redis Streams | Append-only log data type inside Redis with consumer groups. | Reuses existing Redis; very fast; simple; consumer groups and acknowledgements. | Memory-bound; weaker durability guarantees; limited tooling versus Kafka. | Lightweight queues or streams when Redis is already part of the stack. |
+
+## Kafka vs RabbitMQ
+
+RabbitMQ is a smart broker with dumb consumers: it routes each message through exchanges into queues, pushes it to a consumer and deletes it once acknowledged. Kafka is a dumb broker with smart consumers: it appends messages to a partitioned log that is retained for a set time, and each consumer tracks its own offset and can re-read the log.
+
+| Broker | Delivery and ordering | Retention and replay | Routing | Throughput and scaling | Choose when |
+| :-- | :-- | :-- | :-- | :-- | :-- |
+| Kafka | Consumers pull; ordered per partition; exactly-once with transactions | Kept for a retention period; replay by resetting the offset | Topic and partition key only | Millions of messages per second; add partitions | Events must be replayed, many consumers read one stream, or throughput is very high |
+| RabbitMQ | Pushed to consumers; ordered per queue with one consumer; acknowledgements and retries | Removed once acknowledged; no replay | Direct, topic, fanout and header exchanges | Tens of thousands per second per node; add consumers per queue | Tasks go to workers, routing is complex, or priorities and dead-lettering are needed |

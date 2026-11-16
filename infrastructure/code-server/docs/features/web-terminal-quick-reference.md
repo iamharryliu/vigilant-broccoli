@@ -18,7 +18,7 @@ Details: [web-terminal-controls.md](./web-terminal-controls.md). Each control is
 
 ## Menu (☰)
 
-Search is pinned on every page and searches all of them.
+Search is pinned on every page and searches all of them. **Text size** A− / A+ below it shrinks or enlarges the terminal text and is remembered.
 
 ### Claude (built-ins run on tap; `-claude` skills type only)
 

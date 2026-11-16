@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Programming Concepts](#programming-concepts)
+- [Object-Oriented Programming](#object-oriented-programming)
 - [Architecture](#architecture)
 - [Networking](#networking)
 - [Web Rendering](#web-rendering)
@@ -13,6 +14,7 @@
 - [Tooling](#tooling)
 - [Platform Engineering](#platform-engineering)
 - [AI and LLMs](#ai-and-llms)
+- [Software Business](#software-business)
 
 ## Programming Concepts
 
@@ -48,6 +50,18 @@
 | Ternary Operator | A one line if else statement. |
 | Transpiled | Source code is translated ahead of time into source code of another language at a similar level of abstraction (e.g. TypeScript to JavaScript). |
 | Transpiler | Transforms code syntax and features so the code runs across different environments. |
+
+## Object-Oriented Programming
+
+| Term | Definition |
+| :-- | :-- |
+| Abstraction | Exposing only what a caller needs and hiding the implementation behind a simpler interface, such as an abstract class or interface. |
+| Composition | Building behaviour by holding other objects as fields and delegating to them ("has-a"), instead of extending a parent class ("is-a"). Usually preferred over inheritance because it avoids tight coupling to a class hierarchy. |
+| Encapsulation | Bundling data with the methods that act on it and restricting direct access to internal state (for example with private fields), so an object controls how its data changes. |
+| Inheritance | A class reusing and extending the fields and methods of a parent class ("is-a"). Powerful but couples the child to the parent's implementation. |
+| Interface | A contract listing the methods a type must provide, with no implementation. Callers depend on the interface, so implementations can be swapped (see Dependency Inversion). |
+| Polymorphism | Treating different types through one shared interface or base type, with each type supplying its own behaviour. |
+| SOLID | Five design principles for maintainable object-oriented code: single responsibility, open/closed, Liskov substitution, interface segregation and dependency inversion. See [SOLID Principles](./general/solid-principles.md). |
 
 ## Architecture
 
@@ -118,7 +132,7 @@
 
 | Term | Definition |
 | --- | --- |
-| BDD | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/bdd.md). |
+| BDD | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/software-testing.md#behavior-driven-development-bdd). |
 | CI/CD | Continuous Integration/Continuous Deployment (or Delivery). CI automatically builds and tests every merged change; CD automatically ships passing changes to staging or production. |
 | SDLC | Software Development Life Cycle. The end-to-end stages software moves through: planning, requirements, design, implementation, testing, deployment and maintenance. Models like waterfall and agile arrange those stages differently. |
 | TDD | Test-Driven Development. You write the test first and then the code that makes it pass. |
@@ -235,3 +249,18 @@
 | Tool use | A model requesting that the harness run a function, such as a shell command or file read, and then receiving the result. |
 | User Prompt | The input provided by the user to request information or an action. |
 | Yolo mode | An agentic coding tool mode that disables permission prompts so the agent runs every command and file edit unattended ("you only live once"). Fastest but unsafe; use only in a sandbox or disposable environment. |
+
+## Software Business
+
+| Model | Description | Examples |
+| --- | --- | --- |
+| Ad-Supported | Free to use; revenue comes from ads shown to users instead of a direct charge. | Free mobile games, free tiers of Spotify/YouTube |
+| Donation / Pay-What-You-Want | Software is free; users optionally pay any amount they choose. | Wikipedia, VLC, many open-source CLI tools |
+| Freemium | A free tier with core functionality, plus a paid tier that unlocks advanced features, higher limits, or removes restrictions. | Notion, Dropbox, Slack (free vs. paid workspaces) |
+| Marketplace / Commission-Based | The platform is free to join; revenue comes from a cut of transactions or listings made through it. | Shopify App Store, Apple App Store, Steam |
+| Open-Core | The base product is open-source and free; proprietary add-ons, support, or a hosted version are sold on top. | GitLab, Elastic, HashiCorp (pre-license-change) |
+| Perpetual License | A one-time payment grants indefinite use of a specific version, often with paid upgrades for major new versions. | Older versions of Microsoft Office, JetBrains perpetual fallback license |
+| Subscription (SaaS) | Recurring (monthly/annual) payment for continued access; typically hosted and continuously updated by the vendor. | Salesforce, Microsoft 365, Adobe Creative Cloud |
+| Tiered Licensing | Multiple fixed packages (e.g. Basic/Pro/Enterprise) differentiated by feature set, seats, or support level. | Zoom, Atlassian products, GitHub plans |
+| Usage-Based (Pay-As-You-Go) | Charges scale with actual consumption — API calls, compute time, storage, or seats used. | AWS, Twilio, OpenAI/Anthropic API billing |
+| White-Label / OEM Licensing | The software is licensed to another company to rebrand and resell as part of its own product. | Payment processors embedded in POS systems, chat widgets rebranded by agencies |

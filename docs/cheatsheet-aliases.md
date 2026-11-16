@@ -115,6 +115,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
 
 ⬆️  VB PUSH
   pushdocs / pushnotes        Commit and push docs/ / notes/
+  pushsoftwarenotes           Commit and push notes/tech/software/
   pushvbtodo / pushsnippets   Commit and push TODO.md / snippets
   pushactions / pushsetup     Commit and push workflows / setup scripts
   pushdotfiles / pushbruno    Commit and push dotfiles / bruno/
