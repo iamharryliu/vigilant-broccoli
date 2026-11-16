@@ -69,6 +69,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   seafile:ssh                 SSH into Seafile VM
   seafile:logs                Follow Seafile container logs
   seafile:logs:cloud-init     Follow VM provisioning log
+  seafile:gc                  Run Seafile garbage collection now, then show its log and disk use
   seafile:reset               Rebuild containers + volumes (fresh environment)
   seafile:replace             Replace the VM via terraform (fresh host)
 
