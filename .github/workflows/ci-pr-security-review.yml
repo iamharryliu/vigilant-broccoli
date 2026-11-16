@@ -1,14 +1,19 @@
 name: ci-pr-security-review
 
 # Advisory before-merge review of each PR to main: a deterministic high-risk
-# path pre-pass plus a read-only Claude verdict, posted as one marker comment
-# per PR and emailed to the owner when high or critical. Not a required check.
+# path pre-pass plus a read-only Claude verdict. Only a high or critical
+# verdict acts: a structured marker comment (no model text) and an email with
+# the details to the owner. Not a required check.
 #
 # Trust boundary: workflow_run always runs this file from the default branch
 # (OIDC ref refs/heads/main), so a PR cannot edit the reviewer, and the shared
 # main-bound Vault role is safe here. The PR is fetched as data through the API
 # and never checked out or executed. Never switch this to pull_request or
 # pull_request_target. See docs/infrastructure/secret-management.md.
+#
+# The repo is public, so logs, summaries and comments are world-readable: the
+# model's text stays in a file in the review job and goes only to the email.
+# Never pass it through step env, job outputs or echo.
 
 on:
   workflow_run:
@@ -38,9 +43,9 @@ jobs:
       status: ${{ steps.collect.outputs.status }}
       pr: ${{ steps.collect.outputs.pr }}
       meta: ${{ steps.collect.outputs.meta }}
-      verdict: ${{ steps.review.outputs.verdict }}
       severity: ${{ steps.review.outputs.severity }}
-      notify: ${{ steps.review.outputs.notify }}
+      flagged: ${{ steps.review.outputs.flagged }}
+      email: ${{ steps.email.outcome }}
     steps:
       # main, not the PR head: Claude reads it for context. No persisted
       # credentials, so .git/config holds no token for it to read.
@@ -81,10 +86,11 @@ jobs:
         with:
           node-version-file: repo/.nvmrc
 
-      # Same version floor as the agent sandbox image.
+      # Exact pin at or above the agent sandbox image's floor (>=2.1.277); the
+      # file-tool confinement in review-pr-security.sh was verified on it.
       - name: Install Claude Code
         if: steps.collect.outputs.status == 'review'
-        run: npm install -g '@anthropic-ai/claude-code@>=2.1.277'
+        run: npm install -g '@anthropic-ai/claude-code@2.1.311'
 
       - name: Review diff
         id: review
@@ -95,24 +101,12 @@ jobs:
           REPO_DIR: ${{ github.workspace }}/repo
         run: bash repo/.github/scripts/review-pr-security.sh review
 
-  email:
-    needs: review
-    if: needs.review.outputs.notify == 'true'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - name: Checkout email script
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          ref: main
-          sparse-checkout: .github
-          persist-credentials: false
-
-      - name: Import Secrets from Vault
-        uses: ./.github/actions/vault-secrets
+      # The email steps stay in this job, after Claude has exited, because
+      # the verdict file must not cross a job boundary (outputs end up in the
+      # public log as step env).
+      - name: Import email Secrets from Vault
+        if: steps.review.outputs.notify == 'true'
+        uses: ./repo/.github/actions/vault-secrets
         with:
           gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
@@ -121,21 +115,26 @@ jobs:
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
 
       - name: Tunnel to email service
-        uses: ./.github/actions/fly-private-tunnel
+        if: steps.review.outputs.notify == 'true'
+        uses: ./repo/.github/actions/fly-private-tunnel
         with:
           app: staging-vb-email-service
 
+      # The report job fails the run on a failed send, after commenting.
       - name: Email security alert
+        id: email
+        if: steps.review.outputs.notify == 'true'
+        continue-on-error: true
         env:
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
-          PR: ${{ needs.review.outputs.pr }}
-          META: ${{ needs.review.outputs.meta }}
-          VERDICT: ${{ needs.review.outputs.verdict }}
+          PR: ${{ steps.collect.outputs.pr }}
+          META: ${{ steps.collect.outputs.meta }}
+          VERDICT_FILE: ${{ runner.temp }}/pr-security-review/verdict.json
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: node .github/scripts/pr-security-review-email.mjs
+        run: node repo/.github/scripts/pr-security-review-email.mjs
 
   report:
-    needs: [review, email]
+    needs: review
     if: ${{ !cancelled() && (needs.review.outputs.status == 'review' || needs.review.outputs.status == 'docs-only') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -150,7 +149,8 @@ jobs:
           sparse-checkout: .github
           persist-credentials: false
 
-      # Fails the run when the review produced no verdict, after reporting it.
+      # Comments only on high or critical (or to clear an older head's alert).
+      # Fails the run on a missing verdict or a failed alert email.
       - name: Write summary and PR comment
         env:
           GH_TOKEN: ${{ github.token }}
@@ -158,8 +158,8 @@ jobs:
           STATUS: ${{ needs.review.outputs.status }}
           PR: ${{ needs.review.outputs.pr }}
           META: ${{ needs.review.outputs.meta }}
-          VERDICT: ${{ needs.review.outputs.verdict }}
-          REVIEW_RESULT: ${{ needs.review.result }}
-          EMAIL_RESULT: ${{ needs.email.result }}
+          SEVERITY: ${{ needs.review.outputs.severity }}
+          FLAGGED: ${{ needs.review.outputs.flagged }}
+          EMAIL_RESULT: ${{ needs.review.outputs.email }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: bash .github/scripts/review-pr-security.sh report

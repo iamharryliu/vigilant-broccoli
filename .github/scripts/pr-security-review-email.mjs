@@ -1,7 +1,11 @@
 // Sends the ci-pr-security-review alert email for a high or critical verdict.
-// The PR metadata, verdict and pre-pass metadata come from the review job's
-// outputs; all of it is PR- or LLM-derived, so every value is HTML-escaped.
-// EMAIL_DRY_RUN=true prints the message instead of sending it.
+// This email is the only place the model's summary, findings and evidence go:
+// the repo is public, so the verdict is read from VERDICT_FILE in the review
+// job and never passes through step env, job outputs or logs. PR and META come
+// from step outputs. All of it is PR- or LLM-derived, so every value is
+// HTML-escaped. EMAIL_DRY_RUN=true prints the message instead of sending it.
+
+import { readFileSync } from 'node:fs';
 
 const EMAIL_URL =
   process.env.EMAIL_URL ?? 'http://127.0.0.1:3000/api/send-email';
@@ -17,7 +21,7 @@ const DRY_RUN = process.env.EMAIL_DRY_RUN === 'true';
 const RUN_URL = process.env.RUN_URL ?? '';
 const SHARED_APP_TOKEN = process.env.SHARED_APP_TOKEN ?? '';
 const PR = JSON.parse(process.env.PR || '{}');
-const VERDICT = JSON.parse(process.env.VERDICT || '{}');
+const VERDICT = JSON.parse(readFileSync(process.env.VERDICT_FILE, 'utf8'));
 const META = JSON.parse(process.env.META || '{}');
 
 const SEVERITY_COLOR = {
