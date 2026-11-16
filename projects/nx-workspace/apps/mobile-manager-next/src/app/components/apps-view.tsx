@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, type MouseEvent } from 'react';
+import { useCallback, useRef, useState, type MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { toEmbedRoute } from '@vigilant-broccoli/common-js';
-import { SearchInput } from '@vigilant-broccoli/react-lib';
+import {
+  SearchInput,
+  useFocusSearchShortcut,
+} from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
 import { APP_SECTIONS, type AppEntry } from '../constants/apps';
 import { findEmbedLink } from '../constants/quick-links';
@@ -20,6 +23,12 @@ const AppsContent = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const [search, setSearch] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const focusSearch = useCallback(() => {
+    searchInputRef.current?.focus();
+    searchInputRef.current?.select();
+  }, []);
+  useFocusSearchShortcut(focusSearch);
   const query = search.trim().toLowerCase();
   const sections = APP_SECTIONS.map(section => ({
     ...section,
@@ -40,6 +49,7 @@ const AppsContent = () => {
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       <div className="shrink-0">
         <SearchInput
+          ref={searchInputRef}
           type="search"
           aria-label={t('APPS.SEARCH')}
           placeholder={t('APPS.SEARCH')}

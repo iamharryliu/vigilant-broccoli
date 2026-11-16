@@ -4,7 +4,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { EMBED_ROUTE_PATH } from '@vigilant-broccoli/common-js';
 import { SIDEBAR_ROUTE } from '../app.const';
 import { ReactNode, useState, useEffect, useCallback } from 'react';
-import { shouldIgnoreShortcutKeystroke } from '@vigilant-broccoli/react-lib';
+import {
+  shouldIgnoreShortcutKeystroke,
+  useFocusSearchShortcut,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../../libs/auth';
 import { FloatingIslandComponent } from '../components/floating-island.component';
 import { RightSidebar } from '../components/right-sidebar.component';
@@ -20,7 +23,6 @@ import { NotepadProvider } from '../context/NotepadContext';
 const SHORTCUTS_OVERLAY_KEY_CODE = 'Slash';
 
 type KeyboardHandlers = {
-  setSearchDialogOpen: (open: boolean) => void;
   setEmailDialogOpen: (open: boolean) => void;
   openChatbot: () => void;
   setCalendarDialogOpen: (open: boolean) => void;
@@ -34,9 +36,6 @@ const processKeyboardInput = (
   handlers: KeyboardHandlers,
 ): boolean => {
   switch (key) {
-    case '/':
-      handlers.setSearchDialogOpen(true);
-      return true;
     case 'm':
       handlers.setEmailDialogOpen(true);
       return true;
@@ -107,6 +106,8 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [notepadDialogOpen, setNotepadDialogOpen] = useState(false);
   const [utilitiesDialogOpen, setUtilitiesDialogOpen] = useState(false);
   const [shortcutsOverlayOpen, setShortcutsOverlayOpen] = useState(false);
+  const openSearchDialog = useCallback(() => setSearchDialogOpen(true), []);
+  useFocusSearchShortcut(openSearchDialog);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -121,7 +122,6 @@ export default function Layout({ children }: { children: ReactNode }) {
       }
 
       handleKeyboardShortcut(e, {
-        setSearchDialogOpen,
         setEmailDialogOpen,
         openChatbot: () => router.push(SIDEBAR_ROUTE.CHATBOT.path),
         setCalendarDialogOpen,

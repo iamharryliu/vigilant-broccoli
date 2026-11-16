@@ -23,6 +23,7 @@ import {
   DropdownMenu,
   HighlightMatch,
   IconButton,
+  useFocusSearchShortcut,
 } from '@vigilant-broccoli/react-lib';
 
 const MOBILE_NO_CARD_CLS =
@@ -479,6 +480,17 @@ export const DocsExplorer = ({
   }, [urlSync, selectFile]);
 
   const showSidebarOnMobile = () => setMobilePanel('sidebar');
+
+  const focusSearch = useCallback(() => {
+    setMobilePanel('sidebar');
+    // The sidebar is display:none on mobile while the content panel shows,
+    // and an element can't take focus until the next frame paints it.
+    requestAnimationFrame(() => {
+      searchInputRef.current?.focus();
+      searchInputRef.current?.select();
+    });
+  }, []);
+  useFocusSearchShortcut(focusSearch, { enabled: Boolean(search) });
 
   useEffect(() => {
     if (!search) return;
