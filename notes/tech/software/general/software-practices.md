@@ -157,12 +157,6 @@
 
 ### Testing
 
-- Unit Testing
-- End to End (E2E)
-- Integration Testing
-- Performance Testing
-- Security Testing
-
 ## Security
 
 - HTTPS TLS/SSL

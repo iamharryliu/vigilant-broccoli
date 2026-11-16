@@ -1,4 +1,4 @@
-# Data Sync Strategies
+# Data Consistency
 
 How to keep one piece of user data (a note, a list, a document) consistent across several clients and a server.
 
@@ -13,6 +13,7 @@ How to keep one piece of user data (a note, a list, a document) consistent acros
   - [CRDTs](#crdts)
 - [Delivery Mechanisms](#delivery-mechanisms)
 - [Choosing](#choosing)
+- [Concurrent Claims on One Resource](#concurrent-claims-on-one-resource)
 
 ## Strategy Comparison
 
@@ -88,3 +89,21 @@ How changes travel is independent of how conflicts are resolved.
 - Start with the simplest strategy that matches how often two writers actually collide
 - Whatever the strategy, make writes idempotent, so retries and duplicates are harmless
 - Optimistic UI updates should roll back when the server rejects the change
+
+## Concurrent Claims on One Resource
+
+When two users act on the same item at once, such as buying the last unit or placing a bid, the write must be decided in one place, usually the database, not in application code that reads and then writes.
+
+| Approach | How it works | Trade-off |
+| :-- | :-- | :-- |
+| Atomic conditional update | One statement such as `UPDATE items SET stock = stock - 1 WHERE id = ? AND stock > 0`; zero affected rows means another user won | Simplest and fastest for stock and counters; covers one row only |
+| Distributed lock | A lock keyed on the item (for example in Redis) held across app instances | Needed only when state is not in one database; expiry and failure handling are tricky |
+| Optimistic locking | A `version` column checked in the `WHERE` clause; zero affected rows means retry or reject | No locks held; best when conflicts are rare, and needs retry handling |
+| Pessimistic locking | `SELECT ... FOR UPDATE` locks the row inside a transaction so the second user waits | Safe under heavy contention; waiting and deadlock risk |
+| Queue or single writer | All actions for an item go through one queue or worker | Removes races entirely; adds latency and architecture |
+| Transaction isolation level | Serializable or repeatable read makes the database abort conflicting transactions | Easy to apply; lower throughput, and aborted transactions must be retried |
+| Unique constraint | The database rejects a duplicate claim, such as one booking per seat | Cannot be bypassed by application bugs; fits only "exactly one winner" cases |
+
+- Bids: an atomic `UPDATE ... WHERE current_bid < :new_bid`, or optimistic versioning on the auction row
+- Pair any approach with idempotency keys so double-clicks and retries do not create duplicate orders or bids
+- See [ACID](../web-dev/database/database.md#acid) for the isolation guarantee these approaches build on
