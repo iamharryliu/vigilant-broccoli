@@ -17,46 +17,121 @@
     <div id="app">
       <div id="status" hidden></div>
       <div id="terminal"></div>
+      <!-- A control lives in the bar (data-bar-only) or the menu (data-sheet-only), never both. -->
       <div id="toolbar" role="toolbar" aria-label="Terminal keys">
-        <button data-action="keys" aria-label="All keys">☰</button>
+        <button data-action="keys" aria-label="Menu">☰</button>
         <button data-bar-only data-key="enter">Enter</button>
-        <button data-key="tab">Tab</button>
+        <button data-bar-only data-key="tab">Tab</button>
         <button data-bar-only data-key="pageUp">PgUp</button>
         <button data-bar-only data-key="pageDown">PgDn</button>
-        <button data-sheet-only data-key="home">Home</button>
-        <button data-sheet-only data-key="end">End</button>
-        <button data-key="esc">Esc</button>
-        <button data-sheet-only data-toggle="ctrl" aria-pressed="false">
-          Ctrl
-        </button>
-        <button data-sheet-only data-toggle="alt" aria-pressed="false">
-          Alt
-        </button>
-        <button data-ctrl="c">^C</button>
-        <button data-sheet-only data-ctrl="d">^D</button>
-        <button data-sheet-only data-ctrl="z">^Z</button>
-        <button data-action="paste">Paste</button>
+        <button data-bar-only data-key="esc">Esc</button>
+        <button data-bar-only data-ctrl="c">^C</button>
+        <button data-bar-only data-action="paste">Paste</button>
         <button data-bar-only data-key="up">↑</button>
         <button data-bar-only data-key="down">↓</button>
         <button data-bar-only data-key="left">←</button>
         <button data-bar-only data-key="right">→</button>
-        <button data-sheet-only data-text="/clear">/clear</button>
-        <button data-sheet-only data-text="/compact">/compact</button>
-        <button data-sheet-only data-text="/status">/status</button>
-        <button data-sheet-only data-text="/context">/context</button>
-        <button data-sheet-only data-text="/model">/model</button>
-        <button data-sheet-only data-text="/resume">/resume</button>
-        <button data-sheet-only data-text="/usage">/usage</button>
-        <button data-sheet-only data-text="/local-session-status">
-          /local-session-status
+        <button
+          data-sheet-only
+          data-page="claude"
+          data-desc="New conversation."
+          data-text="/clear"
+          data-submit
+        >
+          /clear
         </button>
-        <button data-sheet-only data-text="/local-session-retry-publish">
-          /local-session-retry-publish
+        <button
+          data-sheet-only
+          data-page="claude"
+          data-desc="Summarizes to free context."
+          data-text="/compact"
+          data-submit
+        >
+          /compact
         </button>
-        <button data-sheet-only data-text="/local-create-pr-claude">
+        <button
+          data-sheet-only
+          data-page="claude"
+          data-desc="Version, model and account."
+          data-text="/status"
+          data-submit
+        >
+          /status
+        </button>
+        <button
+          data-sheet-only
+          data-page="claude"
+          data-desc="Context window usage."
+          data-text="/context"
+          data-submit
+        >
+          /context
+        </button>
+        <button
+          data-sheet-only
+          data-page="claude"
+          data-desc="Switches model."
+          data-text="/model"
+          data-submit
+        >
+          /model
+        </button>
+        <button
+          data-sheet-only
+          data-page="claude"
+          data-desc="Reopens a past conversation."
+          data-text="/resume"
+          data-submit
+        >
+          /resume
+        </button>
+        <button
+          data-sheet-only
+          data-page="claude"
+          data-desc="Plan usage and limits."
+          data-text="/usage"
+          data-submit
+        >
+          /usage
+        </button>
+        <button
+          data-sheet-only
+          data-page="claude"
+          data-desc="Implements a request in a tmux worktree and opens a PR."
+          data-text="/local-create-pr-claude"
+        >
           /local-create-pr-claude
         </button>
-        <button data-sheet-only data-text="/local-update-pr">
+        <button
+          data-sheet-only
+          data-page="claude"
+          data-desc="Applies a change to an existing PR in a tmux worktree."
+          data-text="/local-update-pr-claude"
+        >
+          /local-update-pr-claude
+        </button>
+        <button
+          data-sheet-only
+          data-page="dev"
+          data-desc="Status of agent sessions."
+          data-text="/local-session-status"
+        >
+          /local-session-status
+        </button>
+        <button
+          data-sheet-only
+          data-page="dev"
+          data-desc="Retries an authorized push or PR."
+          data-text="/local-session-retry-publish"
+        >
+          /local-session-retry-publish
+        </button>
+        <button
+          data-sheet-only
+          data-page="dev"
+          data-desc="Applies a change to an existing PR."
+          data-text="/local-update-pr"
+        >
           /local-update-pr
         </button>
       </div>
@@ -64,15 +139,29 @@
         id="keys-sheet"
         role="dialog"
         aria-modal="true"
-        aria-label="All keys"
+        aria-label="Menu"
         hidden
       >
         <div id="keys-panel">
           <div id="keys-header">
-            <span>All keys</span>
+            <input
+              id="keys-search"
+              type="search"
+              placeholder="Search commands"
+              aria-label="Search commands"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+            />
             <button data-action="close" aria-label="Close">✕</button>
           </div>
+          <div id="keys-tabs" role="tablist">
+            <button role="tab" data-page-tab="claude">Claude</button>
+            <button role="tab" data-page-tab="dev">Dev</button>
+          </div>
           <div id="keys-list"></div>
+          <p id="keys-empty" hidden>No matches</p>
         </div>
       </div>
     </div>

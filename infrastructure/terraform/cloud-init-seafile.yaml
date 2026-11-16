@@ -114,22 +114,57 @@ write_files:
       docker exec seafile bash -c "grep -q CSRF_TRUSTED_ORIGINS /shared/seafile/conf/seahub_settings.py || echo 'CSRF_TRUSTED_ORIGINS = [\"https://${seafile_domain}\"]' >> /shared/seafile/conf/seahub_settings.py"
       docker compose -f /opt/seafile/docker-compose.yml restart seafile
 
-  - path: /opt/seafile/fix-download-limit.sh
+  - path: /opt/seafile/fix-seafile-conf.sh
     permissions: '0755'
     content: |
       #!/bin/bash
       # Seafile's zip-download endpoint refuses anything over max_download_dir_size
       # (default 100M) with "Failed to download. The total size of the files
-      # exceeded the limit." Must be appended into the existing [fileserver]
-      # section, not a new one, or seafile.conf fails to parse.
+      # exceeded the limit." A key must go into its existing section, not a
+      # duplicate one, or seafile.conf fails to parse.
+      # keep_days is the default history limit for libraries without their own
+      # setting; with none, deleted and overwritten versions were kept forever
+      # and filled the data volume.
+      CONF=/shared/seafile/conf/seafile.conf
       for i in $(seq 1 60); do
-        if docker exec seafile test -f /shared/seafile/conf/seafile.conf; then
+        if docker exec seafile test -f $CONF; then
           break
         fi
         sleep 5
       done
-      docker exec seafile bash -c "grep -q max_download_dir_size /shared/seafile/conf/seafile.conf || sed -i '/^\[fileserver\]/a max_download_dir_size = 20000' /shared/seafile/conf/seafile.conf"
+      docker exec seafile bash -c "grep -q max_download_dir_size $CONF || sed -i '/^\[fileserver\]/a max_download_dir_size = 20000' $CONF"
+      docker exec seafile bash -c "grep -q '^\[history\]' $CONF || printf '\n[history]\n' >> $CONF; grep -q '^keep_days' $CONF || sed -i '/^\[history\]/a keep_days = 30' $CONF"
       docker compose -f /opt/seafile/docker-compose.yml restart seafile
+
+  # The image's /scripts/gc.sh runs GC "online" and seaf-gc.sh never calls its
+  # own validate_already_running, so nothing stops Community Edition GC from
+  # racing seaf-server; stop it first. ExecStopPost restarts the container
+  # (start.py brings seafile and seahub back) even when GC fails.
+  - path: /etc/systemd/system/seafile-gc.service
+    content: |
+      [Unit]
+      Description=Seafile garbage collection (removes blocks no longer referenced by library history)
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Type=oneshot
+      ExecStartPre=/usr/bin/docker exec seafile /opt/seafile/seafile-server-latest/seahub.sh stop
+      ExecStartPre=/usr/bin/docker exec seafile /opt/seafile/seafile-server-latest/seafile.sh stop
+      ExecStart=/usr/bin/docker exec seafile /scripts/gc.sh
+      ExecStopPost=/usr/bin/docker compose -f /opt/seafile/docker-compose.yml restart seafile
+
+  - path: /etc/systemd/system/seafile-gc.timer
+    content: |
+      [Unit]
+      Description=Weekly Seafile garbage collection
+
+      [Timer]
+      OnCalendar=Sun 04:00
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
 
   - path: /opt/seafile/mount-data-and-start.sh
     permissions: '0755'
@@ -178,4 +213,6 @@ runcmd:
   - usermod -aG docker ubuntu
   - /opt/seafile/mount-data-and-start.sh
   - /opt/seafile/fix-csrf.sh
-  - /opt/seafile/fix-download-limit.sh
+  - /opt/seafile/fix-seafile-conf.sh
+  - systemctl daemon-reload
+  - systemctl enable --now seafile-gc.timer
