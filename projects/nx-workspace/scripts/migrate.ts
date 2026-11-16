@@ -7,7 +7,9 @@ import path from 'path';
 // one shared Supabase project) are merged and applied in a single global order
 // by filename, so a migration in one app's folder that depends on an object
 // created earlier in another's still runs after it. Single-dir usage — how the
-// per-app `serve` targets call this — is unchanged.
+// per-app `serve` targets call this — is unchanged. With
+// --database-url-env=<NAME> it targets the Postgres at that connection string
+// (Neon) instead of the Supabase pooler, tracked in its own schema_migrations.
 const MIGRATION_DIRS = process.argv
   .filter(a => a.startsWith('--migrations-dir='))
   .map(a => path.resolve(a.split('=')[1]));
@@ -16,24 +18,35 @@ if (MIGRATION_DIRS.length === 0) {
   process.exit(1);
 }
 
+const DATABASE_URL_ENV = process.argv
+  .find(a => a.startsWith('--database-url-env='))
+  ?.split('=')[1];
+
 const DB_HOST = 'aws-1-eu-west-1.pooler.supabase.com';
 const DB_PORT = 5432;
 const DB_USER = 'postgres.jrdosjjgmsoodpjmjqxx';
 const DB_NAME = 'postgres';
 
-async function run() {
+const createClient = async () => {
+  if (DATABASE_URL_ENV) {
+    const connectionString = process.env[DATABASE_URL_ENV];
+    if (!connectionString) {
+      console.error(
+        `migrate: ${DATABASE_URL_ENV} not set — skipping migrations`,
+      );
+      return null;
+    }
+    return new pg.Client({ connectionString });
+  }
   const password = process.env.SUPABASE_DB_PASSWORD;
   if (!password) {
     console.error(
       'migrate: SUPABASE_DB_PASSWORD not set — skipping migrations',
     );
-    return;
+    return null;
   }
-
-  const baseline = process.argv.includes('--baseline');
   const [ipv4] = await resolve4(DB_HOST);
-
-  const client = new pg.Client({
+  return new pg.Client({
     host: ipv4,
     port: DB_PORT,
     user: DB_USER,
@@ -41,6 +54,12 @@ async function run() {
     database: DB_NAME,
     ssl: { rejectUnauthorized: false },
   });
+};
+
+async function run() {
+  const baseline = process.argv.includes('--baseline');
+  const client = await createClient();
+  if (!client) return;
   await client.connect();
 
   try {

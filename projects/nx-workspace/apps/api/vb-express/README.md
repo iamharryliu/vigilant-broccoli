@@ -29,6 +29,7 @@
   - Google reCAPTCHA
   - Google Tasks
   - LLM Service
+  - Neon
   - Supabase
   - Twilio
 
