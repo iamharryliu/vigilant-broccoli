@@ -288,16 +288,19 @@ jobs:
           DOCKERHUB_TOKEN: ${{ env.DOCKERHUB_TOKEN }}
         run: pnpm exec tsx scripts/update-dockerhub-descriptions.ts
 
-      # Cloudflare proxies api.harryliu.dev to the fly app, so fly needs a cert
-      # for that hostname or the origin TLS handshake fails. `certs add` errors
-      # when the cert exists, so only add it when `certs show` finds none.
-      - name: Ensure fly cert for api.harryliu.dev
+      # Cloudflare proxies api.harryliu.dev and staging-api.harryliu.dev to the
+      # fly apps, so fly needs a cert for each hostname or the origin TLS
+      # handshake fails. `certs add` errors when the cert exists, so only add it
+      # when `certs show` finds none.
+      - name: Ensure fly certs for api.harryliu.dev and staging-api.harryliu.dev
         if: steps.check.outputs.has_deployments == 'true'
         env:
           FLY_API_TOKEN: ${{ env.FLY_API_TOKEN }}
         run: |
           flyctl certs show api.harryliu.dev -a production-vb-express >/dev/null 2>&1 \
             || flyctl certs add api.harryliu.dev -a production-vb-express
+          flyctl certs show staging-api.harryliu.dev -a staging-vb-express >/dev/null 2>&1 \
+            || flyctl certs add staging-api.harryliu.dev -a staging-vb-express
 
   deploy-github-pages:
     needs: gitleaks

@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **30 applications**, **7 API services**, **14 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **31 applications**, **7 API services**, **14 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -114,6 +114,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | <img src="./projects/nx-workspace/apps/ui/photography-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Photography](./projects/nx-workspace/apps/ui/photography-react) | Public photo albums with a lightbox, served from the CMS photography folder. | VB Express | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [photography.harryliu.dev](https://photography.harryliu.dev/) |
 | <img src="./projects/nx-workspace/apps/ui/pomodoro-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Pomodoro](./projects/nx-workspace/apps/ui/pomodoro-react) | Focus timer with work and break sessions. | None | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [pomodoro.harryliu.dev](https://pomodoro.harryliu.dev/) |
 | [RabbitMQ](./infrastructure/terraform/packer) | Message broker for queued email delivery. | — | — | ![Oracle Cloud](https://img.shields.io/badge/Oracle%20Cloud-F80000?style=flat-square&logo=oracle&logoColor=white) | 🔒 Cloudflare Access - [queue.harryliu.dev](https://queue.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/sandbox/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Sandbox](./projects/nx-workspace/apps/ui/sandbox) | Owner-only test page for Google sign-in through VB Express Better Auth. | Google OAuth, VB Express | `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🔒 Cloudflare Access - [sandbox.harryliu.dev](https://sandbox.harryliu.dev/) |
 | [Seafile](./infrastructure/terraform/aws-seafile.tf) | File storage and synchronization. | — | — | ![AWS](https://img.shields.io/badge/AWS-FF9900?style=flat-square) | 🔒 Cloudflare Access - [drive.harryliu.dev](https://drive.harryliu.dev/) |
 | <img src="./projects/nx-workspace/apps/ui/small-business-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Small Business Next](./projects/nx-workspace/apps/ui/small-business-next) | Subscription and subscriber notification management. | — | — | ![Local machine](https://img.shields.io/badge/Local%20machine-555555?style=flat-square) | 💻 |
 | [Socket Server (Socket.IO)](./projects/nx-workspace/apps/socket-server-socketio) | Real-time publish/subscribe backend over Socket.IO and Server-Sent Events. | None | `main` | ![Oracle Cloud](https://img.shields.io/badge/Oracle%20Cloud-F80000?style=flat-square&logo=oracle&logoColor=white) | 🔒 Service Token - [socket.harryliu.dev](https://socket.harryliu.dev/) |

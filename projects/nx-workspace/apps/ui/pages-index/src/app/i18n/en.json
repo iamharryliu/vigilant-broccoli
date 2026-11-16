@@ -151,6 +151,10 @@
       "TITLE": "Web Terminal",
       "DESCRIPTION": "Phone-friendly browser shell with an on-screen key toolbar, behind owner-only access."
     },
+    "SANDBOX": {
+      "TITLE": "Sandbox",
+      "DESCRIPTION": "Owner-only test page for Google sign-in through VB Express Better Auth."
+    },
     "WEATHER": {
       "TITLE": "Weather",
       "DESCRIPTION": "Current weather for your location, deployed on Vercel."

@@ -23,6 +23,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── status.harryliu.dev                   Status summary — the pages-index `StatusPage` at the host root. Cloudflare Worker `status-proxy` (`infrastructure/cloudflare-workers/status-proxy/`, custom domain + script: Terraform `cloudflare-status.tf`; Cloudflare creates the DNS record) reverse-proxies GET/HEAD to `projects.harryliu.dev`, rewrites upstream redirect `Location`s to the status host and passes status codes and content types through. The app picks `StatusPage` because `window.location.hostname` is this host — a URL fragment never reaches the network, so no proxy could select the route
 ├── uptime.harryliu.dev                   Upptime historical site — GitHub Pages `gh-pages` branch of `iamharryliu/uptime` (CNAME to iamharryliu.github.io, DNS-only: Terraform `cloudflare-harryliu-dev.tf`; Pages custom domain set by `github_repository_pages.upptime`; see [upptime.md](./upptime.md))
 ├── api.harryliu.dev                      VB Express (production) — proxied CNAME to `production-vb-express.fly.dev` (Terraform, infrastructure/terraform/); the fly app needs a matching cert, which the `deploy.yml` "Ensure fly cert" step adds idempotently (`flyctl certs add api.harryliu.dev -a production-vb-express`) so Cloudflare's origin TLS handshake succeeds. All production clients and Upptime use this hostname
+├── staging-api.harryliu.dev              VB Express (staging) — proxied CNAME to `staging-vb-express.fly.dev` (Terraform `cloudflare-harryliu-dev.tf`); same `deploy.yml` cert step (`flyctl certs add staging-api.harryliu.dev -a staging-vb-express`). Exists so `*.harryliu.dev` Better Auth clients (sandbox) get same-site cookies, which `fly.dev`, a public suffix, cannot give; Upptime and quick links use it, while calendars and photography staging still call the fly.dev host
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
 ├── findme.harryliu.dev                   FindMe — Cloudflare Pages `production-findme` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── whiteboard.harryliu.dev               Whiteboard — Cloudflare Pages `production-whiteboard` (domain + CNAME: Terraform, infrastructure/terraform/)
@@ -37,6 +38,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── bookmarks.harryliu.dev                Bookmarks — Cloudflare Pages `production-bookmarks-react` (domain + CNAME: Terraform `cloudflare-bookmarks.tf`; browser-local data, no backend or auth)
 ├── photography.harryliu.dev              Photography — Cloudflare Pages `production-photography-react` (domain + CNAME: Terraform `cloudflare-photography.tf`; public, no Access gating; albums and photo bytes come from VB Express `GET /api/public/photography/*` at `api.harryliu.dev` (staging Pages → `staging-vb-express.fly.dev`), allowed by the same narrowly scoped public-prefix CORS rule as Calendars; content is the `photography/` folder of the default R2 bucket, managed in local-manager `/cms`)
 ├── pomodoro.harryliu.dev                 Pomodoro — Cloudflare Pages `production-pomodoro-react` (domain + CNAME: Terraform `cloudflare-pomodoro.tf`; browser-local settings, no backend or auth)
+├── sandbox.harryliu.dev                  Sandbox — Cloudflare Pages `production-sandbox` (single environment deployed from `main`, no staging; domain + CNAME + owner-email-only Cloudflare Access also covering `production-sandbox.pages.dev` and its aliases: Terraform `cloudflare-sandbox.tf`; Google sign-in test against staging VB Express Better Auth at `staging-api.harryliu.dev`, whose credentialed CORS for this origin is scoped to `/api/auth/`)
 ├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
 ├── grind-75.harryliu.dev                 Grind 75 — Cloudflare Pages `production-grind-75-react` (domain + CNAME: Terraform `cloudflare-grind-75.tf`; deployed by deploy-grind-75-react.yml because the solutions snapshot lives outside the nx graph; public, no Access gating)
 ├── context.harryliu.dev                  Agent Context — Cloudflare Pages `production-context-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-context-md.yml because the agent-context snapshot lives outside the nx graph; public, no Access gating)
@@ -61,7 +63,7 @@ cloud8skate.com                           Cloudflare Pages `production-cloud-8-s
 
 fly.dev                                   Fly.io API services (production apps created on first production dispatch)
 ├── demo-office-presence-service.fly.dev          Office Presence Service (demo only) — Slack Events API Request URLs and the demo UI API
-├── staging-vb-express.fly.dev                    VB Express (staging)
+├── staging-vb-express.fly.dev                    VB Express (staging) — origin behind `staging-api.harryliu.dev`
 ├── production-vb-express.fly.dev                 VB Express (production) — origin behind `api.harryliu.dev`; clients should not call it directly
 └── vb-log-shipper                                Fly log shipper (no hostname, no public IP — outbound only: Fly NATS log stream → https://loki.harryliu.dev)
 
@@ -89,6 +91,7 @@ pages.dev                                 Cloudflare Pages provider aliases (ret
 ├── staging-pomodoro-react.pages.dev          Pomodoro (staging, Cloudflare Access)
 ├── production-pomodoro-react.pages.dev       Pomodoro (production origin)
 ├── preview-pomodoro-react.pages.dev          Pomodoro (PR previews)
+├── production-sandbox.pages.dev              Sandbox (production origin, Cloudflare Access)
 ├── demo-office-presence-ui.pages.dev        Office Presence UI (demo only — its only deploy)
 ├── staging-findme.pages.dev                 FindMe (staging)
 ├── production-findme.pages.dev              FindMe (production)
