@@ -11,6 +11,7 @@ Typed selection of string, number or object options through the shared Radix-bas
 - String options use their own value as a label unless `displayMapper` supplies a label; missing mappings fall back to the string. Empty strings are reserved by Radix for the placeholder and must not be included in `options`.
 - `className` styles the trigger; `triggerClassName` merges last and takes precedence for conflicting classes. Supply `id` for an associated label or `aria-label` for an accessible name, and translated placeholder text.
 - `disabled` prevents opening or changing selection. Portal content retains the originating theme, including changes while open.
+- A list opened by touch or pen ignores Radix's close-on-window-resize, which mobile browsers trigger when their toolbar shows or hides as body scroll locks; mouse- and keyboard-opened lists still close on resize.
 
 ## Compatibility
 

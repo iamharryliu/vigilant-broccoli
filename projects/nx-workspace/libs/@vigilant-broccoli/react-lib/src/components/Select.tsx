@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { Check, ChevronDown } from 'lucide-react';
 import { cn } from '../utils/cn';
@@ -8,6 +8,8 @@ import { usePortalTheme } from '../hooks/usePortalTheme';
 
 const DEFAULT_PLACEHOLDER = 'Select';
 const DEFAULT_OPTION_IDENTIFIER = 'id';
+const MOUSE_POINTER_TYPE = 'mouse';
+const RESIZE_EVENT = 'resize';
 
 type SelectOption = number | string | object;
 
@@ -53,6 +55,8 @@ export const Select = <T extends SelectOption>(props: SelectProps<T>) => {
     'aria-label': ariaLabel,
   } = props;
   const theme = usePortalTheme();
+  const [open, setOpen] = useState(false);
+  const openedByTouchRef = useRef(false);
   const isControlled = 'value' in props || 'selectedOption' in props;
   const selection = 'value' in props ? value : selectedOption;
   const handleValueChange = onValueChange ?? setValue;
@@ -92,6 +96,20 @@ export const Select = <T extends SelectOption>(props: SelectProps<T>) => {
             : undefined
       }
       disabled={disabled}
+      open={open}
+      onOpenChange={next => {
+        // Radix closes an open Select on every window resize. Mobile browsers
+        // fire one when their toolbar shows or hides as Radix locks body
+        // scroll, so a tapped Select would open and immediately close.
+        if (
+          !next &&
+          openedByTouchRef.current &&
+          window.event?.type === RESIZE_EVENT
+        ) {
+          return;
+        }
+        setOpen(next);
+      }}
       onValueChange={val => {
         const selected = options.find(option => getOptionValue(option) === val);
         if (selected !== undefined) {
@@ -103,6 +121,12 @@ export const Select = <T extends SelectOption>(props: SelectProps<T>) => {
       <SelectPrimitive.Trigger
         id={id}
         aria-label={ariaLabel}
+        onPointerDown={event => {
+          openedByTouchRef.current = event.pointerType !== MOUSE_POINTER_TYPE;
+        }}
+        onKeyDown={() => {
+          openedByTouchRef.current = false;
+        }}
         className={cn(
           'inline-flex h-10 w-fit items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
           className,
