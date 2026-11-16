@@ -69,4 +69,4 @@ Purpose of Step Definitions:
 - Mapping Gherkin to Code: They connect the human-readable steps in the Gherkin file to programmatic actions.
 - Reusability: Commonly used steps can be defined once and reused across multiple scenarios.
 
-See [Software Lingo](../software-lingo.md) for other test types such as smoke, regression, contract and load testing.
+See [Software Lingo](../software-lingo.md) for other test types such as security, accessibility, mutation, stress, canary and exploratory testing.
