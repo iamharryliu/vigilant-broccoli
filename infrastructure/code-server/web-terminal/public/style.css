@@ -39,6 +39,7 @@ body {
 
 #toolbar button,
 #keys-list button,
+#keys-tabs button,
 #keys-header button {
   flex: 0 0 auto;
   min-width: 44px;
@@ -64,16 +65,30 @@ body {
   display: none;
 }
 
-#keys-list button[data-text] {
+#keys-list button[data-desc] {
   grid-column: 1 / -1;
-  min-height: 44px;
-  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+#keys-list button[hidden] {
+  display: none;
+}
+
+#keys-list button small {
+  color: #aaa;
+  font-size: 13px;
 }
 
 #toolbar button:active,
-#toolbar button[aria-pressed='true'],
 #keys-list button:active,
-#keys-list button[aria-pressed='true'],
+#keys-tabs button:active,
+#keys-tabs button[aria-selected='true'],
 #keys-header button:active {
   background: #3b82f6;
   border-color: #3b82f6;
@@ -110,9 +125,42 @@ body {
 #keys-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   flex: 0 0 auto;
   margin-bottom: 10px;
+}
+
+/* 16px keeps iOS from zooming the page when the field takes focus. */
+#keys-search {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #111;
+  color: #eee;
+  font:
+    16px system-ui,
+    sans-serif;
+}
+
+#keys-tabs {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+}
+
+#keys-tabs button {
+  flex: 1;
+}
+
+#keys-empty {
+  margin: 12px 0;
+  color: #aaa;
+  text-align: center;
 }
 
 #keys-list {

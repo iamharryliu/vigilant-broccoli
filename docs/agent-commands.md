@@ -26,6 +26,7 @@ Custom agent commands from `setup/dotfiles/agent-skills/<name>/SKILL.md`, invoke
 | `local-docker-create-pr-claude` | Develop | Research a request locally, settle blocking questions, then start a background local Docker sandbox solve with Claude. |
 | `local-docker-create-pr-codex` | Develop | Research a request locally, settle blocking questions, then start a background local Docker sandbox solve with Codex. |
 | `local-update-pr` | Develop | Apply a requested change to an existing PR branch and verify its cumulative result. |
+| `local-update-pr-claude` | Develop | Research an existing PR update, settle blocking questions, then start Claude in a detached tmux session on a worktree of the PR branch to apply it and push to the PR. |
 | `local-update-pr-fix-ci` | Develop | Diagnose a PR's failing CI checks from their logs and fix the branch so the checks pass. |
 | `local-update-pr-resolve-conflicts` | Develop | Merge `origin/main` into a PR branch and resolve conflicts while preserving both sides. |
 | `remote-create-pr-codex` | Develop | Research a request locally, settle blocking questions, then start a Codex solve on the code-server VM. |
