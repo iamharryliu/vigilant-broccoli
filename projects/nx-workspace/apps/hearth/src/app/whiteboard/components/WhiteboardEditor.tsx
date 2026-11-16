@@ -81,6 +81,7 @@ function WhiteboardPane({
           <Button
             size="sm"
             variant="outline"
+            className="hidden md:inline-flex"
             aria-label={AI_EDIT_LABEL}
             title={AI_EDIT_LABEL}
             disabled={isLoading || chatDisabled}

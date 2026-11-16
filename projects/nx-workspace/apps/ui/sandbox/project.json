@@ -1,0 +1,55 @@
+{
+  "name": "sandbox",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/sandbox/src",
+  "projectType": "application",
+  "tags": ["visibility:public"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        { "env": "VITE_VB_EXPRESS_URL" },
+        { "dependentTasksOutputFiles": "**/*" }
+      ],
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/sandbox"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outDir": "../../../dist/sandbox"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-sandbox || npx wrangler pages project create production-sandbox --production-branch production"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-sandbox 10",
+      "dependsOn": ["ensure-cf-project"]
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/sandbox --project-name production-sandbox --branch production",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    }
+  }
+}

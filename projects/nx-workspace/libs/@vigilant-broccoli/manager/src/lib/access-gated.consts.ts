@@ -22,6 +22,10 @@ export const ACCESS_GATED_URL = {
     URL: 'https://manager.harryliu.dev/login',
     STAGING_URL: 'https://staging-manager.harryliu.dev/login',
   },
+  SANDBOX: {
+    NAME: 'Sandbox',
+    URL: 'https://sandbox.harryliu.dev/',
+  },
   WEB_TERMINAL: {
     NAME: 'Web Terminal',
     URL: 'https://shell.harryliu.dev/',

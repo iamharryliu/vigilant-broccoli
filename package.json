@@ -40,6 +40,7 @@
     "seafile:open": "open https://drive.harryliu.dev",
     "seafile:password": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform state pull | jq -r '.resources[] | select(.type == \"random_password\" and .name == \"seafile_admin_password\") | .instances[0].attributes.result' | pbcopy && echo 'Seafile admin password copied to clipboard (login email: harryliu1995@gmail.com).'",
     "seafile:logs": "./scripts/shell/oci-ssh.sh aws_seafile_public_ip 'sudo docker logs -f seafile'",
+    "seafile:gc": "./scripts/shell/oci-ssh.sh aws_seafile_public_ip 'sudo systemctl start seafile-gc.service; sudo journalctl -u seafile-gc.service -n 30 --no-pager; df -h /mnt/seafile-data'",
     "seafile:logs:cloud-init": "./scripts/shell/oci-ssh.sh aws_seafile_public_ip 'tail -f /var/log/cloud-init-output.log'",
     "seafile:replace": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply -replace=aws_instance.seafile && ssh-keygen -R $(terraform output -raw aws_seafile_public_ip)",
     "seafile:reset": "./scripts/shell/oci-ssh.sh aws_seafile_public_ip 'cd /opt/seafile && sudo docker compose down -v && sudo docker compose up -d'",

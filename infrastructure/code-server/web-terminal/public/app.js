@@ -1,4 +1,4 @@
-import { CTRL_SHORTCUT, applyModifiers, encodeKey } from './keys.js';
+import { CR, CTRL_SHORTCUT, encodeKey } from './keys.js';
 
 const MESSAGE_TYPE = {
   INPUT: 'input',
@@ -28,20 +28,13 @@ term.open(document.getElementById('terminal'));
 
 const keysSheet = document.getElementById('keys-sheet');
 const keysList = document.getElementById('keys-list');
+const keysSearch = document.getElementById('keys-search');
+const keysTabs = document.getElementById('keys-tabs');
+const keysEmpty = document.getElementById('keys-empty');
 const KEYS_ACTION = { OPEN: 'keys', CLOSE: 'close', PASTE: 'paste' };
-
-const modifiers = { ctrl: false, alt: false };
-// Also matches the copies in the keys list, so both show the same state.
-const setModifier = (name, active) => {
-  modifiers[name] = active;
-  app
-    .querySelectorAll(`[data-toggle="${name}"]`)
-    .forEach(button => button.setAttribute('aria-pressed', String(active)));
-};
-const clearModifiers = () => {
-  setModifier('ctrl', false);
-  setModifier('alt', false);
-};
+const KEYS_PAGE = { CLAUDE: 'claude', DEV: 'dev' };
+const SUBMIT_DELAY_MS = 50;
+let activePage = KEYS_PAGE.CLAUDE;
 
 let socket = null;
 const send = message => {
@@ -58,10 +51,7 @@ const fitTerminal = () => {
   sendResize();
 };
 
-term.onData(data => {
-  sendInput(applyModifiers(data, modifiers));
-  clearModifiers();
-});
+term.onData(sendInput);
 
 const DISMISS_KEYBOARD_KEYS = new Set(['pageUp', 'pageDown']);
 const REPEAT_KEYS = new Set(['pageUp', 'pageDown']);
@@ -73,10 +63,7 @@ let repeated = false;
 
 const sendKey = key =>
   sendInput(
-    encodeKey(key, {
-      ...modifiers,
-      appCursor: term.modes.applicationCursorKeysMode,
-    }),
+    encodeKey(key, { appCursor: term.modes.applicationCursorKeysMode }),
   );
 
 const startRepeat = key => {
@@ -93,8 +80,6 @@ const startRepeat = key => {
 const stopRepeat = () => {
   clearTimeout(repeatTimer);
   repeatTimer = null;
-  // A hold released off the button gets no click, so modifiers are cleared here.
-  if (repeated) clearModifiers();
 };
 
 toolbar.addEventListener('pointerdown', event => {
@@ -124,33 +109,75 @@ keysList.replaceChildren(
         button.dataset.action !== KEYS_ACTION.OPEN &&
         !('barOnly' in button.dataset),
     )
-    .map(button => button.cloneNode(true)),
+    .map(button => {
+      const item = button.cloneNode(true);
+      const label = document.createElement('span');
+      label.textContent = item.textContent.trim();
+      const description = document.createElement('small');
+      description.textContent = item.dataset.desc ?? '';
+      item.replaceChildren(label, description);
+      return item;
+    }),
 );
+
+// A query searches every page; without one the list shows the active page.
+const renderKeysList = () => {
+  const query = keysSearch.value.trim().toLowerCase();
+  let visible = 0;
+  keysList.querySelectorAll('button').forEach(item => {
+    const matches = query
+      ? `${item.firstChild.textContent} ${item.dataset.desc}`
+          .toLowerCase()
+          .includes(query)
+      : item.dataset.page === activePage;
+    item.hidden = !matches;
+    if (matches) visible += 1;
+  });
+  keysTabs
+    .querySelectorAll('button')
+    .forEach(tab =>
+      tab.setAttribute(
+        'aria-selected',
+        String(!query && tab.dataset.pageTab === activePage),
+      ),
+    );
+  keysEmpty.hidden = visible > 0;
+};
+
+const setKeysPage = page => {
+  activePage = page;
+  keysSearch.value = '';
+  renderKeysList();
+  keysList.scrollTop = 0;
+};
+
+keysSearch.addEventListener('input', renderKeysList);
+renderKeysList();
 
 const setKeysSheetOpen = open => {
   keysSheet.hidden = !open;
 };
 
 const handleButton = async button => {
-  const { key, toggle, ctrl, text, action } = button.dataset;
+  const { key, ctrl, text, action } = button.dataset;
   if (action === KEYS_ACTION.OPEN) {
     // Blurred to dismiss the soft keyboard; terminalWasFocused (set by the
     // toolbar pointerdown) is kept so closing the sheet can restore it.
     setKeysSheetOpen(true);
     term.blur();
-  } else if (toggle) {
-    setModifier(toggle, !modifiers[toggle]);
   } else if (key) {
     if (!repeated) sendKey(key);
     repeated = false;
-    clearModifiers();
   } else if (ctrl) {
     sendInput(CTRL_SHORTCUT[ctrl.toUpperCase()]);
-    clearModifiers();
   } else if (text) {
-    // No Enter, so arguments can be added before running.
     sendInput(text);
-    clearModifiers();
+    // Without data-submit there is no Enter, so arguments can be added first.
+    // Enter is its own write so a TUI reads it as a keypress, not as the tail
+    // of pasted text.
+    if ('submit' in button.dataset) {
+      setTimeout(() => sendInput(CR), SUBMIT_DELAY_MS);
+    }
   } else if (action === KEYS_ACTION.PASTE) {
     try {
       term.paste(await navigator.clipboard.readText());
@@ -168,16 +195,28 @@ toolbar.addEventListener('click', event => {
   if (button) handleButton(button);
 });
 
-// Same pointerdown handling as the toolbar, without hold-to-repeat.
-keysSheet.addEventListener('pointerdown', event => event.preventDefault());
+// Same pointerdown handling as the toolbar, without hold-to-repeat. The search
+// field is exempt so it can take focus and show the soft keyboard.
+keysSheet.addEventListener('pointerdown', event => {
+  if (event.target !== keysSearch) event.preventDefault();
+});
 
 const closeKeysSheet = () => {
   setKeysSheetOpen(false);
+  keysSearch.value = '';
+  renderKeysList();
   if (terminalWasFocused) term.focus();
 };
-keysSheet.addEventListener('contextmenu', event => event.preventDefault());
+keysSheet.addEventListener('contextmenu', event => {
+  if (event.target !== keysSearch) event.preventDefault();
+});
 
 keysSheet.addEventListener('click', event => {
+  const tab = event.target.closest('[data-page-tab]');
+  if (tab) {
+    setKeysPage(tab.dataset.pageTab);
+    return;
+  }
   const button = event.target.closest('button');
   if (button?.dataset.action === KEYS_ACTION.CLOSE) {
     closeKeysSheet();
@@ -185,8 +224,7 @@ keysSheet.addEventListener('click', event => {
   }
   if (!button) return;
   handleButton(button);
-  // Ctrl and Alt stay open so a modifier can be chosen before the key.
-  if (!button.dataset.toggle) closeKeysSheet();
+  closeKeysSheet();
 });
 
 // Capture phase so the terminal does not also receive the Escape.

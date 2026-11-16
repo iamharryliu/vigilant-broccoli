@@ -3,7 +3,11 @@ import { apiKey } from '@better-auth/api-key';
 import pg from 'pg';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
-const CLIENT_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+const CLIENT_ORIGINS = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://sandbox.harryliu.dev',
+];
 // Created by neon/migrations; must match the schema those tables live in.
 const AUTH_SCHEMA = 'vb_express_auth';
 const MAX_POOL_CONNECTIONS = 3;

@@ -110,7 +110,7 @@ export const VB_APP_URL = {
   SERVICE_MANAGER: {
     NAME: 'Service Manager API',
     URL: 'https://api.harryliu.dev/',
-    STAGING_URL: 'https://staging-vb-express.fly.dev/',
+    STAGING_URL: 'https://staging-api.harryliu.dev/',
   },
   MEDIA_SERVICE: {
     NAME: 'Media Service API',

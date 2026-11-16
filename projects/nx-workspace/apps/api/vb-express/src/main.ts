@@ -77,7 +77,14 @@ const PUBLIC_CLIENT_ORIGINS = [
 const CALENDAR_PREVIEW_ORIGIN =
   /^https:\/\/[a-z0-9-]+\.preview-calendars\.pages\.dev$/;
 
+const AUTH_API_PREFIX = '/api/auth/';
+const AUTH_CLIENT_ORIGINS = ['https://sandbox.harryliu.dev'];
+
 const privateCorsOptions = createCorsOptions(ALLOWED_ORIGINS);
+const authCorsOptions = createCorsOptions([
+  ...ALLOWED_ORIGINS,
+  ...AUTH_CLIENT_ORIGINS,
+]);
 const publicCorsOptions = {
   ...createCorsOptions([...ALLOWED_ORIGINS, ...PUBLIC_CLIENT_ORIGINS]),
   origin: [
@@ -90,14 +97,15 @@ const publicCorsOptions = {
 };
 
 // The public Pages origins are allowed only on the public read-only prefix and
-// never with credentials; every other route keeps the original allowlist.
-const corsDelegator: FastifyCorsOptionsDelegate = (req, callback) =>
-  callback(
-    null,
-    req.url.split(QUERY_SEPARATOR)[0].startsWith(PUBLIC_API_PREFIX)
-      ? publicCorsOptions
-      : privateCorsOptions,
-  );
+// never with credentials. Browser sign-in clients get credentialed CORS on the
+// Better Auth prefix only; every other route keeps the original allowlist.
+const corsDelegator: FastifyCorsOptionsDelegate = (req, callback) => {
+  const path = req.url.split(QUERY_SEPARATOR)[0];
+  if (path.startsWith(PUBLIC_API_PREFIX))
+    return callback(null, publicCorsOptions);
+  if (path.startsWith(AUTH_API_PREFIX)) return callback(null, authCorsOptions);
+  return callback(null, privateCorsOptions);
+};
 
 const registerService = (
   app: FastifyInstance,

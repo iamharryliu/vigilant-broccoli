@@ -237,6 +237,13 @@
       "titleKey": "WEB_APPLICATIONS_PAGE.WEB_TERMINAL.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WEB_TERMINAL.DESCRIPTION",
       "readmePath": "infrastructure/code-server/README.md"
+    },
+    {
+      "id": "sandbox",
+      "href": "https://sandbox.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.SANDBOX.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.SANDBOX.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/sandbox/README.md"
     }
   ]
 }
