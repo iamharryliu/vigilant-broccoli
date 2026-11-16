@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { Check, ChevronDown } from 'lucide-react';
 import { cn } from '../utils/cn';
@@ -8,6 +8,10 @@ import { usePortalTheme } from '../hooks/usePortalTheme';
 
 const DEFAULT_PLACEHOLDER = 'Select';
 const DEFAULT_OPTION_IDENTIFIER = 'id';
+const MOUSE_POINTER_TYPE = 'mouse';
+
+const isPointInRect = (x: number, y: number, rect: DOMRect) =>
+  x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 
 type SelectOption = number | string | object;
 
@@ -53,6 +57,8 @@ export const Select = <T extends SelectOption>(props: SelectProps<T>) => {
     'aria-label': ariaLabel,
   } = props;
   const theme = usePortalTheme();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const suppressNextClickRef = useRef(false);
   const isControlled = 'value' in props || 'selectedOption' in props;
   const selection = 'value' in props ? value : selectedOption;
   const handleValueChange = onValueChange ?? setValue;
@@ -103,6 +109,16 @@ export const Select = <T extends SelectOption>(props: SelectProps<T>) => {
       <SelectPrimitive.Trigger
         id={id}
         aria-label={ariaLabel}
+        ref={triggerRef}
+        onPointerDown={() => {
+          suppressNextClickRef.current = false;
+        }}
+        onClick={event => {
+          if (suppressNextClickRef.current) {
+            suppressNextClickRef.current = false;
+            event.preventDefault();
+          }
+        }}
         className={cn(
           'inline-flex h-10 w-fit items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
           className,
@@ -122,6 +138,18 @@ export const Select = <T extends SelectOption>(props: SelectProps<T>) => {
             theme.className,
           )}
           style={theme.style}
+          onPointerDownOutside={event => {
+            // While open, Radix disables pointer events outside the list, so a
+            // touch tap on the trigger closes it as an outside pointerdown and
+            // the tap's click then reopens it: the list flickers and stays open.
+            const { clientX, clientY, pointerType } =
+              event.detail.originalEvent;
+            const triggerRect = triggerRef.current?.getBoundingClientRect();
+            suppressNextClickRef.current =
+              pointerType !== MOUSE_POINTER_TYPE &&
+              triggerRect !== undefined &&
+              isPointInRect(clientX, clientY, triggerRect);
+          }}
         >
           <SelectPrimitive.Viewport className="p-1">
             {options.map(option => (
