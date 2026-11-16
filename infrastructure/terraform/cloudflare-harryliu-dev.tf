@@ -89,6 +89,27 @@ resource "cloudflare_dns_record" "harryliu_dev_staging_api" {
   proxied = true
 }
 
+# Cloudflare's proxy hides the CNAME from Fly, so the cert only issues once
+# these DNS-only records prove domain ownership; without them the origin TLS
+# handshake fails with a 525. Values come from `flyctl certs show --json`.
+resource "cloudflare_dns_record" "harryliu_dev_staging_api_acme_challenge" {
+  zone_id = var.cloudflare_zone_id
+  name    = "_acme-challenge.staging-api.harryliu.dev"
+  content = "staging-api.harryliu.dev.0pqp2op.flydns.net"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "harryliu_dev_staging_api_fly_ownership" {
+  zone_id = var.cloudflare_zone_id
+  name    = "_fly-ownership.staging-api.harryliu.dev"
+  content = "\"app-0pqp2op\""
+  type    = "TXT"
+  ttl     = 1
+  proxied = false
+}
+
 resource "cloudflare_dns_record" "harryliu_dev_uptime" {
   zone_id = var.cloudflare_zone_id
   name    = var.uptime_domain
