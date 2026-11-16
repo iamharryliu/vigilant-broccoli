@@ -10,6 +10,31 @@ const BACKOFF = { INITIAL_MS: 500, MAX_MS: 10_000, FACTOR: 2 };
 const RELOAD_AFTER_FAILURES = 3;
 const RELOAD_GUARD_KEY = 'shell-reload-at';
 const RELOAD_GUARD_MS = 60_000;
+const FONT_SIZE = { MIN: 8, MAX: 20, DESKTOP: 14, MOBILE: 11, STEP: 1 };
+const FONT_SIZE_KEY = 'shell-font-size';
+const MOBILE_QUERY = '(max-width: 600px)';
+
+// Storage can throw in private mode; the default size is used instead.
+const readStoredFontSize = () => {
+  try {
+    return Number(localStorage.getItem(FONT_SIZE_KEY)) || null;
+  } catch {
+    return null;
+  }
+};
+
+const storeFontSize = size => {
+  try {
+    localStorage.setItem(FONT_SIZE_KEY, String(size));
+  } catch {
+    // Size still applies for this page load.
+  }
+};
+
+const defaultFontSize = () =>
+  window.matchMedia(MOBILE_QUERY).matches
+    ? FONT_SIZE.MOBILE
+    : FONT_SIZE.DESKTOP;
 
 const app = document.getElementById('app');
 const status = document.getElementById('status');
@@ -17,7 +42,7 @@ const toolbar = document.getElementById('toolbar');
 
 const term = new Terminal({
   cursorBlink: true,
-  fontSize: 14,
+  fontSize: readStoredFontSize() ?? defaultFontSize(),
   scrollback: 5000,
   allowProposedApi: true,
   theme: { background: '#111111' },
@@ -31,7 +56,18 @@ const keysList = document.getElementById('keys-list');
 const keysSearch = document.getElementById('keys-search');
 const keysTabs = document.getElementById('keys-tabs');
 const keysEmpty = document.getElementById('keys-empty');
-const KEYS_ACTION = { OPEN: 'keys', CLOSE: 'close', PASTE: 'paste' };
+const keysFontSize = document.getElementById('keys-font-size');
+const KEYS_ACTION = {
+  OPEN: 'keys',
+  CLOSE: 'close',
+  PASTE: 'paste',
+  FONT_DOWN: 'font-down',
+  FONT_UP: 'font-up',
+};
+const FONT_STEP_BY_ACTION = {
+  [KEYS_ACTION.FONT_DOWN]: -FONT_SIZE.STEP,
+  [KEYS_ACTION.FONT_UP]: FONT_SIZE.STEP,
+};
 const KEYS_PAGE = { CLAUDE: 'claude', DEV: 'dev' };
 const SUBMIT_DELAY_MS = 50;
 let activePage = KEYS_PAGE.CLAUDE;
@@ -50,6 +86,24 @@ const fitTerminal = () => {
   fit.fit();
   sendResize();
 };
+
+const renderFontSize = () => {
+  keysFontSize.textContent = `${term.options.fontSize}px`;
+};
+
+// Refits after the change so the shell and TUIs reflow to the new grid.
+const changeFontSize = step => {
+  const size = Math.min(
+    FONT_SIZE.MAX,
+    Math.max(FONT_SIZE.MIN, term.options.fontSize + step),
+  );
+  term.options.fontSize = size;
+  storeFontSize(size);
+  renderFontSize();
+  fitTerminal();
+};
+
+renderFontSize();
 
 term.onData(sendInput);
 
@@ -220,6 +274,11 @@ keysSheet.addEventListener('click', event => {
   const button = event.target.closest('button');
   if (button?.dataset.action === KEYS_ACTION.CLOSE) {
     closeKeysSheet();
+    return;
+  }
+  // Keeps the sheet open so several taps can adjust the size.
+  if (button?.dataset.action in FONT_STEP_BY_ACTION) {
+    changeFontSize(FONT_STEP_BY_ACTION[button.dataset.action]);
     return;
   }
   if (!button) return;
