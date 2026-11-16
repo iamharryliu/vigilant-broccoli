@@ -38,4 +38,5 @@
 ## Maintenance
 
 - Global keyboard shortcuts are handled in `src/app/(pages)/layout.tsx` (`processKeyboardInput`), and the hold-`?` overlay binding lives further down in the same file's keydown/keyup effect
+- The search dialog's `/` and Cmd/Ctrl+F come from react-lib's [`useFocusSearchShortcut`](../../../../../libs/@vigilant-broccoli/react-lib/docs/features/focus-search-shortcut.md) in the same layout, not `processKeyboardInput`
 - Whenever a shortcut is added, changed, or removed in either place, update `KEYBOARD_SHORTCUTS_MARKDOWN` in `src/app/content/keyboard-shortcuts.md.ts` to match

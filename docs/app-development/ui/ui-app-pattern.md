@@ -28,6 +28,8 @@ Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel (atoms), the
 
 Dialogs with forms, lists or other content needing height (e.g. create/manage task dialogs) pass `fullScreenOnMobile` to `DialogContent`/`AlertDialogContent` (or `FULL_SCREEN_ON_MOBILE_DIALOG_CLASS` when composing classes) so they fill the screen below `sm`; short dialogs such as confirmations stay small centered modals.
 
+A page-level search binds react-lib's `useFocusSearchShortcut`, so `/` (outside text fields) and Cmd/Ctrl+F (anywhere except the search input itself) focus it; see [focus-search-shortcut.md](../../../projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/focus-search-shortcut.md) for the keys and guards.
+
 User-facing auth is `createSupabaseAuth` from `react-lib-auth` — read [supabase-auth-pattern.md](./auth/supabase-auth-pattern.md) first, never hand-roll per-app auth. Supabase auth is UI-app-only: its server half (bearer-token middleware, admin client, per-route helpers) lives inside the Next.js apps, and no fly API service uses it.
 
 ## i18n (required)
