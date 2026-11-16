@@ -3,7 +3,7 @@ const TEXT_ENTRY_ROLES = ['textbox', 'combobox', 'searchbox'];
 const TEXT_ENTRY_SELECTOR = TEXT_ENTRY_ROLES.map(
   role => `[role="${role}"]`,
 ).join(',');
-export const OPEN_DIALOG_SELECTOR =
+const OPEN_DIALOG_SELECTOR =
   '[role="dialog"], [role="alertdialog"], [aria-modal="true"], dialog[open]';
 
 const isTextEntryElement = (target: EventTarget | null): boolean =>

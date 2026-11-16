@@ -490,10 +490,7 @@ export const DocsExplorer = ({
       searchInputRef.current?.select();
     });
   }, []);
-  useFocusSearchShortcut(focusSearch, {
-    enabled: Boolean(search),
-    searchRef: searchInputRef,
-  });
+  useFocusSearchShortcut(focusSearch, { enabled: Boolean(search) });
 
   useEffect(() => {
     if (!search) return;

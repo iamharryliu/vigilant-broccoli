@@ -28,7 +28,7 @@ const AppsContent = () => {
     searchInputRef.current?.focus();
     searchInputRef.current?.select();
   }, []);
-  useFocusSearchShortcut(focusSearch, { searchRef: searchInputRef });
+  useFocusSearchShortcut(focusSearch);
   const query = search.trim().toLowerCase();
   const sections = APP_SECTIONS.map(section => ({
     ...section,

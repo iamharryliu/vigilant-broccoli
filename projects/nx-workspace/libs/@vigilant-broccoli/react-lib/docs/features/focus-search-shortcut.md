@@ -1,18 +1,12 @@
 # Focus Search Shortcut
 
-`useFocusSearchShortcut(onFocusSearch, { enabled, searchRef })` binds the shared "focus search" keys to a window `keydown` listener, so every page-level search answers to the same keys.
+`useFocusSearchShortcut(onFocusSearch, { enabled })` binds `/` to a window `keydown` listener, so every page-level search answers to the same key.
 
 ## Keys
 
 - `/` calls `onFocusSearch` unless `shouldIgnoreShortcutKeystroke` rejects it: inside an input, textarea, select, textbox/combobox/searchbox role or contenteditable, while a dialog is open, with Ctrl/Cmd/Alt held, during IME composition, or after another handler called `preventDefault`.
-- Cmd+F (macOS) or Ctrl+F (elsewhere) calls `onFocusSearch` from anywhere, including another text field or editor. `metaKey` or `ctrlKey` with `f` in either case; Alt or Shift disables it.
-- Either match calls `preventDefault`, so the slash is not typed and the browser's find bar does not open.
-
-## Cmd/Ctrl+F guards
-
-- Skipped while `searchRef.current` is the focused element, so a second press reaches the browser's native find.
-- Skipped when the event is already `defaultPrevented` (e.g. an editor with its own find), during IME composition, or while a dialog is open, unless that dialog contains `searchRef.current`.
-- Without `searchRef` any open dialog skips it, which suits searches that open as a dialog: once the dialog is open, the browser's find takes over.
+- A match calls `preventDefault`, so the slash is not typed.
+- Cmd/Ctrl+F is deliberately not bound: the browser's find keeps working on every page, including where the shortcut opens a search dialog instead of focusing an input.
 
 ## Usage
 
