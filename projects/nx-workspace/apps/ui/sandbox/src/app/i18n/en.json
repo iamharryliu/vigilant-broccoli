@@ -1,0 +1,14 @@
+{
+  "SITE_NAME": "Sandbox",
+  "GOOGLE_SIGN_IN": {
+    "PAGE_TITLE": "Google Sign-in",
+    "TITLE": "Better Auth Google sign-in",
+    "API_BASE_URL": "API: {url}",
+    "SIGNED_OUT": "Signed out.",
+    "NAME": "Name",
+    "EMAIL": "Email",
+    "SESSION_EXPIRES": "Session expires",
+    "SIGN_OUT": "Sign out",
+    "ERROR": "Error: {message}"
+  }
+}

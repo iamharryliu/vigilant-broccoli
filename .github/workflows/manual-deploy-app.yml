@@ -21,6 +21,7 @@ on:
           - chat
           - bookmarks-react
           - pomodoro-react
+          - sandbox
           - photography-react
           - calendars
           - hearth

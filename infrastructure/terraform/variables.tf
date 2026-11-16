@@ -453,6 +453,26 @@ variable "pomodoro_pages_subdomain" {
   default = "production-pomodoro-react.pages.dev"
 }
 
+variable "sandbox_domain" {
+  type    = string
+  default = "sandbox.harryliu.dev"
+}
+
+variable "sandbox_pages_project" {
+  type    = string
+  default = "production-sandbox"
+}
+
+variable "sandbox_pages_subdomain" {
+  type    = string
+  default = "production-sandbox.pages.dev"
+}
+
+variable "sandbox_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
+}
+
 variable "cloud8skate_domain" {
   type    = string
   default = "cloud8skate.com"
