@@ -40,20 +40,16 @@
         "production": {}
       }
     },
-    "ensure-cf-project:production": {
+    "ensure-cf-project": {
       "command": "npx wrangler pages project list 2>&1 | grep -qw production-sandbox || npx wrangler pages project create production-sandbox --production-branch production"
     },
-    "prune-deployments:production": {
+    "prune-deployments": {
       "command": "npx tsx scripts/prune-wrangler-deployments.ts production-sandbox 10",
-      "dependsOn": ["ensure-cf-project:production"]
+      "dependsOn": ["ensure-cf-project"]
     },
-    "deploy:production": {
+    "deploy": {
       "command": "npx wrangler pages deploy dist/sandbox --project-name production-sandbox --branch production",
-      "dependsOn": [
-        "build",
-        "ensure-cf-project:production",
-        "prune-deployments:production"
-      ]
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     }
   }
 }
