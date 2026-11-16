@@ -8,6 +8,7 @@
 - [Networking](#networking)
 - [Web Rendering](#web-rendering)
 - [Testing](#testing)
+- [Performance](#performance)
 - [Development Approaches](#development-approaches)
 - [SDLC Models](#sdlc-models)
 - [Software Roles](#software-roles)
@@ -38,7 +39,6 @@
 | Imperative programming | A paradigm where you spell out the steps that change program state; procedural and object-oriented programming are imperative styles. |
 | Intellectual Property | Legal ownership of creations of the mind, such as source code, designs and brands, protected by copyright, patents, trademarks and licenses. |
 | Interpreted | Source code is executed directly at runtime by an interpreter, with no separate build step (e.g. Python, Ruby, Bash). |
-| Lazy loading | Deferring a load until first access, such as an ORM fetching a related entity only when it is read. Can cause N+1 queries. |
 | Logic programming | A declarative paradigm where you state facts and rules and the engine searches for answers that satisfy them (e.g. Prolog). |
 | Low-level language | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C). |
 | Machine code | Binary instructions executed directly by a specific CPU architecture (e.g. x86-64, ARM64); the lowest level of software. |
@@ -128,6 +128,23 @@
 | System | Tests the fully integrated application as a whole against its overall requirements. | Validating end-to-end functional and non-functional requirements before release. |
 | Unit | Verifies a single function, method, or class in isolation, typically with dependencies mocked/stubbed. | Catching logic bugs early, fast feedback during development. |
 
+## Performance
+
+| Term | Definition |
+| --- | --- |
+| AOT | Ahead-of-time compilation: translating code to machine code at build time, before it runs. Gives fast startup and no runtime compiler cost, but cannot optimize from observed behavior and ties the binary to a platform. |
+| Benchmarking | Running a repeatable workload against a system to measure its performance, so results can be compared before and after a change or against alternatives. |
+| Bottleneck | The slowest stage or most constrained resource in a system, which caps overall throughput or latency; speeding up anything else barely helps. |
+| Eager loading | Fetching or initializing data up front, such as an ORM loading a related entity with the parent query. Pays the cost once and avoids N+1 queries, but wastes work if the data goes unused. |
+| JIT | Just-in-time compilation: compiling code to machine code at runtime, usually for hot paths. Can reach higher peak speed by optimizing from observed behavior, but slows startup and uses extra CPU and memory while warming up. |
+| Latency | The time one operation takes from request to response, usually in milliseconds. Reported as percentiles (p50, p95, p99) because the average hides the slow tail. |
+| Lazy loading | Deferring a load until first access, such as an ORM fetching a related entity only when it is read. Can cause N+1 queries. |
+| p50 | 50th percentile (median): half of measurements fall at or below it. Shows typical latency. |
+| p95 | 95th percentile: the value that 95% of measurements fall at or below, so only the slowest 5% exceed it. Used for latency, where it shows the slow tail that the average hides. |
+| p99 | 99th percentile: only the slowest 1% of measurements exceed it. Shows worst-case tail latency, which affects the most heavily loaded users and requests. |
+| Profiling | Measuring where a running program spends its time and resources (CPU, memory, I/O, queries) to find what to optimize instead of guessing. |
+| Throughput | The amount of work completed per unit of time, such as requests per second. Distinct from latency: a system can have high throughput and still be slow for each individual request. |
+
 ## Development Approaches
 
 | Term | Definition |
@@ -211,7 +228,6 @@
 | Namespace | A Kubernetes scope that groups and isolates resources within one cluster, commonly per team or environment. |
 | Node | A worker machine (VM or physical) in a Kubernetes cluster. Runs the kubelet, kube-proxy, a container runtime and the pods. |
 | Operator | A Kubernetes controller that encodes operational knowledge for an application, managing it through custom resources (e.g. a database operator handling backups and failover). |
-| p95 | 95th percentile: the value that 95% of measurements fall at or below, so only the slowest 5% exceed it. Used for latency, where it shows the slow tail that the average hides. |
 | Platform engineering | Building an internal developer platform of self-service tooling and paved paths so product teams can ship and run software without managing the underlying infrastructure. |
 | Pod | The smallest deployable Kubernetes unit: one or more containers that share networking and storage and are scheduled together onto one node. |
 | Prometheus | An open-source monitoring system that scrapes numeric metrics from services on an interval, stores them as time series and is queried with PromQL. Commonly feeds Grafana and alerts. |
