@@ -12,6 +12,7 @@
   - [Fixes](#fixes)
   - [Spotting It](#spotting-it)
   - [Across Services](#across-services)
+- [Hosting](#hosting)
 
 ## Databases
 
@@ -104,3 +105,7 @@ SELECT * FROM users WHERE id IN (1, 2, 3 /* ... distinct author ids */);
 ### Across Services
 
 The same shape appears over the network: a client fetches a list from one API, then calls another API once per item. The fixes are analogous, such as a batch endpoint that accepts many ids, or an endpoint that returns the related data inline. See [Service Communication](../service-communication.md) for how services talk to each other.
+
+## Hosting
+
+- [Free-Tier Cloud Database Options](./free-tier-db-options.md)
