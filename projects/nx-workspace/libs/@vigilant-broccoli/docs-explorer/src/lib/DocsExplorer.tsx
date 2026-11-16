@@ -23,6 +23,7 @@ import {
   DropdownMenu,
   HighlightMatch,
   IconButton,
+  shouldIgnoreShortcutKeystroke,
 } from '@vigilant-broccoli/react-lib';
 
 const MOBILE_NO_CARD_CLS =
@@ -35,6 +36,8 @@ const KEY_ARROW_DOWN = 'ArrowDown';
 const KEY_ARROW_UP = 'ArrowUp';
 const KEY_ENTER = 'Enter';
 const KEY_ESCAPE = 'Escape';
+const KEY_FOCUS_SEARCH = '/';
+const KEYDOWN_EVENT = 'keydown';
 const SEARCH_DEBOUNCE_MS = 300;
 const SEARCH_RESULT_ITEM_ATTR = 'data-search-result-index';
 const NODE_TYPE_DIRECTORY = 'directory';
@@ -479,6 +482,25 @@ export const DocsExplorer = ({
   }, [urlSync, selectFile]);
 
   const showSidebarOnMobile = () => setMobilePanel('sidebar');
+
+  useEffect(() => {
+    if (!search) return;
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key !== KEY_FOCUS_SEARCH || shouldIgnoreShortcutKeystroke(e)) {
+        return;
+      }
+      e.preventDefault();
+      setMobilePanel('sidebar');
+      // The sidebar is display:none on mobile while the content panel shows,
+      // and an element can't take focus until the next frame paints it.
+      requestAnimationFrame(() => {
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      });
+    };
+    window.addEventListener(KEYDOWN_EVENT, handleKeyDown);
+    return () => window.removeEventListener(KEYDOWN_EVENT, handleKeyDown);
+  }, [search]);
 
   useEffect(() => {
     if (!search) return;
