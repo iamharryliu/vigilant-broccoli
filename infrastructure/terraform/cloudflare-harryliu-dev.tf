@@ -78,6 +78,17 @@ resource "cloudflare_dns_record" "harryliu_dev_api" {
   proxied = true
 }
 
+# Same-site staging host for Better Auth clients on *.harryliu.dev (sandbox);
+# fly.dev is a public suffix, so its cookies are cross-site to those pages.
+resource "cloudflare_dns_record" "harryliu_dev_staging_api" {
+  zone_id = var.cloudflare_zone_id
+  name    = "staging-api.harryliu.dev"
+  content = "staging-vb-express.fly.dev"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = true
+}
+
 resource "cloudflare_dns_record" "harryliu_dev_uptime" {
   zone_id = var.cloudflare_zone_id
   name    = var.uptime_domain

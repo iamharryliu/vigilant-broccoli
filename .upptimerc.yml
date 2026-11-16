@@ -47,7 +47,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-service-manager
-    url: https://staging-vb-express.fly.dev/
+    url: https://staging-api.harryliu.dev/
   - name: staging-media-service
     url: https://staging-media-service.fly.dev/
   - name: staging-component-library
