@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Programming Concepts](#programming-concepts)
+- [Object-Oriented Programming](#object-oriented-programming)
 - [Architecture](#architecture)
 - [Networking](#networking)
 - [Web Rendering](#web-rendering)
@@ -48,6 +49,18 @@
 | Ternary Operator | A one line if else statement. |
 | Transpiled | Source code is translated ahead of time into source code of another language at a similar level of abstraction (e.g. TypeScript to JavaScript). |
 | Transpiler | Transforms code syntax and features so the code runs across different environments. |
+
+## Object-Oriented Programming
+
+| Term | Definition |
+| :-- | :-- |
+| Abstraction | Exposing only what a caller needs and hiding the implementation behind a simpler interface, such as an abstract class or interface. |
+| Composition | Building behaviour by holding other objects as fields and delegating to them ("has-a"), instead of extending a parent class ("is-a"). Usually preferred over inheritance because it avoids tight coupling to a class hierarchy. |
+| Encapsulation | Bundling data with the methods that act on it and restricting direct access to internal state (for example with private fields), so an object controls how its data changes. |
+| Inheritance | A class reusing and extending the fields and methods of a parent class ("is-a"). Powerful but couples the child to the parent's implementation. |
+| Interface | A contract listing the methods a type must provide, with no implementation. Callers depend on the interface, so implementations can be swapped (see Dependency Inversion). |
+| Polymorphism | Treating different types through one shared interface or base type, with each type supplying its own behaviour. |
+| SOLID | Five design principles for maintainable object-oriented code: single responsibility, open/closed, Liskov substitution, interface segregation and dependency inversion. See [SOLID Principles](./general/solid-principles.md). |
 
 ## Architecture
 
@@ -118,7 +131,7 @@
 
 | Term | Definition |
 | --- | --- |
-| BDD | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/bdd.md). |
+| BDD | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/software-testing.md#behavior-driven-development-bdd). |
 | CI/CD | Continuous Integration/Continuous Deployment (or Delivery). CI automatically builds and tests every merged change; CD automatically ships passing changes to staging or production. |
 | SDLC | Software Development Life Cycle. The end-to-end stages software moves through: planning, requirements, design, implementation, testing, deployment and maintenance. Models like waterfall and agile arrange those stages differently. |
 | TDD | Test-Driven Development. You write the test first and then the code that makes it pass. |
