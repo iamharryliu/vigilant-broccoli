@@ -11,6 +11,13 @@ const SAMPLE = `# Markdown sampler
 
 Intro prose stays above the collapsible sections. It has **bold**, *italic*, ~~strikethrough~~, \`inline code\` and a [link](https://harryliu.dev).
 
+<details>
+<summary>Click to expand</summary>
+
+Your **Markdown** content goes here.
+
+</details>
+
 ## Text and lists
 
 ### Unordered and ordered

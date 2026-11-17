@@ -1,11 +1,12 @@
 # Changelog
 
-One section per month, newest first. Agentic pull requests add their own bullet when they change behavior, and `cron-agentic-pr-create-changelog` folds each week's merged pull requests into the current month, tidying those bullets and covering the rest; review entries in its PR and never edit the markers. Months before 2026-07 were reconstructed from commit history, from before work landed through pull requests.
+One collapsible section per month, newest first. Agentic pull requests add their own bullet when they change behavior, and `cron-agentic-pr-create-changelog` folds each week's merged pull requests into the current month, tidying those bullets and covering the rest; review entries in its PR and never edit the markers. Months before 2026-07 were reconstructed from commit history, from before work landed through pull requests.
 
 <!-- changelog-through: acbdb805a10d6e5679c56e24694130971e1f2d4e -->
 <!-- changelog-entries -->
 
-## 2026-11
+<details>
+<summary>November 2026</summary>
 
 ### dotfiles
 
@@ -54,7 +55,7 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New Changelog page lists these entries, linked from the home page ([#1586](https://github.com/iamharryliu/vigilant-broccoli/pull/1586)).
 - New Private section after Demo lists owner-only apps, and Web Terminal moved there ([#1606](https://github.com/iamharryliu/vigilant-broccoli/pull/1606)).
-- The Changelog page shows each month as a collapsible section with a readable heading such as November 2026, newest open and animated as it toggles ([#1660](https://github.com/iamharryliu/vigilant-broccoli/pull/1660)).
+- The Changelog page shows each month as a collapsible section titled like November 2026, newest open and animated as it toggles ([#1660](https://github.com/iamharryliu/vigilant-broccoli/pull/1660)).
 - Games sit after Web Applications, and the Status page drops its updated-date line ([#1396](https://github.com/iamharryliu/vigilant-broccoli/pull/1396), [#1483](https://github.com/iamharryliu/vigilant-broccoli/pull/1483)).
 
 ### docs-md
@@ -127,7 +128,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New SSE transport with HTTP publishing for one-way consumers ([#1543](https://github.com/iamharryliu/vigilant-broccoli/pull/1543)).
 
-## 2026-10
+</details>
+
+<details>
+<summary>October 2026</summary>
 
 ### pages-index
 
@@ -222,7 +226,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 - Every deployed app has its own emoji icon, also on the Apple home screen ([#921](https://github.com/iamharryliu/vigilant-broccoli/pull/921)).
 - llm-service, utilities-ui and waiting-games images are published to Docker Hub ([#1160](https://github.com/iamharryliu/vigilant-broccoli/pull/1160)).
 
-## 2026-09
+</details>
+
+<details>
+<summary>September 2026</summary>
 
 ### personal-website-react
 
@@ -282,7 +289,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 - Browser tabs, history and bookmarks name the current page instead of just the app ([#558](https://github.com/iamharryliu/vigilant-broccoli/pull/558)).
 - Deploys email the deployed PR's details ([#758](https://github.com/iamharryliu/vigilant-broccoli/pull/758)).
 
-## 2026-08
+</details>
+
+<details>
+<summary>August 2026</summary>
 
 ### hearth
 
@@ -346,7 +356,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 - Hammerspoon and Karabiner-Elements turn Caps Lock into a Spaces grid navigator with live window previews ([#516](https://github.com/iamharryliu/vigilant-broccoli/pull/516), [#526](https://github.com/iamharryliu/vigilant-broccoli/pull/526), [#528](https://github.com/iamharryliu/vigilant-broccoli/pull/528)).
 - Night Shift runs from sunset to sunrise ([#517](https://github.com/iamharryliu/vigilant-broccoli/pull/517)).
 
-## 2026-07
+</details>
+
+<details>
+<summary>July 2026</summary>
 
 ### pages-index
 
@@ -402,7 +415,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 - Neovim works as a full editor with LSP, Treesitter, completion and formatting, and Neovide remembers its window size ([#243](https://github.com/iamharryliu/vigilant-broccoli/pull/243), [#239](https://github.com/iamharryliu/vigilant-broccoli/pull/239)).
 - Weekly cleanup also prunes Docker volumes and build cache ([#171](https://github.com/iamharryliu/vigilant-broccoli/pull/171)).
 
-## 2026-06
+</details>
+
+<details>
+<summary>June 2026</summary>
 
 ### personal-website
 
@@ -438,7 +454,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Public services are monitored by Upptime, with a status page.
 
-## 2026-05
+</details>
+
+<details>
+<summary>May 2026</summary>
 
 ### vb-manager-next
 
@@ -470,7 +489,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New `@vigilant-broccoli/money-movement` library.
 
-## 2026-04
+</details>
+
+<details>
+<summary>April 2026</summary>
 
 ### vb-manager-next
 
@@ -491,7 +513,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Updated contact form.
 
-## 2026-03
+</details>
+
+<details>
+<summary>March 2026</summary>
 
 ### vb-manager-next
 
@@ -516,7 +541,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Local Docker Compose stack with Resilio Sync, Immich, Postgres with Adminer, and Grafana ([#10](https://github.com/iamharryliu/vigilant-broccoli/pull/10)).
 
-## 2026-02
+</details>
+
+<details>
+<summary>February 2026</summary>
 
 ### vb-manager-next
 
@@ -540,7 +568,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New metronome utility and Vercel library.
 
-## 2026-01
+</details>
+
+<details>
+<summary>January 2026</summary>
 
 ### vb-manager-next
 
@@ -555,7 +586,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New `tmux-vb` workspace with a tmux and Neovide setup, Vault secret management and IAP SSH.
 
-## 2025-12
+</details>
+
+<details>
+<summary>December 2025</summary>
 
 ### vb-manager-next
 
@@ -575,13 +609,19 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Generic database Docker containers for local development.
 
-## 2025-11
+</details>
+
+<details>
+<summary>November 2025</summary>
 
 ### rabbitmq-service
 
 - Fixed CI deployment.
 
-## 2025-10
+</details>
+
+<details>
+<summary>October 2025</summary>
 
 ### vb-manager
 
@@ -591,7 +631,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New Stripe payments demo.
 
-## 2025-09
+</details>
+
+<details>
+<summary>September 2025</summary>
 
 ### vb-manager
 
@@ -601,7 +644,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New Slack interface and warnings for unset environment variables.
 
-## 2025-08
+</details>
+
+<details>
+<summary>August 2025</summary>
 
 ### vb-manager
 
@@ -619,7 +665,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Added an IMDb link.
 
-## 2025-07
+</details>
+
+<details>
+<summary>July 2025</summary>
 
 ### vb-automations
 
@@ -637,7 +686,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New manager app, starting with a GitHub configuration list.
 
-## 2025-06
+</details>
+
+<details>
+<summary>June 2025</summary>
 
 ### ui-tools
 
@@ -656,19 +708,28 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - A script downloads the résumé as a PDF.
 
-## 2025-04
+</details>
+
+<details>
+<summary>April 2025</summary>
 
 ### google-service
 
 - Improved Google service integration in the shared libraries.
 
-## 2025-03
+</details>
+
+<details>
+<summary>March 2025</summary>
 
 ### cloud8skate
 
 - Updated contact email.
 
-## 2025-02
+</details>
+
+<details>
+<summary>February 2025</summary>
 
 ### employee-handler
 
@@ -686,7 +747,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New shared `@vigilant-broccoli/common-js`, `common-node`, `common-browser` and `react-lib` libraries, with a RabbitMQ queue helper.
 
-## 2025-01
+</details>
+
+<details>
+<summary>January 2025</summary>
 
 ### personal-website
 
@@ -696,13 +760,19 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New Go, RabbitMQ (deployed on Fly.io) and WebSocket demos.
 
-## 2024-12
+</details>
+
+<details>
+<summary>December 2024</summary>
 
 ### dotfiles
 
 - Ongoing dotfiles and alias updates.
 
-## 2024-11
+</details>
+
+<details>
+<summary>November 2024</summary>
 
 ### cloud8skate
 
@@ -712,7 +782,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New Swift demo app.
 
-## 2024-10
+</details>
+
+<details>
+<summary>October 2024</summary>
 
 ### harryliu-dev
 
@@ -734,7 +807,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Deploys to Fly.io.
 
-## 2024-09
+</details>
+
+<details>
+<summary>September 2024</summary>
 
 ### todo-lib
 
@@ -756,7 +832,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Smaller cities file for faster loading.
 
-## 2024-08
+</details>
+
+<details>
+<summary>August 2024</summary>
 
 ### grind-75
 
@@ -774,7 +853,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - DJ scripts pull playlists through the Spotify API, log run time and clean up old directories.
 
-## 2024-07
+</details>
+
+<details>
+<summary>July 2024</summary>
 
 ### harryliu-design
 
@@ -800,7 +882,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - The macOS install script configures the Dock and other system settings, skips existing symlinks and installs Nx globally.
 
-## 2024-06
+</details>
+
+<details>
+<summary>June 2024</summary>
 
 ### grind-75
 
@@ -830,7 +915,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Moved into the repository.
 
-## 2024-05
+</details>
+
+<details>
+<summary>May 2024</summary>
 
 ### toronto-alerts
 
@@ -858,7 +946,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Examples for context, custom hooks, refs and reducers.
 
-## 2024-04
+</details>
+
+<details>
+<summary>April 2024</summary>
 
 ### toronto-alerts
 
@@ -883,7 +974,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - A script backs the repository up to Google Drive.
 
-## 2024-03
+</details>
+
+<details>
+<summary>March 2024</summary>
 
 ### gta-update-alert
 
@@ -900,7 +994,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Scripts download Spotify playlists into a DJ library.
 
-## 2024-02
+</details>
+
+<details>
+<summary>February 2024</summary>
 
 ### harryliu-design
 
@@ -927,7 +1024,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - A GitHub Actions workflow runs end-to-end tests for affected Nx projects.
 
-## 2024-01
+</details>
+
+<details>
+<summary>January 2024</summary>
 
 ### personal-website
 
@@ -951,7 +1051,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - `install.sh` sets up a new macOS machine, with zsh autosuggestions, git config and aliases for git branches and killing ports.
 
-## 2023-12
+</details>
+
+<details>
+<summary>December 2023</summary>
 
 ### personal-website
 
@@ -969,7 +1072,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New Django and Flask demo apps, and Python unit tests for the Grind 75 problems.
 
-## 2023-11
+</details>
+
+<details>
+<summary>November 2023</summary>
 
 ### personal-website
 
@@ -989,7 +1095,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New GraphQL demo with query and update mutation examples.
 
-## 2023-10
+</details>
+
+<details>
+<summary>October 2023</summary>
 
 ### personal-website
 
@@ -1006,7 +1115,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - New script that checks the personal website and emails the admin when it is down.
 
-## 2023-08
+</details>
+
+<details>
+<summary>August 2023</summary>
 
 ### express-demo
 
@@ -1016,7 +1128,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 - Linting runs per project instead of only at the root.
 
-## 2023-07
+</details>
+
+<details>
+<summary>July 2023</summary>
 
 ### personal-website
 
@@ -1025,3 +1140,5 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 ### repo
 
 - Repository created with ESLint, Prettier and a pre-commit hook that lints every commit.
+
+</details>

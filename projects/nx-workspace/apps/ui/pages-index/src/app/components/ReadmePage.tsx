@@ -30,7 +30,6 @@ interface ReadmePageProps {
   notFoundMessage?: string;
   collapsibleHeadingLevel?: number;
   defaultOpenSections?: number;
-  formatSectionTitle?: (title: string) => string;
 }
 
 const CARD_CLASS =
@@ -60,7 +59,6 @@ export function ReadmePage({
   notFoundMessage,
   collapsibleHeadingLevel,
   defaultOpenSections,
-  formatSectionTitle,
 }: ReadmePageProps) {
   const { t } = useTranslation();
   const [content, setContent] = useState<string | null>(null);
@@ -142,7 +140,6 @@ export function ReadmePage({
               repoLinkBase={repoLinkBase}
               collapsibleHeadingLevel={collapsibleHeadingLevel}
               defaultOpenSections={defaultOpenSections}
-              formatSectionTitle={formatSectionTitle}
             />
           )}
         </div>

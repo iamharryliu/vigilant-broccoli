@@ -12,6 +12,11 @@ import {
   type MarkdownSection,
   splitMarkdownSections,
 } from './markdown-sections';
+import {
+  buildSegments,
+  openLeadingItems,
+  type Segment,
+} from './markdown-segments';
 import { observeThemeChange, renderMermaidDiagrams } from './mermaid-diagrams';
 
 const CLS = {
@@ -50,39 +55,81 @@ interface MarkdownViewerProps {
   repoLinkBase?: RepoLinkBase;
   /** Renders each heading of this level as a CollapsibleList item. */
   collapsibleHeadingLevel?: number;
-  /** How many leading collapsible sections start open. */
+  /** How many leading collapsible sections or `<details>` blocks start open. */
   defaultOpenSections?: number;
-  formatSectionTitle?: (title: string) => string;
 }
 
 interface HtmlSection extends MarkdownSection {
-  html: string;
+  segments: Segment[];
 }
 
-interface SectionBodyProps {
-  html: string;
+interface BlocksProps {
+  segments: Segment[];
   filePath?: string;
   onNavigate?: (path: string) => void;
+  nested?: boolean;
 }
 
-// Collapsed accordion content is unmounted, so each body renders its own
-// mermaid diagrams when it opens.
-function SectionBody({ html, filePath, onNavigate }: SectionBodyProps) {
+// Collapsed accordion content is unmounted, so nested chunks render their own
+// mermaid diagrams when they open; top-level ones are rendered by the viewer.
+function HtmlChunk({
+  html,
+  filePath,
+  onNavigate,
+  nested,
+}: { html: string } & Omit<BlocksProps, 'segments'>) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
+    if (!nested) return;
     renderMermaidDiagrams(el);
     return el
       ? observeThemeChange(el, () => renderMermaidDiagrams(el))
       : undefined;
-  }, [html]);
+  }, [html, nested]);
   return (
     <div
       ref={ref}
-      className={CLS.SECTION_PROSE}
+      className={nested ? CLS.SECTION_PROSE : CLS.PROSE}
       dangerouslySetInnerHTML={{ __html: html }}
       onClick={createNoteLinkClickHandler(filePath ?? '', onNavigate)}
     />
+  );
+}
+
+function Blocks({ segments, filePath, onNavigate, nested }: BlocksProps) {
+  return (
+    <>
+      {segments.map((segment, index) =>
+        segment.kind === 'html' ? (
+          <HtmlChunk
+            key={index}
+            html={segment.html}
+            filePath={filePath}
+            onNavigate={onNavigate}
+            nested={nested}
+          />
+        ) : (
+          <div key={index} className={nested ? undefined : CLS.SECTIONS}>
+            <CollapsibleList
+              items={segment.items.map(item => ({
+                id: item.id,
+                title: item.title,
+                defaultOpen: item.open,
+                content: (
+                  <Blocks
+                    segments={item.segments}
+                    filePath={filePath}
+                    onNavigate={onNavigate}
+                    nested
+                  />
+                ),
+              }))}
+            />
+          </div>
+        ),
+      )}
+    </>
   );
 }
 
@@ -95,9 +142,8 @@ export function MarkdownViewer({
   repoLinkBase,
   collapsibleHeadingLevel,
   defaultOpenSections = 0,
-  formatSectionTitle,
 }: MarkdownViewerProps) {
-  const [html, setHtml] = useState('');
+  const [segments, setSegments] = useState<Segment[]>([]);
   const [sections, setSections] = useState<HtmlSection[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(content);
@@ -121,12 +167,17 @@ export function MarkdownViewer({
       Promise.all(
         split.sections.map(async section => ({
           ...section,
-          html: await render(section.markdown),
+          segments: buildSegments(
+            await render(section.markdown),
+            `${section.id}-details`,
+          ),
         })),
       ),
     ]).then(([introHtml, sectionHtml]) => {
       if (typeof window === 'undefined') return;
-      setHtml(introHtml);
+      setSegments(
+        openLeadingItems(buildSegments(introHtml), defaultOpenSections),
+      );
       setSections(sectionHtml);
     });
   }, [content, repoLinkBase?.filePath, collapsibleHeadingLevel]);
@@ -134,13 +185,13 @@ export function MarkdownViewer({
   const proseRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!html) return;
+    if (!segments.length && !sections.length) return;
     const el = proseRef.current;
     renderMermaidDiagrams(el).then(scrollToUrlHash);
     return el
       ? observeThemeChange(el, () => renderMermaidDiagrams(el))
       : undefined;
-  }, [html, isEditing]);
+  }, [segments, sections, isEditing]);
 
   const canEdit = Boolean(saveContent && filePath);
 
@@ -213,26 +264,22 @@ export function MarkdownViewer({
   }
 
   return (
-    <div className={CLS.ROOT}>
-      <div
-        ref={proseRef}
-        className={CLS.PROSE}
-        dangerouslySetInnerHTML={{ __html: html }}
-        onClick={createNoteLinkClickHandler(filePath ?? '', onNavigate)}
-      />
+    <div ref={proseRef} className={CLS.ROOT}>
+      <Blocks segments={segments} filePath={filePath} onNavigate={onNavigate} />
       {sections.length > 0 && (
         <div className={CLS.SECTIONS}>
           <CollapsibleList
             key={content}
             items={sections.map((section, index) => ({
               id: section.id,
-              title: formatSectionTitle?.(section.title) ?? section.title,
+              title: section.title,
               defaultOpen: index < defaultOpenSections,
               content: (
-                <SectionBody
-                  html={section.html}
+                <Blocks
+                  segments={section.segments}
                   filePath={filePath}
                   onNavigate={onNavigate}
+                  nested
                 />
               ),
             }))}
