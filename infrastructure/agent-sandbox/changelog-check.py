@@ -1,6 +1,7 @@
 """Checks a changelog run's edit to CHANGELOG.md before the runner commits it.
 
-Entries are one `## YYYY-MM` section per month, newest first. A run may only
+Entries are one `<details><summary>Month YYYY</summary>` block per month,
+newest first. A run may only
 create or edit the sections for the months its pull requests merged in, so a
 stray edit cannot rewrite history the run never read. A month already linking
 one of those pull requests is also editable: a PR writes its own bullet into
@@ -11,33 +12,56 @@ Usage: changelog-check.py <old CHANGELOG.md> <new CHANGELOG.md> <month|#PR>...
 
 import re
 import sys
+from datetime import datetime
 
 ENTRIES_ANCHOR = "<!-- changelog-entries -->"
-MONTH_HEADING = re.compile(r"^## (\d{4}-\d{2})$")
+SUMMARY = re.compile(r"^<summary>([A-Z][a-z]+ \d{4})</summary>$")
 HTML_TAG = re.compile(r"</?(details|summary)\b")
+OPEN, CLOSE = "<details>", "</details>"
+
+
+def month_key(label):
+    try:
+        return datetime.strptime(label, "%B %Y").strftime("%Y-%m")
+    except ValueError:
+        sys.exit(f"changelog-check: '{label}' is not a 'Month YYYY' summary.")
 
 
 def sections(text):
     _, sep, entries = text.partition(ENTRIES_ANCHOR + "\n")
     if not sep:
         sys.exit("changelog-check: the changelog-entries anchor is missing.")
+    lines = entries.splitlines()
     found = {}
     order = []
-    current = None
-    for line in entries.splitlines():
-        if line.startswith("## "):
-            match = MONTH_HEADING.match(line)
-            if not match:
-                sys.exit(
-                    f"changelog-check: '{line}' is not a '## YYYY-MM' month heading."
-                )
-            current = match.group(1)
-            if current in found:
-                sys.exit(f"changelog-check: month {current} appears twice.")
-            order.append(current)
-            found[current] = []
-        elif current:
-            found[current].append(line)
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        index += 1
+        if not line.strip():
+            continue
+        if line != OPEN:
+            sys.exit(f"changelog-check: '{line}' is outside a month <details> block.")
+        match = SUMMARY.match(lines[index]) if index < len(lines) else None
+        if not match:
+            sys.exit(
+                f"changelog-check: a <details> block lacks a '<summary>Month YYYY</summary>' line."
+            )
+        month = month_key(match.group(1))
+        if month in found:
+            sys.exit(f"changelog-check: month {month} appears twice.")
+        order.append(month)
+        index += 1
+        body = []
+        while index < len(lines) and lines[index] != CLOSE:
+            if HTML_TAG.search(lines[index]):
+                sys.exit(f"changelog-check: {month} contains nested HTML tags.")
+            body.append(lines[index])
+            index += 1
+        if index == len(lines):
+            sys.exit(f"changelog-check: the {month} block is missing </details>.")
+        index += 1
+        found[month] = body
     if order != sorted(order, reverse=True):
         sys.exit("changelog-check: month sections are not newest first.")
     return found
@@ -55,10 +79,7 @@ def main():
         if any(link in line for line in lines for link in pr_links)
     }
     with open(new_path) as f:
-        new_text = f.read()
-    new = sections(new_text)
-    if HTML_TAG.search(new_text):
-        sys.exit("changelog-check: the changelog contains HTML tags.")
+        new = sections(f.read())
     for month in set(old) | set(new):
         if month not in months and old.get(month) != new.get(month):
             sys.exit(
