@@ -15,7 +15,12 @@ import {
   VB_LINKS,
   toQuickLinks,
 } from '@vigilant-broccoli/public-links';
-import { EMAIL_LINK, PROJECT_LINK, SOCIAL_LINK } from '@harry/personal';
+import {
+  EMAIL_LINK,
+  INTEREST_LINK,
+  PROJECT_LINK,
+  SOCIAL_LINK,
+} from '@harry/personal';
 import {
   CLOUDFLARE_ACCOUNT_LINK,
   FLYIO_ACCOUNT_LINK,
@@ -244,6 +249,7 @@ const LEISURE_LINKS: QuickLink[] = [
     PERSONAL_URL.TO_READ,
     PERSONAL_URL.TO_WATCH_ANIME,
     PERSONAL_URL.TO_WATCH_MOVIES_SHOWS,
+    INTEREST_LINK.GOODREADS,
   ]),
 ];
 
