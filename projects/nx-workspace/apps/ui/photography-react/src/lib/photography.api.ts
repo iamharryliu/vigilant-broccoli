@@ -2,11 +2,16 @@ import { ENVIRONMENT } from '../environments/environment';
 import { ALBUMS_PATH, PHOTOS_PATH } from './photography.consts';
 import { Album } from './photography.types';
 
+const ABSOLUTE_URL = /^https?:\/\//;
+
+// Mock photos carry absolute URLs; real ones are bucket paths.
 export const photoUrl = (path: string) =>
-  `${ENVIRONMENT.API_URL}${PHOTOS_PATH}/${path
-    .split('/')
-    .map(encodeURIComponent)
-    .join('/')}`;
+  ABSOLUTE_URL.test(path)
+    ? path
+    : `${ENVIRONMENT.API_URL}${PHOTOS_PATH}/${path
+        .split('/')
+        .map(encodeURIComponent)
+        .join('/')}`;
 
 export const fetchAlbums = async (signal: AbortSignal): Promise<Album[]> => {
   const response = await fetch(`${ENVIRONMENT.API_URL}${ALBUMS_PATH}`, {

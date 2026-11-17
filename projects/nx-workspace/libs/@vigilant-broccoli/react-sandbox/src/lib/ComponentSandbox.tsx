@@ -43,6 +43,7 @@ import { AudioButtonDemo } from './demos/AudioButtonDemo';
 import { CalendarListDemo } from './demos/CalendarListDemo';
 import { GoogleSignInPageDemo } from './demos/GoogleSignInPageDemo';
 import { ImageCarouselDemo } from './demos/ImageCarouselDemo';
+import { ImageGalleryDemo } from './demos/ImageGalleryDemo';
 import { MetronomeDemo } from './demos/MetronomeDemo';
 import {
   I18nProvider as SandboxI18nProvider,
@@ -538,6 +539,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Image filmstrip thumbnails that open the full-screen carousel dialog, using local placeholder images.',
     lib: LIB.MEDIA,
     content: <ImageCarouselDemo />,
+  },
+  {
+    id: 'image-gallery',
+    label: 'Image Gallery',
+    description:
+      'One image list rendered as masonry, justified rows or a shuffled stack (← / → cycles it), with each image running its call to action.',
+    lib: LIB.MEDIA,
+    content: <ImageGalleryDemo />,
   },
   {
     id: 'calendar-list',
