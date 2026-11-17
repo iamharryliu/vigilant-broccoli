@@ -6,6 +6,7 @@
 - [What I Care About](#what-i-care-about)
 - [Tell Me About Yourself](#tell-me-about-yourself)
 - [Questions](#questions)
+  - [Goals of Questions](#goals-of-questions)
   - [Opening Questions](#opening-questions)
   - [Product Questions](#product-questions)
   - [Team Questions](#team-questions)
@@ -14,7 +15,7 @@
   - [Flexibility Questions](#flexibility-questions)
   - [Stability Questions](#stability-questions)
   - [Interview End Questions](#interview-end-questions)
-  - [Negotiation Questions](#negotiation-questions)
+  - [Compensation Questions](#compensation-questions)
 
 ## Ask Yourself
 
@@ -75,73 +76,77 @@
 | [Flexibility](#flexibility-questions) | Remote, hybrid, office days and schedule flexibility. |
 | [Stability](#stability-questions) | Company risks and long-term outlook. |
 | [Interview End](#interview-end-questions) | Closing the interview and learning what happens next. |
-| [Negotiation](#negotiation-questions) | Pay, perks and tools once an offer is likely. |
+| [Compensation](#compensation-questions) | Pay, perks and tools once an offer is likely. |
+
+### Goals of Questions
+
+| Goal | Description |
+| --- | --- |
+| Understand Logistics | How the hiring process runs, when it ends and where and when you would work. |
+| Understand Compensation | What the role pays and what perks and tools come with it. |
+| Understand Expectations / Responsibilities | What the role involves day to day and what success looks like. |
+| Understand Environment / Management and Team | Who you would work with and for, how they work together and how people are supported. |
+| Understand Practices | How engineering gets done: stack, testing, deployments, code quality and tech debt. |
+| Understand Company Direction | Where the company is heading, its risks and whether it will be around and growing. |
+| Understand Reflection | How the interviewer sees your fit and whether any concerns can be addressed before you leave. |
 
 ### Opening Questions
 
-- Why is role open?
+| Goal | Question |
+| --- | --- |
+| Logistics | • What does the hiring process look like?<br>• What is the expected hiring date? |
+| Compensation | • What is the salary range? |
+| Expectations / Responsibilities | • What are the expectations for the role? |
+| Environment / Management and Team | • Why is role open? Are we replacing someone, or is it a new role on the team?<br>• What does the company value? |
 
 ### Product Questions
 
-- Current stack and why it was chosen?
-- How are code quality, testing, deployments and CI/CD handled?
-- Every company is carrying some amount of _technical debt_, what's the tech debt situation here?
-  - How much they think there is?
-  - What they're doing about it?
-- What do they like about it.
-- What do they dislike about it.
-- What's the most interesting thing that they have worked on or learned on the project?
+| Goal | Question |
+| --- | --- |
+| Environment / Management and Team | • What do they like about it.<br>• What do they dislike about it.<br>• What's the most interesting thing that they have worked on or learned on the project? |
+| Practices | • Current stack and why it was chosen?<br>• What is the CI/CD approach?<br>&emsp;&emsp;◦ What does the code review process look like?<br>&emsp;&emsp;◦ What does the testing process look like?<br>&emsp;&emsp;◦ How are environments and deployments handled?<br>&emsp;&emsp;◦ How are scalability and performance handled?<br>&emsp;&emsp;◦ What are the documentation processes?<br>• Every company is carrying some amount of _technical debt_, what's the tech debt situation here?<br>&emsp;&emsp;◦ How much they think there is?<br>&emsp;&emsp;◦ What they're doing about it? |
 
 ### Team Questions
 
-- What are the teams like?
-- How does the team operate?
-- What challenges are there?
-- How does leadership prioritize long-term technical investments vs. short-term business needs?
-- What's the balance between firefighting and project work in an average week?
-- What does the day to day look like for you
-- Who would be the direct manager?
-- How is the onboarding process for a new hire?
-- How much time do you have available to develop versus being in meetings?
-- Which meetings are mandatory, such as team syncs, one-on-ones with the manager or all-hands, and how often?
-- Where do they see the team in a year?
+| Goal | Question |
+| --- | --- |
+| Expectations / Responsibilities | • What would the day to day look like for my role? What does it look like for you?<br>&emsp;&emsp;◦ How much time do you have available to develop versus being in meetings?<br>&emsp;&emsp;◦ Which meetings are mandatory, such as team syncs, one-on-ones with the manager or all-hands, and how often?<br>• What's the balance between firefighting and project work in an average week?<br>• How much ownership do I have over technical decisions? |
+| Environment / Management and Team | • What is the team structure and what are the working practices?<br>• What are the biggest challenges that the team is facing?<br>• Who would be the direct manager?<br>• How is the onboarding process for a new hire? |
+| Company Direction | • How does leadership prioritize long-term technical investments vs. short-term business needs?<br>• Where do they see the team in a year? |
 
 ### Performance Questions
 
-- What does being successful look like in the first 90 days
-- How is performance measured and how often is feedback given?
+| Goal | Question |
+| --- | --- |
+| Expectations / Responsibilities | • What does being successful look like in the first 90 days<br>• How is performance measured and how often is feedback given?<br>• What distinguishes a senior engineer on this team? |
 
 ### Culture Questions
 
-- How would you describe the culture and how is it maintained if there is one?
-- How does the company support professional development?
-- Is there an active mentoring strategy?
-- What do you like most about working here?
-- What do you wish you could improve?
+| Goal | Question |
+| --- | --- |
+| Environment / Management and Team | • How would you describe the culture and how is it maintained if there is one?<br>• How does the company support professional development?<br>• Is there an active mentoring strategy?<br>• What do you like most about working here?<br>• What do you wish you could improve? |
 
 ### Flexibility Questions
 
-- Is the role remote, hybrid or in office?
-- How many days a week are expected in office, and which days?
-- Is the in-office policy likely to change, and has it changed recently?
-- Is there flexibility on location, such as working remotely for a stretch of time?
-- Are core hours expected, or can I set my own schedule?
-- How are time off and sick days handled?
-- How do remote and in-office team members collaborate?
+| Goal | Question |
+| --- | --- |
+| Logistics | • Is the role remote, hybrid or in office?<br>• How many days a week are expected in office, and which days?<br>• Is the in-office policy likely to change, and has it changed recently?<br>• Is there flexibility on location, such as working remotely for a stretch of time?<br>• Are core hours expected, or can I set my own schedule?<br>• How are time off and sick days handled?<br>• How do remote and in-office team members collaborate? |
 
 ### Stability Questions
 
-- What are the biggest risks or unknowns the company is facing in the near future?
-- Where do you see the company in 3-5 years?
+| Goal | Question |
+| --- | --- |
+| Company Direction | • What are the biggest risks or unknowns the company is facing in the near future?<br>• Where do you see the company in 3-5 years? |
 
 ### Interview End Questions
 
-- What are the next steps?
+| Goal | Question |
+| --- | --- |
+| Logistics | • What are the next steps? |
+| Reflection | • Is there anything about my experience that gives you hesitation?<br>• Is there anything in my background that I can clarify for you? |
 
-### Negotiation Questions
+### Compensation Questions
 
-- Salary expectations
-- What amenities are there?
-  - coding assistant provider?
-  - phone provider?
-  - cloud services ie Google Workspace?
+| Goal | Question |
+| --- | --- |
+| Compensation | • Salary expectations<br>• What amenities are there?<br>&emsp;&emsp;◦ coding assistant provider?<br>&emsp;&emsp;◦ phone provider?<br>&emsp;&emsp;◦ cloud services ie Google Workspace? |
