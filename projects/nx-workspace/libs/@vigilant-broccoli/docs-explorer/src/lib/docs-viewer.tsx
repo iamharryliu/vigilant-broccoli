@@ -1,3 +1,4 @@
+import { FileText, ListChecks } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
@@ -15,6 +16,7 @@ import {
 import {
   DESKTOP_MEDIA_QUERY,
   DocsExplorer,
+  MENU_ICON_SIZE,
   type DocsExplorerUrlSync,
   type DocsNode,
   type DocsSearchResult,
@@ -77,6 +79,11 @@ type ViewMode = (typeof VIEW_MODE)[keyof typeof VIEW_MODE];
 const MODE_LABEL: Record<ViewMode, string> = {
   [VIEW_MODE.MARKDOWN]: 'Markdown',
   [VIEW_MODE.CHECKLIST]: 'Checklist',
+};
+
+const MODE_ICON: Record<ViewMode, typeof FileText> = {
+  [VIEW_MODE.MARKDOWN]: FileText,
+  [VIEW_MODE.CHECKLIST]: ListChecks,
 };
 
 const GRAPH_SCOPE = {
@@ -311,8 +318,7 @@ function GraphPanel({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Sits left of DocsExplorer's top-right close button. */}
-      <div className="absolute top-2 right-12 z-10">
+      <div className="absolute top-2 right-2 z-10">
         {isDesktop ? (
           <Popover.Root open={showSettings} onOpenChange={setShowSettings}>
             <Popover.Trigger>
@@ -448,12 +454,14 @@ export function DocsViewer({
 
   const canEdit = Boolean(saveContent && activeFile);
 
-  const viewModeOptions = (Object.values(VIEW_MODE) as ViewMode[]).map(
-    mode => ({
+  const viewModeOptions = (Object.values(VIEW_MODE) as ViewMode[]).map(mode => {
+    const Icon = MODE_ICON[mode];
+    return {
       label: MODE_LABEL[mode],
       value: mode,
-    }),
-  );
+      icon: <Icon size={MENU_ICON_SIZE} />,
+    };
+  });
 
   const renderContent = (
     content: string,
