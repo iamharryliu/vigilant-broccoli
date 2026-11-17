@@ -43,7 +43,7 @@ export function App() {
 
   return (
     <ThemeProvider storageKey={THEME_STORAGE_KEY}>
-      <div className="h-dvh p-2 sm:p-4 bg-white dark:bg-gray-900">
+      <div className="h-dvh overflow-hidden overscroll-none p-2 sm:p-4 bg-white dark:bg-gray-900">
         {nodes && (
           <DocsExplorer
             nodes={nodes}
