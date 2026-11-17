@@ -215,6 +215,15 @@ $label	${size:--}"
 }
 
 # Cheatsheet
+# The picker writes the chosen command to a file and this shell evals it, so
+# aliases, functions and directory changes (`..`, `mkcd`) apply here.
 cheatsheet() {
-    "$REPO_DIR/scripts/shell/cheatsheet-aliases.sh"
+    local picked_file picked
+    picked_file=$(mktemp) || return 1
+    node "$REPO_DIR/scripts/node/cheatsheet.mjs" docs/cheatsheet-aliases.md --output "$picked_file"
+    picked=$(<"$picked_file")
+    rm -f "$picked_file"
+    [ -n "$picked" ] || return 0
+    print -s -- "$picked"
+    eval "$picked"
 }
