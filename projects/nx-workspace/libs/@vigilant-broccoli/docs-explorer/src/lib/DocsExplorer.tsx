@@ -1,10 +1,13 @@
 'use client';
 
 import {
+  ArrowLeft,
   ChevronRight,
+  Copy,
   File,
   FileText,
   Folder,
+  Pencil,
   Search as SearchIcon,
 } from 'lucide-react';
 import {
@@ -23,6 +26,7 @@ import {
   DropdownMenu,
   HighlightMatch,
   IconButton,
+  shouldIgnoreShortcutKeystroke,
   useFocusSearchShortcut,
 } from '@vigilant-broccoli/react-lib';
 
@@ -31,11 +35,18 @@ const MOBILE_NO_CARD_CLS =
 
 // Matches Tailwind's `md:` breakpoint.
 export const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
+export const MENU_ICON_SIZE = 14;
+const CONTENT_BAR_CLS =
+  'sticky top-0 z-10 flex items-center justify-between gap-2 px-2 py-1 border-b border-border bg-background/80 backdrop-blur-sm';
 
 const KEY_ARROW_DOWN = 'ArrowDown';
 const KEY_ARROW_UP = 'ArrowUp';
 const KEY_ENTER = 'Enter';
 const KEY_ESCAPE = 'Escape';
+const KEY_TOGGLE_SIDEBAR = 'f';
+const KEY_TOGGLE_GRAPH = 'g';
+// Hover hint only: the accessible name stays the plain label.
+const withShortcut = (label: string, key: string) => `${label} (${key})`;
 const SEARCH_DEBOUNCE_MS = 300;
 const SEARCH_RESULT_ITEM_ATTR = 'data-search-result-index';
 const NODE_TYPE_DIRECTORY = 'directory';
@@ -136,11 +147,13 @@ export interface DocsExplorerUrlSync {
 export interface ViewModeOption {
   label: string;
   value: string;
+  icon?: ReactNode;
 }
 
 export interface DocsExplorerAction {
   label: string;
   onSelect: () => void;
+  icon?: ReactNode;
 }
 
 interface DocsExplorerProps {
@@ -194,6 +207,8 @@ const COPY = {
   SHOW_GRAPH: 'Graph view',
   HIDE_GRAPH: 'Close graph view',
   GRAPH_TITLE: 'Graph',
+  HIDE_SIDEBAR: 'Hide sidebar',
+  SHOW_SIDEBAR: 'Show sidebar',
 } as const;
 
 const AGGREGATE_MODE_LABEL: Record<AggregateMode, string> = {
@@ -270,6 +285,25 @@ export const DocsExplorer = ({
   const [mobilePanel, setMobilePanel] = useState<'sidebar' | 'content'>(
     'sidebar',
   );
+  // Desktop-only: mobile already swaps between the sidebar and content panels.
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const hasGraph = Boolean(renderGraph);
+
+  useEffect(() => {
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (shouldIgnoreShortcutKeystroke(event)) return;
+      if (event.key === KEY_TOGGLE_SIDEBAR) {
+        event.preventDefault();
+        setIsSidebarCollapsed(prev => !prev);
+      } else if (event.key === KEY_TOGGLE_GRAPH && hasGraph) {
+        event.preventDefault();
+        setShowGraph(prev => !prev);
+        setMobilePanel('content');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [hasGraph]);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const resultsContainerRef = useRef<HTMLDivElement>(null);
@@ -483,8 +517,10 @@ export const DocsExplorer = ({
 
   const focusSearch = useCallback(() => {
     setMobilePanel('sidebar');
-    // The sidebar is display:none on mobile while the content panel shows,
-    // and an element can't take focus until the next frame paints it.
+    setIsSidebarCollapsed(false);
+    // The sidebar is display:none on mobile while the content panel shows
+    // (visibility:hidden on desktop while collapsed), and an element can't
+    // take focus until the next frame paints it.
     requestAnimationFrame(() => {
       searchInputRef.current?.focus();
       searchInputRef.current?.select();
@@ -572,190 +608,366 @@ export const DocsExplorer = ({
 
   const sidebarVisibilityCls =
     mobilePanel === 'sidebar' ? 'flex' : '!hidden md:!flex';
+  // The negative margin cancels the row's md:gap-4 so collapsed content sits
+  // flush. Visibility drops tab stops: it is transitioned only when
+  // collapsing, so expanding makes the sidebar focusable on the first frame
+  // (a transitioned hidden→visible is still hidden at progress 0).
+  const sidebarCollapseCls = isSidebarCollapsed
+    ? 'md:w-0 md:-mr-4 md:opacity-0 md:invisible md:transition-[width,margin-right,opacity,visibility]'
+    : 'md:w-80 md:transition-[width,margin-right,opacity]';
+  const showSidebarButton = isSidebarCollapsed && (
+    <span className="hidden md:inline-flex">
+      <IconButton
+        variant="ghost"
+        icon="panel-left-open"
+        aria-label={COPY.SHOW_SIDEBAR}
+        title={withShortcut(COPY.SHOW_SIDEBAR, KEY_TOGGLE_SIDEBAR)}
+        onClick={() => setIsSidebarCollapsed(false)}
+      />
+    </span>
+  );
+  const showGraphButton = renderGraph && (
+    <IconButton
+      variant={showGraph ? 'default' : 'ghost'}
+      icon="graph"
+      aria-label={showGraph ? COPY.HIDE_GRAPH : COPY.SHOW_GRAPH}
+      title={withShortcut(
+        showGraph ? COPY.HIDE_GRAPH : COPY.SHOW_GRAPH,
+        KEY_TOGGLE_GRAPH,
+      )}
+      onClick={() => setShowGraph(prev => !prev)}
+    />
+  );
+  const hasNote = Boolean(selectedPath) || hasSelection;
+  // Note actions picked from the graph view swap back to the note they act on.
+  const showNote = (action: () => void) => () => {
+    setShowGraph(false);
+    action();
+  };
+  // The scroll-driven heading and its refs only exist in the note view.
+  const renderContentBar = (isGraphView: boolean) => (
+    <div
+      ref={isGraphView ? undefined : contentBarRef}
+      className={CONTENT_BAR_CLS}
+    >
+      <div className="flex min-w-0 items-center gap-1">
+        {showSidebarButton}
+        {history.length > 0 && (
+          <IconButton
+            variant="ghost"
+            icon="arrow-left"
+            onClick={goBack}
+            aria-label={COPY.BACK_TO_PREVIOUS}
+          />
+        )}
+        {!isGraphView && (
+          <span
+            ref={stickyHeadingRef}
+            className="min-w-0 truncate pl-2 text-sm font-semibold opacity-0 will-change-[opacity,transform]"
+            aria-hidden
+          />
+        )}
+      </div>
+      <div className="flex items-center gap-1">
+        {showGraphButton}
+        <DropdownMenu.Root>
+          {/* Without a note the menu only holds the mobile "Back to files". */}
+          <DropdownMenu.Trigger className={hasNote ? undefined : 'md:hidden'}>
+            <IconButton
+              variant="ghost"
+              icon="ellipsis-horizontal"
+              aria-label={COPY.DOCUMENT_ACTIONS}
+            />
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            {hasNote && viewModes && viewModes.length > 0 && (
+              <>
+                {viewModes.map(mode => (
+                  <DropdownMenu.Item
+                    key={mode.value}
+                    onSelect={showNote(() => onViewModeChange?.(mode.value))}
+                    className={
+                      currentViewMode === mode.value ? 'font-semibold' : ''
+                    }
+                  >
+                    {mode.icon}
+                    {mode.label}
+                  </DropdownMenu.Item>
+                ))}
+                <DropdownMenu.Separator />
+              </>
+            )}
+            {hasNote && (
+              <>
+                {onEdit && !isAggregate && (
+                  <DropdownMenu.Item onSelect={showNote(onEdit)}>
+                    <Pencil size={MENU_ICON_SIZE} />
+                    {COPY.EDIT}
+                  </DropdownMenu.Item>
+                )}
+                {extraActions &&
+                  !isAggregate &&
+                  selectedPath &&
+                  extraActions(selectedPath).map(action => (
+                    <DropdownMenu.Item
+                      key={action.label}
+                      onSelect={showNote(action.onSelect)}
+                    >
+                      {action.icon}
+                      {action.label}
+                    </DropdownMenu.Item>
+                  ))}
+                {isAggregate && (
+                  <>
+                    <DropdownMenu.RadioGroup
+                      value={aggregateMode}
+                      onValueChange={value =>
+                        setAggregateMode(value as AggregateMode)
+                      }
+                    >
+                      {(Object.values(AGGREGATE_MODE) as AggregateMode[]).map(
+                        mode => (
+                          <DropdownMenu.RadioItem key={mode} value={mode}>
+                            {AGGREGATE_MODE_LABEL[mode]}
+                          </DropdownMenu.RadioItem>
+                        ),
+                      )}
+                    </DropdownMenu.RadioGroup>
+                    <DropdownMenu.Separator />
+                  </>
+                )}
+                <DropdownMenu.Item
+                  onSelect={() =>
+                    navigator.clipboard.writeText(
+                      hasSelection ? aggregateContent : content,
+                    )
+                  }
+                >
+                  <Copy size={MENU_ICON_SIZE} />
+                  {COPY.COPY_MARKDOWN}
+                </DropdownMenu.Item>
+              </>
+            )}
+            {hasNote && <DropdownMenu.Separator className="md:!hidden" />}
+            <DropdownMenu.Item
+              onSelect={showSidebarOnMobile}
+              className="md:!hidden"
+            >
+              <ArrowLeft size={MENU_ICON_SIZE} />
+              {COPY.BACK_TO_FILES}
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      </div>
+    </div>
+  );
   const contentVisibilityCls =
     mobilePanel === 'content' ? 'flex' : '!hidden md:!flex';
 
   return (
     <>
       <div className="h-full flex gap-2 md:gap-4">
-        <Card
-          className={`${MOBILE_NO_CARD_CLS} ${sidebarVisibilityCls} w-full md:w-80 md:flex-shrink-0 overflow-hidden flex-col`}
+        <div
+          className={`${sidebarVisibilityCls} ${sidebarCollapseCls} w-full md:flex-shrink-0 overflow-hidden md:duration-200 md:ease-out`}
         >
-          <div className="px-3 pt-3 pb-2">
-            <div className="flex items-center justify-between mb-1.5">
-              <h2 className="text-sm font-semibold">{sidebarTitle}</h2>
-              <div className="flex items-center gap-1">
-                {renderGraph && (
-                  <IconButton
-                    variant={showGraph ? 'default' : 'ghost'}
-                    icon="graph"
-                    aria-label={showGraph ? COPY.HIDE_GRAPH : COPY.SHOW_GRAPH}
-                    onClick={() => {
-                      setShowGraph(prev => !prev);
-                      setMobilePanel('content');
-                    }}
-                  />
-                )}
-                {onCreate && (
-                  <IconButton
-                    variant="ghost"
-                    icon="plus"
-                    aria-label={COPY.CREATE_FILE}
-                    onClick={onCreate}
-                  />
-                )}
-                {(enableMultiSelect || hasSidebarActions) && (
-                  <DropdownMenu.Root>
-                    <DropdownMenu.Trigger>
+          <Card
+            className={`${MOBILE_NO_CARD_CLS} flex w-full md:w-80 md:flex-shrink-0 overflow-hidden flex-col`}
+          >
+            <div className="px-3 pt-3 pb-2">
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-1">
+                  <span className="hidden md:inline-flex">
+                    <IconButton
+                      variant="ghost"
+                      icon="panel-left-close"
+                      aria-label={COPY.HIDE_SIDEBAR}
+                      title={withShortcut(
+                        COPY.HIDE_SIDEBAR,
+                        KEY_TOGGLE_SIDEBAR,
+                      )}
+                      onClick={() => setIsSidebarCollapsed(true)}
+                    />
+                  </span>
+                  <h2 className="text-sm font-semibold">{sidebarTitle}</h2>
+                </div>
+                <div className="flex items-center gap-1">
+                  {/* Desktop opens the graph from the content pane instead;
+                      on mobile the file list is the only entry point. */}
+                  {renderGraph && (
+                    <span className="inline-flex md:hidden">
                       <IconButton
-                        variant="ghost"
-                        icon="ellipsis-horizontal"
-                        aria-label={COPY.SIDEBAR_ACTIONS}
+                        variant={showGraph ? 'default' : 'ghost'}
+                        icon="graph"
+                        aria-label={
+                          showGraph ? COPY.HIDE_GRAPH : COPY.SHOW_GRAPH
+                        }
+                        onClick={() => {
+                          setShowGraph(prev => !prev);
+                          setMobilePanel('content');
+                        }}
                       />
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content>
-                      {enableMultiSelect && (
-                        <DropdownMenu.Item onSelect={toggleMultiSelectMode}>
-                          {multiSelectMode
-                            ? COPY.TURN_OFF_MULTI_SELECT
-                            : COPY.SELECT_MULTIPLE}
-                        </DropdownMenu.Item>
-                      )}
-                      {enableMultiSelect && hasSidebarActions && (
-                        <DropdownMenu.Separator />
-                      )}
-                      {sidebarActions?.map(action => (
-                        <DropdownMenu.Item
-                          key={action.label}
-                          onSelect={action.onSelect}
-                        >
-                          {action.label}
-                        </DropdownMenu.Item>
-                      ))}
-                    </DropdownMenu.Content>
-                  </DropdownMenu.Root>
-                )}
-              </div>
-            </div>
-            {search && (
-              <>
-                <ClearableInput
-                  ref={searchInputRef}
-                  startAddon={<SearchIcon className="w-4 h-4" />}
-                  placeholder={searchPlaceholder}
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  onClear={clearSearch}
-                  onKeyDown={handleSearchInputKeyDown}
-                />
-                {isSearchMode && !isSearching && (
-                  <div className="text-xs text-muted-foreground mt-1.5">
-                    {searchResults.length === 0
-                      ? COPY.NO_RESULTS
-                      : `${searchResults.length} ${
-                          searchResults.length === 1 ? 'result' : 'results'
-                        }`}
-                  </div>
-                )}
-              </>
-            )}
-            {multiSelectMode && (
-              <div className="flex items-center justify-between text-xs text-muted-foreground mt-1.5">
-                <span>
-                  {hasSelection
-                    ? `${selectedPaths.length} ${COPY.SELECTED_SUFFIX}`
-                    : ''}
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={selectAll}
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    {COPY.SELECT_ALL}
-                  </button>
-                  {hasSelection && (
-                    <button
-                      type="button"
-                      onClick={clearSelection}
-                      className="text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                      {COPY.CLEAR_SELECTION}
-                    </button>
+                    </span>
                   )}
-                  {onDeleteSelected && hasSelection && (
-                    <button
-                      type="button"
-                      onClick={() => setPendingBulkDelete(true)}
-                      className="text-red-600 dark:text-red-400 hover:underline"
-                    >
-                      {COPY.DELETE_SELECTED}
-                    </button>
+                  {onCreate && (
+                    <IconButton
+                      variant="ghost"
+                      icon="plus"
+                      aria-label={COPY.CREATE_FILE}
+                      onClick={onCreate}
+                    />
+                  )}
+                  {(enableMultiSelect || hasSidebarActions) && (
+                    <DropdownMenu.Root>
+                      <DropdownMenu.Trigger>
+                        <IconButton
+                          variant="ghost"
+                          icon="ellipsis-horizontal"
+                          aria-label={COPY.SIDEBAR_ACTIONS}
+                        />
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content>
+                        {enableMultiSelect && (
+                          <DropdownMenu.Item onSelect={toggleMultiSelectMode}>
+                            {multiSelectMode
+                              ? COPY.TURN_OFF_MULTI_SELECT
+                              : COPY.SELECT_MULTIPLE}
+                          </DropdownMenu.Item>
+                        )}
+                        {enableMultiSelect && hasSidebarActions && (
+                          <DropdownMenu.Separator />
+                        )}
+                        {sidebarActions?.map(action => (
+                          <DropdownMenu.Item
+                            key={action.label}
+                            onSelect={action.onSelect}
+                          >
+                            {action.label}
+                          </DropdownMenu.Item>
+                        ))}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Root>
                   )}
                 </div>
               </div>
-            )}
-          </div>
-          <div className="flex-1 overflow-auto">
-            {isSearchMode ? (
-              <div
-                ref={resultsContainerRef}
-                className="px-1 pb-2"
-                onKeyDown={handleResultsKeyDown}
-              >
-                {isSearching ? (
-                  <div className="text-muted-foreground text-center py-2">
-                    {COPY.SEARCHING}
-                  </div>
-                ) : (
-                  <SearchResultList
-                    results={searchResults}
-                    onResultClick={selectFile}
-                    selectedPath={selectedPath || undefined}
-                    query={searchQuery}
+              {search && (
+                <>
+                  <ClearableInput
+                    ref={searchInputRef}
+                    startAddon={<SearchIcon className="w-4 h-4" />}
+                    placeholder={searchPlaceholder}
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    onClear={clearSearch}
+                    onKeyDown={handleSearchInputKeyDown}
                   />
-                )}
-              </div>
-            ) : (
-              <div className="px-2 pb-2">
-                <FileTree
-                  nodes={nodes}
-                  onFileSelect={selectFile}
-                  selectedPath={selectedPath || undefined}
-                  selectedPaths={selectedPaths}
-                  onToggleSelect={toggleSelectPath}
-                  multiSelectMode={multiSelectMode}
-                />
-              </div>
-            )}
-          </div>
-        </Card>
+                  {isSearchMode && !isSearching && (
+                    <div className="text-xs text-muted-foreground mt-1.5">
+                      {searchResults.length === 0
+                        ? COPY.NO_RESULTS
+                        : `${searchResults.length} ${
+                            searchResults.length === 1 ? 'result' : 'results'
+                          }`}
+                    </div>
+                  )}
+                </>
+              )}
+              {multiSelectMode && (
+                <div className="flex items-center justify-between text-xs text-muted-foreground mt-1.5">
+                  <span>
+                    {hasSelection
+                      ? `${selectedPaths.length} ${COPY.SELECTED_SUFFIX}`
+                      : ''}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={selectAll}
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      {COPY.SELECT_ALL}
+                    </button>
+                    {hasSelection && (
+                      <button
+                        type="button"
+                        onClick={clearSelection}
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        {COPY.CLEAR_SELECTION}
+                      </button>
+                    )}
+                    {onDeleteSelected && hasSelection && (
+                      <button
+                        type="button"
+                        onClick={() => setPendingBulkDelete(true)}
+                        className="text-red-600 dark:text-red-400 hover:underline"
+                      >
+                        {COPY.DELETE_SELECTED}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="flex-1 overflow-auto">
+              {isSearchMode ? (
+                <div
+                  ref={resultsContainerRef}
+                  className="px-1 pb-2"
+                  onKeyDown={handleResultsKeyDown}
+                >
+                  {isSearching ? (
+                    <div className="text-muted-foreground text-center py-2">
+                      {COPY.SEARCHING}
+                    </div>
+                  ) : (
+                    <SearchResultList
+                      results={searchResults}
+                      onResultClick={selectFile}
+                      selectedPath={selectedPath || undefined}
+                      query={searchQuery}
+                    />
+                  )}
+                </div>
+              ) : (
+                <div className="px-2 pb-2">
+                  <FileTree
+                    nodes={nodes}
+                    onFileSelect={selectFile}
+                    selectedPath={selectedPath || undefined}
+                    selectedPaths={selectedPaths}
+                    onToggleSelect={toggleSelectPath}
+                    multiSelectMode={multiSelectMode}
+                  />
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
 
         <Card
-          className={`${MOBILE_NO_CARD_CLS} ${contentVisibilityCls} flex-1 overflow-hidden flex-col`}
+          className={`${MOBILE_NO_CARD_CLS} ${contentVisibilityCls} relative flex-1 overflow-hidden flex-col`}
         >
           {showGraph && renderGraph ? (
-            <div className="relative w-full h-full">
-              <div className="absolute top-2 left-2 z-10 md:!hidden">
-                <IconButton
-                  variant="ghost"
-                  icon="arrow-left"
-                  onClick={showSidebarOnMobile}
-                  aria-label={COPY.BACK_TO_FILES}
-                />
+            <div className="w-full h-full flex flex-col">
+              {renderContentBar(true)}
+              <div className="relative flex-1 min-h-0">
+                {renderGraph(selectFile)}
               </div>
-              <div className="absolute top-2 right-2 z-10">
-                <IconButton
-                  variant="ghost"
-                  icon="x"
-                  onClick={() => setShowGraph(false)}
-                  aria-label={COPY.HIDE_GRAPH}
-                />
-              </div>
-              {renderGraph(selectFile)}
             </div>
           ) : !selectedPath && !hasSelection ? (
-            <CenteredMessage>{emptyMessage}</CenteredMessage>
+            <>
+              {showSidebarButton && (
+                <div className="absolute top-2 left-2 z-10">
+                  {showSidebarButton}
+                </div>
+              )}
+              {showGraphButton && (
+                <div className="absolute top-2 right-2 z-10">
+                  {showGraphButton}
+                </div>
+              )}
+              <CenteredMessage>{emptyMessage}</CenteredMessage>
+            </>
           ) : (hasSelection ? isLoadingAggregate : isLoadingContent) ? null : (
               hasSelection ? aggregateError : contentError
             ) ? (
@@ -767,106 +979,7 @@ export const DocsExplorer = ({
               ref={contentScrollRef}
               className="w-full h-full overflow-auto flex flex-col"
             >
-              <div
-                ref={contentBarRef}
-                className="sticky top-0 z-10 flex items-center justify-between gap-2 px-2 py-1 border-b border-border bg-background/80 backdrop-blur-sm"
-              >
-                <div className="flex min-w-0 items-center gap-1">
-                  {history.length > 0 && (
-                    <IconButton
-                      variant="ghost"
-                      icon="arrow-left"
-                      onClick={goBack}
-                      aria-label={COPY.BACK_TO_PREVIOUS}
-                    />
-                  )}
-                  <span
-                    ref={stickyHeadingRef}
-                    className="min-w-0 truncate pl-2 text-sm font-semibold opacity-0 will-change-[opacity,transform]"
-                    aria-hidden
-                  />
-                </div>
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger>
-                    <IconButton
-                      variant="ghost"
-                      icon="ellipsis-horizontal"
-                      aria-label={COPY.DOCUMENT_ACTIONS}
-                    />
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Content>
-                    {viewModes && viewModes.length > 0 && (
-                      <>
-                        {viewModes.map(mode => (
-                          <DropdownMenu.Item
-                            key={mode.value}
-                            onSelect={() => onViewModeChange?.(mode.value)}
-                            className={
-                              currentViewMode === mode.value
-                                ? 'font-semibold'
-                                : ''
-                            }
-                          >
-                            {mode.label}
-                          </DropdownMenu.Item>
-                        ))}
-                        <DropdownMenu.Separator />
-                      </>
-                    )}
-                    {onEdit && !isAggregate && (
-                      <DropdownMenu.Item onSelect={onEdit}>
-                        {COPY.EDIT}
-                      </DropdownMenu.Item>
-                    )}
-                    {extraActions &&
-                      !isAggregate &&
-                      selectedPath &&
-                      extraActions(selectedPath).map(action => (
-                        <DropdownMenu.Item
-                          key={action.label}
-                          onSelect={action.onSelect}
-                        >
-                          {action.label}
-                        </DropdownMenu.Item>
-                      ))}
-                    {isAggregate && (
-                      <>
-                        <DropdownMenu.RadioGroup
-                          value={aggregateMode}
-                          onValueChange={value =>
-                            setAggregateMode(value as AggregateMode)
-                          }
-                        >
-                          {(
-                            Object.values(AGGREGATE_MODE) as AggregateMode[]
-                          ).map(mode => (
-                            <DropdownMenu.RadioItem key={mode} value={mode}>
-                              {AGGREGATE_MODE_LABEL[mode]}
-                            </DropdownMenu.RadioItem>
-                          ))}
-                        </DropdownMenu.RadioGroup>
-                        <DropdownMenu.Separator />
-                      </>
-                    )}
-                    <DropdownMenu.Item
-                      onSelect={() =>
-                        navigator.clipboard.writeText(
-                          hasSelection ? aggregateContent : content,
-                        )
-                      }
-                    >
-                      {COPY.COPY_MARKDOWN}
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Separator className="md:!hidden" />
-                    <DropdownMenu.Item
-                      onSelect={showSidebarOnMobile}
-                      className="md:!hidden"
-                    >
-                      {COPY.BACK_TO_FILES}
-                    </DropdownMenu.Item>
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
-              </div>
+              {renderContentBar(false)}
               <div ref={contentBodyRef} className="flex-1 min-h-0">
                 {renderContent ? (
                   renderContent(

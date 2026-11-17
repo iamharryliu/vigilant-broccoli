@@ -16,6 +16,8 @@ import {
   Minus,
   Moon,
   MoreHorizontal,
+  PanelLeftClose,
+  PanelLeftOpen,
   Pause,
   Pencil,
   Play,
@@ -75,6 +77,8 @@ export const ICON_BUTTON_ICONS = {
   help: CircleHelp,
   settings: Settings,
   incognito: VenetianMask,
+  'panel-left-close': PanelLeftClose,
+  'panel-left-open': PanelLeftOpen,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconButtonIcon = keyof typeof ICON_BUTTON_ICONS;
@@ -117,6 +121,8 @@ const ICON_BUTTON_DEFAULT_LABELS = {
   help: 'Help',
   settings: 'Settings',
   incognito: 'Incognito',
+  'panel-left-close': 'Hide sidebar',
+  'panel-left-open': 'Show sidebar',
 } as const satisfies Record<IconButtonIcon, string>;
 
 const DEFAULT_ICON_SIZE = 16;
