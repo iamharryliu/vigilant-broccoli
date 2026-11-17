@@ -43,7 +43,7 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 ### photography-react
 
 - New public photo gallery at photography.harryliu.dev with an album grid, album pages and a lightbox viewer ([#1592](https://github.com/iamharryliu/vigilant-broccoli/pull/1592)).
-- Albums and photos show in uncropped masonry columns with only cover images on the album list, and albums have real URLs like `/summer-trip`; old `#/` links still redirect (PR: pending).
+- Albums and photos show in uncropped masonry columns with only cover images on the album list, and albums have real URLs like `/summer-trip`; old `#/` links still redirect ([#1658](https://github.com/iamharryliu/vigilant-broccoli/pull/1658)).
 
 ### pages-index
 
@@ -91,7 +91,7 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 ### react-lib-media
 
-- New `ImageGallery` shows a list of images with a call to action as masonry columns, justified rows or a shuffled stack you page through with the arrow keys, demoed in the component library (PR: pending).
+- New `ImageGallery` shows a list of images with a call to action as masonry columns, justified rows or a shuffled stack you page through with the arrow keys, demoed in the component library ([#1658](https://github.com/iamharryliu/vigilant-broccoli/pull/1658)).
 
 ### chat
 
