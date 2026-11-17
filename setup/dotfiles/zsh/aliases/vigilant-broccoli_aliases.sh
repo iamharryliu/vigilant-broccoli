@@ -73,7 +73,8 @@ alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
 # Reclaim disk: Claude worktrees, local branches, Docker build cache/images, package-manager caches. Docker volumes are left alone.
 localcleanup() {
     local worktrees_dir="$REPO_DIR/.claude/worktrees" worktree header
-    local -a worktrees=() skipped=() remove_args=() branches_before=() branches_after=()
+    # Dirty worktrees are force-removed by default; --keep-dirty skips them instead.
+    local -a worktrees=() skipped=() remove_args=(--force) branches_before=() branches_after=()
     local removed=0 worktree_kb=0 kb out size label cache_path branch
     local branches_deleted=0
     local summary="" docker_note="" free_before="" free_after="" width=0 line disk_path
@@ -86,17 +87,18 @@ localcleanup() {
         disk_path=/
         cache_entries=("Yarn cache|$HOME/.cache/yarn" "Cypress cache|$HOME/.cache/Cypress" "pip cache|$HOME/.cache/pip" "pnpm store|$HOME/.local/share/pnpm/store" "pnpm cache|$HOME/.cache/pnpm")
     fi
+    # --force/-f is the default and still accepted, so existing habits keep working.
     case "${1:-}" in
-        "") ;;
-        --force|-f)
-            [ "$#" -eq 1 ] || { echo "Usage: localcleanup [--force|-f]" >&2; return 1; }
-            remove_args=(--force)
+        ""|--force|-f) ;;
+        --keep-dirty|-k)
+            remove_args=()
             ;;
         *)
-            echo "Usage: localcleanup [--force|-f]" >&2
+            echo "Usage: localcleanup [--keep-dirty|-k]" >&2
             return 1
             ;;
     esac
+    [ "$#" -le 1 ] || { echo "Usage: localcleanup [--keep-dirty|-k]" >&2; return 1; }
     # Keep unmatched globs harmless in zsh without changing the caller's options.
     if [ -n "${ZSH_VERSION:-}" ]; then
         setopt local_options nonomatch

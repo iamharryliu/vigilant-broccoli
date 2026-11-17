@@ -98,7 +98,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   dockeropen                  Open Docker Desktop
   killdockerdesktop           Quit Docker Desktop and its background processes
   dockercleanup               Run docker_cleanup.sh
-  localcleanup                Remove clean Claude worktrees (`--force` removes dirty ones too) and delete local branches except main and any still checked out, prune Docker images/build cache, clear npm/Yarn/Cypress/pip caches (plus the pnpm store on Linux), then print per-item reclaimed sizes and free disk before/after (confirms)
+  localcleanup                Remove all Claude worktrees, uncommitted changes included (`--keep-dirty` skips dirty ones) and delete local branches except main and any still checked out, prune Docker images/build cache, clear npm/Yarn/Cypress/pip caches (plus the pnpm store on Linux), then print per-item reclaimed sizes and free disk before/after (confirms)
 
 ☁️  VB INFRA
   sshocivm [cmd]              SSH into the OCI VM (IP from terraform output)

@@ -9,7 +9,7 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 ### dotfiles
 
-- `localcleanup` also deletes local branches except main and any still checked out in a worktree, and its summary lists how many were deleted and kept ([#1656](https://github.com/iamharryliu/vigilant-broccoli/pull/1656)).
+- `localcleanup` also deletes local branches except main and any still checked out in a worktree, and its summary lists how many were deleted and kept. It now removes worktrees with uncommitted changes by default; `--keep-dirty` skips them ([#1656](https://github.com/iamharryliu/vigilant-broccoli/pull/1656)).
 
 ### hearth
 
