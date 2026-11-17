@@ -56,7 +56,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - New Changelog page lists these entries, linked from the home page ([#1586](https://github.com/iamharryliu/vigilant-broccoli/pull/1586)).
 - New Private section after Demo lists owner-only apps, and Web Terminal moved there ([#1606](https://github.com/iamharryliu/vigilant-broccoli/pull/1606)).
 - The Changelog page shows each month as a collapsible section titled like November 2026, newest open and animated as it toggles ([#1660](https://github.com/iamharryliu/vigilant-broccoli/pull/1660)).
-- Tall changelog sections now take longer to open and close, up to half a second, so the toggle is visible on phones (PR: pending).
+- Tall changelog sections now take longer to open and close, up to half a second, so the toggle is visible on phones ([#1662](https://github.com/iamharryliu/vigilant-broccoli/pull/1662)).
 - Games sit after Web Applications, and the Status page drops its updated-date line ([#1396](https://github.com/iamharryliu/vigilant-broccoli/pull/1396), [#1483](https://github.com/iamharryliu/vigilant-broccoli/pull/1483)).
 
 ### docs-md
