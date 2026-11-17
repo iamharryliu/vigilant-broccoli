@@ -1,6 +1,6 @@
 # Cheatsheet
 
-Useful infra-level CLI commands, runnable via `pnpm run <script>`.
+Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsheet` opens them in an interactive picker: ↑/↓ move, typing filters, → and ← enter and leave a header group while the filter is empty, Enter opens a group or runs the command (prompting for arguments first when it takes any), and Esc or Ctrl-C quits. Piped or non-terminal output prints the sheet instead.
 
 ```
 📦 REPOSITORY
@@ -8,7 +8,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   open:repo                   Open GitHub repo
   open:repo:actions           Open GitHub Actions
   npm:packages                Open npm packages page
-  cheatsheet                  Print this cheatsheet
+  cheatsheet                  Browse, filter and run these commands
   cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
   cheatsheet:aliases          Print the shell alias cheatsheet
   dockerhub:descriptions      Push every Docker Hub repo's description and overview from the pages-index image registry (Vault DOCKERHUB_TOKEN)

@@ -1,11 +1,11 @@
 # Cheatsheet — Shell Aliases
 
-Shell aliases and functions from `setup/dotfiles/`, available in any shell. Print with `cheatsheet` (or `pnpm cheatsheet:aliases`).
+Shell aliases and functions from `setup/dotfiles/`, available in any shell. Browse and run them with `cheatsheet` (the same picker as `pnpm cheatsheet`; the picked command runs in your current shell, so directory changes stick), or print them with `pnpm cheatsheet:aliases`.
 
 ```
 🐚 SHELL
   initsh                      Reload the shell (source ~/.zshrc or ~/.bashrc)
-  cheatsheet                  Print this cheatsheet
+  cheatsheet                  Browse, filter and run these aliases
   explain_shell '<cmd>'       Open the command on explainshell.com
   spellcheck                  Run codespell
   (on new shell)              Start `pnpm event-calendars:sync` in the background once a day, logging to ~/.vb-manager/event-calendars-sync.log (non-login failures retry hourly)

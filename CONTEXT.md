@@ -51,7 +51,7 @@ Read the relevant document before working on its subject. Before editing a direc
 ### Root Scripts Conventions
 
 - Put useful infrastructure commands in the root `package.json`.
-- Keep [docs/cheatsheet.md](./docs/cheatsheet.md) in sync with root scripts and [docs/cheatsheet-aliases.md](./docs/cheatsheet-aliases.md) with aliases/functions under `setup/dotfiles/`. Edit the Markdown sources; their shell scripts only print them.
+- Keep [docs/cheatsheet.md](./docs/cheatsheet.md) in sync with root scripts and [docs/cheatsheet-aliases.md](./docs/cheatsheet-aliases.md) with aliases/functions under `setup/dotfiles/`. Edit the Markdown sources: `scripts/node/cheatsheet.mjs` parses their fenced block (header lines, then `  command  description` rows) to browse and run them.
 
 ### Toolchain
 
