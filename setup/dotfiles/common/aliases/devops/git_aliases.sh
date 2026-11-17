@@ -67,7 +67,8 @@ rmgbn() {
 
 
 droplocalbranches() {
-  local branches_to_delete
+  local branches_to_delete worktree_path keep_checked_out=false
+  [[ "${1:-}" == "--keep-checked-out" ]] && keep_checked_out=true
   branches_to_delete=$(git branch --format='%(refname:short)' | grep -vE "^main$")
 
   if [[ -z "$branches_to_delete" ]]; then
@@ -76,10 +77,12 @@ droplocalbranches() {
   fi
 
   while IFS= read -r branch; do
-    local worktree_path
-    worktree_path=$(git worktree list --porcelain | awk -v b="refs/heads/$branch" '/^worktree/ {path=$2} $0 ~ b {print path}')
+    worktree_path=$(git worktree list --porcelain | awk -v b="branch refs/heads/$branch" '/^worktree/ {path=$2} $0 == b {print path}')
 
     if [[ -n "$worktree_path" ]]; then
+      if $keep_checked_out; then
+        continue
+      fi
       echo "Removing worktree for branch '$branch' at $worktree_path..."
       git worktree remove --force "$worktree_path" || {
         echo "  Failed to remove worktree. Skipping branch '$branch'."
