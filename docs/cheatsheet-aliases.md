@@ -104,7 +104,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   sshocivm [cmd]              SSH into the OCI VM (IP from terraform output)
   vbvault                     Open the Vault UI
   cpvaulttoken                Copy the Vault root token to clipboard
-  vbbackup                    Back up secrets and the repo
+  vbbackup                    Back up secrets, the repo and the Spotify library
   awsprofiles                 Open ~/.aws/credentials
   vbactions / vbnpm           Open the repo's Actions / npm packages
 

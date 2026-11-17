@@ -3,8 +3,7 @@ import argparse
 import json
 import sys
 from spotify_to_mp3_service import SpotifyToMp3Service
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+from spotify_auth import build_spotify_client
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,16 +14,7 @@ def get_spotify_playlists(
     client_id=os.environ.get("SPOTIFY_CLIENT_ID"),
     client_secret=os.environ.get("SPOTIFY_CLIENT_SECRET"),
 ) -> list[dict]:
-    redirect_uri = "http://127.0.0.1:20001/callback"
-
-    sp = spotipy.Spotify(
-        auth_manager=SpotifyOAuth(
-            client_id=client_id,
-            client_secret=client_secret,
-            redirect_uri=redirect_uri,
-            scope="playlist-read-private playlist-read-collaborative",
-        )
-    )
+    sp = build_spotify_client(client_id=client_id, client_secret=client_secret)
 
     all_playlists = []
     results = sp.current_user_playlists(limit=50)
