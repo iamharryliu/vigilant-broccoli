@@ -55,13 +55,13 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 - Long documents keep a sticky action bar with a title that fades in on scroll. The in-app back button retraces file navigation, and browser back and forward work too ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
 - Several files can be selected at once, and the graph has settings for scope, hop count and forces ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
 - On desktop the sidebar slides away for full-width reading, from its panel icon or `f`. The graph opens from the content bar or `g` and shares its top bar and menu, whose items now have icons ([#1650](https://github.com/iamharryliu/vigilant-broccoli/pull/1650)).
-- The graph opens without a top bar and stays open on the start page, keeps the open note centered and highlights it and hovered notes with soft glows. Its settings add color schemes from Sanzo Wada's _A Dictionary of Color Combinations_ (No. 321 by default) and a node glow switch, and it now defaults to 4 hops (PR: pending).
+- The graph opens without a top bar and stays open on the start page, keeps the open note centered and highlights it and hovered notes with soft glows. Its settings add color schemes from Sanzo Wada's _A Dictionary of Color Combinations_ (No. 321 by default) and a node glow switch, and it now defaults to 4 hops ([#1657](https://github.com/iamharryliu/vigilant-broccoli/pull/1657)).
 
 ### context-md
 
 - Browser back and forward switch between files ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
 - The sidebar can be hidden on desktop from its panel icon or `f` ([#1650](https://github.com/iamharryliu/vigilant-broccoli/pull/1650)).
-- The graph keeps the open note centered, highlights it and hovered notes with soft glows, and adds color schemes from Sanzo Wada's _A Dictionary of Color Combinations_ (No. 321 by default) and a node glow switch to its settings (PR: pending).
+- The graph keeps the open note centered, highlights it and hovered notes with soft glows, and adds color schemes from Sanzo Wada's _A Dictionary of Color Combinations_ (No. 321 by default) and a node glow switch to its settings ([#1657](https://github.com/iamharryliu/vigilant-broccoli/pull/1657)).
 
 ### bookmarks-react
 
