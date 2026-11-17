@@ -166,7 +166,7 @@ TODO_RULES="- Update only this pull request. If the change is too large or bundl
 TODO_FIELDS=""
 if [ "$TODO_ENABLED" = 1 ]; then
   TODO_RULES="$TODO_RULES
-- Do not edit TODO.md beyond the QA row the skill asks for: the runner removes exactly the rows you declare in todo_ids. This PR already exists, so link a QA row to it as \"PR: ${PR_URL}\"."
+- Do not edit TODO.md beyond the QA row the skill asks for: the runner removes exactly the rows you declare in todo_ids. This PR already exists, so link a QA row to it as \"PR: ${PR_URL}\" and a CHANGELOG.md bullet as \"[#${PR}](${PR_URL})\"."
   TODO_FIELDS="
   - todo_ids: array of the TODO.md ids named in the instruction that this update fully resolves (omit or [] when none)"
 fi
@@ -296,6 +296,7 @@ if [ "$TODO_ENABLED" = 1 ] && { [ -n "$(git status --porcelain)" ] || [ "${#RESO
   pr_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
   pr_fill_qa_placeholder "$PR_URL" "$BASE_SHA" || true
 fi
+pr_fill_changelog_placeholder "$PR_URL" "$BASE_SHA" || true
 
 python3 "$SCREENSHOTS_HELPER" --metadata "$META_FILE" --prepare
 bash "$PRE_COMMIT_HELPER"

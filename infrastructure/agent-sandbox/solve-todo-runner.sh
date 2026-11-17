@@ -64,7 +64,7 @@ SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-create-pr/
 . "$(dirname "${BASH_SOURCE[0]}")/no-changes.sh"
 
 QA_RULE="
-- The PR does not exist yet: write the literal \"${PR_QA_PLACEHOLDER}\" wherever a QA row needs this PR's link; the calling script replaces it with the PR URL after opening the PR."
+- The PR does not exist yet: write the literal \"${PR_QA_PLACEHOLDER}\" wherever a QA row or CHANGELOG.md bullet needs this PR's link; the calling script replaces it with the PR link after opening the PR."
 
 if [ "$MODE" = id ]; then
   # TODO items live as rows of one markdown table (ID | Type | Priority |

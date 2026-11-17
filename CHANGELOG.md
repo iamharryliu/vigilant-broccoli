@@ -1,6 +1,6 @@
 # Changelog
 
-One section per month, newest first. `cron-agentic-pr-create-changelog` folds each week's merged pull requests into the current month; review entries in its PR and never edit the markers. Months before 2026-07 were reconstructed from commit history, from before work landed through pull requests.
+One section per month, newest first. Agentic pull requests add their own bullet when they change behavior, and `cron-agentic-pr-create-changelog` folds each week's merged pull requests into the current month, tidying those bullets and covering the rest; review entries in its PR and never edit the markers. Months before 2026-07 were reconstructed from commit history, from before work landed through pull requests.
 
 <!-- changelog-through: acbdb805a10d6e5679c56e24694130971e1f2d4e -->
 <!-- changelog-entries -->

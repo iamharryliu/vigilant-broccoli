@@ -135,7 +135,8 @@ and a human or a `TODO.md` row re-scopes it.
   from `TODO.md` only those rows, failing a run that deleted any other row or edited anything but
   [QA rows](../../docs/todo-pattern.md#qa-rows);
 - commits, pushes and opens the PR with its title, summary, next steps, concerns, suggestions, screenshots and history row,
-  then replaces the `PR: pending` placeholder on this PR's QA rows with the PR URL in a follow-up commit;
+  then replaces the `PR: pending` placeholder on this PR's QA rows with the PR URL, and on its `CHANGELOG.md` bullets
+  with the `[#N](url)` link, in a follow-up commit;
 - when a create run fails, saves its partial work as a draft PR and prints a `RESULT::` marker saying what became of it. A
   failed update publishes nothing.
 
