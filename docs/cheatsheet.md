@@ -127,7 +127,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   vault:store-promotion-key <pem>  Store the production-promotion GitHub App key in Vault
 
 🔑 SECRETS
-  secret-rotation:all         Run the local rotations, dispatch ci-rotate-secrets, then rotate the OCI key
+  secret-rotation:all         Run the local rotations, dispatch ci-rotate-secrets, rotate the OCI key, then back up Vault to Bitwarden
   secret-rotation:flyio       Rotate Fly.io token
   secret-rotation:gitea       Rotate Gitea CI token (scoped read:repository)
   secret-rotation:profile-deploy-key  Rotate profile repo deploy key, store in Vault
