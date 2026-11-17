@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, AnimationEvent, ReactNode } from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import { ChevronDown } from 'lucide-react';
 
@@ -20,6 +20,21 @@ interface CollapsibleListProps {
   /** Fires only for user toggles, not the saved state restored after mount. */
   onOpenChange?: (id: string, open: boolean) => void;
 }
+
+const MIN_TOGGLE_MS = 200;
+const MAX_TOGGLE_MS = 500;
+const MS_PER_PX = 0.15;
+
+// The keyframes run a fixed 0.2s, which flashes past on a section thousands of
+// pixels tall and reads as no transition. Stretch tall sections up to a cap.
+const scaleToggleDuration = (event: AnimationEvent<HTMLDivElement>): void => {
+  const el = event.currentTarget;
+  const ms = Math.min(
+    MAX_TOGGLE_MS,
+    Math.max(MIN_TOGGLE_MS, el.scrollHeight * MS_PER_PX),
+  );
+  el.style.animationDuration = `${ms}ms`;
+};
 
 export const CollapsibleList = ({
   items,
@@ -99,7 +114,10 @@ export const CollapsibleList = ({
               <div className="ml-2 flex items-center">{item.headerAction}</div>
             )}
           </AccordionPrimitive.Header>
-          <AccordionPrimitive.Content className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <AccordionPrimitive.Content
+            className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+            onAnimationStart={scaleToggleDuration}
+          >
             <div className="flex flex-col gap-3 pb-4">{item.content}</div>
           </AccordionPrimitive.Content>
         </AccordionPrimitive.Item>
