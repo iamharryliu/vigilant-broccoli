@@ -32,7 +32,7 @@ The **Text size** row under the search field shrinks (A−) or enlarges (A+) the
 
 ### Claude page
 
-Built-in commands type the command and press Enter. The `-claude` skills only type it, so arguments can be added first.
+Buttons type the command and press Enter.
 
 | Command | What it does |
 | --- | --- |
@@ -43,15 +43,15 @@ Built-in commands type the command and press Enter. The `-claude` skills only ty
 | `/resume` | Reopens a previous conversation. |
 | `/status` | Shows version, model and account state. |
 | `/usage` | Shows plan usage and limits. |
-| `/local-create-pr-claude` | Researches a request, then runs Claude in a detached tmux session on a fresh worktree to implement it and open a PR. |
-| `/local-update-pr-claude` | Researches a change to an existing PR, then runs Claude in a detached tmux session on a worktree of its branch and pushes to the PR. |
 
 ### Dev page
 
 Buttons type the command without pressing Enter, so arguments can be added first.
 
-| Command | What it does |
-| --- | --- |
-| `/local-session-retry-publish` | Tells idle agents to retry an authorized push or PR after credentials were refreshed. |
-| `/local-session-status` | Read-only status of agent sessions and jobs started in this conversation. |
-| `/local-update-pr` | Applies a requested change to an existing PR branch and verifies it. |
+| Command | What it does | Runs on tap |
+| --- | --- | --- |
+| `/local-create-pr-claude` | Researches a request, then runs Claude in a detached tmux session on a fresh worktree to implement it and open a PR. | No |
+| `/local-session-retry-publish` | Tells idle agents to retry an authorized push or PR after credentials were refreshed. | No |
+| `/local-session-status` | Read-only status of agent sessions and jobs started in this conversation. | No |
+| `/local-update-pr-claude` | Researches a change to an existing PR, then runs Claude in a detached tmux session on a worktree of its branch and pushes to the PR. | No |
+| `/local-update-pr` | Applies a requested change to an existing PR branch and verifies it. | No |
