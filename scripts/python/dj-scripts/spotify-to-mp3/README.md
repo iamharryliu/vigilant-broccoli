@@ -33,3 +33,17 @@ pip install --upgrade spotdl yt-dlp ytmusicapi
 # Example cronjob.
 0 */1 * * * cd ~/spotify-to-mp3/ && source venv/bin/activate && python download_music.py -f mix
 ```
+
+## Library Backup
+
+`backup_library.py` writes playlists (with every track) and liked songs to `~/resilio-sync/backup/spotify/spotify-library-<YYYY-MM-DD UTC>.json` (atomic write, newest 5 kept). Playlists whose items Spotify refuses (e.g. editorial playlists in development-mode apps) keep their metadata with an `error` field.
+
+```
+# Run with Vault-injected credentials (also part of the `vbbackup` alias).
+projects/nx-workspace/scripts/shell/backup-spotify.sh
+
+# Or directly from this directory with a local .env.
+python backup_library.py --output-dir DIR
+```
+
+The backup adds the `user-library-read` scope, so the first run re-prompts Spotify consent because the cached token's scope changes. `download_music.py` keeps its narrower scope; both share `spotify_auth.py`.
