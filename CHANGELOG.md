@@ -57,6 +57,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - New Private section after Demo lists owner-only apps, and Web Terminal moved there ([#1606](https://github.com/iamharryliu/vigilant-broccoli/pull/1606)).
 - The Changelog page shows each month as a collapsible section titled like November 2026, newest open and animated as it toggles ([#1660](https://github.com/iamharryliu/vigilant-broccoli/pull/1660)).
 - Games sit after Web Applications, and the Status page drops its updated-date line ([#1396](https://github.com/iamharryliu/vigilant-broccoli/pull/1396), [#1483](https://github.com/iamharryliu/vigilant-broccoli/pull/1483)).
+- The Deployments page refreshes itself every 5 minutes while visible, so the Refresh button is gone. Each app has one Preview link with its commit and deploy age, and an empty list says whether there are no open pull requests or none have a preview yet (PR: pending).
 
 ### docs-md
 

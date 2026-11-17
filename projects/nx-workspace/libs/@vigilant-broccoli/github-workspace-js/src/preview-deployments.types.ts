@@ -44,6 +44,7 @@ export type PreviewDeploymentsResult =
   | {
       ok: true;
       pullRequests: PreviewDeploymentPullRequest[];
+      openPullCount: number;
       fetchedAt: string;
     }
   | {
