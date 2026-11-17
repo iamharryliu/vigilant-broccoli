@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchAlbums } from '../../lib/photography.api';
 import { PHOTOGRAPHY_STATE } from '../../lib/photography.consts';
+import { isMockMode, MOCK_ALBUMS } from '../../lib/photography.mock';
 import { Album, PhotographyState } from '../../lib/photography.types';
 
 export const useAlbums = () => {
@@ -10,6 +11,11 @@ export const useAlbums = () => {
   const [albums, setAlbums] = useState<Album[]>([]);
 
   useEffect(() => {
+    if (isMockMode()) {
+      setAlbums(MOCK_ALBUMS);
+      setState(PHOTOGRAPHY_STATE.READY);
+      return;
+    }
     const controller = new AbortController();
     fetchAlbums(controller.signal)
       .then(loaded => {
