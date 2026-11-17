@@ -10,7 +10,7 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 ### dotfiles
 
 - `localcleanup` also deletes local branches except main and any still checked out in a worktree, and its summary lists how many were deleted and kept. It now removes worktrees with uncommitted changes by default; `--keep-dirty` skips them ([#1656](https://github.com/iamharryliu/vigilant-broccoli/pull/1656)).
-- `cheatsheet` and `pnpm cheatsheet` open an interactive picker: arrow keys browse header groups, typing filters every command, Enter runs the pick (asking for arguments first when it takes any), and Esc or Ctrl-C quits (PR: pending).
+- `cheatsheet` and `pnpm cheatsheet` open an interactive picker: arrow keys browse header groups, typing filters every command, Enter runs the pick (asking for arguments first when it takes any), and Esc or Ctrl-C quits ([#1659](https://github.com/iamharryliu/vigilant-broccoli/pull/1659)).
 
 ### hearth
 
