@@ -45,6 +45,8 @@ const KEY_ENTER = 'Enter';
 const KEY_ESCAPE = 'Escape';
 const KEY_TOGGLE_SIDEBAR = 'f';
 const KEY_TOGGLE_GRAPH = 'g';
+// Hover hint only: the accessible name stays the plain label.
+const withShortcut = (label: string, key: string) => `${label} (${key})`;
 const SEARCH_DEBOUNCE_MS = 300;
 const SEARCH_RESULT_ITEM_ATTR = 'data-search-result-index';
 const NODE_TYPE_DIRECTORY = 'directory';
@@ -619,6 +621,7 @@ export const DocsExplorer = ({
         variant="ghost"
         icon="panel-left-open"
         aria-label={COPY.SHOW_SIDEBAR}
+        title={withShortcut(COPY.SHOW_SIDEBAR, KEY_TOGGLE_SIDEBAR)}
         onClick={() => setIsSidebarCollapsed(false)}
       />
     </span>
@@ -628,6 +631,10 @@ export const DocsExplorer = ({
       variant={showGraph ? 'default' : 'ghost'}
       icon="graph"
       aria-label={showGraph ? COPY.HIDE_GRAPH : COPY.SHOW_GRAPH}
+      title={withShortcut(
+        showGraph ? COPY.HIDE_GRAPH : COPY.SHOW_GRAPH,
+        KEY_TOGGLE_GRAPH,
+      )}
       onClick={() => setShowGraph(prev => !prev)}
     />
   );
@@ -774,6 +781,10 @@ export const DocsExplorer = ({
                       variant="ghost"
                       icon="panel-left-close"
                       aria-label={COPY.HIDE_SIDEBAR}
+                      title={withShortcut(
+                        COPY.HIDE_SIDEBAR,
+                        KEY_TOGGLE_SIDEBAR,
+                      )}
                       onClick={() => setIsSidebarCollapsed(true)}
                     />
                   </span>
