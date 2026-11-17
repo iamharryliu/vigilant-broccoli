@@ -12,6 +12,7 @@ import {
   useDocumentTitle,
   useMediaQuery,
   SegmentedControl,
+  Switch,
 } from '@vigilant-broccoli/react-lib';
 import {
   DESKTOP_MEDIA_QUERY,
@@ -31,6 +32,12 @@ import {
   FORCE_LIMITS,
   type GraphForces,
 } from './graph-view';
+import {
+  DEFAULT_GRAPH_COLOR_SCHEME_ID,
+  findGraphColorScheme,
+  GRAPH_COLOR_SCHEMES,
+  type GraphColorScheme,
+} from './graph-color-schemes';
 
 const FILE_PARAM = 'file';
 
@@ -68,6 +75,9 @@ export const createSearchParamUrlSync = (
 
 const VIEW_MODE_STORAGE_KEY = 'docs-md:view-mode';
 const GRAPH_SCOPE_STORAGE_KEY = 'docs-md:graph-scope';
+const GRAPH_COLOR_SCHEME_STORAGE_KEY = 'docs-md:graph-color-scheme';
+const GRAPH_NODE_GLOW_STORAGE_KEY = 'docs-md:graph-node-glow';
+const NODE_GLOW_OFF = 'off';
 const GRAPH_DEPTH_STORAGE_KEY = 'docs-md:graph-depth';
 
 const VIEW_MODE = {
@@ -97,7 +107,7 @@ const GRAPH_SCOPE_LABEL: Record<GraphScope, string> = {
   [GRAPH_SCOPE.LOCAL]: 'Local',
 };
 
-const DEFAULT_GRAPH_DEPTH = 1;
+const DEFAULT_GRAPH_DEPTH = 4;
 const MAX_GRAPH_DEPTH = 10;
 const GRAPH_DEPTH_OPTIONS = Array.from(
   { length: MAX_GRAPH_DEPTH },
@@ -135,9 +145,28 @@ const COPY = {
   SCOPE_LABEL: 'Graph scope',
   DEPTH_LABEL: 'Graph depth',
   DEPTH_PLACEHOLDER: 'Hops',
+  COLOR_SCHEME: 'Color scheme',
+  NODE_GLOW: 'Node glow',
 } as const;
 
 const depthLabel = (value: number) => `${value} hop${value > 1 ? 's' : ''}`;
+
+const colorSchemeLabel = (scheme: GraphColorScheme) => (
+  <span className="flex items-center gap-2">
+    {scheme.colors && (
+      <span className="flex" aria-hidden>
+        {scheme.colors.map(color => (
+          <span
+            key={color}
+            className="h-3 w-3 first:rounded-l-sm last:rounded-r-sm"
+            style={{ backgroundColor: color }}
+          />
+        ))}
+      </span>
+    )}
+    {scheme.name}
+  </span>
+);
 
 const AGGREGATE_KEY_PREFIX = 'aggregate:';
 const HEADING_RE = /^#\s+(.+)$/m;
@@ -190,6 +219,10 @@ function GraphPanel({
   const [error, setError] = useState<string | null>(null);
   const [depth, setDepth] = useState<number>(DEFAULT_GRAPH_DEPTH);
   const [forces, setForces] = useState<GraphForces>(DEFAULT_FORCES);
+  const [colorSchemeId, setColorSchemeId] = useState(
+    DEFAULT_GRAPH_COLOR_SCHEME_ID,
+  );
+  const [showNodeGlow, setShowNodeGlow] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const isDesktop = useMediaQuery(DESKTOP_MEDIA_QUERY);
 
@@ -200,6 +233,14 @@ function GraphPanel({
     if (GRAPH_DEPTH_OPTIONS.includes(storedDepth)) {
       setDepth(storedDepth);
     }
+    const storedScheme = findGraphColorScheme(
+      window.localStorage.getItem(GRAPH_COLOR_SCHEME_STORAGE_KEY),
+    );
+    if (storedScheme) setColorSchemeId(storedScheme.id);
+    setShowNodeGlow(
+      window.localStorage.getItem(GRAPH_NODE_GLOW_STORAGE_KEY) !==
+        NODE_GLOW_OFF,
+    );
     setForces(prev => {
       const next = { ...prev };
       for (const key of FORCE_ORDER) {
@@ -228,6 +269,20 @@ function GraphPanel({
   const updateDepth = (next: number) => {
     setDepth(next);
     window.localStorage.setItem(GRAPH_DEPTH_STORAGE_KEY, String(next));
+  };
+
+  const updateColorScheme = (scheme: GraphColorScheme) => {
+    setColorSchemeId(scheme.id);
+    window.localStorage.setItem(GRAPH_COLOR_SCHEME_STORAGE_KEY, scheme.id);
+  };
+  const colorScheme =
+    findGraphColorScheme(colorSchemeId) ?? GRAPH_COLOR_SCHEMES[0];
+
+  const updateNodeGlow = (next: boolean) => {
+    setShowNodeGlow(next);
+    if (next) window.localStorage.removeItem(GRAPH_NODE_GLOW_STORAGE_KEY);
+    else
+      window.localStorage.setItem(GRAPH_NODE_GLOW_STORAGE_KEY, NODE_GLOW_OFF);
   };
 
   const updateForce = (key: keyof GraphForces, value: number) => {
@@ -267,20 +322,32 @@ function GraphPanel({
             label: GRAPH_SCOPE_LABEL[value],
           }))}
         />
-        {/* Always shown; empty in global scope, and picking a depth switches
-            back to local. */}
+        {scope === GRAPH_SCOPE.LOCAL && (
+          <Select
+            aria-label={COPY.DEPTH_LABEL}
+            placeholder={COPY.DEPTH_PLACEHOLDER}
+            className="h-7 text-xs"
+            value={depth}
+            onValueChange={updateDepth}
+            options={GRAPH_DEPTH_OPTIONS}
+            renderItem={depthLabel}
+          />
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-sm font-medium">{COPY.COLOR_SCHEME}</span>
         <Select
-          aria-label={COPY.DEPTH_LABEL}
-          placeholder={COPY.DEPTH_PLACEHOLDER}
+          aria-label={COPY.COLOR_SCHEME}
           className="h-7 text-xs"
-          value={scope === GRAPH_SCOPE.LOCAL ? depth : undefined}
-          onValueChange={value => {
-            updateDepth(value);
-            updateScope(GRAPH_SCOPE.LOCAL);
-          }}
-          options={GRAPH_DEPTH_OPTIONS}
-          renderItem={depthLabel}
+          value={colorScheme}
+          onValueChange={updateColorScheme}
+          options={[...GRAPH_COLOR_SCHEMES]}
+          renderItem={colorSchemeLabel}
         />
+        <label className="flex items-center justify-between text-xs">
+          <span>{COPY.NODE_GLOW}</span>
+          <Switch checked={showNodeGlow} onCheckedChange={updateNodeGlow} />
+        </label>
       </div>
       <div className="flex flex-col gap-3">
         <span className="text-sm font-medium">{COPY.FORCES}</span>
@@ -318,7 +385,9 @@ function GraphPanel({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="absolute top-2 right-2 z-10">
+      {/* The graph area already sits inside the card padding, so the content
+          bar's py-1 px-2 alone lines this up with its right-hand buttons. */}
+      <div className="absolute top-1 right-2 z-10">
         {isDesktop ? (
           <Popover.Root open={showSettings} onOpenChange={setShowSettings}>
             <Popover.Trigger>
@@ -358,6 +427,8 @@ function GraphPanel({
             activePath={activePath}
             onSelect={onSelect}
             forces={forces}
+            palette={colorScheme.colors ?? undefined}
+            showNodeGlow={showNodeGlow}
           />
         )}
         {isOrphan && (

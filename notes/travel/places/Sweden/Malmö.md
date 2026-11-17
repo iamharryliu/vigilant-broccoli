@@ -132,6 +132,7 @@
 - [Malmö Live](https://malmolive.se/program)
 - Inline Skating
   - FNS Copenhagen
+    - [FNS Copenhagen Website](http://www.fns-cph.dk/en/home.html)
     - [FNS Copenhagen Facebook](https://www.facebook.com/FNSCPH/events)
     - [FNS Copenhagen Instagram](https://www.instagram.com/fnscph/)
   - [Malmö City Skaters](https://www.malmocityskaters.se/)
@@ -156,8 +157,6 @@
       - [UNITED SOCIAL – Salsa & Bachata Sundays at United Dance Studios](https://fb.me/e/6X0FS5QUe)
       - [Salsa & Bachata Fever](https://fb.me/e/1P2QypJZHm)
     - [Latin Dance Events](https://www.facebook.com/groups/klubbkalenderlatin/events)
-- Tech
-  - [Goto 10 Events](https://www.goto10.se/event/)
 
 ## Entertainment
 

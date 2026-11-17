@@ -5,8 +5,6 @@
   "ALBUMS": {
     "TITLE": "Albums",
     "EMPTY": "No albums yet.",
-    "PHOTO_COUNT_ONE": "1 photo",
-    "PHOTO_COUNT_OTHER": "{count} photos",
     "OPEN_ALBUM": "Open album {name}"
   },
   "ALBUM": {

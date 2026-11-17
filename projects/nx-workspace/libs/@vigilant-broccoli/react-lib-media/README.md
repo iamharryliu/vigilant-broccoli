@@ -1,6 +1,6 @@
 # React Lib Media
 
-Audio, image and GitHub Actions badge display components.
+Audio, image, image gallery and GitHub Actions badge display components.
 
 ## Table of Contents
 
@@ -14,6 +14,7 @@ Audio, image and GitHub Actions badge display components.
 | Audio Button | [View](https://components.harryliu.dev/audio-button) |
 | GitHub Actions Badges | [View](https://components.harryliu.dev/github-actions-badges) |
 | Image Carousel | [View](https://components.harryliu.dev/image-carousel) |
+| Image Gallery | [View](https://components.harryliu.dev/image-gallery) |
 
 ## Stack
 

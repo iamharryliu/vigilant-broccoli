@@ -70,6 +70,7 @@
 | API | Application Programming Interface — a defined set of rules and protocols that lets one piece of software request services or data from another. |
 | Backend | The server-side part of an application responsible for data processing, storage, and business logic. |
 | daemon | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers. |
+| Dependency Injection | Passing a component the dependencies it needs (via constructor, setter or a container) instead of having it create them itself, so implementations can be swapped and mocked in tests. A technique for achieving Inversion of Control. |
 | Dependency Inversion | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres) |
 | Distributed systems | A system whose components run on multiple networked machines and coordinate by passing messages, so it appears to users as a single system. |
 | DTO | Data Transfer Object — a plain object with no behaviour that defines the shape of data passed between layers or over the network (e.g. an API request or response body), decoupling it from internal domain models. |
@@ -79,6 +80,7 @@
 | Event Driven Architecture | A design where components communicate by emitting and reacting to events (e.g. "order placed") through a broker or queue instead of calling each other directly, so producers and consumers stay decoupled and asynchronous. |
 | Firmware | Low-level software written to a device's non-volatile memory that directly controls its hardware, such as the code running on a microcontroller. |
 | Frontend | The client-side part of an application responsible for user interface and interaction. |
+| Inversion of Control | A general principle where a framework or container calls your code and controls flow and object creation, instead of your code driving them ("Hollywood principle": don't call us, we'll call you). Dependency Injection, callbacks and event handlers are ways to achieve it. |
 | LTS | Long term support. |
 | Microcontroller | A small computer on a single chip (CPU, memory, and I/O) built to run one dedicated task, typically the target hardware for embedded software. |
 | microservices | Breaking applications into tiny remote services that run independently of each other. |
@@ -133,12 +135,14 @@
 | Term | Definition |
 | --- | --- |
 | AOT | Ahead-of-time compilation: translating code to machine code at build time, before it runs. Gives fast startup and no runtime compiler cost, but cannot optimize from observed behavior and ties the binary to a platform. |
+| Backpressure | A consumer signaling a faster producer to slow down (or dropping, buffering or rejecting work) when it cannot keep up, so queues and memory stay bounded instead of growing until the system fails. Examples: TCP flow control, bounded queues, HTTP 429 or 503 responses, streaming APIs. |
 | Benchmarking | Running a repeatable workload against a system to measure its performance, so results can be compared before and after a change or against alternatives. |
 | Bottleneck | The slowest stage or most constrained resource in a system, which caps overall throughput or latency; speeding up anything else barely helps. |
 | Eager loading | Fetching or initializing data up front, such as an ORM loading a related entity with the parent query. Pays the cost once and avoids N+1 queries, but wastes work if the data goes unused. |
 | JIT | Just-in-time compilation: compiling code to machine code at runtime, usually for hot paths. Can reach higher peak speed by optimizing from observed behavior, but slows startup and uses extra CPU and memory while warming up. |
 | Latency | The time one operation takes from request to response, usually in milliseconds. Reported as percentiles (p50, p95, p99) because the average hides the slow tail. |
 | Lazy loading | Deferring a load until first access, such as an ORM fetching a related entity only when it is read. Can cause N+1 queries. |
+| Memory leak | Memory that a program no longer needs but never releases, such as unfreed allocations in manual-memory languages or lingering references (listeners, caches, closures) that stop a garbage collector from reclaiming it. Usage grows over time until performance degrades or the process crashes with out-of-memory. Found with heap profiling or heap snapshots. |
 | p50 | 50th percentile (median): half of measurements fall at or below it. Shows typical latency. |
 | p95 | 95th percentile: the value that 95% of measurements fall at or below, so only the slowest 5% exceed it. Used for latency, where it shows the slow tail that the average hides. |
 | p99 | 99th percentile: only the slowest 1% of measurements exceed it. Shows worst-case tail latency, which affects the most heavily loaded users and requests. |
