@@ -2,6 +2,13 @@
 
 ## Table of Contents
 
+- [Programming Paradigms](#programming-paradigms)
+  - [Paradigm Families](#paradigm-families)
+  - [Paradigm Styles](#paradigm-styles)
+  - [Typing Systems](#typing-systems)
+- [Language Comparison Table](#language-comparison-table)
+- [Language Conversion Table](#language-conversion-table)
+- [Framework Conversion Table](#framework-conversion-table)
 - [Software Execution](#software-execution)
   - [Execution Paths](#execution-paths)
     - [Native Compiled](#native-compiled)
@@ -10,109 +17,31 @@
     - [Transpiled to JavaScript](#transpiled-to-javascript)
   - [Machine Code vs Bytecode](#machine-code-vs-bytecode)
   - [Compiled vs Transpiled vs Interpreted](#compiled-vs-transpiled-vs-interpreted)
-- [Programming Paradigms](#programming-paradigms)
-  - [Imperative vs Declarative](#imperative-vs-declarative)
-  - [Procedural vs Functional vs Object-Oriented](#procedural-vs-functional-vs-object-oriented)
-  - [Static vs Dynamic Typing](#static-vs-dynamic-typing)
-- [Language Comparison Table](#language-comparison-table)
-- [Language Conversion Table](#language-conversion-table)
-- [Framework Conversion Table](#framework-conversion-table)
 - [References](#references)
-
-## Software Execution
-
-### Execution Paths
-
-#### Native Compiled
-
-C, C++, Rust, Go, Swift.
-
-```mermaid
-flowchart LR
-  A[Source code] -->|Compiler, build time| B[Machine code binary] --> C[CPU]
-```
-
-#### Compiled to a Virtual Machine
-
-Java, Kotlin, Scala (JVM); C# (.NET CLR); Elixir (BEAM).
-
-```mermaid
-flowchart LR
-  A[Source code] -->|Compiler, build time| B[Bytecode] --> C[Virtual machine] -->|Interpret, then JIT hot code| D[Machine code] --> E[CPU]
-```
-
-#### Interpreted
-
-Python, Ruby, PHP. Bash skips the bytecode step and executes each line directly.
-
-```mermaid
-flowchart LR
-  A[Source code] -->|Interpreter, at runtime| B[Bytecode] --> C[Interpreter VM] --> D[CPU]
-```
-
-#### Transpiled to JavaScript
-
-TypeScript; plain JavaScript skips the transpile step.
-
-```mermaid
-flowchart LR
-  A[TypeScript] -->|tsc, Babel or bundler, build time| B[JavaScript] --> C["JS engine (browser or Node.js)"] -->|Interpret bytecode, then JIT hot code| D[Machine code] --> E[CPU]
-```
-
-### Machine Code vs Bytecode
-
-| Aspect | Machine Code | Bytecode |
-| :-- | :-- | :-- |
-| Runs on | CPU directly | Virtual machine (interpreted/JIT) |
-| Portability | One OS and CPU per build | Any platform with the VM |
-| Speed | Fastest | Near native once JIT compiled |
-| Examples | C, C++, Rust, Go, Swift | Java, Kotlin, C#, Elixir, Python |
-
-### Compiled vs Transpiled vs Interpreted
-
-| Aspect | Compiled | Transpiled | Interpreted |
-| :-- | :-- | :-- | :-- |
-| Translation | To machine code or bytecode | To another source language | None, run directly |
-| When | Build time | Build time | Runtime |
-| Speed | Fastest | Same as target language | Slowest (JIT helps) |
-| Errors | Caught at build | Caught at build | Caught when run |
-| Examples | C, Rust, Go; Java, C# bytecode | TypeScript, Sass | Python, Ruby, Bash |
 
 ## Programming Paradigms
 
-### Imperative vs Declarative
+### Paradigm Families
 
-| Aspect | Imperative | Declarative |
-| :-- | :-- | :-- |
-| Core idea | Spell out the steps that change state | Describe the result, not the steps |
-| Control | Programmer controls the execution order | Engine decides how to produce the result |
-| Styles | Procedural, object-oriented | Functional, logic |
-| Examples | C, Java, Python | SQL, HTML/CSS, Terraform |
-| Code (names of adults) | `const names = [];`<br>`for (const u of users) {`<br>`  if (u.age >= 18) names.push(u.name);`<br>`}` | `SELECT name FROM users WHERE age >= 18;` |
+| Paradigm | Core idea | Control | Styles | Examples | Code example |
+| :-- | :-- | :-- | :-- | :-- | :-- |
+| Imperative | Spell out the steps that change state | Programmer controls the execution order | Procedural, object-oriented | C, Java, Python | `const names = [];`<br>`for (const u of users) {`<br>`  if (u.age >= 18) names.push(u.name);`<br>`}` |
+| Declarative | Describe the result, not the steps | Engine decides how to produce the result | Functional, logic | SQL, HTML/CSS, Terraform | `SELECT name FROM users WHERE age >= 18;` |
 
-### Procedural vs Functional vs Object-Oriented
+### Paradigm Styles
 
-| Aspect | Procedural | Functional | Object-Oriented |
+| Paradigm | Core idea | State | Code reuse | Side effects | Code example |
+| :-- | :-- | :-- | :-- | :-- | :-- |
+| Procedural | Ordered steps grouped into routines | Shared, mutable | Calling shared functions | Common | `int total = 0;`<br>`for (int i = 0; i < n; i++) {`<br>`  if (nums[i] % 2 == 0) total += nums[i] * nums[i];`<br>`}` |
+| Functional | Pure functions composed together | Immutable, passed between functions | Higher-order functions and composition | Avoided or isolated | `nums`<br>`  .filter(x => x % 2 === 0)`<br>`  .map(x => x * x)`<br>`  .reduce((a, b) => a + b, 0)` |
+| Object-Oriented | Objects bundling data with behaviour | Encapsulated inside objects | Inheritance and polymorphism | Common, contained by encapsulation | `class Nums {`<br>`  constructor(values) { this.values = values; }`<br>`  sumEvenSquares() {`<br>`    return this.values`<br>`      .filter(x => x % 2 === 0)`<br>`      .reduce((a, x) => a + x * x, 0);`<br>`  }`<br>`}`<br>`new Nums(nums).sumEvenSquares()` |
+
+### Typing Systems
+
+| Typing | Core idea | Details | Languages |
 | :-- | :-- | :-- | :-- |
-| Core idea | Ordered steps grouped into routines | Pure functions composed together | Objects bundling data with behaviour |
-| State | Shared, mutable | Immutable, passed between functions | Encapsulated inside objects |
-| Code reuse | Calling shared functions | Higher-order functions and composition | Inheritance and polymorphism |
-| Side effects | Common | Avoided or isolated | Common, contained by encapsulation |
-| Code (sum of even squares) | `int total = 0;`<br>`for (int i = 0; i < n; i++) {`<br>`  if (nums[i] % 2 == 0) total += nums[i] * nums[i];`<br>`}` | `nums`<br>`  .filter(x => x % 2 === 0)`<br>`  .map(x => x * x)`<br>`  .reduce((a, b) => a + b, 0)` | `class Nums {`<br>`  constructor(values) { this.values = values; }`<br>`  sumEvenSquares() {`<br>`    return this.values`<br>`      .filter(x => x % 2 === 0)`<br>`      .reduce((a, x) => a + x * x, 0);`<br>`  }`<br>`}`<br>`new Nums(nums).sumEvenSquares()` |
-
-### Static vs Dynamic Typing
-
-| Aspect | Static | Dynamic |
-| :-- | :-- | :-- |
-| Core idea | Types are checked at compile time | Types are checked at runtime |
-| Variable types | Fixed once declared or inferred | A variable can hold values of any type over its lifetime |
-| Type errors | Caught before the program runs | Surface only when the offending line executes |
-| Annotations | Declared, or inferred (Go, Kotlin, Rust, Swift, TypeScript) | Usually none; optional hints (Python type hints) |
-| Tooling | Precise autocomplete, refactoring and navigation | Weaker static analysis; relies on tests and runtime checks |
-| Speed | Faster; the compiler can optimize with known types | Slower; type checks and dispatch happen at runtime |
-| Flexibility | More upfront ceremony; generics needed for reuse | Quick prototyping and duck typing |
-| Examples | C, Go, Java, Kotlin, Rust, Swift, TypeScript | JavaScript, Lua, Perl, PHP, Python, Ruby |
-| Code (add) | `function add(a: number, b: number): number {`<br>`  return a + b;`<br>`}`<br>`add(1, "2"); // compile error` | `def add(a, b):`<br>`    return a + b`<br>`add(1, "2")  # TypeError at runtime` |
+| Static | Types are checked at compile time and fixed once declared or inferred, so type errors are caught before the program runs | • **Tooling:** precise autocomplete, refactoring and navigation<br>• **Speed:** faster; the compiler can optimize with known types<br>• **Flexibility:** more upfront ceremony; generics needed for reuse | C, Go, Java, Kotlin, Rust, Swift, TypeScript; types are declared, or inferred (Go, Kotlin, Rust, Swift, TypeScript) |
+| Dynamic | Types are checked at runtime, so a variable can hold values of any type over its lifetime, and type errors surface only when the offending line executes | • **Tooling:** weaker static analysis; relies on tests and runtime checks<br>• **Speed:** slower; type checks and dispatch happen at runtime<br>• **Flexibility:** quick prototyping and duck typing | JavaScript, Lua, Perl, PHP, Python, Ruby; usually no annotations, with optional hints (Python type hints) |
 
 ## Language Comparison Table
 
@@ -201,6 +130,65 @@ flowchart LR
 | Transactions | `prisma.$transaction`, TypeORM `transaction()` | `@Transactional` (Spring) | `BeginTransaction`, `TransactionScope` |
 | Validation | zod, class-validator | Jakarta Bean Validation (Hibernate Validator) | DataAnnotations, FluentValidation |
 | Workspace / multi-project | npm / pnpm workspaces, Nx | Maven multi-module, Gradle multi-project | Solution (`.sln`) of projects |
+
+## Software Execution
+
+### Execution Paths
+
+#### Native Compiled
+
+C, C++, Rust, Go, Swift.
+
+```mermaid
+flowchart LR
+  A[Source code] -->|Compiler, build time| B[Machine code binary] --> C[CPU]
+```
+
+#### Compiled to a Virtual Machine
+
+Java, Kotlin, Scala (JVM); C# (.NET CLR); Elixir (BEAM).
+
+```mermaid
+flowchart LR
+  A[Source code] -->|Compiler, build time| B[Bytecode] --> C[Virtual machine] -->|Interpret, then JIT hot code| D[Machine code] --> E[CPU]
+```
+
+#### Interpreted
+
+Python, Ruby, PHP. Bash skips the bytecode step and executes each line directly.
+
+```mermaid
+flowchart LR
+  A[Source code] -->|Interpreter, at runtime| B[Bytecode] --> C[Interpreter VM] --> D[CPU]
+```
+
+#### Transpiled to JavaScript
+
+TypeScript; plain JavaScript skips the transpile step.
+
+```mermaid
+flowchart LR
+  A[TypeScript] -->|tsc, Babel or bundler, build time| B[JavaScript] --> C["JS engine (browser or Node.js)"] -->|Interpret bytecode, then JIT hot code| D[Machine code] --> E[CPU]
+```
+
+### Machine Code vs Bytecode
+
+| Aspect | Machine Code | Bytecode |
+| :-- | :-- | :-- |
+| Runs on | CPU directly | Virtual machine (interpreted/JIT) |
+| Portability | One OS and CPU per build | Any platform with the VM |
+| Speed | Fastest | Near native once JIT compiled |
+| Examples | C, C++, Rust, Go, Swift | Java, Kotlin, C#, Elixir, Python |
+
+### Compiled vs Transpiled vs Interpreted
+
+| Aspect | Compiled | Transpiled | Interpreted |
+| :-- | :-- | :-- | :-- |
+| Translation | To machine code or bytecode | To another source language | None, run directly |
+| When | Build time | Build time | Runtime |
+| Speed | Fastest | Same as target language | Slowest (JIT helps) |
+| Errors | Caught at build | Caught at build | Caught when run |
+| Examples | C, Rust, Go; Java, C# bytecode | TypeScript, Sass | Python, Ruby, Bash |
 
 ## References
 
