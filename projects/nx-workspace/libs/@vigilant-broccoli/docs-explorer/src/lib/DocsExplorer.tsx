@@ -38,6 +38,14 @@ export const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
 export const MENU_ICON_SIZE = 14;
 const CONTENT_BAR_CLS =
   'sticky top-0 z-10 flex items-center justify-between gap-2 px-2 py-1 border-b border-border bg-background/80 backdrop-blur-sm';
+// Absolute children skip the card's md:p-3, so overlays add it back to land
+// where the content bar's px-2 py-1 puts its buttons; the sidebar header uses
+// the same px-2 pt-1, so the hide and show sidebar buttons swap in place.
+const CONTENT_BAR_INSET_LEFT_CLS = 'top-1 left-2 md:top-4 md:left-5';
+const CONTENT_BAR_INSET_RIGHT_CLS = 'top-1 right-2 md:top-4 md:right-5';
+// The root graph view has no note heading to show, so its controls float over
+// the graph instead; right-12 / md:right-16 clear the graph settings icon.
+const FLOATING_CONTENT_BAR_CLS = `pointer-events-none absolute ${CONTENT_BAR_INSET_LEFT_CLS} right-12 md:right-16 z-10 flex items-center justify-between gap-2 [&>*]:pointer-events-auto`;
 
 const KEY_ARROW_DOWN = 'ArrowDown';
 const KEY_ARROW_UP = 'ArrowUp';
@@ -272,6 +280,12 @@ export const DocsExplorer = ({
   );
   const hasSidebarActions = Boolean(sidebarActions?.length);
   const hasSelection = selectedPaths.length > 0;
+  const hasNote = Boolean(selectedPath) || hasSelection;
+  // The root graph view stays open: there is no note to toggle back to.
+  const toggleGraph = useCallback(
+    () => setShowGraph(prev => !prev || !hasNote),
+    [hasNote],
+  );
   const isAggregate = selectedPaths.length > 1;
   const aggregateContent = buildAggregateContent(
     aggregateSourceContents,
@@ -297,13 +311,13 @@ export const DocsExplorer = ({
         setIsSidebarCollapsed(prev => !prev);
       } else if (event.key === KEY_TOGGLE_GRAPH && hasGraph) {
         event.preventDefault();
-        setShowGraph(prev => !prev);
+        toggleGraph();
         setMobilePanel('content');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [hasGraph]);
+  }, [hasGraph, toggleGraph]);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const resultsContainerRef = useRef<HTMLDivElement>(null);
@@ -635,10 +649,9 @@ export const DocsExplorer = ({
         showGraph ? COPY.HIDE_GRAPH : COPY.SHOW_GRAPH,
         KEY_TOGGLE_GRAPH,
       )}
-      onClick={() => setShowGraph(prev => !prev)}
+      onClick={toggleGraph}
     />
   );
-  const hasNote = Boolean(selectedPath) || hasSelection;
   // Note actions picked from the graph view swap back to the note they act on.
   const showNote = (action: () => void) => () => {
     setShowGraph(false);
@@ -648,7 +661,9 @@ export const DocsExplorer = ({
   const renderContentBar = (isGraphView: boolean) => (
     <div
       ref={isGraphView ? undefined : contentBarRef}
-      className={CONTENT_BAR_CLS}
+      className={
+        isGraphView && !hasNote ? FLOATING_CONTENT_BAR_CLS : CONTENT_BAR_CLS
+      }
     >
       <div className="flex min-w-0 items-center gap-1">
         {showSidebarButton}
@@ -669,7 +684,7 @@ export const DocsExplorer = ({
         )}
       </div>
       <div className="flex items-center gap-1">
-        {showGraphButton}
+        {(!isGraphView || hasNote) && showGraphButton}
         <DropdownMenu.Root>
           {/* Without a note the menu only holds the mobile "Back to files". */}
           <DropdownMenu.Trigger className={hasNote ? undefined : 'md:hidden'}>
@@ -773,7 +788,7 @@ export const DocsExplorer = ({
           <Card
             className={`${MOBILE_NO_CARD_CLS} flex w-full md:w-80 md:flex-shrink-0 overflow-hidden flex-col`}
           >
-            <div className="px-3 pt-3 pb-2">
+            <div className="px-2 pt-1 pb-2">
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-1">
                   <span className="hidden md:inline-flex">
@@ -802,7 +817,7 @@ export const DocsExplorer = ({
                           showGraph ? COPY.HIDE_GRAPH : COPY.SHOW_GRAPH
                         }
                         onClick={() => {
-                          setShowGraph(prev => !prev);
+                          toggleGraph();
                           setMobilePanel('content');
                         }}
                       />
@@ -957,12 +972,12 @@ export const DocsExplorer = ({
           ) : !selectedPath && !hasSelection ? (
             <>
               {showSidebarButton && (
-                <div className="absolute top-2 left-2 z-10">
+                <div className={`absolute ${CONTENT_BAR_INSET_LEFT_CLS} z-10`}>
                   {showSidebarButton}
                 </div>
               )}
               {showGraphButton && (
-                <div className="absolute top-2 right-2 z-10">
+                <div className={`absolute ${CONTENT_BAR_INSET_RIGHT_CLS} z-10`}>
                   {showGraphButton}
                 </div>
               )}
