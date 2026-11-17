@@ -47,6 +47,18 @@ const CFG = {
   DRAG_THRESHOLD_PX: 4,
   ALPHA_DRAG: 0.3,
   ALPHA_FORCE_UPDATE: 0.6,
+  // Glow radius is in world units so it scales with zoom, floored to stay visible zoomed out.
+  ACTIVE_GLOW_RADIUS: 160,
+  ACTIVE_GLOW_MIN_PX: 48,
+  HOVER_GLOW_SCALE: 0.6,
+  // Per-node glow radius as a multiple of the node's radius, and its peak alpha.
+  NODE_GLOW_SCALE: 4,
+  NODE_GLOW_ALPHA_LIGHT: 0.18,
+  NODE_GLOW_ALPHA_DARK: 0.25,
+  GLOW_FADE_STOPS: 12,
+  HOVER_NODE_SCALE: 1.35,
+  HOVER_GROW_MS: 150,
+  HOVER_LABEL_FONT_PX: 12,
 } as const;
 
 export interface GraphForces {
@@ -67,10 +79,11 @@ export const FORCE_LIMITS: Record<
   keyof GraphForces,
   { min: number; max: number; step: number }
 > = {
-  center: { min: 0, max: 0.4, step: 0.01 },
-  repel: { min: 0, max: 800, step: 10 },
+  // Each range is symmetric around its DEFAULT_FORCES value so sliders start centered.
+  center: { min: 0, max: 0.16, step: 0.01 },
+  repel: { min: 0, max: 560, step: 10 },
   link: { min: 0, max: 1, step: 0.05 },
-  linkDistance: { min: 10, max: 250, step: 5 },
+  linkDistance: { min: 10, max: 140, step: 5 },
 };
 
 const COLOR = {
@@ -85,6 +98,28 @@ const COLOR = {
   DIM_ALPHA: 0.15,
 } as const;
 
+interface GlowStyle {
+  LIGHT: string;
+  DARK: string;
+  PEAK_LIGHT: number;
+  PEAK_DARK: number;
+}
+
+// Blue marks the open note; amber marks the hovered one so the two read apart.
+const ACTIVE_GLOW: GlowStyle = {
+  LIGHT: '#3b82f6',
+  DARK: '#60a5fa',
+  PEAK_LIGHT: 0.28,
+  PEAK_DARK: 0.35,
+};
+
+const HOVER_GLOW: GlowStyle = {
+  LIGHT: '#f59e0b',
+  DARK: '#fbbf24',
+  PEAK_LIGHT: 0.3,
+  PEAK_DARK: 0.35,
+};
+
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
 
@@ -97,20 +132,56 @@ const EVENT = {
   CHANGE: 'change',
 } as const;
 
-const groupHue = (group: string): number => {
+const groupHash = (group: string): number => {
   let hash = 0;
   for (let i = 0; i < group.length; i++)
     hash = (hash * 31 + group.charCodeAt(i)) >>> 0;
-  return hash % 360;
+  return hash;
 };
 
-const nodeColor = (group: string, dark: boolean): string => {
+// Palette colors are picked by hash, not by position in the current graph,
+// so a folder keeps its colour when the local subgraph changes.
+const nodeColor = (
+  group: string,
+  dark: boolean,
+  palette: readonly string[] | undefined,
+): string => {
   if (!group) return dark ? COLOR.ROOT_DARK : COLOR.ROOT_LIGHT;
-  return `hsl(${groupHue(group)} 65% ${dark ? 62 : 46}%)`;
+  if (palette?.length) return palette[groupHash(group) % palette.length];
+  return `hsl(${groupHash(group) % 360} 65% ${dark ? 62 : 46}%)`;
+};
+
+// Handles the #rrggbb and hsl() colors nodeColor and the glow styles produce.
+const withAlpha = (color: string, alpha: number): string =>
+  color.startsWith('#')
+    ? `${color}${Math.round(alpha * 255)
+        .toString(16)
+        .padStart(2, '0')}`
+    : color.replace(')', ` / ${alpha})`);
+
+// A cosine falloff sampled into many stops: two or three linear stops leave
+// a visible bright core and kinks where the slope changes. Every stop keeps
+// the glow's own color, since fading to `transparent` (black) darkens the edge.
+const addFadeStops = (
+  gradient: CanvasGradient,
+  color: string,
+  peak: number,
+) => {
+  for (let i = 0; i <= CFG.GLOW_FADE_STOPS; i++) {
+    const t = i / CFG.GLOW_FADE_STOPS;
+    gradient.addColorStop(
+      t,
+      withAlpha(color, peak * (0.5 + 0.5 * Math.cos(Math.PI * t))),
+    );
+  }
 };
 
 const nodeRadius = (degree: number): number =>
   CFG.NODE_MIN_R + Math.sqrt(degree) * CFG.NODE_R_STEP;
+
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+const easeOutCubic = (t: number): number => 1 - (1 - t) ** 3;
 
 const linkWidth = (value: number | undefined): number =>
   value == null
@@ -166,6 +237,10 @@ export interface GraphViewProps {
   activePath?: string;
   onSelect: (path: string) => void;
   forces?: GraphForces;
+  // Omitted keeps the hashed per-group hues.
+  palette?: readonly string[];
+  // The faint per-node glows; the open-note and hover highlights always draw.
+  showNodeGlow?: boolean;
 }
 
 export function GraphView({
@@ -173,7 +248,14 @@ export function GraphView({
   activePath,
   onSelect,
   forces = DEFAULT_FORCES,
+  palette,
+  showNodeGlow = true,
 }: GraphViewProps) {
+  const paletteRef = useRef(palette);
+  paletteRef.current = palette;
+  const showNodeGlowRef = useRef(showNodeGlow);
+  showNodeGlowRef.current = showNodeGlow;
+  const drawRef = useRef<(() => void) | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const activePathRef = useRef(activePath);
@@ -185,6 +267,7 @@ export function GraphView({
   const chargeForceRef = useRef<ForceManyBody<SimNode> | null>(null);
   const xForceRef = useRef<ForceX<SimNode> | null>(null);
   const yForceRef = useRef<ForceY<SimNode> | null>(null);
+  const refitRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -208,6 +291,10 @@ export function GraphView({
 
     const transform = { k: 1, x: 0, y: 0 };
     let hoveredId: string | null = null;
+    // Hover grow progress (0–1) per node; nodes leave the map once shrunk back.
+    const growth = new Map<string, number>();
+    let growFrame: number | null = null;
+    let growLastTs = 0;
     let userInteracted = false;
     let width = container.clientWidth;
     let height = container.clientHeight;
@@ -221,8 +308,12 @@ export function GraphView({
       wy: (py - transform.y) / transform.k,
     });
 
+    // Centers on the open note when there is one, zooming out far enough that
+    // the farthest node on each axis still fits; otherwise fits the bounding box.
     const fitToView = () => {
       if (nodes.length === 0) return;
+      const active = activePathRef.current;
+      const anchor = active ? nodeById.get(active) : undefined;
       let minX = Infinity,
         minY = Infinity,
         maxX = -Infinity,
@@ -233,16 +324,18 @@ export function GraphView({
         maxX = Math.max(maxX, n.x ?? 0);
         maxY = Math.max(maxY, n.y ?? 0);
       }
-      const spanX = maxX - minX || 1;
-      const spanY = maxY - minY || 1;
+      const cx = anchor ? (anchor.x ?? 0) : (minX + maxX) / 2;
+      const cy = anchor ? (anchor.y ?? 0) : (minY + maxY) / 2;
+      const spanX = 2 * Math.max(cx - minX, maxX - cx) || 1;
+      const spanY = 2 * Math.max(cy - minY, maxY - cy) || 1;
       const k = Math.min(
         (width - CFG.FIT_PADDING * 2) / spanX,
         (height - CFG.FIT_PADDING * 2) / spanY,
         CFG.MAX_ZOOM,
       );
       transform.k = Math.max(k, CFG.MIN_ZOOM);
-      transform.x = width / 2 - ((minX + maxX) / 2) * transform.k;
-      transform.y = height / 2 - ((minY + maxY) / 2) * transform.k;
+      transform.x = width / 2 - cx * transform.k;
+      transform.y = height / 2 - cy * transform.k;
     };
 
     const draw = () => {
@@ -258,6 +351,51 @@ export function GraphView({
       const focusSet = focusId ? neighbors.get(focusId) : null;
       const isLit = (id: string) =>
         !dimming || id === focusId || (focusSet?.has(id) ?? false);
+
+      const drawnRadius = (n: SimNode) =>
+        nodeRadius(n.degree) *
+        (1 + (CFG.HOVER_NODE_SCALE - 1) * easeOutCubic(growth.get(n.id) ?? 0));
+      const nodeGlowAlpha = dark
+        ? CFG.NODE_GLOW_ALPHA_DARK
+        : CFG.NODE_GLOW_ALPHA_LIGHT;
+      for (const n of showNodeGlowRef.current ? nodes : []) {
+        if (n.id === activeId) continue;
+        const { sx, sy } = toScreen(n);
+        const glowR = drawnRadius(n) * CFG.NODE_GLOW_SCALE;
+        const color = nodeColor(n.group, dark, paletteRef.current);
+        const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, glowR);
+        addFadeStops(
+          glow,
+          color,
+          nodeGlowAlpha * (isLit(n.id) ? 1 : COLOR.DIM_ALPHA),
+        );
+        ctx.fillStyle = glow;
+        ctx.fillRect(sx - glowR, sy - glowR, glowR * 2, glowR * 2);
+      }
+
+      const drawGlow = (node: SimNode, scale: number, style: GlowStyle) => {
+        const { sx, sy } = toScreen(node);
+        const glowR =
+          Math.max(
+            CFG.ACTIVE_GLOW_RADIUS * transform.k,
+            CFG.ACTIVE_GLOW_MIN_PX,
+          ) * scale;
+        const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, glowR);
+        addFadeStops(
+          glow,
+          dark ? style.DARK : style.LIGHT,
+          dark ? style.PEAK_DARK : style.PEAK_LIGHT,
+        );
+        ctx.fillStyle = glow;
+        ctx.fillRect(sx - glowR, sy - glowR, glowR * 2, glowR * 2);
+      };
+      const activeNode = activeId ? nodeById.get(activeId) : undefined;
+      if (activeNode) drawGlow(activeNode, 1, ACTIVE_GLOW);
+      const hoveredNode =
+        hoveredId != null && hoveredId !== activeId
+          ? nodeById.get(hoveredId)
+          : undefined;
+      if (hoveredNode) drawGlow(hoveredNode, CFG.HOVER_GLOW_SCALE, HOVER_GLOW);
 
       for (const link of links) {
         const s = nodeById.get(endpointId(link.source));
@@ -292,20 +430,16 @@ export function GraphView({
       ctx.textBaseline = 'top';
       for (const n of nodes) {
         const { sx, sy } = toScreen(n);
-        const r = nodeRadius(n.degree);
+        const r = drawnRadius(n);
         const lit = isLit(n.id);
-        ctx.globalAlpha = lit ? 1 : COLOR.DIM_ALPHA;
+        ctx.globalAlpha = n.id === active || lit ? 1 : COLOR.DIM_ALPHA;
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
-        ctx.fillStyle = nodeColor(n.group, dark);
+        ctx.fillStyle =
+          n.id === active
+            ? COLOR.ACCENT
+            : nodeColor(n.group, dark, paletteRef.current);
         ctx.fill();
-        if (n.id === active) {
-          ctx.globalAlpha = 1;
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = COLOR.ACCENT;
-          ctx.stroke();
-          ctx.lineWidth = CFG.LINK_WIDTH;
-        }
         const isFocusNeighbor =
           hoveredId != null && (focusSet?.has(n.id) ?? false);
         const labelled =
@@ -316,7 +450,13 @@ export function GraphView({
         if (labelled) {
           ctx.globalAlpha = lit ? 1 : COLOR.DIM_ALPHA;
           ctx.fillStyle = dark ? COLOR.LABEL_DARK : COLOR.LABEL_LIGHT;
-          ctx.fillText(n.name, sx, sy + r + 2);
+          if (n.id === hoveredId) {
+            ctx.font = `600 ${CFG.HOVER_LABEL_FONT_PX}px sans-serif`;
+            ctx.fillText(n.name, sx, sy + r + 2);
+            ctx.font = `${CFG.LABEL_FONT_PX}px sans-serif`;
+          } else {
+            ctx.fillText(n.name, sx, sy + r + 2);
+          }
         }
       }
       ctx.globalAlpha = 1;
@@ -352,6 +492,40 @@ export function GraphView({
         draw();
       });
     simRef.current = sim;
+
+    const stepGrow = (ts: number) => {
+      const reduceMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
+      const delta = reduceMotion
+        ? 1
+        : (ts - (growLastTs || ts)) / CFG.HOVER_GROW_MS;
+      growLastTs = ts;
+      if (hoveredId != null && !growth.has(hoveredId)) growth.set(hoveredId, 0);
+      let settled = true;
+      for (const [id, progress] of growth) {
+        const target = id === hoveredId ? 1 : 0;
+        const next =
+          target > progress
+            ? Math.min(progress + delta, 1)
+            : Math.max(progress - delta, 0);
+        if (next === 0 && target === 0) growth.delete(id);
+        else growth.set(id, next);
+        if (next !== target) settled = false;
+      }
+      draw();
+      growFrame = settled ? null : requestAnimationFrame(stepGrow);
+    };
+    const startGrow = () => {
+      if (growFrame != null) return;
+      growLastTs = 0;
+      growFrame = requestAnimationFrame(stepGrow);
+    };
+
+    drawRef.current = draw;
+    refitRef.current = () => {
+      userInteracted = false;
+      fitToView();
+      draw();
+    };
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -414,6 +588,7 @@ export function GraphView({
         canvas.style.cursor = hit ? 'pointer' : 'grab';
         if (nextHover !== hoveredId) {
           hoveredId = nextHover;
+          startGrow();
           draw();
         }
         return;
@@ -494,6 +669,9 @@ export function GraphView({
     media?.addEventListener(EVENT.CHANGE, draw);
 
     return () => {
+      if (growFrame != null) cancelAnimationFrame(growFrame);
+      refitRef.current = null;
+      drawRef.current = null;
       sim.stop();
       simRef.current = null;
       resizeObserver.disconnect();
@@ -506,6 +684,16 @@ export function GraphView({
       canvas.removeEventListener(EVENT.WHEEL, onWheel);
     };
   }, [graph, onSelect]);
+
+  // Global scope keeps the same graph across note changes, so the mount effect
+  // does not rerun; recenter on the newly opened note here instead.
+  useEffect(() => {
+    refitRef.current?.();
+  }, [activePath]);
+
+  useEffect(() => {
+    drawRef.current?.();
+  }, [palette, showNodeGlow]);
 
   useEffect(() => {
     const sim = simRef.current;
