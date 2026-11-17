@@ -3,7 +3,7 @@
 User-facing key reference: [web-terminal-controls.md](./web-terminal-controls.md); update it when buttons change.
 
 - Every control lives in exactly one place, the bar or the menu, never both. Every button carries `data-bar-only` or `data-sheet-only`; a new one needs exactly one.
-- The horizontal bar in `web-terminal/public/index.html` shows only `☰`, `Enter`, `Tab`, `PgUp`, `PgDn`, `Esc`, `^C`, `Paste` and the arrows, in that order. All carry `data-bar-only`, so `app.js` leaves them out of the sheet.
+- The bar in `web-terminal/public/index.html` shows only `☰`, `Enter`, `PgUp`, `Tab`, `↑`, `Esc` on the first row and `^C`, `Paste`, `PgDn`, `←`, `↓`, `→` on the second, a six-column grid so nothing scrolls horizontally and the arrows form an inverted T with `Esc` at the top right. All carry `data-bar-only`, so `app.js` leaves them out of the sheet.
 - The slash-command buttons carry `data-sheet-only`: `style.css` hides them from the bar, but they stay in the markup so the menu can clone them.
 - Menu buttons carry `data-page` (`claude` or `dev`, matching the tabs in `#keys-tabs`) and `data-desc`, the description shown under the label and matched by search.
 - `handleButton` in `app.js` sends `data-text` buttons' text. With `data-submit` (the `claude` page's built-in commands: `/clear`, `/compact`, `/status`, `/context`, `/model`, `/resume`, `/usage`) it follows with Enter as a separate write after `SUBMIT_DELAY_MS`; without it no Enter is sent, so arguments can be added before running (the `claude` page's `-claude` skills and the `dev` page's repo agent skills). Skill buttons must match a directory name in `setup/dotfiles/agent-skills/`.

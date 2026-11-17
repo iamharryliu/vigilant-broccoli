@@ -75,6 +75,7 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 ### web-terminal
 
+- The bar is a two-row grid so every key shows without scrolling, with the arrows laid out as on a keyboard and Esc at the top right, and the Claude PR skills moved to the Dev tab (PR: pending).
 - The mobile toolbar keeps the keys in use, with arrows and Tab on the bar, shortcut buttons for agent and Claude Code commands, and a full-screen All keys sheet ([#1481](https://github.com/iamharryliu/vigilant-broccoli/pull/1481), [#1484](https://github.com/iamharryliu/vigilant-broccoli/pull/1484), [#1502](https://github.com/iamharryliu/vigilant-broccoli/pull/1502), [#1504](https://github.com/iamharryliu/vigilant-broccoli/pull/1504), [#1505](https://github.com/iamharryliu/vigilant-broccoli/pull/1505), [#1507](https://github.com/iamharryliu/vigilant-broccoli/pull/1507)).
 
 ### react-lib

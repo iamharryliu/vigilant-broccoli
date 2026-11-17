@@ -27,14 +27,19 @@ body {
 }
 
 #toolbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   gap: 6px;
   padding: 6px;
   padding-bottom: max(6px, env(safe-area-inset-bottom));
-  overflow-x: auto;
   background: #1c1c1c;
   border-top: 1px solid #333;
-  -webkit-overflow-scrolling: touch;
+}
+
+/* Two rows of six fit the narrowest phone without scrolling; the 12 bar
+   buttons fill the grid exactly. */
+#toolbar button:not([data-sheet-only]) {
+  padding: 0;
 }
 
 #toolbar button,
