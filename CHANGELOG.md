@@ -54,12 +54,12 @@ One section per month, newest first. `cron-agentic-pr-create-changelog` folds ea
 
 - Long documents keep a sticky action bar with a title that fades in on scroll. The in-app back button retraces file navigation, and browser back and forward work too ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
 - Several files can be selected at once, and the graph has settings for scope, hop count and forces ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
-- On desktop the sidebar slides away for full-width reading, from its panel icon or `f`. The graph opens from the content bar or `g` and shares its top bar and menu, whose items now have icons (PR: pending).
+- On desktop the sidebar slides away for full-width reading, from its panel icon or `f`. The graph opens from the content bar or `g` and shares its top bar and menu, whose items now have icons ([#1650](https://github.com/iamharryliu/vigilant-broccoli/pull/1650)).
 
 ### context-md
 
 - Browser back and forward switch between files ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
-- The sidebar can be hidden on desktop from its panel icon or `f` (PR: pending).
+- The sidebar can be hidden on desktop from its panel icon or `f` ([#1650](https://github.com/iamharryliu/vigilant-broccoli/pull/1650)).
 
 ### bookmarks-react
 
