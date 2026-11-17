@@ -43,7 +43,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### grind-75-react
 
-- The page no longer scrolls on mobile, so the explorer can't slide under the browser address bar (PR: pending).
+- The page no longer scrolls on mobile, so the explorer can't slide under the browser address bar ([#1661](https://github.com/iamharryliu/vigilant-broccoli/pull/1661)).
 
 - New public app that shows each Grind 75 problem's Go, Python and TypeScript solutions side by side, as language tabs on mobile ([#1471](https://github.com/iamharryliu/vigilant-broccoli/pull/1471), [#1478](https://github.com/iamharryliu/vigilant-broccoli/pull/1478), [#1487](https://github.com/iamharryliu/vigilant-broccoli/pull/1487)).
 - Browser back and forward now move through the app's URL state ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
@@ -62,7 +62,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### docs-md
 
-- The page no longer scrolls on mobile, so the explorer can't slide under the browser address bar (PR: pending).
+- The page no longer scrolls on mobile, so the explorer can't slide under the browser address bar ([#1661](https://github.com/iamharryliu/vigilant-broccoli/pull/1661)).
 
 - Long documents keep a sticky action bar with a title that fades in on scroll. The in-app back button retraces file navigation, and browser back and forward work too ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
 - Several files can be selected at once, and the graph has settings for scope, hop count and forces ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
@@ -71,7 +71,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### context-md
 
-- The page no longer scrolls on mobile, so the explorer can't slide under the browser address bar (PR: pending).
+- The page no longer scrolls on mobile, so the explorer can't slide under the browser address bar ([#1661](https://github.com/iamharryliu/vigilant-broccoli/pull/1661)).
 
 - Browser back and forward switch between files ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
 - The sidebar can be hidden on desktop from its panel icon or `f` ([#1650](https://github.com/iamharryliu/vigilant-broccoli/pull/1650)).
