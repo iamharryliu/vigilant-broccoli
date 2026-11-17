@@ -2,9 +2,11 @@
 
 Entries are one `## YYYY-MM` section per month, newest first. A run may only
 create or edit the sections for the months its pull requests merged in, so a
-stray edit cannot rewrite history the run never read.
+stray edit cannot rewrite history the run never read. A month already linking
+one of those pull requests is also editable: a PR writes its own bullet into
+the month it was authored in, which can precede its merge month.
 
-Usage: changelog-check.py <old CHANGELOG.md> <new CHANGELOG.md> <month>...
+Usage: changelog-check.py <old CHANGELOG.md> <new CHANGELOG.md> <month|#PR>...
 """
 
 import re
@@ -42,9 +44,16 @@ def sections(text):
 
 
 def main():
-    old_path, new_path, *months = sys.argv[1:]
+    old_path, new_path, *scope = sys.argv[1:]
+    months = {arg for arg in scope if not arg.startswith("#")}
+    pr_links = [f"/pull/{arg[1:]})" for arg in scope if arg.startswith("#")]
     with open(old_path) as f:
         old = sections(f.read())
+    months |= {
+        month
+        for month, lines in old.items()
+        if any(link in line for line in lines for link in pr_links)
+    }
     with open(new_path) as f:
         new_text = f.read()
     new = sections(new_text)
@@ -53,7 +62,7 @@ def main():
     for month in set(old) | set(new):
         if month not in months and old.get(month) != new.get(month):
             sys.exit(
-                f"changelog-check: {month} changed, but no pull request in this run merged then."
+                f"changelog-check: {month} changed, but no pull request in this run merged then or is linked there."
             )
 
 
