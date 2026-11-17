@@ -20,7 +20,7 @@ Details: [web-terminal-controls.md](./web-terminal-controls.md). Each control is
 
 Search is pinned on every page and searches all of them. **Text size** A− / A+ below it shrinks or enlarges the terminal text and is remembered.
 
-### Claude (built-ins run on tap; `-claude` skills type only)
+### Claude (run on tap)
 
 | Button | What it does |
 | --- | --- |
@@ -31,13 +31,13 @@ Search is pinned on every page and searches all of them. **Text size** A− / A+
 | `/model` | Switches model. |
 | `/resume` | Reopens a past conversation. |
 | `/usage` | Plan usage and limits. |
-| `/local-create-pr-claude` | Implements a request in a tmux worktree and opens a PR. |
-| `/local-update-pr-claude` | Applies a change to an existing PR in a tmux worktree. |
 
-### Dev (types only, add arguments)
+### Dev (type only, add arguments)
 
-| Button | What it does |
-| --- | --- |
-| `/local-session-status` | Status of agent sessions. |
-| `/local-session-retry-publish` | Retries an authorized push or PR. |
-| `/local-update-pr` | Applies a change to an existing PR. |
+| Button | What it does | Runs on tap |
+| --- | --- | --- |
+| `/local-session-status` | Status of agent sessions. | No |
+| `/local-session-retry-publish` | Retries an authorized push or PR. | No |
+| `/local-update-pr` | Applies a change to an existing PR. | No |
+| `/local-create-pr-claude` | Implements a request in a tmux worktree and opens a PR. | No |
+| `/local-update-pr-claude` | Applies a change to an existing PR in a tmux worktree. | No |
