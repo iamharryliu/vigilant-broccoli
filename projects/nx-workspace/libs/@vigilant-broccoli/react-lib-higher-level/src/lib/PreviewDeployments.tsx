@@ -1,14 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { RefreshCw } from 'lucide-react';
-import {
-  Button,
-  Callout,
-  CalloutText,
-  Card,
-  Text,
-} from '@vigilant-broccoli/react-lib';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Callout, CalloutText, Card, Text } from '@vigilant-broccoli/react-lib';
 import {
   PREVIEW_DEPLOYMENTS_ERROR,
   PreviewDeploymentPullRequest,
@@ -16,15 +9,15 @@ import {
 } from '@vigilant-broccoli/github-workspace-js';
 
 const LABEL = {
-  REFRESH: 'Refresh',
-  ALIAS: 'Latest',
-  BUILD: 'This build',
+  PREVIEW: 'Preview',
   UPDATED: 'Updated',
   BY: 'by',
 };
 
 const MESSAGE = {
-  EMPTY: 'No open pull requests have a deployed preview.',
+  NO_OPEN_PULLS: 'There are no open pull requests.',
+  NO_PREVIEWS: (count: number) =>
+    `${count} open pull ${count === 1 ? 'request has' : 'requests have'} no deployed preview yet.`,
   UPSTREAM: 'Could not load preview deployments from GitHub.',
   RATE_LIMITED:
     'GitHub API rate limit reached (60 unauthenticated requests per hour).',
@@ -46,6 +39,23 @@ const STYLE = {
 const externalLinkProps = { target: '_blank', rel: 'noopener noreferrer' };
 
 const formatTime = (iso: string) => new Date(iso).toLocaleTimeString();
+
+const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
+  ['day', 86_400_000],
+  ['hour', 3_600_000],
+  ['minute', 60_000],
+];
+const relativeTimeFormat = new Intl.RelativeTimeFormat('en', {
+  numeric: 'auto',
+});
+
+const formatAge = (iso: string) => {
+  const elapsed = Date.now() - new Date(iso).getTime();
+  const [unit, size] =
+    RELATIVE_UNITS.find(([, size]) => elapsed >= size) ??
+    RELATIVE_UNITS[RELATIVE_UNITS.length - 1];
+  return relativeTimeFormat.format(-Math.floor(elapsed / size), unit);
+};
 
 const errorMessage = (
   result: Extract<PreviewDeploymentsResult, { ok: false }>,
@@ -78,17 +88,13 @@ const PullRequestCard = ({ pull }: { pull: PreviewDeploymentPullRequest }) => (
             {...externalLinkProps}
             className={STYLE.appLink}
           >
-            <Text size="2">{LABEL.ALIAS}</Text>
-          </a>
-          <a
-            href={app.buildUrl}
-            {...externalLinkProps}
-            className={STYLE.appLink}
-          >
-            <Text size="2">{LABEL.BUILD}</Text>
+            <Text size="2">{LABEL.PREVIEW}</Text>
           </a>
           <Text size="1" color="gray">
-            <code>{app.commit.slice(0, SHORT_SHA_LENGTH)}</code>
+            <code>{app.commit.slice(0, SHORT_SHA_LENGTH)}</code> ·{' '}
+            <time dateTime={app.deployedAt} title={app.deployedAt}>
+              {formatAge(app.deployedAt)}
+            </time>
           </Text>
         </li>
       ))}
@@ -101,16 +107,18 @@ interface PreviewDeploymentsProps {
   loadPreviewDeployments: () => Promise<PreviewDeploymentsResult>;
 }
 
+// Each load costs two unauthenticated GitHub calls against a 60 per hour per
+// IP limit, so one visible tab polling every 5 minutes uses 24.
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+
 export const PreviewDeployments = ({
   loadPreviewDeployments,
 }: PreviewDeploymentsProps) => {
   const [result, setResult] = useState<PreviewDeploymentsResult | null>(null);
-  const [loading, setLoading] = useState(true);
+  const lastFetchedAt = useRef(0);
 
-  // On load and on demand only: unauthenticated GitHub calls are limited to
-  // 60 per hour per IP, so no polling.
   const refresh = useCallback(async () => {
-    setLoading(true);
+    lastFetchedAt.current = Date.now();
     try {
       setResult(await loadPreviewDeployments());
     } catch {
@@ -120,32 +128,43 @@ export const PreviewDeployments = ({
         rateLimitResetAt: null,
       });
     }
-    setLoading(false);
   }, [loadPreviewDeployments]);
+
+  // Polling and the focus refetch both pause while the tab is hidden and stop
+  // once GitHub rate-limits this IP, since further calls would only fail.
+  const rateLimited =
+    result?.ok === false &&
+    result.error === PREVIEW_DEPLOYMENTS_ERROR.RATE_LIMITED;
 
   useEffect(() => {
     refresh();
   }, [refresh]);
 
+  useEffect(() => {
+    if (rateLimited) return;
+    const refreshIfStale = () => {
+      if (
+        document.visibilityState === 'visible' &&
+        Date.now() - lastFetchedAt.current >= REFRESH_INTERVAL_MS
+      )
+        refresh();
+    };
+    const timer = setInterval(refreshIfStale, REFRESH_INTERVAL_MS);
+    document.addEventListener('visibilitychange', refreshIfStale);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', refreshIfStale);
+    };
+  }, [refresh, rateLimited]);
+
   return (
     <div className={STYLE.root}>
-      <div className="flex items-center justify-end gap-3">
-        {result?.ok && (
-          <Text size="1" color="gray">
-            {LABEL.UPDATED} {formatTime(result.fetchedAt)}
-          </Text>
-        )}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={refresh}
-          disabled={loading}
-        >
-          <RefreshCw size={14} />
-          {LABEL.REFRESH}
-        </Button>
-      </div>
-      {loading && !result ? null : result && !result.ok ? (
+      {result?.ok && (
+        <Text size="1" color="gray" className="text-right">
+          {LABEL.UPDATED} {formatTime(result.fetchedAt)}
+        </Text>
+      )}
+      {!result ? null : !result.ok ? (
         <Callout color="red">
           <CalloutText>{errorMessage(result)}</CalloutText>
         </Callout>
@@ -156,7 +175,11 @@ export const PreviewDeployments = ({
           ))}
         </div>
       ) : (
-        <Text color="gray">{MESSAGE.EMPTY}</Text>
+        <Text color="gray">
+          {result.openPullCount
+            ? MESSAGE.NO_PREVIEWS(result.openPullCount)
+            : MESSAGE.NO_OPEN_PULLS}
+        </Text>
       )}
     </div>
   );

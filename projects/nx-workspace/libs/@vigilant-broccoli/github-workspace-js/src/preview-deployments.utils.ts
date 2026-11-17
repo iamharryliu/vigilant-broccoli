@@ -136,6 +136,7 @@ export const fetchPreviewDeployments = async (
     return {
       ok: true,
       pullRequests: groupPreviewDeployments(deployments, openPulls),
+      openPullCount: openPulls.length,
       fetchedAt: new Date().toISOString(),
     };
   } catch {
