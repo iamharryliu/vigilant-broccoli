@@ -1,10 +1,10 @@
 name: cron-agentic-pr-create-changelog
 
-# Summarizes the pull requests merged to main since the last entry into
-# CHANGELOG.md (served at projects.harryliu.dev/#/changelog), opening one PR
-# only when there is something user-facing to report. Same container and
-# credentials as `cron-agentic-pr-create-readmes`; the local equivalent is
-# `pnpm agentic-pr-create-changelog`.
+# Folds the pull requests merged to main since the last run into the current
+# month's section of CHANGELOG.md (served at projects.harryliu.dev/#/changelog),
+# opening one PR only when there is something user-facing to report. Same
+# container and credentials as `cron-agentic-pr-create-readmes`; the local
+# equivalent is `pnpm agentic-pr-create-changelog`.
 #
 # A clean run opens no PR and still succeeds: the runner prints CHANGELOG_CLEAN
 # and exits 0.
@@ -74,7 +74,7 @@ jobs:
           agent: claude
           model: ${{ steps.config.outputs.model }}
           firewall: ${{ steps.config.outputs.firewall }}
-          description: Summarize the pull requests merged to main since the last changelog-through marker into a new CHANGELOG.md entry. Opens a pull request only when something user-facing shipped.
+          description: Summarize the pull requests merged to main since the last changelog-through marker into the CHANGELOG.md section for their merge month. Opens a pull request only when something user-facing shipped.
 
   changelog:
     needs: overview
