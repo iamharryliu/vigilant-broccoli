@@ -70,11 +70,12 @@ alias syncbooks='rsync -a --progress "$HOME/Library/Mobile Documents/iCloud~com~
 # Docker
 alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
 
-# Reclaim disk: Claude worktrees, Docker build cache/images, package-manager caches. Docker volumes are left alone.
+# Reclaim disk: Claude worktrees, local branches, Docker build cache/images, package-manager caches. Docker volumes are left alone.
 localcleanup() {
     local worktrees_dir="$REPO_DIR/.claude/worktrees" worktree header
-    local -a worktrees=() skipped=() remove_args=()
-    local removed=0 worktree_kb=0 kb out size label cache_path
+    local -a worktrees=() skipped=() remove_args=() branches_before=() branches_after=()
+    local removed=0 worktree_kb=0 kb out size label cache_path branch
+    local branches_deleted=0
     local summary="" docker_note="" free_before="" free_after="" width=0 line disk_path
     local -a cache_entries=()
     # Cache directories and the volume holding user data differ between macOS and Linux.
@@ -110,9 +111,15 @@ localcleanup() {
     else
         header="Claude worktrees to remove (worktrees with uncommitted changes are skipped):"
     fi
+    while IFS= read -r branch; do
+        [ -n "$branch" ] && branches_before+=("$branch")
+    done < <(git -C "$REPO_DIR" branch --format='%(refname:short)' | grep -vE '^main$')
+
     echo "$header"
     printf '  %s\n' "${worktrees[@]}"
-    ask "Remove them${remove_args[*]:+ (uncommitted changes will be lost)}, prune Docker, and clear npm/Yarn/Cypress/pip caches?" || {
+    echo "Local branches to delete (branches still checked out in a worktree are kept):"
+    printf '  %s\n' "${branches_before[@]}"
+    ask "Remove them${remove_args[*]:+ (uncommitted changes will be lost)}, delete the local branches, prune Docker, and clear npm/Yarn/Cypress/pip caches?" || {
         echo "Cleanup canceled."
         return 0
     }
@@ -135,6 +142,15 @@ localcleanup() {
         else printf "%dK", kb
     }')
     summary="Claude worktrees ($removed removed, ${#skipped[@]} skipped)	$size"
+
+    # Subshell so droplocalbranches runs against $REPO_DIR; branches still checked out (the main checkout, skipped dirty worktrees) are kept.
+    (cd "$REPO_DIR" && droplocalbranches --keep-checked-out)
+    while IFS= read -r branch; do
+        [ -n "$branch" ] && branches_after+=("$branch")
+    done < <(git -C "$REPO_DIR" branch --format='%(refname:short)' | grep -vE '^main$')
+    branches_deleted=$((${#branches_before[@]} - ${#branches_after[@]}))
+    summary="$summary
+Local branches ($branches_deleted deleted, ${#branches_after[@]} kept)	-"
 
     if docker info &> /dev/null; then
         out=$(docker builder prune -af)
@@ -186,6 +202,9 @@ $label	${size:--}"
     done <<< "$summary"
     for worktree in "${skipped[@]}"; do
         echo "  Skipped worktree: $worktree (uncommitted changes)"
+    done
+    for branch in "${branches_after[@]}"; do
+        echo "  Kept branch: $branch (checked out in a worktree)"
     done
     echo "Disk free: $free_before before -> $free_after after"
     if [ "$disk_path" = /System/Volumes/Data ]; then

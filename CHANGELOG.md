@@ -7,6 +7,10 @@ One section per month, newest first. Agentic pull requests add their own bullet 
 
 ## 2026-11
 
+### dotfiles
+
+- `localcleanup` also deletes local branches except main and any still checked out in a worktree, and its summary lists how many were deleted and kept (PR: pending).
+
 ### hearth
 
 - New Whiteboard and Tasks tabs on the home page with recurring and one-off tasks stored per home, assignable to members, with each recurring occurrence its own instance and carried-over ones labeled missed ([#1485](https://github.com/iamharryliu/vigilant-broccoli/pull/1485), [#1493](https://github.com/iamharryliu/vigilant-broccoli/pull/1493), [#1495](https://github.com/iamharryliu/vigilant-broccoli/pull/1495), [#1508](https://github.com/iamharryliu/vigilant-broccoli/pull/1508), [#1561](https://github.com/iamharryliu/vigilant-broccoli/pull/1561)).
