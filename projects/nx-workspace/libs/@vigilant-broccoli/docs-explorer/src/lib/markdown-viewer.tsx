@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
+import { CollapsibleList } from '@vigilant-broccoli/react-lib';
 import { createHeadingRenderer, marked } from './markdown-config';
 import {
   createNoteLinkClickHandler,
@@ -7,6 +8,10 @@ import {
   rewriteRepoRelativeLinks,
   scrollToUrlHash,
 } from './note-links';
+import {
+  type MarkdownSection,
+  splitMarkdownSections,
+} from './markdown-sections';
 import { observeThemeChange, renderMermaidDiagrams } from './mermaid-diagrams';
 
 const CLS = {
@@ -23,6 +28,9 @@ const CLS = {
     'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100',
   TEXTAREA:
     'flex-1 min-h-0 w-full resize-none px-4 sm:px-6 py-4 font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 outline-none',
+  SECTION_PROSE:
+    'prose dark:prose-invert max-w-none px-1 prose-th:align-middle prose-td:align-middle prose-table:block prose-table:overflow-x-auto',
+  SECTIONS: 'px-4 sm:px-6 pb-4',
   ERROR: 'text-xs text-red-500 mr-auto',
 } as const;
 
@@ -40,6 +48,42 @@ interface MarkdownViewerProps {
   editTrigger?: number;
   onNavigate?: (path: string) => void;
   repoLinkBase?: RepoLinkBase;
+  /** Renders each heading of this level as a CollapsibleList item. */
+  collapsibleHeadingLevel?: number;
+  /** How many leading collapsible sections start open. */
+  defaultOpenSections?: number;
+  formatSectionTitle?: (title: string) => string;
+}
+
+interface HtmlSection extends MarkdownSection {
+  html: string;
+}
+
+interface SectionBodyProps {
+  html: string;
+  filePath?: string;
+  onNavigate?: (path: string) => void;
+}
+
+// Collapsed accordion content is unmounted, so each body renders its own
+// mermaid diagrams when it opens.
+function SectionBody({ html, filePath, onNavigate }: SectionBodyProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    renderMermaidDiagrams(el);
+    return el
+      ? observeThemeChange(el, () => renderMermaidDiagrams(el))
+      : undefined;
+  }, [html]);
+  return (
+    <div
+      ref={ref}
+      className={CLS.SECTION_PROSE}
+      dangerouslySetInnerHTML={{ __html: html }}
+      onClick={createNoteLinkClickHandler(filePath ?? '', onNavigate)}
+    />
+  );
 }
 
 export function MarkdownViewer({
@@ -49,24 +93,43 @@ export function MarkdownViewer({
   editTrigger,
   onNavigate,
   repoLinkBase,
+  collapsibleHeadingLevel,
+  defaultOpenSections = 0,
+  formatSectionTitle,
 }: MarkdownViewerProps) {
   const [html, setHtml] = useState('');
+  const [sections, setSections] = useState<HtmlSection[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(content);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    marked
-      .parse(content, { renderer: createHeadingRenderer(), async: true })
-      .then(raw => {
-        if (typeof window === 'undefined') return;
-        const safe = DOMPurify.sanitize(raw);
-        setHtml(
-          repoLinkBase ? rewriteRepoRelativeLinks(safe, repoLinkBase) : safe,
-        );
+    const render = async (markdown: string) => {
+      const raw = await marked.parse(markdown, {
+        renderer: createHeadingRenderer(),
+        async: true,
       });
-  }, [content, repoLinkBase?.filePath]);
+      const safe = DOMPurify.sanitize(raw);
+      return repoLinkBase ? rewriteRepoRelativeLinks(safe, repoLinkBase) : safe;
+    };
+    const split = collapsibleHeadingLevel
+      ? splitMarkdownSections(content, collapsibleHeadingLevel)
+      : { intro: content, sections: [] };
+    Promise.all([
+      render(split.intro),
+      Promise.all(
+        split.sections.map(async section => ({
+          ...section,
+          html: await render(section.markdown),
+        })),
+      ),
+    ]).then(([introHtml, sectionHtml]) => {
+      if (typeof window === 'undefined') return;
+      setHtml(introHtml);
+      setSections(sectionHtml);
+    });
+  }, [content, repoLinkBase?.filePath, collapsibleHeadingLevel]);
 
   const proseRef = useRef<HTMLDivElement>(null);
 
@@ -157,6 +220,25 @@ export function MarkdownViewer({
         dangerouslySetInnerHTML={{ __html: html }}
         onClick={createNoteLinkClickHandler(filePath ?? '', onNavigate)}
       />
+      {sections.length > 0 && (
+        <div className={CLS.SECTIONS}>
+          <CollapsibleList
+            key={content}
+            items={sections.map((section, index) => ({
+              id: section.id,
+              title: formatSectionTitle?.(section.title) ?? section.title,
+              defaultOpen: index < defaultOpenSections,
+              content: (
+                <SectionBody
+                  html={section.html}
+                  filePath={filePath}
+                  onNavigate={onNavigate}
+                />
+              ),
+            }))}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -65,6 +65,7 @@ import { CRUDListNoImagesDemo } from './demos/CRUDListNoImagesDemo';
 import { WeatherClockCardDemo } from './demos/WeatherClockCardDemo';
 import { CRUDListWithImagesDemo } from './demos/CRUDListWithImagesDemo';
 import { DocsExplorerDemo } from './demos/DocsExplorerDemo';
+import { MarkdownViewerDemo } from './demos/MarkdownViewerDemo';
 import { SelectDemo } from './demos/SelectDemo';
 import { ErrorDemo } from './demos/ErrorDemo';
 import { GithubActionsBadgesDemo } from './demos/GithubActionsBadgesDemo';
@@ -477,6 +478,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site.',
     lib: LIB.DOCS_EXPLORER,
     content: <DocsExplorerDemo />,
+  },
+  {
+    id: 'markdown-viewer',
+    label: 'Markdown Viewer',
+    description:
+      'Renders Markdown with sanitized HTML and mermaid diagrams. With collapsibleHeadingLevel, each heading of that level becomes a CollapsibleList item (defaultOpenSections opens the first N); the changelog page uses this for its monthly sections. Use the Custom text tab to try your own Markdown and settings.',
+    lib: LIB.DOCS_EXPLORER,
+    content: <MarkdownViewerDemo />,
   },
   {
     id: 'notepad',
