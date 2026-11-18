@@ -33,5 +33,6 @@
   "STORAGE_ERROR": "Browser storage is unavailable. Changes last only until you reload; export to keep a copy.",
   "NO_SUBGROUP": "No subsection",
   "NEW_SUBGROUP": "New subsection…",
-  "NEW_SUBGROUP_NAME": "New subsection name"
+  "NEW_SUBGROUP_NAME": "New subsection name",
+  "SEARCH": "Search bookmarks"
 }
