@@ -2,6 +2,7 @@
 
 - [Guitar Parts](https://ca.pinterest.com/search/pins/?q=guitar%20parts)
 - [Types of Guitars](https://ca.pinterest.com/search/pins/?q=types%20of%20guitars)
+- [Guitar Chords](./guitar-chords.md)
 
 - Same notes are 5 frets apart when move to higher string, except when moving from the G string to the B string than they are 4 frets apart.
 - Low E and high E are 2 octaves apart.s
