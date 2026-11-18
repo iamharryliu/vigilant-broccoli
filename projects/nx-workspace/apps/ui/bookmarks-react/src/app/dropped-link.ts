@@ -18,11 +18,7 @@ export function readDroppedLink(data: DataTransfer) {
   for (const candidate of candidates) {
     const url = toUrl(candidate);
     if (!url) continue;
-    const anchorText = new DOMParser()
-      .parseFromString(data.getData('text/html'), 'text/html')
-      .querySelector('a')
-      ?.textContent?.trim();
-    return { label: anchorText || url.hostname, target: url.href };
+    return { label: url.hostname, target: url.href };
   }
   return null;
 }
