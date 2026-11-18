@@ -3,8 +3,14 @@ import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
 import { DEFAULT_BOOKMARKS } from './default-bookmarks';
 
 const STORAGE_KEY = 'bookmarks:v1';
-export const TAB = { BOOKMARKS: 'bookmarks', MANAGE: 'manage' } as const;
+export const TAB = {
+  BOOKMARKS: 'bookmarks',
+  MANAGE: 'manage',
+  SETTINGS: 'settings',
+} as const;
 type Tab = (typeof TAB)[keyof typeof TAB];
+const toTab = (value: unknown): Tab =>
+  Object.values(TAB).find(tab => tab === value) ?? TAB.BOOKMARKS;
 type StoredState = { bookmarks: QuickLink[]; tab: Tab };
 const EMPTY_STATE: StoredState = { bookmarks: [], tab: TAB.BOOKMARKS };
 const DEFAULT_STATE: StoredState = {
@@ -51,7 +57,7 @@ function readState(): StoredState {
     const stored = JSON.parse(raw);
     return {
       bookmarks: parseBookmarks(stored.bookmarks),
-      tab: stored.tab === TAB.MANAGE ? TAB.MANAGE : TAB.BOOKMARKS,
+      tab: toTab(stored.tab),
     };
   } catch {
     return EMPTY_STATE;
@@ -75,7 +81,6 @@ export function useBookmarks() {
     storageError,
     setBookmarks: (bookmarks: QuickLink[]) => save({ ...state, bookmarks }),
     resetBookmarks: () => save({ ...state, bookmarks: DEFAULT_BOOKMARKS }),
-    setTab: (tab: string) =>
-      save({ ...state, tab: tab === TAB.MANAGE ? TAB.MANAGE : TAB.BOOKMARKS }),
+    setTab: (tab: string) => save({ ...state, tab: toTab(tab) }),
   };
 }
