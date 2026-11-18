@@ -107,7 +107,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
-- New `ThemePreferenceControl`, a shared System/Light/Dark picker. Bookmarks and Hearth settings use it in place of their own copies, and Job Hunt's theme dropdown becomes the same segmented control (PR: pending).
+- New `ThemePreferenceControl`, a shared System/Light/Dark picker. Bookmarks and Hearth settings use it in place of their own copies, and Job Hunt's theme dropdown becomes the same segmented control ([#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
 - `SearchableList` moved out of `react-lib-higher-level` into its own `@vigilant-broccoli/entry-directory` library and is now `EntryDirectory` (`EntryDirectoryRow`, `ENTRY_DIRECTORY_VIEW` and the matching types), and `Sidebar` moved into its own `@vigilant-broccoli/sidebar` library; apps import it from there. The chatbot library now exports `ConfirmDeleteDialog` ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680)).
 - Checklist rows support drag reorder, animated completion and a standard ellipsis menu with confirmed delete ([#1587](https://github.com/iamharryliu/vigilant-broccoli/pull/1587), [#1607](https://github.com/iamharryliu/vigilant-broccoli/pull/1607)).
 - FileExplorer gained file previews, image thumbnails, multi-select, a right-click menu, keyboard navigation and a modal image and PDF viewer ([#1514](https://github.com/iamharryliu/vigilant-broccoli/pull/1514), [#1520](https://github.com/iamharryliu/vigilant-broccoli/pull/1520), [#1530](https://github.com/iamharryliu/vigilant-broccoli/pull/1530), [#1562](https://github.com/iamharryliu/vigilant-broccoli/pull/1562)).
@@ -118,7 +118,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### component-library
 
-- Every shared component now has a page, including new chatbot and file-explorer groups, and Button List, Icon Button, Input, Textarea and Toggle Group are split into their own pages. Each page has a Demo section and, for composed components, a Built with button list that opens the pages of the components it uses. Typography moved to the top of the sidebar, above Components ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680)). The Theme Preference Control has its own page (PR: pending).
+- Every shared component now has a page, including new chatbot and file-explorer groups, and Button List, Icon Button, Input, Textarea and Toggle Group are split into their own pages. Each page has a Demo section and, for composed components, a Built with button list that opens the pages of the components it uses. Typography moved to the top of the sidebar, above Components ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680)). The Theme Preference Control has its own page ([#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
 
 ### react-lib-media
 
