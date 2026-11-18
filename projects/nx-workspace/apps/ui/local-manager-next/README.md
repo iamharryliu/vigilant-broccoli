@@ -51,6 +51,7 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - `realtime`
   - `resume`
   - `security-news`
+  - `sidebar`
   - `storage`
 - Cloud services
   - Cloudflare R2

@@ -16,6 +16,7 @@ Everyday utility components for React apps: timers, converters and a weather clo
 | Cooking Conversions | [View](https://components.vigilant-broccoli.app/cooking-conversions) |
 | Currency Converter | [View](https://components.vigilant-broccoli.app/currency-converter) |
 | Pomodoro | [View](https://components.vigilant-broccoli.app/pomodoro) |
+| QR Reader | [View](https://components.vigilant-broccoli.app/qr-reader) |
 | Stopwatch | [View](https://components.vigilant-broccoli.app/stopwatch) |
 | Timer | [View](https://components.vigilant-broccoli.app/timer) |
 | Weather Clock Card | [View](https://components.vigilant-broccoli.app/weather-clock-card) |

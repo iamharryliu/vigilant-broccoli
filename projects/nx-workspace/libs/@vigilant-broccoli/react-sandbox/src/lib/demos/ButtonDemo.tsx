@@ -6,46 +6,14 @@ import { ExternalLink, ArrowRight } from 'lucide-react';
 import {
   Button,
   Input,
-  ButtonList,
-  ButtonConfig,
   ChatSendButton,
   CloseButton,
   CopyButton,
-  DarkModeIconButton,
-  DeleteIconButton,
-  IconButton,
   MonospaceText,
   GoogleSigninButton,
   MicrosoftSigninButton,
   SpeechToTextButton,
 } from '@vigilant-broccoli/react-lib';
-
-const BUTTON_LIST_BUTTONS: ButtonConfig[] = [
-  'GitHub',
-  'Google',
-  'YouTube',
-  'LinkedIn',
-  'Spotify',
-  'Notion',
-  'Figma',
-  'Vercel',
-  'Slack',
-  'Discord',
-  'Twitch',
-  'Reddit',
-  'Twitter',
-  'Instagram',
-  'Facebook',
-  'TikTok',
-  'AWS',
-  'GCP',
-  'Azure',
-  'Cloudflare',
-  'Heroku',
-  'Railway',
-  'Supabase',
-  'Firebase',
-].map(label => ({ label, onClick: () => alert(label) }));
 
 const MOCK_PROCESS_DELAY_MS = 1500;
 const MOCK_STREAM_DELAY_MS = 2500;
@@ -113,7 +81,6 @@ function SpeechToTextButtonDemo() {
 
 export function ButtonDemo() {
   const { t } = useTranslation();
-  const [dark, setDark] = useState(false);
 
   return (
     <div className="flex flex-col gap-6">
@@ -166,28 +133,6 @@ export function ButtonDemo() {
       </DemoSection>
 
       <div className="flex flex-col gap-6">
-        <DemoSection title={t('DEMO_SECTION.BUTTON.ICON_BUTTONS')}>
-          <div className="flex flex-wrap items-center gap-3">
-            <IconButton icon="x" title="Close" />
-            <IconButton icon="filter" variant="outline" title="Filter" />
-            <IconButton icon="search" variant="ghost" title="Search" />
-            <IconButton icon="plus" variant="secondary" title="Add" />
-            <IconButton icon="minus" variant="secondary" title="Remove" />
-          </div>
-        </DemoSection>
-
-        <DemoSection title={t('DEMO_SECTION.BUTTON.DELETE_ICON_BUTTON')}>
-          <div className="flex flex-wrap items-center gap-3">
-            <DeleteIconButton title="Delete" />
-          </div>
-        </DemoSection>
-
-        <DemoSection title={t('DEMO_SECTION.BUTTON.DARK_MODE_ICON_BUTTON')}>
-          <div className="flex flex-wrap items-center gap-3">
-            <DarkModeIconButton dark={dark} onToggle={setDark} />
-          </div>
-        </DemoSection>
-
         <DemoSection title={t('DEMO_SECTION.BUTTON.CLOSE_BUTTON')}>
           <div className="flex flex-wrap items-center gap-3">
             <CloseButton title="Close" />
@@ -235,10 +180,6 @@ export function ButtonDemo() {
 
       <DemoSection title={t('DEMO_SECTION.BUTTON.CHAT_SEND_BUTTON')}>
         <ChatSendButtonDemo />
-      </DemoSection>
-
-      <DemoSection title={t('DEMO_SECTION.BUTTON.BUTTON_LIST')}>
-        <ButtonList buttons={BUTTON_LIST_BUTTONS} />
       </DemoSection>
     </div>
   );

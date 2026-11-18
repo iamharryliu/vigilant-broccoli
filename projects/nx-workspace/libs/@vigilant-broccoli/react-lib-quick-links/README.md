@@ -24,5 +24,5 @@ Searchable, grouped quick-link launcher as an inline panel (`QuickLinksPanel`) a
 - Framework - React
 - Internal libs
   - `common-js`
+  - `entry-directory`
   - `react-lib`
-  - `react-lib-higher-level`

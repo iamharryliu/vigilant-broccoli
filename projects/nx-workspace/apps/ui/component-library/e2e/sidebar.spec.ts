@@ -105,8 +105,7 @@ test.describe('component-library Sidebar (mobile drawer)', () => {
 
     // Simulate the spurious mouseleave Chrome can dispatch on the aside when
     // page content changes under a stationary pointer during navigation
-    // (see the fix in libs/@vigilant-broccoli/react-lib-higher-level
-    // Sidebar.tsx). React's onMouseLeave is synthesized from the bubbling
+    // (see the fix in libs/@vigilant-broccoli/sidebar/src/lib/Sidebar.tsx). React's onMouseLeave is synthesized from the bubbling
     // native "mouseout" event, not a native "mouseleave" listener, so that's
     // what has to be dispatched here for the handler to actually fire. Every
     // item carries an icon, so canCollapse is true and forceExpanded tracks
@@ -139,7 +138,7 @@ test.describe('component-library Sidebar (mobile drawer)', () => {
 
     // Selecting a react-utility item via search (flat results list, no manual
     // expand) should open react-utility because it now holds the active item,
-    // per libs/@vigilant-broccoli/react-lib-higher-level/docs/features/sidebar.md.
+    // per libs/@vigilant-broccoli/sidebar/docs/features/sidebar.md.
     await page.getByPlaceholder('Search...').fill(ALARM_LABEL);
     await page.getByRole('button', { name: ALARM_LABEL }).click();
 

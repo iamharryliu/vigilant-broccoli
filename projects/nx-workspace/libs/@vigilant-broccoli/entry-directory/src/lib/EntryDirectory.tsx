@@ -22,15 +22,15 @@ import {
   Button,
 } from '@vigilant-broccoli/react-lib';
 
-export const SEARCHABLE_LIST_VIEW = {
+export const ENTRY_DIRECTORY_VIEW = {
   ROWS: 'rows',
   GROUPED: 'grouped',
 } as const;
 
-export type SearchableListView =
-  (typeof SEARCHABLE_LIST_VIEW)[keyof typeof SEARCHABLE_LIST_VIEW];
+export type EntryDirectoryView =
+  (typeof ENTRY_DIRECTORY_VIEW)[keyof typeof ENTRY_DIRECTORY_VIEW];
 
-export type SearchableListItem = {
+export type EntryDirectoryItem = {
   label: string;
   value: string;
   onOpen?: () => void;
@@ -43,11 +43,11 @@ export type SearchableListItem = {
   menuActions?: EllipsisAction[];
 };
 
-export type SearchableListGroup = {
+export type EntryDirectoryGroup = {
   /** An empty name renders the entries without a heading. */
   name: string;
   isFavorites?: boolean;
-  entries: SearchableListItem[];
+  entries: EntryDirectoryItem[];
 };
 
 const SEARCH_PLACEHOLDER = 'Search...';
@@ -58,19 +58,19 @@ const URL_PREFIX = 'http';
 const ENTER_KEY = 'Enter';
 
 const VIEW_OPTIONS: {
-  value: SearchableListView;
+  value: EntryDirectoryView;
   label: string;
   description: string;
   Icon: LucideIcon;
 }[] = [
   {
-    value: SEARCHABLE_LIST_VIEW.GROUPED,
+    value: ENTRY_DIRECTORY_VIEW.GROUPED,
     label: 'Grouped',
     description: 'Grouped: badges under group titles',
     Icon: LayoutList,
   },
   {
-    value: SEARCHABLE_LIST_VIEW.ROWS,
+    value: ENTRY_DIRECTORY_VIEW.ROWS,
     label: 'Rows',
     description: 'Rows: detailed rows with open and copy buttons',
     Icon: Rows3,
@@ -92,23 +92,23 @@ const ARROW_DIRECTION: Record<string, Direction> = {
 
 const isUrl = (value: string) => value.startsWith(URL_PREFIX);
 
-const isSearchableListView = (
+const isEntryDirectoryView = (
   value: string | null,
-): value is SearchableListView =>
+): value is EntryDirectoryView =>
   VIEW_OPTIONS.some(option => option.value === value);
 
 const openUrl = (url: string) =>
   window.open(url, WINDOW_TARGET_BLANK, WINDOW_OPEN_FEATURES);
 
-type ScoredEntry = { entry: SearchableListItem; score: number };
+type ScoredEntry = { entry: EntryDirectoryItem; score: number };
 
-const scoreEntry = (entry: SearchableListItem, query: string) => {
+const scoreEntry = (entry: EntryDirectoryItem, query: string) => {
   const labelMatch = fuzzyMatch(query, entry.label);
   if (labelMatch.matched) return labelMatch.score;
   return entry.value.toLowerCase().includes(query.toLowerCase()) ? 0 : null;
 };
 
-const searchGroups = (groups: SearchableListGroup[], query: string) => {
+const searchGroups = (groups: EntryDirectoryGroup[], query: string) => {
   if (!query) {
     return groups.map(group => ({
       name: group.name,
@@ -131,13 +131,13 @@ const searchGroups = (groups: SearchableListGroup[], query: string) => {
     .sort((a, b) => b.scored[0].score - a.scored[0].score);
 };
 
-export const SearchableListRow = ({
+export const EntryDirectoryRow = ({
   entry,
   onActivate,
   onKeyDown,
   actions,
 }: {
-  entry: SearchableListItem;
+  entry: EntryDirectoryItem;
   onActivate: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void;
   /** Replaces the default favorite, open and copy buttons. */
@@ -180,7 +180,7 @@ export const SearchableListRow = ({
   </li>
 );
 
-const FavoriteButton = ({ entry }: { entry: SearchableListItem }) => {
+const FavoriteButton = ({ entry }: { entry: EntryDirectoryItem }) => {
   const accessibleLabel = entry.isFavorite
     ? REMOVE_FAVORITE_LABEL(entry.label)
     : ADD_FAVORITE_LABEL(entry.label);
@@ -208,24 +208,24 @@ const FavoriteButton = ({ entry }: { entry: SearchableListItem }) => {
   );
 };
 
-export const SearchableList = ({
+export const EntryDirectory = ({
   groups,
   searchPlaceholder = SEARCH_PLACEHOLDER,
-  defaultView = SEARCHABLE_LIST_VIEW.ROWS,
+  defaultView = ENTRY_DIRECTORY_VIEW.ROWS,
   storageKey,
   onEntryOpen,
   autoFocusSearch = false,
 }: {
-  groups: SearchableListGroup[];
+  groups: EntryDirectoryGroup[];
   searchPlaceholder?: string;
-  defaultView?: SearchableListView;
+  defaultView?: EntryDirectoryView;
   /** Persists the chosen view in localStorage under this key. */
   storageKey?: string;
   onEntryOpen?: () => void;
   autoFocusSearch?: boolean;
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [view, setView] = useState<SearchableListView>(defaultView);
+  const [view, setView] = useState<EntryDirectoryView>(defaultView);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -233,7 +233,7 @@ export const SearchableList = ({
     if (!storageKey) return;
     try {
       const savedView = localStorage.getItem(storageKey);
-      if (isSearchableListView(savedView)) setView(savedView);
+      if (isEntryDirectoryView(savedView)) setView(savedView);
     } catch {
       // Keep the default view when browser storage is unavailable.
     }
@@ -245,7 +245,7 @@ export const SearchableList = ({
     }
   }, [autoFocusSearch]);
 
-  const handleViewChange = (nextView: SearchableListView) => {
+  const handleViewChange = (nextView: EntryDirectoryView) => {
     setView(nextView);
     try {
       if (storageKey) localStorage.setItem(storageKey, nextView);
@@ -267,7 +267,7 @@ export const SearchableList = ({
       null,
     )?.entry;
 
-  const activate = (entry: SearchableListItem) => {
+  const activate = (entry: EntryDirectoryItem) => {
     if (entry.onOpen) {
       entry.onOpen();
     } else if (isUrl(entry.value)) {
@@ -307,7 +307,7 @@ export const SearchableList = ({
     moveFocus(e);
   };
 
-  const toButtonConfig = (entry: SearchableListItem): ButtonConfig => ({
+  const toButtonConfig = (entry: EntryDirectoryItem): ButtonConfig => ({
     label: entry.isFavorite
       ? `${FAVORITE_BADGE_PREFIX}${entry.label}`
       : entry.label,
@@ -315,7 +315,7 @@ export const SearchableList = ({
     isExternal: entry.isExternal ?? (!entry.onOpen && isUrl(entry.value)),
   });
 
-  const renderButtons = (items: SearchableListItem[]) => (
+  const renderButtons = (items: EntryDirectoryItem[]) => (
     <div className="flex flex-wrap gap-2">
       {items.map((entry, index) => (
         <ButtonList
@@ -331,7 +331,7 @@ export const SearchableList = ({
 
   const renderGroup = (group: (typeof searched)[number], index: number) => {
     const items = group.scored.map(({ entry }) => entry);
-    const isRows = view === SEARCHABLE_LIST_VIEW.ROWS;
+    const isRows = view === ENTRY_DIRECTORY_VIEW.ROWS;
     return (
       <div
         key={`${group.name}-${index}`}
@@ -350,7 +350,7 @@ export const SearchableList = ({
         {isRows ? (
           <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
             {items.map((entry, entryIndex) => (
-              <SearchableListRow
+              <EntryDirectoryRow
                 key={`${entry.label}-${entryIndex}`}
                 entry={entry}
                 onActivate={() => activate(entry)}
@@ -380,7 +380,7 @@ export const SearchableList = ({
         </div>
         <Tabs
           value={view}
-          onValueChange={next => handleViewChange(next as SearchableListView)}
+          onValueChange={next => handleViewChange(next as EntryDirectoryView)}
         >
           <TabsList aria-label={VIEW_TOGGLE_LABEL} className="h-11">
             {VIEW_OPTIONS.map(({ value, label, description, Icon }) => (
@@ -406,7 +406,7 @@ export const SearchableList = ({
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
           <div
             ref={contentRef}
-            className={`flex flex-col py-3 ${view === SEARCHABLE_LIST_VIEW.ROWS ? 'gap-3' : 'gap-4'}`}
+            className={`flex flex-col py-3 ${view === ENTRY_DIRECTORY_VIEW.ROWS ? 'gap-3' : 'gap-4'}`}
           >
             {searched.map(renderGroup)}
           </div>

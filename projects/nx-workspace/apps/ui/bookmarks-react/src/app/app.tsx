@@ -41,10 +41,7 @@ import {
   type SegmentedControlOption,
   type ThemePreference,
 } from '@vigilant-broccoli/react-lib';
-import {
-  Sidebar,
-  type SidebarCTA,
-} from '@vigilant-broccoli/react-lib-higher-level';
+import { Sidebar, type SidebarCTA } from '@vigilant-broccoli/sidebar';
 import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-quick-links';
 import { I18nProvider, useTranslation } from './i18n';
 import { usePageTitle } from './use-page-title';

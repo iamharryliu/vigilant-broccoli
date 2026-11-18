@@ -1,6 +1,6 @@
 # React Lib Higher Level
 
-Composed React components built on `react-lib`: the sidebar, tabbed view, searchable list, notepad, chat room, preview deployments, security news and weather embed.
+Composed React components built on `react-lib`: tabbed view, notepad, chat room, preview deployments, security news and weather embed.
 
 ## Table of Contents
 
@@ -12,13 +12,15 @@ Composed React components built on `react-lib`: the sidebar, tabbed view, search
 
 | Component | Demo |
 | --- | --- |
+| Chat Panel | [View](https://components.vigilant-broccoli.app/chat-panel) |
 | Mobile Home | [View](https://components.vigilant-broccoli.app/mobile-home) |
+| Preview Deployments | [View](https://components.vigilant-broccoli.app/preview-deployments) |
+| Security News List | [View](https://components.vigilant-broccoli.app/security-news-list) |
+| Weather Embed Card | [View](https://components.vigilant-broccoli.app/weather-embed-card) |
 
 ## Features
 
 - [Chat Room](./docs/features/chat-room.md)
-- [Searchable List](./docs/features/searchable-list.md)
-- [Sidebar](./docs/features/sidebar.md)
 
 ## Stack
 
@@ -26,7 +28,6 @@ Composed React components built on `react-lib`: the sidebar, tabbed view, search
 - Framework - React
 - External libs
   - `@supabase/supabase-js`
-  - `lucide-react`
   - `socket.io-client`
 - Internal libs
   - `common-js`

@@ -4,7 +4,7 @@ Dedicated component-library examples for shared controls, surfaces and typograph
 
 ## Coverage
 
-- Input and Textarea: labeled editable fields, disabled fields, invalid styling with associated messages, and long content. Error styles are supplied by the demo caller through `className` and `aria-invalid`.
+- Input and Textarea (separate entries sharing one states demo): labeled editable fields, disabled fields, invalid styling with associated messages, and long content. Error styles are supplied by the demo caller through `className` and `aria-invalid`.
 - Checkbox: controlled selection with a status readout, unchecked, checked, disabled, disabled checked, indeterminate, invalid and wrapping-label examples.
 - Badge: all four variants across the eight supported colors, both sizes, and a wrapping long label.
 - Card: a plain surface, CardContainer with a working header action, a loading skeleton, an empty state and long content.

@@ -35,6 +35,7 @@ Mobile dashboard with calendar, tasks, notepad, weather, language learning and q
   - `react-lib-tasks`
   - `realtime`
   - `security-news`
+  - `sidebar`
 - Cloud services
   - Google Workspace APIs
   - Nominatim / OpenStreetMap

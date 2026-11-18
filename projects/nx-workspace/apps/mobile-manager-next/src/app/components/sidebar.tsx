@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { House, LayoutGrid, LogOut } from 'lucide-react';
-import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/sidebar';
 import { signOut } from '../providers/auth-provider';
 import { APP_ROUTE, PAGE_TITLE } from '../app.const';
 
