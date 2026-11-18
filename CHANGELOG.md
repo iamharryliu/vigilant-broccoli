@@ -80,7 +80,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - Bookmarks and its staging site moved to `bookmarks.vigilant-broccoli.app` and `staging-bookmarks.vigilant-broccoli.app` with no redirect from the `harryliu.dev` addresses. Saved bookmarks stay in the old address's browser storage, so Export them there and Import them on the new one ([#1666](https://github.com/iamharryliu/vigilant-broccoli/pull/1666)).
 - The default list now includes the generic browser links from the local manager (dev vendor consoles, Google, Proton, AI tools, messaging, learning) and leaves out personal accounts and the repo's own apps ([#1668](https://github.com/iamharryliu/vigilant-broccoli/pull/1668)).
 - Dropping a link onto the page opens the Add dialog with its URL and the hostname as the label, and a help button beside the tabs explains drag and drop, favorites, local-only storage and import modes ([#1670](https://github.com/iamharryliu/vigilant-broccoli/pull/1670)).
-- Manage Bookmarks rows can be navigated with the Up and Down arrow keys from the search field, the focused row is highlighted in full, and the help button now opens a centered dialog that also mentions arrow-key navigation (PR: pending).
+- Manage Bookmarks rows can be navigated with the Up and Down arrow keys from the search field, the focused row is highlighted in full, and the help button now opens a centered dialog that also mentions arrow-key navigation ([#1671](https://github.com/iamharryliu/vigilant-broccoli/pull/1671)).
 
 ### weather-next
 
