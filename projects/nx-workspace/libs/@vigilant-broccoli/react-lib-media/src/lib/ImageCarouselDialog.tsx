@@ -60,10 +60,11 @@ export function ImageCarouselDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        fullScreenOnMobile
         className={cn(
-          'left-0 top-0 h-dvh w-screen max-w-none translate-x-0 translate-y-0 text-white',
+          'text-white',
           'sm:left-[50%] sm:top-[50%] sm:h-[85vh] sm:w-[90vw] sm:max-w-4xl sm:-translate-x-1/2 sm:-translate-y-1/2',
-          'flex flex-col gap-0 rounded-none border-none bg-black p-0 sm:rounded-lg',
+          'flex flex-col gap-0 border-none bg-black p-0',
         )}
       >
         <DialogTitle className="sr-only">

@@ -26,6 +26,7 @@ import {
   Button,
   DeleteItemConfirmationDialog,
   Dialog,
+  DialogBody,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -65,6 +66,18 @@ const CONFIRM = {
   CLEAR_ALL: 'clear-all',
 } as const;
 type Confirm = (typeof CONFIRM)[keyof typeof CONFIRM];
+const IMPORT_STEP = { EDIT: 'edit', CHOOSE: 'choose' } as const;
+type ImportStep = (typeof IMPORT_STEP)[keyof typeof IMPORT_STEP];
+const isSameBookmark = (a: QuickLink, b: QuickLink) =>
+  a.label === b.label && a.target === b.target && a.subgroup === b.subgroup;
+const mergeBookmarks = (current: QuickLink[], incoming: QuickLink[]) =>
+  incoming.reduce(
+    (merged, link) =>
+      merged.some(old => isSameBookmark(old, link))
+        ? merged
+        : [...merged, link],
+    current,
+  );
 const TAB_TITLE_KEYS = {
   [TAB.BOOKMARKS]: 'BOOKMARKS',
   [TAB.SETTINGS]: 'SETTINGS',
@@ -106,6 +119,8 @@ function BookmarksPage() {
   const [editing, setEditing] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [importText, setImportText] = useState('');
+  const [importStep, setImportStep] = useState<ImportStep>(IMPORT_STEP.EDIT);
+  const importFileRef = useRef<HTMLInputElement>(null);
   const [confirming, setConfirming] = useState<Confirm | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -303,6 +318,7 @@ function BookmarksPage() {
   };
   const closeImport = () => {
     setIsImportOpen(false);
+    setImportStep(IMPORT_STEP.EDIT);
     setImportText('');
     setDefaultsError(false);
   };
@@ -325,21 +341,10 @@ function BookmarksPage() {
     event.preventDefault();
     readImportFile(event.dataTransfer.files[0]);
   };
+  const mergedImport = mergeBookmarks(bookmarks, pendingImport ?? []);
   const importBookmarks = (replace: boolean) => {
     if (!pendingImport) return;
-    const merged = replace ? [] : [...bookmarks];
-    for (const link of pendingImport) {
-      if (
-        !merged.some(
-          old =>
-            old.label === link.label &&
-            old.target === link.target &&
-            old.subgroup === link.subgroup,
-        )
-      )
-        merged.push(link);
-    }
-    setBookmarks(replace ? pendingImport : merged);
+    setBookmarks(replace ? pendingImport : mergedImport);
     closeImport();
   };
   return (
@@ -372,15 +377,17 @@ function BookmarksPage() {
               <Menu size={ICON_SIZE} />
             </Button>
             <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-              <DialogContent aria-describedby={undefined}>
+              <DialogContent scrollable aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>{t('HELP')}</DialogTitle>
                 </DialogHeader>
-                <ul className="list-disc space-y-4 pl-5 text-sm">
-                  {HELP_KEYS.map(key => (
-                    <li key={key}>{t(key)}</li>
-                  ))}
-                </ul>
+                <DialogBody>
+                  <ul className="list-disc space-y-4 pl-5 text-sm">
+                    {HELP_KEYS.map(key => (
+                      <li key={key}>{t(key)}</li>
+                    ))}
+                  </ul>
+                </DialogBody>
               </DialogContent>
             </Dialog>
           </div>
@@ -441,57 +448,66 @@ function BookmarksPage() {
           open={isDialogOpen}
           onOpenChange={open => (open ? setIsDialogOpen(true) : closeDialog())}
         >
-          <DialogContent fullScreenOnMobile aria-describedby={undefined}>
-            <form onSubmit={submit} className="space-y-3">
+          <DialogContent
+            fullScreenOnMobile
+            scrollable
+            aria-describedby={undefined}
+          >
+            <form
+              onSubmit={submit}
+              className="flex min-h-0 flex-1 flex-col gap-4"
+            >
               <DialogHeader>
                 <DialogTitle>
                   {t(editing === null ? 'ADD' : 'EDIT')}
                 </DialogTitle>
               </DialogHeader>
-              <label className="block">
-                {t('LABEL')}
-                <Input
-                  required
-                  value={form.label}
-                  onChange={e => setForm({ ...form, label: e.target.value })}
-                />
-              </label>
-              <label className="block">
-                {t('URL')}
-                <Input
-                  required
-                  type="url"
-                  value={form.target}
-                  onChange={e => setForm({ ...form, target: e.target.value })}
-                />
-              </label>
-              <div className="space-y-1">
-                <span className="block">{t('SUBGROUP')}</span>
-                <Select
-                  value={selectedSubgroup}
-                  onValueChange={changeSubgroup}
-                  options={subgroupOptions}
-                  displayMapper={subgroupDisplay}
-                  aria-label={t('SUBGROUP')}
-                  className="w-full"
-                />
-              </div>
-              {isNewSubgroup && (
+              <DialogBody className="space-y-3">
                 <label className="block">
-                  {t('NEW_SUBGROUP_NAME')}
+                  {t('LABEL')}
                   <Input
-                    value={form.subgroup}
-                    onChange={e =>
-                      setForm({ ...form, subgroup: e.target.value })
-                    }
+                    required
+                    value={form.label}
+                    onChange={e => setForm({ ...form, label: e.target.value })}
                   />
                 </label>
-              )}
-              {error && (
-                <p role="alert" className="text-destructive">
-                  {error}
-                </p>
-              )}
+                <label className="block">
+                  {t('URL')}
+                  <Input
+                    required
+                    type="url"
+                    value={form.target}
+                    onChange={e => setForm({ ...form, target: e.target.value })}
+                  />
+                </label>
+                <div className="space-y-1">
+                  <span className="block">{t('SUBGROUP')}</span>
+                  <Select
+                    value={selectedSubgroup}
+                    onValueChange={changeSubgroup}
+                    options={subgroupOptions}
+                    displayMapper={subgroupDisplay}
+                    aria-label={t('SUBGROUP')}
+                    className="w-full"
+                  />
+                </div>
+                {isNewSubgroup && (
+                  <label className="block">
+                    {t('NEW_SUBGROUP_NAME')}
+                    <Input
+                      value={form.subgroup}
+                      onChange={e =>
+                        setForm({ ...form, subgroup: e.target.value })
+                      }
+                    />
+                  </label>
+                )}
+                {error && (
+                  <p role="alert" className="text-destructive">
+                    {error}
+                  </p>
+                )}
+              </DialogBody>
               <DialogFooter className="gap-2 sm:gap-0">
                 <Button type="button" variant="outline" onClick={closeDialog}>
                   {t('CANCEL')}
@@ -507,70 +523,124 @@ function BookmarksPage() {
           open={isImportOpen}
           onOpenChange={open => (open ? setIsImportOpen(true) : closeImport())}
         >
-          <DialogContent fullScreenOnMobile aria-describedby={undefined}>
+          <DialogContent
+            fullScreenOnMobile
+            scrollable
+            aria-describedby={undefined}
+          >
             <DialogHeader>
               <DialogTitle>{t('IMPORT')}</DialogTitle>
             </DialogHeader>
-            <div
-              className="space-y-3 text-sm"
-              onDragOver={event => event.preventDefault()}
-              onDrop={dropImport}
-            >
-              <p>{t('IMPORT_SHAPE')}</p>
-              <Textarea
-                value={importText}
-                onChange={event => setImportText(event.target.value)}
-                placeholder={IMPORT_EXAMPLE}
-                spellCheck={false}
-                aria-label={t('IMPORT_TEXT')}
-                className="min-h-48 font-mono text-xs"
-              />
-              <Button type="button" variant="outline" onClick={loadDefaultJson}>
-                {t('SET_TO_DEFAULT_JSON')}
-              </Button>
-              <p className="text-muted-foreground">{t('IMPORT_RULES')}</p>
-              <label className="block space-y-1">
-                <span className="block">{t('IMPORT_FILE')}</span>
-                <Input
-                  type="file"
-                  accept=".json,application/json"
-                  onChange={readImport}
-                />
-              </label>
-              {defaultsError && (
-                <p role="alert" className="text-destructive">
-                  {t('DEFAULTS_UNAVAILABLE')}
-                </p>
-              )}
-              {parsedImport.isInvalid && (
-                <p role="alert" className="text-destructive">
-                  {t('INVALID_IMPORT')}
-                </p>
-              )}
-              {pendingImport && (
-                <p role="status">
-                  {t('IMPORT_READY', { count: pendingImport.length })}
-                </p>
-              )}
-            </div>
-            <DialogFooter className="gap-2 sm:gap-0">
-              <Button type="button" variant="outline" onClick={closeImport}>
-                {t('CANCEL')}
-              </Button>
-              <Button
-                disabled={!pendingImport}
-                onClick={() => importBookmarks(false)}
-              >
-                {t('MERGE')}
-              </Button>
-              <Button
-                variant="destructive"
-                disabled={!pendingImport}
-                onClick={() => importBookmarks(true)}
-              >
-                {t('REPLACE')}
-              </Button>
-            </DialogFooter>
+            {importStep === IMPORT_STEP.EDIT ? (
+              <>
+                <DialogBody
+                  className="space-y-3 text-sm"
+                  onDragOver={event => event.preventDefault()}
+                  onDrop={dropImport}
+                >
+                  <p>{t('IMPORT_SHAPE')}</p>
+                  <Textarea
+                    value={importText}
+                    onChange={event => setImportText(event.target.value)}
+                    placeholder={`${t('IMPORT_HINT')}\n${IMPORT_EXAMPLE}`}
+                    spellCheck={false}
+                    aria-label={t('IMPORT_TEXT')}
+                    className="min-h-48 font-mono text-xs sm:min-h-80"
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={loadDefaultJson}
+                    >
+                      {t('SET_TO_DEFAULT_JSON')}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => importFileRef.current?.click()}
+                    >
+                      {t('IMPORT_FILE')}
+                    </Button>
+                    <input
+                      ref={importFileRef}
+                      type="file"
+                      accept=".json,application/json"
+                      className="hidden"
+                      onChange={readImport}
+                    />
+                  </div>
+                  {defaultsError && (
+                    <p role="alert" className="text-destructive">
+                      {t('DEFAULTS_UNAVAILABLE')}
+                    </p>
+                  )}
+                  {parsedImport.isInvalid && (
+                    <p role="alert" className="text-destructive">
+                      {t('INVALID_IMPORT')}
+                    </p>
+                  )}
+                  {pendingImport && (
+                    <p role="status">
+                      {t('IMPORT_READY', { count: pendingImport.length })}
+                    </p>
+                  )}
+                </DialogBody>
+                <DialogFooter>
+                  <Button
+                    disabled={!pendingImport}
+                    onClick={() => setImportStep(IMPORT_STEP.CHOOSE)}
+                  >
+                    {t('SUBMIT')}
+                  </Button>
+                </DialogFooter>
+              </>
+            ) : (
+              <>
+                <DialogBody className="space-y-3 text-sm">
+                  <p>
+                    {t('IMPORT_CHOOSE', { count: pendingImport?.length ?? 0 })}
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="h-auto w-full flex-col items-start gap-1 whitespace-normal py-3 text-left"
+                    onClick={() => importBookmarks(false)}
+                  >
+                    <span className="font-medium">{t('MERGE')}</span>
+                    <span className="font-normal text-muted-foreground">
+                      {t('MERGE_INFO', {
+                        added: mergedImport.length - bookmarks.length,
+                        current: bookmarks.length,
+                      })}
+                    </span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-auto w-full flex-col items-start gap-1 whitespace-normal py-3 text-left"
+                    onClick={() => importBookmarks(true)}
+                  >
+                    <span className="font-medium text-destructive">
+                      {t('REPLACE')}
+                    </span>
+                    <span className="font-normal text-muted-foreground">
+                      {t('REPLACE_INFO', {
+                        current: bookmarks.length,
+                        count: pendingImport?.length ?? 0,
+                      })}
+                    </span>
+                  </Button>
+                </DialogBody>
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setImportStep(IMPORT_STEP.EDIT)}
+                  >
+                    {t('BACK')}
+                  </Button>
+                </DialogFooter>
+              </>
+            )}
           </DialogContent>
         </Dialog>
       </main>
