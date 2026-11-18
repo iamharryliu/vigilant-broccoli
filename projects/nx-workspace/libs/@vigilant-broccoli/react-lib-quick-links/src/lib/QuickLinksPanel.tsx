@@ -12,7 +12,7 @@ import {
   type SearchableListItem,
   type SearchableListView,
 } from '@vigilant-broccoli/react-lib-higher-level';
-import { WINDOW_OPEN_FEATURES } from '@vigilant-broccoli/react-lib';
+import { IconButton, WINDOW_OPEN_FEATURES } from '@vigilant-broccoli/react-lib';
 import { useQuickLinkFavorites } from './useQuickLinkFavorites';
 
 export {
@@ -44,6 +44,13 @@ export type QuickLinksPanelProps = {
   preserveOrder?: boolean;
   /** Adds browser-local favorite controls and a Favorites group. */
   enableFavorites?: boolean;
+  /** Adds a pencil to the view switcher; while active, rows get edit and delete buttons and activating a row edits it. */
+  editing?: {
+    active: boolean;
+    onActiveChange: (active: boolean) => void;
+    onEditLink: (link: QuickLink) => void;
+    onDeleteLink: (link: QuickLink) => void;
+  };
 };
 
 const NON_BROWSER_TYPES = [
@@ -80,6 +87,7 @@ export function QuickLinksPanel({
   defaultView = SEARCHABLE_LIST_VIEW.GROUPED,
   preserveOrder = false,
   enableFavorites = false,
+  editing,
 }: QuickLinksPanelProps) {
   const { favorites, toggleFavorite } = useQuickLinkFavorites(enableFavorites);
   const toEntry = (link: QuickLink): SearchableListItem => {
@@ -99,8 +107,24 @@ export function QuickLinksPanel({
       onFavoriteToggle: enableFavorites
         ? () => toggleFavorite(favoriteId)
         : undefined,
+      actions: editing?.active ? (
+        <>
+          <IconButton
+            variant="ghost"
+            icon="edit"
+            onClick={() => editing.onEditLink(link)}
+          />
+          <IconButton
+            variant="ghost"
+            icon="trash"
+            onClick={() => editing.onDeleteLink(link)}
+          />
+        </>
+      ) : undefined,
       onOpen: () => {
-        if (isShellLink(link)) {
+        if (editing?.active) {
+          editing.onEditLink(link);
+        } else if (isShellLink(link)) {
           onShellExecute?.(link.type, link.target, link.args);
         } else if (link.type === OPEN_TYPE.INTERNAL && onInternalOpen) {
           onInternalOpen(link.target);
@@ -143,6 +167,12 @@ export function QuickLinksPanel({
       storageKey={STORAGE_KEY}
       onEntryOpen={onLinkOpen}
       autoFocusSearch={autoFocusSearch}
+      editMode={
+        editing && {
+          active: editing.active,
+          onChange: editing.onActiveChange,
+        }
+      }
     />
   );
 }
