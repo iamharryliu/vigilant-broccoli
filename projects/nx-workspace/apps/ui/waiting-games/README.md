@@ -1,6 +1,6 @@
 # Waiting Games
 
-Hands-free games to watch while queuing or travelling, served at waiting.harryliu.dev.
+Hands-free games to watch while queuing or travelling, served at waiting.vigilant-broccoli.app.
 
 ## Table of Contents
 

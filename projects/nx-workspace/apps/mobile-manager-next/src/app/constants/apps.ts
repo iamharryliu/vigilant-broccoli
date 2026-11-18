@@ -53,7 +53,7 @@ const LEISURE_APPS: AppEntry[] = [
 const UTILITY_APPS: AppEntry[] = [
   {
     label: 'Docs',
-    webUrl: 'https://docs.harryliu.dev',
+    webUrl: 'https://docs.vigilant-broccoli.app',
     tileColor: 'bg-blue-600',
     icon: FileText,
   },

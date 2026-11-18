@@ -14,7 +14,7 @@
   "linkFallbacks": [
     {
       "prefix": "notes/",
-      "base": "https://docs.harryliu.dev/?file="
+      "base": "https://docs.vigilant-broccoli.app/?file="
     },
     {
       "prefix": "",

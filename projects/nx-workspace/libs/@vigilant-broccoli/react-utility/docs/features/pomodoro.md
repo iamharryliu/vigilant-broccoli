@@ -1,7 +1,7 @@
 # Pomodoro
 
 - `PomodoroEngine` owns the timer and must be mounted once; `PomodoroUtilityContent` renders it and talks to it through window events, so the content can mount anywhere (dialogs, pages, the component sandbox).
-- Consumed by `pomodoro-react` (pomodoro.harryliu.dev) and the `react-sandbox` utility group.
+- Consumed by `pomodoro-react` (pomodoro.vigilant-broccoli.app) and the `react-sandbox` utility group.
 
 ## Modes
 

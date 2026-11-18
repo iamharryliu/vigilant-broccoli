@@ -57,15 +57,18 @@ export const PROJECT_HOSTING = {
   },
 };
 
+// Keep in sync with `vigilant_broccoli_domain` in infrastructure/terraform/variables.tf.
+const VB_APP_DOMAIN = 'vigilant-broccoli.app';
+
 const STAGING_HOSTS = {
   'personal-website-react': 'staging.harryliu.dev',
-  'docs-md': 'staging-docs.harryliu.dev',
-  'context-md': 'staging-context.harryliu.dev',
-  'utilities-ui': 'staging-utilities.harryliu.dev',
-  'bookmarks-react': 'staging-bookmarks.vigilant-broccoli.app',
+  'docs-md': `staging-docs.${VB_APP_DOMAIN}`,
+  'context-md': `staging-context.${VB_APP_DOMAIN}`,
+  'utilities-ui': `staging-utilities.${VB_APP_DOMAIN}`,
+  'bookmarks-react': `staging-bookmarks.${VB_APP_DOMAIN}`,
   'photography-react': 'staging-photography.harryliu.dev',
-  'pomodoro-react': 'staging-pomodoro.harryliu.dev',
-  'waiting-games': 'staging-waiting.harryliu.dev',
+  'pomodoro-react': `staging-pomodoro.${VB_APP_DOMAIN}`,
+  'waiting-games': `staging-waiting.${VB_APP_DOMAIN}`,
   'weather-next': 'staging-weather.harryliu.dev',
   balloono: 'staging-balloono.harryliu.dev',
   calendars: 'staging-calendar.harryliu.dev',
@@ -74,7 +77,7 @@ const STAGING_HOSTS = {
   findme: 'staging-findme.harryliu.dev',
   hearth: 'staging-hearth.harryliu.dev',
   chat: 'staging-chat.harryliu.dev',
-  'component-library': 'staging-components.harryliu.dev',
+  'component-library': `staging-components.${VB_APP_DOMAIN}`,
 };
 
 export const NO_URL = '—';

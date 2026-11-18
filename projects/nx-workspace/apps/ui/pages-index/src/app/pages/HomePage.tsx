@@ -62,7 +62,7 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
-              href="https://context.harryliu.dev/"
+              href="https://context.vigilant-broccoli.app/"
               title={t('HOME.CLAUDE_CONTEXT.TITLE')}
               description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
               icon={<Bot className={ICON_CLASS} />}
@@ -145,7 +145,7 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
-              href="https://components.harryliu.dev/"
+              href="https://components.vigilant-broccoli.app/"
               title={t('HOME.UI.TITLE')}
               description={t('HOME.UI.DESCRIPTION')}
               icon={<LayoutGrid className={ICON_CLASS} />}

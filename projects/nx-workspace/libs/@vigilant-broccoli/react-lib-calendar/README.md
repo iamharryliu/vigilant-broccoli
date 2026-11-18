@@ -12,7 +12,7 @@ Calendar list view, phone agenda, event details, event calendars list, the Creat
 
 | Component | Demo |
 | --- | --- |
-| Calendar List | [View](https://components.harryliu.dev/calendar-list) |
+| Calendar List | [View](https://components.vigilant-broccoli.app/calendar-list) |
 
 ## Features
 
