@@ -6,9 +6,8 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { LucideIcon } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import { cn } from '@vigilant-broccoli/react-lib';
+import { cn, SegmentedControl } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
 import { DotPaths } from '@vigilant-broccoli/react-lib';
@@ -253,59 +252,6 @@ const toAxisLabel = (
     showOnMobile: isJanuaryStart || Number(monthNumber) % 2 === 1,
   };
 };
-
-interface SegmentedControlProps<T extends string> {
-  labelKey: DotPaths<typeof en>;
-  value: T;
-  options: {
-    value: T;
-    labelKey: DotPaths<typeof en>;
-    Icon?: LucideIcon;
-  }[];
-  onChange: (value: T) => void;
-}
-
-function SegmentedControl<T extends string>({
-  labelKey,
-  value,
-  options,
-  onChange,
-}: SegmentedControlProps<T>) {
-  const { t } = useTranslation();
-  const label = t(labelKey);
-  return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className="flex w-fit rounded-lg border border-gray-200 bg-white p-0.5 dark:border-gray-700 dark:bg-gray-800"
-    >
-      {options.map(option => {
-        const optionLabel = t(option.labelKey);
-        return (
-          <button
-            key={option.value}
-            type="button"
-            role="radio"
-            aria-checked={option.value === value}
-            aria-label={optionLabel}
-            onClick={() => onChange(option.value)}
-            className={cn(
-              'flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition sm:px-3 sm:py-1.5 sm:text-sm',
-              option.value === value
-                ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
-                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100',
-            )}
-          >
-            {option.Icon && <option.Icon className={ICON_CLASS} />}
-            <span className={cn(option.Icon && 'hidden sm:inline')}>
-              {optionLabel}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 interface ChipSelectorProps<T extends string> {
   labelKey: DotPaths<typeof en>;
@@ -692,16 +638,25 @@ export function RepoTimelinePage() {
         <>
           <div className="mb-2 flex shrink-0 flex-wrap items-center gap-2">
             <SegmentedControl
-              labelKey="REPO_TIMELINE_PAGE.VIEW_LABEL"
+              label={t('REPO_TIMELINE_PAGE.VIEW_LABEL')}
               value={view}
               onChange={setView}
-              options={TIMELINE_VIEW_OPTIONS}
+              options={TIMELINE_VIEW_OPTIONS.map(
+                ({ value, labelKey, Icon }) => ({
+                  value,
+                  label: t(labelKey),
+                  icon: <Icon className={ICON_CLASS} />,
+                }),
+              )}
             />
             <SegmentedControl
-              labelKey="REPO_TIMELINE_PAGE.METRIC_LABEL"
+              label={t('REPO_TIMELINE_PAGE.METRIC_LABEL')}
               value={metric}
               onChange={setMetric}
-              options={TIMELINE_METRIC_OPTIONS}
+              options={TIMELINE_METRIC_OPTIONS.map(({ value, labelKey }) => ({
+                value,
+                label: t(labelKey),
+              }))}
             />
           </div>
 

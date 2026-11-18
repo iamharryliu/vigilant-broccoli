@@ -9,7 +9,7 @@ Dedicated component-library examples for shared controls, surfaces and typograph
 - Badge: all four variants across the eight supported colors, both sizes, and a wrapping long label.
 - Card: a plain surface, CardContainer with a working header action, a loading skeleton, an empty state and long content.
 - Typography: all nine Text and Heading sizes, four weights, supported text colors and a narrow wrapping paragraph. Visual heading sizes remain independent of semantic heading levels.
-- Segmented Control: both sizes and an icon/short-label example, each with independent controlled state and a selected-value readout. Its current API does not expose a disabled or error state.
+- Segmented Control: a theme-preference picker (a setting, not a view switch) in both sizes plus icon/short-label and full-width examples, each with independent controlled state and a selected-value readout. Its current API does not expose a disabled or error state.
 
 ## Navigation and review
 

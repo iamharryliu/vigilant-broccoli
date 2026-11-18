@@ -1,5 +1,8 @@
+'use client';
+
 import { ReactNode } from 'react';
 import { cn } from '../utils/cn';
+import { ToggleGroup, ToggleGroupItem } from './ToggleGroup';
 
 export type SegmentedControlOption<T extends string> = {
   value: T;
@@ -17,12 +20,6 @@ export type SegmentedControlSize = keyof typeof SIZE_CLASS;
 
 const FULL_WIDTH_SIZE_CLASS =
   'gap-2 px-3 py-2.5 text-sm min-h-10 sm:py-2 sm:min-h-0';
-
-const ROOT_CLASS = 'flex rounded-lg border border-border bg-card p-0.5';
-const ITEM_CLASS =
-  'flex items-center whitespace-nowrap rounded-md transition cursor-pointer';
-const ITEM_ACTIVE_CLASS = 'bg-primary text-primary-foreground';
-const ITEM_INACTIVE_CLASS = 'text-muted-foreground hover:text-foreground';
 
 export function SegmentedControl<T extends string>({
   label,
@@ -44,30 +41,25 @@ export function SegmentedControl<T extends string>({
   className?: string;
 }) {
   return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className={cn(ROOT_CLASS, fullWidth ? 'w-full' : 'w-fit', className)}
+    <ToggleGroup
+      label={label}
+      value={value}
+      onValueChange={next => onChange(next as T)}
+      className={cn(fullWidth && 'w-full', className)}
     >
       {options.map(option => {
-        const isActive = option.value === value;
         // The visible label is dropped on mobile once an icon or short label
-        // stands in for it, so aria-label carries the full name regardless.
+        // stands in for it, so the item's aria-label carries the full name.
         const isLabelResponsive =
           !fullWidth && Boolean(option.icon || option.shortLabel);
         return (
-          <button
+          <ToggleGroupItem
             key={option.value}
-            type="button"
-            role="radio"
-            aria-checked={isActive}
-            aria-label={option.label}
-            onClick={() => onChange(option.value)}
+            value={option.value}
+            label={option.label}
             className={cn(
-              ITEM_CLASS,
               fullWidth ? FULL_WIDTH_SIZE_CLASS : SIZE_CLASS[size],
-              fullWidth && 'flex-1 justify-center',
-              isActive ? ITEM_ACTIVE_CLASS : ITEM_INACTIVE_CLASS,
+              fullWidth && 'flex-1',
             )}
           >
             {option.icon}
@@ -77,9 +69,9 @@ export function SegmentedControl<T extends string>({
             <span className={cn(isLabelResponsive && 'hidden sm:inline')}>
               {option.label}
             </span>
-          </button>
+          </ToggleGroupItem>
         );
       })}
-    </div>
+    </ToggleGroup>
   );
 }
