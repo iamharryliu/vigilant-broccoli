@@ -4,7 +4,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSeenWords } from '../hooks/use-seen-words';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { AudioButton } from '@vigilant-broccoli/react-lib-media';
-import { useTextToSpeech } from '@vigilant-broccoli/react-lib';
+import {
+  DeleteItemConfirmationDialog,
+  useTextToSpeech,
+} from '@vigilant-broccoli/react-lib';
 import {
   ArrowLeftRight,
   Loader2,
@@ -57,6 +60,7 @@ export const LanguageLearningView = () => {
   const [hasError, setHasError] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showSeen, setShowSeen] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const [sentences, setSentences] = useState<
     Partial<Record<Language, SentenceResult>>
   >({});
@@ -109,10 +113,6 @@ export const LanguageLearningView = () => {
   const selectTab = (next: Tab) => {
     setTab(next);
     loadWord(next);
-  };
-
-  const handleClearSeen = () => {
-    if (window.confirm(CLEAR_CONFIRM)) clear();
   };
 
   const copyWord = async (language: Language, word: string) => {
@@ -296,7 +296,7 @@ export const LanguageLearningView = () => {
             {showSeen && (
               <button
                 type="button"
-                onClick={handleClearSeen}
+                onClick={() => setIsClearing(true)}
                 className="py-1 hover:text-gray-900 dark:hover:text-gray-100"
               >
                 {CLEAR_ALL_LABEL}
@@ -322,6 +322,14 @@ export const LanguageLearningView = () => {
           )}
         </div>
       )}
+      <DeleteItemConfirmationDialog
+        open={isClearing}
+        onOpenChange={setIsClearing}
+        title={CLEAR_ALL_LABEL}
+        description={CLEAR_CONFIRM}
+        confirmLabel={CLEAR_ALL_LABEL}
+        deleteItem={async () => clear()}
+      />
     </div>
   );
 };

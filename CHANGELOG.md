@@ -23,6 +23,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - Where Is separates Analyze from Save, makes photos optional and sorts tags alphabetically ([#1531](https://github.com/iamharryliu/vigilant-broccoli/pull/1531), [#1532](https://github.com/iamharryliu/vigilant-broccoli/pull/1532), [#1533](https://github.com/iamharryliu/vigilant-broccoli/pull/1533)).
 - Checklist rows share a standard ellipsis menu, and deleting a one-off task asks for confirmation ([#1607](https://github.com/iamharryliu/vigilant-broccoli/pull/1607)).
 - Content-heavy dialogs go full screen on phones, and recipes respond to browser back and forward ([#1498](https://github.com/iamharryliu/vigilant-broccoli/pull/1498), [#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
+- Deleting a home asks for confirmation in a dialog instead of a browser prompt ([#1672](https://github.com/iamharryliu/vigilant-broccoli/pull/1672)).
 
 ### tasks-next
 
@@ -82,6 +83,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - The default list now includes the generic browser links from the local manager (dev vendor consoles, Google, Proton, AI tools, messaging, learning) and leaves out personal accounts and the repo's own apps ([#1668](https://github.com/iamharryliu/vigilant-broccoli/pull/1668)).
 - Dropping a link onto the page opens the Add dialog with its URL and the hostname as the label, and a help button beside the tabs explains drag and drop, favorites, local-only storage and import modes ([#1670](https://github.com/iamharryliu/vigilant-broccoli/pull/1670)).
 - The Manage Bookmarks tab is folded into Bookmarks: a pencil in the view switcher beside the search field switches the list to rows with edit and delete buttons, a plus button adds a bookmark, and Export, Import (a dialog that shows the expected JSON shape with a file picker), Clear all and Reset to default moved to Settings. Rows highlight in full while navigating with the Up and Down arrow keys, Help opens a centered dialog, and Settings now lives at `/settings` ([#1671](https://github.com/iamharryliu/vigilant-broccoli/pull/1671)).
+- Deleting a bookmark asks for confirmation in a dialog instead of a browser prompt ([#1672](https://github.com/iamharryliu/vigilant-broccoli/pull/1672)).
 
 ### weather-next
 
@@ -120,6 +122,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - New file converter, connection world map, security news page, and iCal and web page event sources ([#1472](https://github.com/iamharryliu/vigilant-broccoli/pull/1472), [#1379](https://github.com/iamharryliu/vigilant-broccoli/pull/1379), [#1399](https://github.com/iamharryliu/vigilant-broccoli/pull/1399)).
 - Cloud services, local services, text tools and music moved into their own apps ([#1429](https://github.com/iamharryliu/vigilant-broccoli/pull/1429), [#1529](https://github.com/iamharryliu/vigilant-broccoli/pull/1529)).
 - The home Tasks card embeds tasks.harryliu.dev in place of the native list ([#1600](https://github.com/iamharryliu/vigilant-broccoli/pull/1600), [#1601](https://github.com/iamharryliu/vigilant-broccoli/pull/1601)).
+- Deleting a storage demo file asks for confirmation in a dialog instead of a browser prompt ([#1672](https://github.com/iamharryliu/vigilant-broccoli/pull/1672)).
 - Kanban and to-do lists delete through the standard ellipsis menu ([#1607](https://github.com/iamharryliu/vigilant-broccoli/pull/1607)).
 
 ### mobile-manager-next
@@ -128,6 +131,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - Instagram appears in the Leisure apps, and embed-flagged links open in an in-app page ([#1598](https://github.com/iamharryliu/vigilant-broccoli/pull/1598), [#1398](https://github.com/iamharryliu/vigilant-broccoli/pull/1398)).
 - The Tasks tab embeds tasks.harryliu.dev inside a matching border. Voice input, AI task creation and the bottom-sheet create dialog are gone from it ([#1602](https://github.com/iamharryliu/vigilant-broccoli/pull/1602), [#1612](https://github.com/iamharryliu/vigilant-broccoli/pull/1612)).
 - Google Tasks and Calendar stay connected past the hourly token expiry ([#1524](https://github.com/iamharryliu/vigilant-broccoli/pull/1524)).
+- Clearing seen words in language learning asks for confirmation in a dialog instead of a browser prompt ([#1672](https://github.com/iamharryliu/vigilant-broccoli/pull/1672)).
 
 ### media-service
 

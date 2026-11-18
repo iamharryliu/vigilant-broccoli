@@ -50,7 +50,11 @@ const EMPTY_FORM = { label: '', target: '', subgroup: '' };
 const EXPORT_FILENAME = 'bookmarks.json';
 const JSON_TYPE = 'application/json';
 const ICON_SIZE = 14;
-const CONFIRM = { CLEAR_ALL: 'clear-all', RESET_TO_DEFAULT: 'reset' } as const;
+const CONFIRM = {
+  CLEAR_ALL: 'clear-all',
+  DELETE_BOOKMARK: 'delete-bookmark',
+  RESET_TO_DEFAULT: 'reset',
+} as const;
 type Confirm = (typeof CONFIRM)[keyof typeof CONFIRM];
 const TAB_TITLE_KEYS = {
   [TAB.BOOKMARKS]: 'BOOKMARKS',
@@ -93,6 +97,7 @@ function BookmarksPage() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [pendingImport, setPendingImport] = useState<QuickLink[] | null>(null);
   const [confirming, setConfirming] = useState<Confirm | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<QuickLink | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
@@ -213,10 +218,9 @@ function BookmarksPage() {
       window.removeEventListener('drop', onDrop);
     };
   }, []);
-  const deleteBookmark = (link: QuickLink) => {
-    if (window.confirm(t('CONFIRM_DELETE'))) {
-      setBookmarks(bookmarks.filter(old => old !== link));
-    }
+  const requestDelete = (link: QuickLink) => {
+    setPendingDelete(link);
+    setConfirming(CONFIRM.DELETE_BOOKMARK);
   };
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -340,7 +344,7 @@ function BookmarksPage() {
                 active: isEditMode,
                 onActiveChange: setIsEditMode,
                 onEditLink: link => openEdit(bookmarks.indexOf(link)),
-                onDeleteLink: deleteBookmark,
+                onDeleteLink: requestDelete,
               }}
             />
           ) : (
@@ -384,6 +388,19 @@ function BookmarksPage() {
           </div>
         </TabsContent>
       </Tabs>
+      <DeleteItemConfirmationDialog
+        open={confirming === CONFIRM.DELETE_BOOKMARK}
+        onOpenChange={open =>
+          setConfirming(open ? CONFIRM.DELETE_BOOKMARK : null)
+        }
+        title={t('DELETE')}
+        description={t('CONFIRM_DELETE')}
+        confirmLabel={t('DELETE')}
+        cancelLabel={t('CANCEL')}
+        deleteItem={async () =>
+          setBookmarks(bookmarks.filter(old => old !== pendingDelete))
+        }
+      />
       <DeleteItemConfirmationDialog
         open={confirming === CONFIRM.CLEAR_ALL}
         onOpenChange={open => setConfirming(open ? CONFIRM.CLEAR_ALL : null)}
