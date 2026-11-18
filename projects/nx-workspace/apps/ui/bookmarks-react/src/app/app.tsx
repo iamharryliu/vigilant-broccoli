@@ -60,6 +60,7 @@ function BookmarksPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
   const [pendingImport, setPendingImport] = useState<QuickLink[] | null>(null);
   const [confirming, setConfirming] = useState<Confirm | null>(null);
   const importInput = useRef<HTMLInputElement>(null);
@@ -82,9 +83,15 @@ function BookmarksPage() {
     },
   ];
   usePageTitle(t(TAB_TITLE_KEYS[tab]));
-  const subgroups = [
-    ...new Set(bookmarks.map(link => link.subgroup ?? '')),
-  ].sort((a, b) => a.localeCompare(b));
+  const needle = search.trim().toLowerCase();
+  const matchesSearch = (link: QuickLink) =>
+    !needle || `${link.label} ${link.target}`.toLowerCase().includes(needle);
+  const sortedSubgroups = (links: QuickLink[]) =>
+    [...new Set(links.map(link => link.subgroup ?? ''))].sort((a, b) =>
+      a.localeCompare(b),
+    );
+  const subgroups = sortedSubgroups(bookmarks);
+  const visibleSubgroups = sortedSubgroups(bookmarks.filter(matchesSearch));
   const subgroupOptions = [
     NO_SUBGROUP,
     ...subgroups.filter(Boolean),
@@ -181,13 +188,13 @@ function BookmarksPage() {
     setPendingImport(null);
   };
   return (
-    <main className="min-h-dvh bg-background p-4 text-foreground sm:p-8">
+    <main className="min-h-dvh bg-background px-4 pb-4 pt-2 text-foreground sm:px-8 sm:pb-8 sm:pt-4">
+      <h1 className="sr-only">{t('TITLE')}</h1>
       <Tabs
         value={tab}
         onValueChange={setTab}
         className="mx-auto max-w-2xl space-y-6"
       >
-        <h1 className="sr-only">{t('TITLE')}</h1>
         <TabsList>
           <TabsTrigger value={TAB.BOOKMARKS}>
             <Bookmark size={ICON_SIZE} />
@@ -214,7 +221,7 @@ function BookmarksPage() {
             <p className="py-8">{t('EMPTY')}</p>
           )}
         </TabsContent>
-        <TabsContent value={TAB.MANAGE} className="space-y-6">
+        <TabsContent value={TAB.MANAGE} className="space-y-2">
           <div className="flex flex-wrap items-center gap-1">
             <IconButton
               variant="ghost"
@@ -376,7 +383,14 @@ function BookmarksPage() {
               </div>
             </section>
           )}
-          {subgroups.map(group => (
+          <Input
+            type="search"
+            value={search}
+            onChange={event => setSearch(event.target.value)}
+            placeholder={t('SEARCH')}
+            aria-label={t('SEARCH')}
+          />
+          {visibleSubgroups.map(group => (
             <section key={group} className="space-y-2">
               <h2 className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {group || t('UNGROUPED')}
@@ -384,7 +398,10 @@ function BookmarksPage() {
               <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
                 {bookmarks
                   .map((link, index) => ({ link, index }))
-                  .filter(({ link }) => (link.subgroup ?? '') === group)
+                  .filter(
+                    ({ link }) =>
+                      matchesSearch(link) && (link.subgroup ?? '') === group,
+                  )
                   .map(({ link, index }) => (
                     <SearchableListRow
                       key={index}
