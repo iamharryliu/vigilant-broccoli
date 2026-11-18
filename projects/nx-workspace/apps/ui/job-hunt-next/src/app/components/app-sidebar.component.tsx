@@ -23,7 +23,7 @@ import {
   isJobMatchesBookmarkletMessage,
 } from '@vigilant-broccoli/common-js';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
-import { Sidebar } from '@vigilant-broccoli/react-lib-higher-level';
+import { Sidebar } from '@vigilant-broccoli/sidebar';
 import { APP_TAB, AppTab, toTabFromPath } from '../app.const';
 import { OPEN_HELP_EVENT } from '../constants/career';
 import { useTranslation } from '../i18n';

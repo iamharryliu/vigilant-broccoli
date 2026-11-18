@@ -31,11 +31,17 @@
       "@vigilant-broccoli/employee-handler": [
         "./libs/@vigilant-broccoli/employee-handler/src/index.ts"
       ],
+      "@vigilant-broccoli/entry-directory": [
+        "./libs/@vigilant-broccoli/entry-directory/src/index.ts"
+      ],
       "@vigilant-broccoli/fastify": [
         "./libs/@vigilant-broccoli/fastify/src/index.ts"
       ],
       "@vigilant-broccoli/google-workspace": [
         "./libs/@vigilant-broccoli/google-workspace/src/index.ts"
+      ],
+      "@vigilant-broccoli/sidebar": [
+        "./libs/@vigilant-broccoli/sidebar/src/index.ts"
       ],
       "@vigilant-broccoli/react-lib": [
         "./libs/@vigilant-broccoli/react-lib/src/index.ts"

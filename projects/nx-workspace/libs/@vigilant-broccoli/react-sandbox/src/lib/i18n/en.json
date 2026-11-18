@@ -29,8 +29,12 @@
   },
   "FOUNDATIONS": {
     "INPUT": {
-      "NAME": "Input and Textarea",
-      "SUMMARY": "Text fields in default, disabled, invalid and long-content states, with labels and validation messages."
+      "NAME": "Input",
+      "SUMMARY": "Single-line text field in default, disabled, invalid and long-content states, with labels and validation messages."
+    },
+    "TEXTAREA": {
+      "NAME": "Textarea",
+      "SUMMARY": "Multi-line text field in default, disabled, invalid and long-content states, with labels and validation messages."
     },
     "CHECKBOX": {
       "NAME": "Checkbox",
@@ -142,8 +146,11 @@
       "MONOSPACE_TEXT": "Monospace Text",
       "SOCIAL_SIGNIN_BUTTONS": "Social Signin Buttons",
       "CHAT_SEND_BUTTON": "Chat Send Button",
-      "BUTTON_LIST": "Button List",
       "CHAT_PLACEHOLDER": "Type a message…"
+    },
+    "BUTTON_LIST": {
+      "DEFAULT": "Default",
+      "EXTERNAL": "External links"
     },
     "AVATAR": {
       "SIZES": "Sizes",

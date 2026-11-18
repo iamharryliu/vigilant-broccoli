@@ -184,6 +184,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/deployment](./projects/nx-workspace/libs/@vigilant-broccoli/deployment) | Deploy notification constants for local-manager-next. | `type:util` |
 | [@vigilant-broccoli/devops-cli](./projects/nx-workspace/libs/@vigilant-broccoli/devops-cli) | Typed wrappers for the aws, gcloud, docker, pm2, flyctl, vercel, wrangler and tailscale CLIs. | `type:util` |
 | [@vigilant-broccoli/docs-explorer](./projects/nx-workspace/libs/@vigilant-broccoli/docs-explorer) | Markdown docs browser with file tree, search, Mermaid diagrams and a note graph. | `type:domain` |
+| [@vigilant-broccoli/entry-directory](./projects/nx-workspace/libs/@vigilant-broccoli/entry-directory) | Searchable, grouped directory of label/value entries with Rows and Grouped views, favorites, and open and copy actions. | `type:higher-level` |
 | [@vigilant-broccoli/fastify](./projects/nx-workspace/libs/@vigilant-broccoli/fastify) | Fastify docs, API key, reCAPTCHA, honeypot, request logging and ping plugins. | `type:util` |
 | [@vigilant-broccoli/file-explorer](./projects/nx-workspace/libs/@vigilant-broccoli/file-explorer) | File browser with previews, upload and delete over any list/file endpoint pair. | `type:domain` |
 | [@vigilant-broccoli/github-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/github-workspace) | GitHub CLI commands and models for Node. | `type:util` |
@@ -201,7 +202,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/react-lib-auth](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-auth) | Supabase auth provider factory and Google sign-in page for React apps. | `type:domain` |
 | [@vigilant-broccoli/react-lib-calendar](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-calendar) | Calendar list view, phone agenda, event details, Create calendar event dialog and date grouping helpers. | `type:domain` |
 | [@vigilant-broccoli/react-lib-crud-list](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-crud-list) | Generic create, update and delete list with its form dialog. | `type:domain` |
-| [@vigilant-broccoli/react-lib-higher-level](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-higher-level) | Composite React components such as Sidebar, the searchable list, the notepad and the chat room. | `type:higher-level` |
+| [@vigilant-broccoli/react-lib-higher-level](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-higher-level) | Composite React components such as the notepad and the chat room. | `type:higher-level` |
 | [@vigilant-broccoli/react-lib-quick-links](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-quick-links) | Searchable quick-link panel and dialog with favorites. | `type:higher-level` |
 | [@vigilant-broccoli/react-lib-tasks](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-tasks) | Google Tasks list, task capture dialog and the shared `/api/tasks` route handlers. | `type:domain` |
 | [@vigilant-broccoli/react-lib-media](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-media) | Audio, image and GitHub Actions badge display components. | `type:domain` |
@@ -211,6 +212,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/realtime](./projects/nx-workspace/libs/@vigilant-broccoli/realtime) | Supabase Realtime hooks for the collaborative whiteboard and live location sharing. | `type:domain` |
 | [@vigilant-broccoli/security-news](./projects/nx-workspace/libs/@vigilant-broccoli/security-news) | Filters vulnerability and incident feeds to exploitable issues affecting stack products. | `type:util` |
 | [@vigilant-broccoli/resume](./projects/nx-workspace/libs/@vigilant-broccoli/resume) | Resume schema, experience data and PDF generation. | `type:util` |
+| [@vigilant-broccoli/sidebar](./projects/nx-workspace/libs/@vigilant-broccoli/sidebar) | Collapsible icon rail that becomes a drawer on narrow screens, with nested groups, search and an optional footer. | `type:higher-level` |
 | [@vigilant-broccoli/storage](./projects/nx-workspace/libs/@vigilant-broccoli/storage) | Multi-provider object storage bucket service. | `type:util` |
 | [@vigilant-broccoli/vercel-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/vercel-workspace) | Vercel API types and utilities. | `type:util` |
 

@@ -25,10 +25,7 @@ import {
   VisuallyHidden,
 } from '@vigilant-broccoli/react-lib';
 import { WeatherClockCardUtilityContent } from '@vigilant-broccoli/react-utility';
-import {
-  Sidebar,
-  type SidebarCTA,
-} from '@vigilant-broccoli/react-lib-higher-level';
+import { Sidebar, type SidebarCTA } from '@vigilant-broccoli/sidebar';
 import {
   CreateTasksDialog,
   GoogleTasksComponent,

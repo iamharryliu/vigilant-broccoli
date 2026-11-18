@@ -7,7 +7,7 @@ import { useTheme } from '@vigilant-broccoli/react-lib';
 import {
   Sidebar as SharedSidebar,
   SidebarCTA,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/sidebar';
 import { getSupabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
 import { NAV_LINKS } from '../app.consts';

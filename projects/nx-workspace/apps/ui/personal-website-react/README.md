@@ -18,8 +18,8 @@
   - `common-js`
   - `@harry/personal`
   - `react-lib`
-  - `react-lib-higher-level`
   - `resume`
+  - `sidebar`
 - Cloud services
   - Google Analytics
   - Google reCAPTCHA

@@ -34,6 +34,7 @@ Shared life for homes, communes, and communities.
   - `react-lib-higher-level`
   - `react-lib-media`
   - `realtime`
+  - `sidebar`
 - Cloud services
   - Cloudflare R2
   - Media Service
