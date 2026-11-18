@@ -75,7 +75,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### bookmarks-react
 
 - Bookmarks are managed in a dialog, with curated defaults and a Reset to default action ([#1437](https://github.com/iamharryliu/vigilant-broccoli/pull/1437)).
-- The tabs, now Bookmarks, Manage Bookmarks and Settings with icons, sit at the top left. Settings picks System, Light or Dark, and Add, Export, Import, Clear all and Reset to default are icon buttons in one row. The default list drops the repo's own links (PR: pending).
+- The tabs, now Bookmarks, Manage Bookmarks and Settings with icons, sit at the top left. Settings picks System, Light or Dark, and Add, Export, Import, Clear all and Reset to default are icon buttons in one row. The default list drops the repo's own links ([#1665](https://github.com/iamharryliu/vigilant-broccoli/pull/1665)).
 
 ### weather-next
 
