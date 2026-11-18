@@ -51,6 +51,7 @@ export * from './Switch';
 export * from './SpeechToTextButton';
 export * from './ChatSendButton';
 export * from './ThemeProvider';
+export * from './ThemePreferenceControl';
 export * from './DarkModeIconButton';
 export * from './HoneypotField';
 export * from './VisuallyHidden';

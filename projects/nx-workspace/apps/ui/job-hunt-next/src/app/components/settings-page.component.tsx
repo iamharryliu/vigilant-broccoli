@@ -1,32 +1,27 @@
 'use client';
 
-import { Select, useTheme } from '@vigilant-broccoli/react-lib';
+import { Select, ThemePreferenceControl } from '@vigilant-broccoli/react-lib';
 import { LOCALES, useI18n, useTranslation } from '../i18n';
 
-const THEME_OPTIONS = ['system', 'light', 'dark'] as const;
 const LANGUAGE_OPTIONS = [LOCALES.EN, LOCALES.SV] as const;
 
 export const SettingsPage = () => {
   const { t } = useTranslation();
   const { locale, setLocale } = useI18n();
-  const { preference, setPreference } = useTheme();
 
   return (
     <div className="flex max-w-xl flex-col gap-4">
-      <label className="flex items-center justify-between gap-2 text-sm font-medium">
+      <div className="flex items-center justify-between gap-2 text-sm font-medium">
         {t('SETTINGS.THEME')}
-        <Select
-          aria-label={t('SETTINGS.THEME')}
-          options={[...THEME_OPTIONS]}
-          value={preference}
-          onValueChange={setPreference}
-          displayMapper={{
+        <ThemePreferenceControl
+          label={t('SETTINGS.THEME')}
+          labels={{
             system: t('SETTINGS.SYSTEM'),
             light: t('SETTINGS.LIGHT'),
             dark: t('SETTINGS.DARK'),
           }}
         />
-      </label>
+      </div>
       <label className="flex items-center justify-between gap-2 text-sm font-medium">
         {t('SETTINGS.LANGUAGE')}
         <Select

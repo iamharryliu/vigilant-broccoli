@@ -54,6 +54,7 @@ Shared React component library.
 | Tabs | [View](https://components.vigilant-broccoli.app/tabs) |
 | Team Avatar | [View](https://components.vigilant-broccoli.app/team-avatar) |
 | Textarea | [View](https://components.vigilant-broccoli.app/textarea) |
+| Theme Preference Control | [View](https://components.vigilant-broccoli.app/theme-preference-control) |
 | Toaster | [View](https://components.vigilant-broccoli.app/toaster) |
 | Toggle Group | [View](https://components.vigilant-broccoli.app/toggle-group) |
 | Tooltip | [View](https://components.vigilant-broccoli.app/tooltip) |

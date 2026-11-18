@@ -268,6 +268,9 @@ export const BUILT_WITH: Record<string, BuiltWithItem[]> = {
     { name: 'Textarea', entryId: 'textarea' },
   ],
   'team-avatar': [{ name: 'Avatar', entryId: 'avatar' }],
+  'theme-preference-control': [
+    { name: 'SegmentedControl', entryId: 'segmented-control' },
+  ],
   timer: [
     { name: 'Button', entryId: 'buttons' },
     { name: 'Text', entryId: 'typography' },
