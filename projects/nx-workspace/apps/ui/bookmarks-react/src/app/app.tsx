@@ -65,6 +65,18 @@ const HELP_KEYS = [
 ] as const;
 // Radix Select items cannot have an empty value, so the "none" and "new" choices use sentinels.
 const ARROW_DIRECTION = { ArrowDown: 'down', ArrowUp: 'up' } as const;
+const IMPORT_EXAMPLE = JSON.stringify(
+  [
+    {
+      label: 'Example',
+      target: 'https://example.com',
+      type: 'browser',
+      subgroup: 'Optional group',
+    },
+  ],
+  null,
+  2,
+);
 const NO_SUBGROUP = '__none__';
 const NEW_SUBGROUP = '__new__';
 
@@ -82,7 +94,8 @@ function BookmarksPage() {
   const [confirming, setConfirming] = useState<Confirm | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const importInput = useRef<HTMLInputElement>(null);
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [importError, setImportError] = useState('');
   const listRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const { preference, setPreference } = useTheme();
@@ -242,16 +255,20 @@ function BookmarksPage() {
     anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 0);
   };
+  const closeImport = () => {
+    setIsImportOpen(false);
+    setPendingImport(null);
+    setImportError('');
+  };
   const readImport = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    event.target.value = '';
     setPendingImport(null);
-    setError('');
+    setImportError('');
     if (!file) return;
     try {
       setPendingImport(parseBookmarks(JSON.parse(await file.text())));
     } catch {
-      setError(t('INVALID_IMPORT'));
+      setImportError(t('INVALID_IMPORT'));
     }
   };
   const importBookmarks = (replace: boolean) => {
@@ -269,7 +286,7 @@ function BookmarksPage() {
         merged.push(link);
     }
     setBookmarks(replace ? pendingImport : merged);
-    setPendingImport(null);
+    closeImport();
   };
   return (
     <main className="min-h-dvh bg-background px-4 pb-4 pt-2 text-foreground sm:px-8 sm:pb-8 sm:pt-4">
@@ -352,16 +369,7 @@ function BookmarksPage() {
               variant="ghost"
               icon="upload"
               aria-label={t('IMPORT')}
-              onClick={() => importInput.current?.click()}
-            />
-            <input
-              ref={importInput}
-              type="file"
-              accept=".json,application/json"
-              onChange={readImport}
-              className="hidden"
-              aria-hidden="true"
-              tabIndex={-1}
+              onClick={() => setIsImportOpen(true)}
             />
             <div className="ml-auto flex items-center gap-2">
               <IconButton
@@ -469,33 +477,61 @@ function BookmarksPage() {
               </form>
             </DialogContent>
           </Dialog>
-          {error && !isDialogOpen && (
-            <p role="alert" className="text-destructive">
-              {error}
-            </p>
-          )}
-          {pendingImport && (
-            <section className="space-y-2">
-              <p>{t('IMPORT_READY', { count: pendingImport.length })}</p>
-              <div className="flex gap-2">
-                <Button onClick={() => importBookmarks(false)}>
+          <Dialog
+            open={isImportOpen}
+            onOpenChange={open =>
+              open ? setIsImportOpen(true) : closeImport()
+            }
+          >
+            <DialogContent fullScreenOnMobile aria-describedby={undefined}>
+              <DialogHeader>
+                <DialogTitle>{t('IMPORT')}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3 text-sm">
+                <p>{t('IMPORT_SHAPE')}</p>
+                <pre className="overflow-x-auto rounded-md border border-border bg-muted p-3 font-mono text-xs">
+                  {IMPORT_EXAMPLE}
+                </pre>
+                <p className="text-muted-foreground">{t('IMPORT_RULES')}</p>
+                <label className="block space-y-1">
+                  <span className="block">{t('IMPORT_FILE')}</span>
+                  <Input
+                    type="file"
+                    accept=".json,application/json"
+                    onChange={readImport}
+                  />
+                </label>
+                {importError && (
+                  <p role="alert" className="text-destructive">
+                    {importError}
+                  </p>
+                )}
+                {pendingImport && (
+                  <p role="status">
+                    {t('IMPORT_READY', { count: pendingImport.length })}
+                  </p>
+                )}
+              </div>
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button type="button" variant="outline" onClick={closeImport}>
+                  {t('CANCEL')}
+                </Button>
+                <Button
+                  disabled={!pendingImport}
+                  onClick={() => importBookmarks(false)}
+                >
                   {t('MERGE')}
                 </Button>
                 <Button
                   variant="destructive"
+                  disabled={!pendingImport}
                   onClick={() => importBookmarks(true)}
                 >
                   {t('REPLACE')}
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setPendingImport(null)}
-                >
-                  {t('CANCEL')}
-                </Button>
-              </div>
-            </section>
-          )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           <Input
             ref={searchRef}
             type="search"
