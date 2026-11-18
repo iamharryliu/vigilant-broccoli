@@ -423,9 +423,14 @@ variable "component_library_pages_subdomain" {
   default = "production-component-library.pages.dev"
 }
 
+variable "vigilant_broccoli_domain" {
+  type    = string
+  default = "vigilant-broccoli.app"
+}
+
 variable "bookmarks_domain" {
   type    = string
-  default = "bookmarks.harryliu.dev"
+  default = "bookmarks.vigilant-broccoli.app"
 }
 
 variable "bookmarks_pages_project" {

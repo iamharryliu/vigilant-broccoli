@@ -154,11 +154,11 @@
     },
     {
       "id": "bookmarks",
-      "href": "https://bookmarks.harryliu.dev/",
+      "href": "https://bookmarks.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/bookmarks-react/README.md",
-      "stagingHref": "https://staging-bookmarks.harryliu.dev/"
+      "stagingHref": "https://staging-bookmarks.vigilant-broccoli.app/"
     },
     {
       "id": "pomodoro",

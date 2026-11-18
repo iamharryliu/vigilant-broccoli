@@ -18,7 +18,6 @@ locals {
   ])
 
   staging_pages_domains = {
-    staging-bookmarks-react    = "staging-bookmarks.harryliu.dev"
     staging-calendars          = "staging-calendar.harryliu.dev"
     staging-component-library  = "staging-components.harryliu.dev"
     staging-context-md         = "staging-context.harryliu.dev"
@@ -68,6 +67,8 @@ resource "cloudflare_zero_trust_access_application" "staging_pages" {
     { type = "public", uri = local.staging_pages_domains[each.key] },
     ] : [], each.key == local.staging_cloud8skate_project ? [
     { type = "public", uri = local.staging_cloud8skate_domain },
+    ] : [], each.key == local.staging_bookmarks_project ? [
+    { type = "public", uri = local.staging_bookmarks_domain },
   ] : [])
   policies = [
     { id = cloudflare_zero_trust_access_policy.staging_ui_owner.id, precedence = 1 },

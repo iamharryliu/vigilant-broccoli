@@ -62,7 +62,7 @@ const STAGING_HOSTS = {
   'docs-md': 'staging-docs.harryliu.dev',
   'context-md': 'staging-context.harryliu.dev',
   'utilities-ui': 'staging-utilities.harryliu.dev',
-  'bookmarks-react': 'staging-bookmarks.harryliu.dev',
+  'bookmarks-react': 'staging-bookmarks.vigilant-broccoli.app',
   'photography-react': 'staging-photography.harryliu.dev',
   'pomodoro-react': 'staging-pomodoro.harryliu.dev',
   'waiting-games': 'staging-waiting.harryliu.dev',

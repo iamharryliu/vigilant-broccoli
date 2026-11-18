@@ -75,6 +75,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### bookmarks-react
 
 - Bookmarks are managed in a dialog, with curated defaults and a Reset to default action ([#1437](https://github.com/iamharryliu/vigilant-broccoli/pull/1437)).
+- Bookmarks and its staging site moved to `bookmarks.vigilant-broccoli.app` and `staging-bookmarks.vigilant-broccoli.app` with no redirect from the `harryliu.dev` addresses. Saved bookmarks stay in the old address's browser storage, so Export them there and Import them on the new one (PR: pending).
 
 ### weather-next
 
