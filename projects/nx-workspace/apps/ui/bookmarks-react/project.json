@@ -8,8 +8,17 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "generate-default-bookmarks": {
+      "command": "npx tsx apps/ui/bookmarks-react/scripts/generate-default-bookmarks.ts",
+      "inputs": [
+        "{projectRoot}/scripts/**/*",
+        "^production",
+        { "dependentTasksOutputFiles": "**/*" }
+      ],
+      "outputs": ["{projectRoot}/public/default-bookmarks.json"]
+    },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate-default-bookmarks"],
       "inputs": [
         "production",
         "^production",
@@ -33,11 +42,16 @@
       }
     },
     "serve": {
+      "dependsOn": ["generate-default-bookmarks"],
       "defaultConfiguration": "development",
       "configurations": {
         "development": {},
         "production": {}
       }
+    },
+    "deploy-container": {
+      "dependsOn": ["build"],
+      "command": "docker buildx build --platform linux/amd64,linux/arm64 -f apps/ui/bookmarks-react/Dockerfile -t iamharryliu/bookmarks-react:latest -t iamharryliu/bookmarks-react:${COMMIT_SHA:-latest} --push dist/bookmarks-react"
     },
     "ensure-cf-project": {
       "command": "npx wrangler pages project list 2>&1 | grep -qw staging-bookmarks-react || npx wrangler pages project create staging-bookmarks-react --production-branch main"
@@ -48,7 +62,12 @@
     },
     "deploy": {
       "command": "npx wrangler pages deploy dist/bookmarks-react --project-name staging-bookmarks-react --branch main",
-      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+      "dependsOn": [
+        "build",
+        "deploy-container",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
     },
     "manual-deploy": {
       "command": "npx wrangler pages deploy dist/bookmarks-react --project-name staging-bookmarks-react --branch main",
@@ -65,6 +84,7 @@
       "command": "npx wrangler pages deploy dist/bookmarks-react --project-name production-bookmarks-react --branch production",
       "dependsOn": [
         "build",
+        "deploy-container",
         "ensure-cf-project:production",
         "prune-deployments:production"
       ]

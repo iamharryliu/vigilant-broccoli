@@ -1,16 +1,21 @@
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
   type FormEvent,
   type ChangeEvent,
+  type DragEvent as ReactDragEvent,
+  type MouseEvent,
 } from 'react';
 import {
   Bookmark,
+  CircleHelp,
   Download,
-  RotateCcw,
+  Menu,
   Monitor,
   Moon,
+  Plus,
   Settings,
   Sun,
   Trash2,
@@ -25,24 +30,29 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  IconButton,
   Input,
   SegmentedControl,
   Select,
+  Textarea,
   ThemeProvider,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
   useTheme,
+  type EllipsisAction,
   type SegmentedControlOption,
   type ThemePreference,
 } from '@vigilant-broccoli/react-lib';
+import {
+  Sidebar,
+  type SidebarCTA,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-quick-links';
 import { I18nProvider, useTranslation } from './i18n';
 import { usePageTitle } from './use-page-title';
-import { parseBookmarks, useBookmarks } from './use-bookmarks';
-import { TAB, useRouteTab } from './use-route-tab';
+import {
+  fetchDefaultBookmarks,
+  parseBookmarks,
+  useBookmarks,
+} from './use-bookmarks';
+import { TAB, TAB_PATH, useRouteTab, type Tab } from './use-route-tab';
 import { readDroppedLink } from './dropped-link';
 
 const THEME_STORAGE_KEY = 'bookmarks-react-theme';
@@ -50,10 +60,9 @@ const EMPTY_FORM = { label: '', target: '', subgroup: '' };
 const EXPORT_FILENAME = 'bookmarks.json';
 const JSON_TYPE = 'application/json';
 const ICON_SIZE = 14;
+const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
 const CONFIRM = {
   CLEAR_ALL: 'clear-all',
-  DELETE_BOOKMARK: 'delete-bookmark',
-  RESET_TO_DEFAULT: 'reset',
 } as const;
 type Confirm = (typeof CONFIRM)[keyof typeof CONFIRM];
 const TAB_TITLE_KEYS = {
@@ -64,6 +73,7 @@ const HELP_KEYS = [
   'HELP_DROP',
   'HELP_KEYBOARD',
   'HELP_EDIT',
+  'HELP_NAVIGATION',
   'HELP_FAVORITES',
   'HELP_STORAGE',
   'HELP_IMPORT',
@@ -86,22 +96,33 @@ const NEW_SUBGROUP = '__new__';
 
 function BookmarksPage() {
   const { t } = useTranslation();
-  const { bookmarks, setBookmarks, resetBookmarks, storageError } =
+  const { bookmarks, setBookmarks, storageError, isLoadingDefaults } =
     useBookmarks();
+  const [defaultsError, setDefaultsError] = useState(false);
   const { tab, setTab } = useRouteTab();
   const [form, setForm] = useState(EMPTY_FORM);
   const [isNewSubgroup, setIsNewSubgroup] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
   const [error, setError] = useState('');
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [pendingImport, setPendingImport] = useState<QuickLink[] | null>(null);
+  const [importText, setImportText] = useState('');
   const [confirming, setConfirming] = useState<Confirm | null>(null);
-  const [pendingDelete, setPendingDelete] = useState<QuickLink | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
-  const [importError, setImportError] = useState('');
+  const parsedImport = useMemo(() => {
+    if (!importText.trim()) return { links: null, isInvalid: false };
+    try {
+      return {
+        links: parseBookmarks(JSON.parse(importText)),
+        isInvalid: false,
+      };
+    } catch {
+      return { links: null, isInvalid: true };
+    }
+  }, [importText]);
+  const pendingImport = parsedImport.links;
   const { preference, setPreference } = useTheme();
   const themeOptions: SegmentedControlOption<ThemePreference>[] = [
     {
@@ -121,6 +142,24 @@ function BookmarksPage() {
     },
   ];
   usePageTitle(t(TAB_TITLE_KEYS[tab]));
+  const sidebarItems: SidebarCTA[] = [
+    {
+      label: t('BOOKMARKS'),
+      icon: Bookmark,
+      href: TAB_PATH[TAB.BOOKMARKS],
+      isActive: tab === TAB.BOOKMARKS,
+      onClick: event => selectTab(event, TAB.BOOKMARKS),
+    },
+    { label: t('ADD'), icon: Plus, onClick: () => openAdd() },
+    {
+      label: t('SETTINGS'),
+      icon: Settings,
+      href: TAB_PATH[TAB.SETTINGS],
+      isActive: tab === TAB.SETTINGS,
+      onClick: event => selectTab(event, TAB.SETTINGS),
+    },
+    { label: t('HELP'), icon: CircleHelp, onClick: () => setIsHelpOpen(true) },
+  ];
   const subgroups = [
     ...new Set(bookmarks.map(link => link.subgroup ?? '')),
   ].sort((a, b) => a.localeCompare(b));
@@ -218,10 +257,26 @@ function BookmarksPage() {
       window.removeEventListener('drop', onDrop);
     };
   }, []);
-  const requestDelete = (link: QuickLink) => {
-    setPendingDelete(link);
-    setConfirming(CONFIRM.DELETE_BOOKMARK);
+  // Modified clicks keep their native new-tab behavior on the sidebar's real links.
+  const selectTab = (event: MouseEvent<HTMLElement>, next: Tab) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button)
+      return;
+    event.preventDefault();
+    setTab(next);
   };
+  const getMenuActions = (link: QuickLink): EllipsisAction[] => [
+    { label: t('EDIT'), onSelect: () => openEdit(bookmarks.indexOf(link)) },
+    {
+      label: t('DELETE'),
+      color: 'red',
+      onSelect: () => setBookmarks(bookmarks.filter(old => old !== link)),
+      confirm: {
+        title: t('DELETE'),
+        description: t('CONFIRM_DELETE'),
+        confirmLabel: t('DELETE'),
+      },
+    },
+  ];
   const submit = (event: FormEvent) => {
     event.preventDefault();
     try {
@@ -248,19 +303,27 @@ function BookmarksPage() {
   };
   const closeImport = () => {
     setIsImportOpen(false);
-    setPendingImport(null);
-    setImportError('');
+    setImportText('');
+    setDefaultsError(false);
+  };
+  const readImportFile = async (file?: File) => {
+    if (file) setImportText(await file.text());
   };
   const readImport = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    setPendingImport(null);
-    setImportError('');
-    if (!file) return;
+    await readImportFile(event.target.files?.[0]);
+    event.target.value = '';
+  };
+  const loadDefaultJson = async () => {
     try {
-      setPendingImport(parseBookmarks(JSON.parse(await file.text())));
+      setImportText(JSON.stringify(await fetchDefaultBookmarks(), null, 2));
+      setDefaultsError(false);
     } catch {
-      setImportError(t('INVALID_IMPORT'));
+      setDefaultsError(true);
     }
+  };
+  const dropImport = (event: ReactDragEvent<HTMLElement>) => {
+    event.preventDefault();
+    readImportFile(event.dataTransfer.files[0]);
   };
   const importBookmarks = (replace: boolean) => {
     if (!pendingImport) return;
@@ -280,263 +343,238 @@ function BookmarksPage() {
     closeImport();
   };
   return (
-    <main className="min-h-dvh bg-background px-4 pb-4 pt-2 text-foreground sm:px-8 sm:pb-8 sm:pt-4">
-      <h1 className="sr-only">{t('TITLE')}</h1>
-      {isDragging && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center border-4 border-dashed border-primary bg-background/80 text-lg font-medium"
-        >
-          {t('DROP_TO_ADD')}
-        </div>
-      )}
-      <Tabs
-        value={tab}
-        onValueChange={setTab}
-        className="mx-auto max-w-2xl space-y-6"
-      >
-        <div className="flex items-center gap-2">
-          <TabsList>
-            <TabsTrigger value={TAB.BOOKMARKS}>
-              <Bookmark size={ICON_SIZE} />
-              {t('BOOKMARKS')}
-            </TabsTrigger>
-            <TabsTrigger value={TAB.SETTINGS}>
-              <Settings size={ICON_SIZE} />
-              {t('SETTINGS')}
-            </TabsTrigger>
-          </TabsList>
-          <div className="ml-auto flex items-center gap-1">
-            <IconButton
-              variant="ghost"
-              icon="plus"
-              aria-label={t('ADD')}
-              onClick={openAdd}
-            />
-            <IconButton
-              variant="ghost"
-              icon="help"
-              aria-label={t('HELP')}
-              onClick={() => setIsHelpOpen(true)}
-            />
+    <>
+      <Sidebar
+        items={sidebarItems}
+        className={SIDEBAR_POSITION}
+        mobileOpen={isSidebarOpen}
+        onMobileClose={() => setIsSidebarOpen(false)}
+      />
+      <main className="min-h-dvh bg-background px-4 pb-4 pt-2 text-foreground transition-[padding] duration-200 sm:px-8 sm:pb-8 sm:pt-4 md:pl-[5.5rem] md:peer-hover:pl-56">
+        <h1 className="sr-only">{t('TITLE')}</h1>
+        {isDragging && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center border-4 border-dashed border-primary bg-background/80 text-lg font-medium"
+          >
+            {t('DROP_TO_ADD')}
           </div>
-          <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-            <DialogContent aria-describedby={undefined}>
-              <DialogHeader>
-                <DialogTitle>{t('HELP')}</DialogTitle>
-              </DialogHeader>
-              <ul className="list-disc space-y-4 pl-5 text-sm">
-                {HELP_KEYS.map(key => (
-                  <li key={key}>{t(key)}</li>
-                ))}
-              </ul>
-            </DialogContent>
-          </Dialog>
-        </div>
-        {storageError && <p role="status">{t('STORAGE_ERROR')}</p>}
-        <TabsContent value={TAB.BOOKMARKS}>
-          {bookmarks.length ? (
-            <QuickLinksPanel
-              links={bookmarks}
-              autoFocusSearch
-              enableFavorites={!isEditMode}
-              editing={{
-                active: isEditMode,
-                onActiveChange: setIsEditMode,
-                onEditLink: link => openEdit(bookmarks.indexOf(link)),
-                onDeleteLink: requestDelete,
-              }}
-            />
+        )}
+        <div className="mx-auto max-w-2xl space-y-6">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              aria-label={t('MENU')}
+              onClick={() => setIsSidebarOpen(open => !open)}
+            >
+              <Menu size={ICON_SIZE} />
+            </Button>
+            <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+              <DialogContent aria-describedby={undefined}>
+                <DialogHeader>
+                  <DialogTitle>{t('HELP')}</DialogTitle>
+                </DialogHeader>
+                <ul className="list-disc space-y-4 pl-5 text-sm">
+                  {HELP_KEYS.map(key => (
+                    <li key={key}>{t(key)}</li>
+                  ))}
+                </ul>
+              </DialogContent>
+            </Dialog>
+          </div>
+          {storageError && <p role="status">{t('STORAGE_ERROR')}</p>}
+          {tab === TAB.BOOKMARKS ? (
+            bookmarks.length ? (
+              <QuickLinksPanel
+                links={bookmarks}
+                autoFocusSearch
+                enableFavorites
+                getMenuActions={getMenuActions}
+              />
+            ) : (
+              !isLoadingDefaults && <p className="py-8">{t('EMPTY')}</p>
+            )
           ) : (
-            <p className="py-8">{t('EMPTY')}</p>
-          )}
-        </TabsContent>
-        <TabsContent value={TAB.SETTINGS} className="space-y-3">
-          <h2 className="text-sm font-medium">{t('APPEARANCE')}</h2>
-          <SegmentedControl
-            label={t('THEME')}
-            value={preference}
-            options={themeOptions}
-            onChange={setPreference}
-            fullWidth
-          />
-          <h2 className="pt-3 text-sm font-medium">{t('DATA')}</h2>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={exportBookmarks}>
-              <Download size={ICON_SIZE} />
-              {t('EXPORT')}
-            </Button>
-            <Button variant="outline" onClick={() => setIsImportOpen(true)}>
-              <Upload size={ICON_SIZE} />
-              {t('IMPORT')}
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={!bookmarks.length}
-              onClick={() => setConfirming(CONFIRM.CLEAR_ALL)}
-            >
-              <Trash2 size={ICON_SIZE} />
-              {t('CLEAR_ALL')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => setConfirming(CONFIRM.RESET_TO_DEFAULT)}
-            >
-              <RotateCcw size={ICON_SIZE} />
-              {t('RESET_TO_DEFAULT')}
-            </Button>
-          </div>
-        </TabsContent>
-      </Tabs>
-      <DeleteItemConfirmationDialog
-        open={confirming === CONFIRM.DELETE_BOOKMARK}
-        onOpenChange={open =>
-          setConfirming(open ? CONFIRM.DELETE_BOOKMARK : null)
-        }
-        title={t('DELETE')}
-        description={t('CONFIRM_DELETE')}
-        confirmLabel={t('DELETE')}
-        cancelLabel={t('CANCEL')}
-        deleteItem={async () =>
-          setBookmarks(bookmarks.filter(old => old !== pendingDelete))
-        }
-      />
-      <DeleteItemConfirmationDialog
-        open={confirming === CONFIRM.CLEAR_ALL}
-        onOpenChange={open => setConfirming(open ? CONFIRM.CLEAR_ALL : null)}
-        title={t('CLEAR_ALL')}
-        description={t('CONFIRM_CLEAR_ALL')}
-        confirmLabel={t('CLEAR_ALL')}
-        cancelLabel={t('CANCEL')}
-        deleteItem={async () => setBookmarks([])}
-      />
-      <DeleteItemConfirmationDialog
-        open={confirming === CONFIRM.RESET_TO_DEFAULT}
-        onOpenChange={open =>
-          setConfirming(open ? CONFIRM.RESET_TO_DEFAULT : null)
-        }
-        title={t('RESET_TO_DEFAULT')}
-        description={t('CONFIRM_RESET_TO_DEFAULT')}
-        confirmLabel={t('RESET_TO_DEFAULT')}
-        cancelLabel={t('CANCEL')}
-        deleteItem={async () => resetBookmarks()}
-      />
-      <Dialog
-        open={isDialogOpen}
-        onOpenChange={open => (open ? setIsDialogOpen(true) : closeDialog())}
-      >
-        <DialogContent fullScreenOnMobile aria-describedby={undefined}>
-          <form onSubmit={submit} className="space-y-3">
-            <DialogHeader>
-              <DialogTitle>{t(editing === null ? 'ADD' : 'EDIT')}</DialogTitle>
-            </DialogHeader>
-            <label className="block">
-              {t('LABEL')}
-              <Input
-                required
-                value={form.label}
-                onChange={e => setForm({ ...form, label: e.target.value })}
+            <div className="space-y-3">
+              <h2 className="text-sm font-medium">{t('APPEARANCE')}</h2>
+              <SegmentedControl
+                label={t('THEME')}
+                value={preference}
+                options={themeOptions}
+                onChange={setPreference}
+                fullWidth
               />
-            </label>
-            <label className="block">
-              {t('URL')}
-              <Input
-                required
-                type="url"
-                value={form.target}
-                onChange={e => setForm({ ...form, target: e.target.value })}
-              />
-            </label>
-            <div className="space-y-1">
-              <span className="block">{t('SUBGROUP')}</span>
-              <Select
-                value={selectedSubgroup}
-                onValueChange={changeSubgroup}
-                options={subgroupOptions}
-                displayMapper={subgroupDisplay}
-                aria-label={t('SUBGROUP')}
-                className="w-full"
-              />
+              <h2 className="pt-3 text-sm font-medium">{t('DATA')}</h2>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" onClick={exportBookmarks}>
+                  <Download size={ICON_SIZE} />
+                  {t('EXPORT')}
+                </Button>
+                <Button variant="outline" onClick={() => setIsImportOpen(true)}>
+                  <Upload size={ICON_SIZE} />
+                  {t('IMPORT')}
+                </Button>
+                <Button
+                  variant="destructive"
+                  disabled={!bookmarks.length}
+                  onClick={() => setConfirming(CONFIRM.CLEAR_ALL)}
+                >
+                  <Trash2 size={ICON_SIZE} />
+                  {t('CLEAR_ALL')}
+                </Button>
+              </div>
             </div>
-            {isNewSubgroup && (
+          )}
+        </div>
+        <DeleteItemConfirmationDialog
+          open={confirming === CONFIRM.CLEAR_ALL}
+          onOpenChange={open => setConfirming(open ? CONFIRM.CLEAR_ALL : null)}
+          title={t('CLEAR_ALL')}
+          description={t('CONFIRM_CLEAR_ALL')}
+          confirmLabel={t('CLEAR_ALL')}
+          cancelLabel={t('CANCEL')}
+          deleteItem={async () => setBookmarks([])}
+        />
+        <Dialog
+          open={isDialogOpen}
+          onOpenChange={open => (open ? setIsDialogOpen(true) : closeDialog())}
+        >
+          <DialogContent fullScreenOnMobile aria-describedby={undefined}>
+            <form onSubmit={submit} className="space-y-3">
+              <DialogHeader>
+                <DialogTitle>
+                  {t(editing === null ? 'ADD' : 'EDIT')}
+                </DialogTitle>
+              </DialogHeader>
               <label className="block">
-                {t('NEW_SUBGROUP_NAME')}
+                {t('LABEL')}
                 <Input
-                  value={form.subgroup}
-                  onChange={e => setForm({ ...form, subgroup: e.target.value })}
+                  required
+                  value={form.label}
+                  onChange={e => setForm({ ...form, label: e.target.value })}
                 />
               </label>
-            )}
-            {error && (
-              <p role="alert" className="text-destructive">
-                {error}
-              </p>
-            )}
+              <label className="block">
+                {t('URL')}
+                <Input
+                  required
+                  type="url"
+                  value={form.target}
+                  onChange={e => setForm({ ...form, target: e.target.value })}
+                />
+              </label>
+              <div className="space-y-1">
+                <span className="block">{t('SUBGROUP')}</span>
+                <Select
+                  value={selectedSubgroup}
+                  onValueChange={changeSubgroup}
+                  options={subgroupOptions}
+                  displayMapper={subgroupDisplay}
+                  aria-label={t('SUBGROUP')}
+                  className="w-full"
+                />
+              </div>
+              {isNewSubgroup && (
+                <label className="block">
+                  {t('NEW_SUBGROUP_NAME')}
+                  <Input
+                    value={form.subgroup}
+                    onChange={e =>
+                      setForm({ ...form, subgroup: e.target.value })
+                    }
+                  />
+                </label>
+              )}
+              {error && (
+                <p role="alert" className="text-destructive">
+                  {error}
+                </p>
+              )}
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button type="button" variant="outline" onClick={closeDialog}>
+                  {t('CANCEL')}
+                </Button>
+                <Button type="submit">
+                  {t(editing === null ? 'ADD' : 'SAVE')}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          open={isImportOpen}
+          onOpenChange={open => (open ? setIsImportOpen(true) : closeImport())}
+        >
+          <DialogContent fullScreenOnMobile aria-describedby={undefined}>
+            <DialogHeader>
+              <DialogTitle>{t('IMPORT')}</DialogTitle>
+            </DialogHeader>
+            <div
+              className="space-y-3 text-sm"
+              onDragOver={event => event.preventDefault()}
+              onDrop={dropImport}
+            >
+              <p>{t('IMPORT_SHAPE')}</p>
+              <Textarea
+                value={importText}
+                onChange={event => setImportText(event.target.value)}
+                placeholder={IMPORT_EXAMPLE}
+                spellCheck={false}
+                aria-label={t('IMPORT_TEXT')}
+                className="min-h-48 font-mono text-xs"
+              />
+              <Button type="button" variant="outline" onClick={loadDefaultJson}>
+                {t('SET_TO_DEFAULT_JSON')}
+              </Button>
+              <p className="text-muted-foreground">{t('IMPORT_RULES')}</p>
+              <label className="block space-y-1">
+                <span className="block">{t('IMPORT_FILE')}</span>
+                <Input
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={readImport}
+                />
+              </label>
+              {defaultsError && (
+                <p role="alert" className="text-destructive">
+                  {t('DEFAULTS_UNAVAILABLE')}
+                </p>
+              )}
+              {parsedImport.isInvalid && (
+                <p role="alert" className="text-destructive">
+                  {t('INVALID_IMPORT')}
+                </p>
+              )}
+              {pendingImport && (
+                <p role="status">
+                  {t('IMPORT_READY', { count: pendingImport.length })}
+                </p>
+              )}
+            </div>
             <DialogFooter className="gap-2 sm:gap-0">
-              <Button type="button" variant="outline" onClick={closeDialog}>
+              <Button type="button" variant="outline" onClick={closeImport}>
                 {t('CANCEL')}
               </Button>
-              <Button type="submit">
-                {t(editing === null ? 'ADD' : 'SAVE')}
+              <Button
+                disabled={!pendingImport}
+                onClick={() => importBookmarks(false)}
+              >
+                {t('MERGE')}
+              </Button>
+              <Button
+                variant="destructive"
+                disabled={!pendingImport}
+                onClick={() => importBookmarks(true)}
+              >
+                {t('REPLACE')}
               </Button>
             </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-      <Dialog
-        open={isImportOpen}
-        onOpenChange={open => (open ? setIsImportOpen(true) : closeImport())}
-      >
-        <DialogContent fullScreenOnMobile aria-describedby={undefined}>
-          <DialogHeader>
-            <DialogTitle>{t('IMPORT')}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 text-sm">
-            <p>{t('IMPORT_SHAPE')}</p>
-            <pre className="overflow-x-auto rounded-md border border-border bg-muted p-3 font-mono text-xs">
-              {IMPORT_EXAMPLE}
-            </pre>
-            <p className="text-muted-foreground">{t('IMPORT_RULES')}</p>
-            <label className="block space-y-1">
-              <span className="block">{t('IMPORT_FILE')}</span>
-              <Input
-                type="file"
-                accept=".json,application/json"
-                onChange={readImport}
-              />
-            </label>
-            {importError && (
-              <p role="alert" className="text-destructive">
-                {importError}
-              </p>
-            )}
-            {pendingImport && (
-              <p role="status">
-                {t('IMPORT_READY', { count: pendingImport.length })}
-              </p>
-            )}
-          </div>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button type="button" variant="outline" onClick={closeImport}>
-              {t('CANCEL')}
-            </Button>
-            <Button
-              disabled={!pendingImport}
-              onClick={() => importBookmarks(false)}
-            >
-              {t('MERGE')}
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={!pendingImport}
-              onClick={() => importBookmarks(true)}
-            >
-              {t('REPLACE')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </main>
+          </DialogContent>
+        </Dialog>
+      </main>
+    </>
   );
 }
 
