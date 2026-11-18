@@ -80,6 +80,7 @@ import {
   PopoverDemo,
   SearchInputDemo,
   SpeechToTextToggleButtonDemo,
+  ThemePreferenceControlDemo,
   ToggleGroupDemo,
   UpptimeStatusListDemo,
 } from './demos/ReactLibExtrasDemo';
@@ -478,6 +479,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Single-select group with a sliding pill and radiogroup arrow-key navigation; the base of Segmented Control and the Tabs list.',
     lib: LIB.REACT_LIB,
     content: <ToggleGroupDemo />,
+  },
+  {
+    id: 'theme-preference-control',
+    label: 'Theme Preference Control',
+    description:
+      "System/Light/Dark picker bound to the surrounding ThemeProvider; here it switches this sandbox's theme.",
+    lib: LIB.REACT_LIB,
+    content: <ThemePreferenceControlDemo />,
   },
   {
     id: 'toaster',

@@ -12,6 +12,7 @@ import {
   SearchInput,
   SpeechToTextToggleButton,
   Text,
+  ThemePreferenceControl,
   ToggleGroup,
   ToggleGroupItem,
   UPTIME_STATUS,
@@ -136,6 +137,13 @@ export const SpeechToTextToggleButtonDemo = () => {
     />
   );
 };
+
+export const ThemePreferenceControlDemo = () => (
+  <div className="flex max-w-md flex-col gap-3">
+    <ThemePreferenceControl />
+    <ThemePreferenceControl fullWidth />
+  </div>
+);
 
 const TOGGLE_OPTIONS = ['Day', 'Week', 'Month'];
 

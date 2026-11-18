@@ -13,11 +13,8 @@ import {
   CircleHelp,
   Download,
   Menu,
-  Monitor,
-  Moon,
   Plus,
   Settings,
-  Sun,
   Trash2,
   Upload,
 } from 'lucide-react';
@@ -32,14 +29,11 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-  SegmentedControl,
   Select,
   Textarea,
+  ThemePreferenceControl,
   ThemeProvider,
-  useTheme,
   type EllipsisAction,
-  type SegmentedControlOption,
-  type ThemePreference,
 } from '@vigilant-broccoli/react-lib';
 import { Sidebar, type SidebarCTA } from '@vigilant-broccoli/sidebar';
 import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-quick-links';
@@ -135,24 +129,6 @@ function BookmarksPage() {
     }
   }, [importText]);
   const pendingImport = parsedImport.links;
-  const { preference, setPreference } = useTheme();
-  const themeOptions: SegmentedControlOption<ThemePreference>[] = [
-    {
-      value: 'system',
-      label: t('THEME_SYSTEM'),
-      icon: <Monitor size={ICON_SIZE} />,
-    },
-    {
-      value: 'light',
-      label: t('THEME_LIGHT'),
-      icon: <Sun size={ICON_SIZE} />,
-    },
-    {
-      value: 'dark',
-      label: t('THEME_DARK'),
-      icon: <Moon size={ICON_SIZE} />,
-    },
-  ];
   usePageTitle(t(TAB_TITLE_KEYS[tab]));
   const sidebarItems: SidebarCTA[] = [
     {
@@ -403,11 +379,13 @@ function BookmarksPage() {
           ) : (
             <div className="space-y-3">
               <h2 className="text-sm font-medium">{t('APPEARANCE')}</h2>
-              <SegmentedControl
+              <ThemePreferenceControl
                 label={t('THEME')}
-                value={preference}
-                options={themeOptions}
-                onChange={setPreference}
+                labels={{
+                  system: t('THEME_SYSTEM'),
+                  light: t('THEME_LIGHT'),
+                  dark: t('THEME_DARK'),
+                }}
                 fullWidth
               />
               <h2 className="pt-3 text-sm font-medium">{t('DATA')}</h2>
