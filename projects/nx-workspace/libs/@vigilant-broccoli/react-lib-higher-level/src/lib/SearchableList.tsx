@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { LayoutList, List, Rows3, Star, type LucideIcon } from 'lucide-react';
+import { LayoutList, Rows3, Star, type LucideIcon } from 'lucide-react';
 import {
   type ButtonConfig,
   ButtonList,
@@ -25,7 +25,6 @@ import {
 export const SEARCHABLE_LIST_VIEW = {
   ROWS: 'rows',
   GROUPED: 'grouped',
-  LIST: 'list',
 } as const;
 
 export type SearchableListView =
@@ -65,12 +64,6 @@ const VIEW_OPTIONS: {
   Icon: LucideIcon;
 }[] = [
   {
-    value: SEARCHABLE_LIST_VIEW.LIST,
-    label: 'List',
-    description: 'List: all entries as badges',
-    Icon: List,
-  },
-  {
     value: SEARCHABLE_LIST_VIEW.GROUPED,
     label: 'Grouped',
     description: 'Grouped: badges under group titles',
@@ -85,7 +78,6 @@ const VIEW_OPTIONS: {
 ];
 
 const VIEW_ICON_SIZE = 16;
-const FAVORITES_LABEL = 'Favorites';
 const FAVORITE_BADGE_PREFIX = '★ ';
 const ADD_FAVORITE_LABEL = (label: string) => `Add ${label} to favorites`;
 const REMOVE_FAVORITE_LABEL = (label: string) =>
@@ -416,22 +408,7 @@ export const SearchableList = ({
             ref={contentRef}
             className={`flex flex-col py-3 ${view === SEARCHABLE_LIST_VIEW.ROWS ? 'gap-3' : 'gap-4'}`}
           >
-            {view === SEARCHABLE_LIST_VIEW.LIST ? (
-              <>
-                {entries.some(entry => entry.isFavorite) && (
-                  <div className="flex flex-col gap-2">
-                    <Text size="3" weight="medium">
-                      {FAVORITES_LABEL}
-                    </Text>
-                    {renderButtons(entries.filter(entry => entry.isFavorite))}
-                  </div>
-                )}
-                {entries.some(entry => !entry.isFavorite) &&
-                  renderButtons(entries.filter(entry => !entry.isFavorite))}
-              </>
-            ) : (
-              searched.map(renderGroup)
-            )}
+            {searched.map(renderGroup)}
           </div>
         </div>
       )}
