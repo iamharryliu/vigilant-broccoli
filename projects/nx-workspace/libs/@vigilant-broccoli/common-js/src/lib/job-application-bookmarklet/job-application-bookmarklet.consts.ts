@@ -48,6 +48,18 @@ export const JOB_MATCHES_PROGRESS_STATE = {
   DONE: 'done',
 } as const;
 
+export const JOB_MATCHES_SKIP_REASON = {
+  NO_DESCRIPTION: 'no-description',
+  DUPLICATE_URL: 'duplicate-url',
+} as const;
+
+export type JobMatchesBookmarkletSkip = {
+  title: string;
+  reason: (typeof JOB_MATCHES_SKIP_REASON)[keyof typeof JOB_MATCHES_SKIP_REASON];
+  // The card's key, or the address the click resolved to.
+  detail: string;
+};
+
 export type JobMatchesBookmarkletProgress = {
   state: (typeof JOB_MATCHES_PROGRESS_STATE)[keyof typeof JOB_MATCHES_PROGRESS_STATE];
   // Postings sent so far, and cards opened so far.
@@ -64,6 +76,8 @@ export type JobMatchesBookmarkletMessage = {
   source: typeof JOB_APPLICATION_BOOKMARKLET.MESSAGE_SOURCE;
   postings: JobMatchesBookmarkletPosting[];
   progress: JobMatchesBookmarkletProgress;
+  // Cards opened since the last message that produced no posting.
+  skipped?: JobMatchesBookmarkletSkip[];
 };
 
 export const isJobMatchesBookmarkletMessage = (

@@ -1,5 +1,6 @@
 import {
   type JobMatchesBookmarkletPosting,
+  type JobMatchesBookmarkletSkip,
   type StoredJobMatchesPosting,
   CONTENT_TYPE_HEADER,
   HTTP_METHOD,
@@ -25,11 +26,12 @@ export const fetchMatchPostings = () =>
 // Adds to the stored postings; ones captured before stay.
 export const addMatchPostings = async (
   postings: JobMatchesBookmarkletPosting[],
+  skipped: JobMatchesBookmarkletSkip[] = [],
 ) => {
   const stored = await fetch(API_ENDPOINTS.JOB_MATCHES, {
     method: HTTP_METHOD.POST,
     headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
-    body: JSON.stringify({ postings }),
+    body: JSON.stringify({ postings, skipped }),
   }).then(readPostings);
   window.dispatchEvent(new Event(JOB_MATCHES_CHANGED_EVENT));
   return stored;
