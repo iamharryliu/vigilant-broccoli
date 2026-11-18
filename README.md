@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **31 applications**, **7 API services**, **14 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **31 applications**, **7 API services**, **15 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -144,6 +144,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 
 | Image | Application | Pushed by | Runs on |
 | --- | --- | --- | --- |
+| [`iamharryliu/bookmarks-react`](https://hub.docker.com/r/iamharryliu/bookmarks-react) | [Bookmarks React](./projects/nx-workspace/apps/ui/bookmarks-react) | `deploy-container` target | None; published for self-hosting |
 | [`iamharryliu/bucket-service`](https://hub.docker.com/r/iamharryliu/bucket-service) | [Bucket Service](./projects/nx-workspace/apps/api/bucket-service) | `deploy-container` target | Fly.io (staging, production) |
 | [`iamharryliu/email-service`](https://hub.docker.com/r/iamharryliu/email-service) | [Email Service](./projects/nx-workspace/apps/api/email-service) | `deploy-container` target | Fly.io (staging, production) |
 | [`iamharryliu/email-subscription-service`](https://hub.docker.com/r/iamharryliu/email-subscription-service) | [Email Subscription Service](./projects/nx-workspace/apps/api/email-subscription-service) | `deploy-container` target | Fly.io (staging, production) |

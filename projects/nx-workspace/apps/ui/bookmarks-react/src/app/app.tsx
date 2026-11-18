@@ -1,18 +1,21 @@
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
   type FormEvent,
   type ChangeEvent,
+  type DragEvent as ReactDragEvent,
   type MouseEvent,
 } from 'react';
 import {
   Bookmark,
+  CircleHelp,
   Download,
   Menu,
-  RotateCcw,
   Monitor,
   Moon,
+  Plus,
   Settings,
   Sun,
   Trash2,
@@ -27,10 +30,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  IconButton,
   Input,
   SegmentedControl,
   Select,
+  Textarea,
   ThemeProvider,
   useTheme,
   type EllipsisAction,
@@ -44,7 +47,11 @@ import {
 import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-quick-links';
 import { I18nProvider, useTranslation } from './i18n';
 import { usePageTitle } from './use-page-title';
-import { parseBookmarks, useBookmarks } from './use-bookmarks';
+import {
+  fetchDefaultBookmarks,
+  parseBookmarks,
+  useBookmarks,
+} from './use-bookmarks';
 import { TAB, TAB_PATH, useRouteTab, type Tab } from './use-route-tab';
 import { readDroppedLink } from './dropped-link';
 
@@ -56,7 +63,6 @@ const ICON_SIZE = 14;
 const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
 const CONFIRM = {
   CLEAR_ALL: 'clear-all',
-  RESET_TO_DEFAULT: 'reset',
 } as const;
 type Confirm = (typeof CONFIRM)[keyof typeof CONFIRM];
 const TAB_TITLE_KEYS = {
@@ -90,21 +96,33 @@ const NEW_SUBGROUP = '__new__';
 
 function BookmarksPage() {
   const { t } = useTranslation();
-  const { bookmarks, setBookmarks, resetBookmarks, storageError } =
+  const { bookmarks, setBookmarks, storageError, isLoadingDefaults } =
     useBookmarks();
+  const [defaultsError, setDefaultsError] = useState(false);
   const { tab, setTab } = useRouteTab();
   const [form, setForm] = useState(EMPTY_FORM);
   const [isNewSubgroup, setIsNewSubgroup] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
   const [error, setError] = useState('');
-  const [pendingImport, setPendingImport] = useState<QuickLink[] | null>(null);
+  const [importText, setImportText] = useState('');
   const [confirming, setConfirming] = useState<Confirm | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
-  const [importError, setImportError] = useState('');
+  const parsedImport = useMemo(() => {
+    if (!importText.trim()) return { links: null, isInvalid: false };
+    try {
+      return {
+        links: parseBookmarks(JSON.parse(importText)),
+        isInvalid: false,
+      };
+    } catch {
+      return { links: null, isInvalid: true };
+    }
+  }, [importText]);
+  const pendingImport = parsedImport.links;
   const { preference, setPreference } = useTheme();
   const themeOptions: SegmentedControlOption<ThemePreference>[] = [
     {
@@ -132,6 +150,7 @@ function BookmarksPage() {
       isActive: tab === TAB.BOOKMARKS,
       onClick: event => selectTab(event, TAB.BOOKMARKS),
     },
+    { label: t('ADD'), icon: Plus, onClick: () => openAdd() },
     {
       label: t('SETTINGS'),
       icon: Settings,
@@ -139,6 +158,7 @@ function BookmarksPage() {
       isActive: tab === TAB.SETTINGS,
       onClick: event => selectTab(event, TAB.SETTINGS),
     },
+    { label: t('HELP'), icon: CircleHelp, onClick: () => setIsHelpOpen(true) },
   ];
   const subgroups = [
     ...new Set(bookmarks.map(link => link.subgroup ?? '')),
@@ -283,19 +303,27 @@ function BookmarksPage() {
   };
   const closeImport = () => {
     setIsImportOpen(false);
-    setPendingImport(null);
-    setImportError('');
+    setImportText('');
+    setDefaultsError(false);
+  };
+  const readImportFile = async (file?: File) => {
+    if (file) setImportText(await file.text());
   };
   const readImport = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    setPendingImport(null);
-    setImportError('');
-    if (!file) return;
+    await readImportFile(event.target.files?.[0]);
+    event.target.value = '';
+  };
+  const loadDefaultJson = async () => {
     try {
-      setPendingImport(parseBookmarks(JSON.parse(await file.text())));
+      setImportText(JSON.stringify(await fetchDefaultBookmarks(), null, 2));
+      setDefaultsError(false);
     } catch {
-      setImportError(t('INVALID_IMPORT'));
+      setDefaultsError(true);
     }
+  };
+  const dropImport = (event: ReactDragEvent<HTMLElement>) => {
+    event.preventDefault();
+    readImportFile(event.dataTransfer.files[0]);
   };
   const importBookmarks = (replace: boolean) => {
     if (!pendingImport) return;
@@ -343,20 +371,6 @@ function BookmarksPage() {
             >
               <Menu size={ICON_SIZE} />
             </Button>
-            <div className="ml-auto flex items-center gap-1">
-              <IconButton
-                variant="ghost"
-                icon="plus"
-                aria-label={t('ADD')}
-                onClick={openAdd}
-              />
-              <IconButton
-                variant="ghost"
-                icon="help"
-                aria-label={t('HELP')}
-                onClick={() => setIsHelpOpen(true)}
-              />
-            </div>
             <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
               <DialogContent aria-describedby={undefined}>
                 <DialogHeader>
@@ -380,7 +394,7 @@ function BookmarksPage() {
                 getMenuActions={getMenuActions}
               />
             ) : (
-              <p className="py-8">{t('EMPTY')}</p>
+              !isLoadingDefaults && <p className="py-8">{t('EMPTY')}</p>
             )
           ) : (
             <div className="space-y-3">
@@ -410,13 +424,6 @@ function BookmarksPage() {
                   <Trash2 size={ICON_SIZE} />
                   {t('CLEAR_ALL')}
                 </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => setConfirming(CONFIRM.RESET_TO_DEFAULT)}
-                >
-                  <RotateCcw size={ICON_SIZE} />
-                  {t('RESET_TO_DEFAULT')}
-                </Button>
               </div>
             </div>
           )}
@@ -429,17 +436,6 @@ function BookmarksPage() {
           confirmLabel={t('CLEAR_ALL')}
           cancelLabel={t('CANCEL')}
           deleteItem={async () => setBookmarks([])}
-        />
-        <DeleteItemConfirmationDialog
-          open={confirming === CONFIRM.RESET_TO_DEFAULT}
-          onOpenChange={open =>
-            setConfirming(open ? CONFIRM.RESET_TO_DEFAULT : null)
-          }
-          title={t('RESET_TO_DEFAULT')}
-          description={t('CONFIRM_RESET_TO_DEFAULT')}
-          confirmLabel={t('RESET_TO_DEFAULT')}
-          cancelLabel={t('CANCEL')}
-          deleteItem={async () => resetBookmarks()}
         />
         <Dialog
           open={isDialogOpen}
@@ -515,11 +511,23 @@ function BookmarksPage() {
             <DialogHeader>
               <DialogTitle>{t('IMPORT')}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3 text-sm">
+            <div
+              className="space-y-3 text-sm"
+              onDragOver={event => event.preventDefault()}
+              onDrop={dropImport}
+            >
               <p>{t('IMPORT_SHAPE')}</p>
-              <pre className="overflow-x-auto rounded-md border border-border bg-muted p-3 font-mono text-xs">
-                {IMPORT_EXAMPLE}
-              </pre>
+              <Textarea
+                value={importText}
+                onChange={event => setImportText(event.target.value)}
+                placeholder={IMPORT_EXAMPLE}
+                spellCheck={false}
+                aria-label={t('IMPORT_TEXT')}
+                className="min-h-48 font-mono text-xs"
+              />
+              <Button type="button" variant="outline" onClick={loadDefaultJson}>
+                {t('SET_TO_DEFAULT_JSON')}
+              </Button>
               <p className="text-muted-foreground">{t('IMPORT_RULES')}</p>
               <label className="block space-y-1">
                 <span className="block">{t('IMPORT_FILE')}</span>
@@ -529,9 +537,14 @@ function BookmarksPage() {
                   onChange={readImport}
                 />
               </label>
-              {importError && (
+              {defaultsError && (
                 <p role="alert" className="text-destructive">
-                  {importError}
+                  {t('DEFAULTS_UNAVAILABLE')}
+                </p>
+              )}
+              {parsedImport.isInvalid && (
+                <p role="alert" className="text-destructive">
+                  {t('INVALID_IMPORT')}
                 </p>
               )}
               {pendingImport && (

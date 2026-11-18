@@ -291,6 +291,9 @@
   },
   "DOCKER_IMAGES_PAGE": {
     "TITLE": "Docker Hub",
+    "BOOKMARKS_REACT": {
+      "DESCRIPTION": "Browser-local bookmark manager served by nginx, seeded with your team's bookmarks from a mounted JSON file."
+    },
     "BUCKET_SERVICE": {
       "DESCRIPTION": "Object storage proxy across multiple bucket providers."
     },
