@@ -102,6 +102,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### web-terminal
 
+- The Dev menu page holds every repo skill, including `/local-create-pr-claude` and `/local-update-pr-claude`; `/local-session-status` and `/local-session-retry-publish` run on tap while the PR skills still wait for a prompt ([#1682](https://github.com/iamharryliu/vigilant-broccoli/pull/1682)).
 - The bar is a two-row grid so every key shows without scrolling, with the arrows laid out as on a keyboard and Esc at the top right, and the Claude PR skills moved to the Dev tab ([#1655](https://github.com/iamharryliu/vigilant-broccoli/pull/1655)).
 - The mobile toolbar keeps the keys in use, with arrows and Tab on the bar, shortcut buttons for agent and Claude Code commands, and a full-screen All keys sheet ([#1481](https://github.com/iamharryliu/vigilant-broccoli/pull/1481), [#1484](https://github.com/iamharryliu/vigilant-broccoli/pull/1484), [#1502](https://github.com/iamharryliu/vigilant-broccoli/pull/1502), [#1504](https://github.com/iamharryliu/vigilant-broccoli/pull/1504), [#1505](https://github.com/iamharryliu/vigilant-broccoli/pull/1505), [#1507](https://github.com/iamharryliu/vigilant-broccoli/pull/1507)).
 
@@ -109,6 +110,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - New `ThemePreferenceControl`, a shared System/Light/Dark picker. Bookmarks and Hearth settings use it in place of their own copies, and Job Hunt's theme dropdown becomes the same segmented control ([#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
 - `SearchableList` moved out of `react-lib-higher-level` into its own `@vigilant-broccoli/entry-directory` library and is now `EntryDirectory` (`EntryDirectoryRow`, `ENTRY_DIRECTORY_VIEW` and the matching types), and `Sidebar` moved into its own `@vigilant-broccoli/sidebar` library; apps import it from there. The chatbot library now exports `ConfirmDeleteDialog` ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680)).
+
+### component-library
+
+- Every shared component now has a page, including new chatbot and file-explorer groups, and Button List, Icon Button, Input, Textarea and Toggle Group are split into their own pages. Each page has a Demo section and, for composed components, a Built with button list that opens the pages of the components it uses. Typography moved to the top of the sidebar, above Components ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680)).
 - Checklist rows support drag reorder, animated completion and a standard ellipsis menu with confirmed delete ([#1587](https://github.com/iamharryliu/vigilant-broccoli/pull/1587), [#1607](https://github.com/iamharryliu/vigilant-broccoli/pull/1607)).
 - FileExplorer gained file previews, image thumbnails, multi-select, a right-click menu, keyboard navigation and a modal image and PDF viewer ([#1514](https://github.com/iamharryliu/vigilant-broccoli/pull/1514), [#1520](https://github.com/iamharryliu/vigilant-broccoli/pull/1520), [#1530](https://github.com/iamharryliu/vigilant-broccoli/pull/1530), [#1562](https://github.com/iamharryliu/vigilant-broccoli/pull/1562)).
 - Notepad and whiteboard text persists with its Yjs state, so reloads and rejoins no longer lose edits ([#1503](https://github.com/iamharryliu/vigilant-broccoli/pull/1503)).

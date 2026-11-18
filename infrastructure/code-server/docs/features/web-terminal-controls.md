@@ -46,12 +46,12 @@ Buttons type the command and press Enter.
 
 ### Dev page
 
-Buttons type the command without pressing Enter, so arguments can be added first.
+Buttons marked `On tap` type the command and press Enter; those marked `Takes prompt` only type it, so a prompt can be added first.
 
-| Command | What it does | Runs on tap |
+| Command | What it does | Runs |
 | --- | --- | --- |
-| `/local-create-pr-claude` | Researches a request, then runs Claude in a detached tmux session on a fresh worktree to implement it and open a PR. | No |
-| `/local-session-retry-publish` | Tells idle agents to retry an authorized push or PR after credentials were refreshed. | No |
-| `/local-session-status` | Read-only status of agent sessions and jobs started in this conversation. | No |
-| `/local-update-pr-claude` | Researches a change to an existing PR, then runs Claude in a detached tmux session on a worktree of its branch and pushes to the PR. | No |
-| `/local-update-pr` | Applies a requested change to an existing PR branch and verifies it. | No |
+| `/local-create-pr-claude` | Researches a request, then runs Claude in a detached tmux session on a fresh worktree to implement it and open a PR. | Takes prompt |
+| `/local-session-retry-publish` | Tells idle agents to retry an authorized push or PR after credentials were refreshed. | On tap |
+| `/local-session-status` | Read-only status of agent sessions and jobs started in this conversation. | On tap |
+| `/local-update-pr-claude` | Researches a change to an existing PR, then runs Claude in a detached tmux session on a worktree of its branch and pushes to the PR. | Takes prompt |
+| `/local-update-pr` | Applies a requested change to an existing PR branch and verifies it. | Takes prompt |
