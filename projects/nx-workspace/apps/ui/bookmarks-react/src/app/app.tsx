@@ -4,6 +4,7 @@ import {
   useState,
   type FormEvent,
   type ChangeEvent,
+  type KeyboardEvent,
 } from 'react';
 import {
   Bookmark,
@@ -24,7 +25,7 @@ import {
   DialogTitle,
   IconButton,
   Input,
-  Popover,
+  moveQuickLinkFocusByDirection,
   SegmentedControl,
   Select,
   ThemeProvider,
@@ -57,11 +58,13 @@ const TAB_TITLE_KEYS = {
 } as const;
 const HELP_KEYS = [
   'HELP_DROP',
+  'HELP_KEYBOARD',
   'HELP_FAVORITES',
   'HELP_STORAGE',
   'HELP_IMPORT',
 ] as const;
 // Radix Select items cannot have an empty value, so the "none" and "new" choices use sentinels.
+const ARROW_DIRECTION = { ArrowDown: 'down', ArrowUp: 'up' } as const;
 const NO_SUBGROUP = '__none__';
 const NEW_SUBGROUP = '__new__';
 
@@ -77,8 +80,11 @@ function BookmarksPage() {
   const [search, setSearch] = useState('');
   const [pendingImport, setPendingImport] = useState<QuickLink[] | null>(null);
   const [confirming, setConfirming] = useState<Confirm | null>(null);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const importInput = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
   const { preference, setPreference } = useTheme();
   const themeOptions: SegmentedControlOption<ThemePreference>[] = [
     {
@@ -201,6 +207,17 @@ function BookmarksPage() {
       window.removeEventListener('drop', onDrop);
     };
   }, []);
+  const moveFocus = (event: KeyboardEvent<HTMLElement>) => {
+    if (!(event.key in ARROW_DIRECTION)) return;
+    if (event.target !== event.currentTarget) return;
+    event.preventDefault();
+    moveQuickLinkFocusByDirection({
+      contentRoot: listRef.current,
+      searchInput: searchRef.current,
+      currentElement: event.currentTarget,
+      direction: ARROW_DIRECTION[event.key as keyof typeof ARROW_DIRECTION],
+    });
+  };
   const submit = (event: FormEvent) => {
     event.preventDefault();
     try {
@@ -285,24 +302,25 @@ function BookmarksPage() {
               {t('SETTINGS')}
             </TabsTrigger>
           </TabsList>
-          <Popover.Root>
-            <Popover.Trigger>
-              <IconButton
-                variant="ghost"
-                icon="help"
-                aria-label={t('HELP')}
-                className="ml-auto"
-              />
-            </Popover.Trigger>
-            <Popover.Content align="end" className="w-80 space-y-2 text-sm">
-              <h2 className="font-medium">{t('HELP')}</h2>
-              <ul className="list-disc space-y-1 pl-4">
+          <IconButton
+            variant="ghost"
+            icon="help"
+            aria-label={t('HELP')}
+            className="ml-auto"
+            onClick={() => setIsHelpOpen(true)}
+          />
+          <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+            <DialogContent aria-describedby={undefined}>
+              <DialogHeader>
+                <DialogTitle>{t('HELP')}</DialogTitle>
+              </DialogHeader>
+              <ul className="list-disc space-y-4 pl-5 text-sm">
                 {HELP_KEYS.map(key => (
                   <li key={key}>{t(key)}</li>
                 ))}
               </ul>
-            </Popover.Content>
-          </Popover.Root>
+            </DialogContent>
+          </Dialog>
         </div>
         {storageError && <p role="status">{t('STORAGE_ERROR')}</p>}
         <TabsContent value={TAB.BOOKMARKS}>
@@ -479,56 +497,61 @@ function BookmarksPage() {
             </section>
           )}
           <Input
+            ref={searchRef}
             type="search"
+            onKeyDown={moveFocus}
             value={search}
             onChange={event => setSearch(event.target.value)}
             placeholder={t('SEARCH')}
             aria-label={t('SEARCH')}
           />
-          {visibleSubgroups.map(group => (
-            <section key={group} className="space-y-2">
-              <h2 className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {group || t('UNGROUPED')}
-              </h2>
-              <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
-                {bookmarks
-                  .map((link, index) => ({ link, index }))
-                  .filter(
-                    ({ link }) =>
-                      matchesSearch(link) && (link.subgroup ?? '') === group,
-                  )
-                  .map(({ link, index }) => (
-                    <SearchableListRow
-                      key={index}
-                      entry={{ label: link.label, value: link.target }}
-                      onActivate={() => openEdit(index)}
-                      actions={
-                        <>
-                          <IconButton
-                            variant="ghost"
-                            icon="edit"
-                            aria-label={t('EDIT')}
-                            onClick={() => openEdit(index)}
-                          />
-                          <IconButton
-                            variant="ghost"
-                            icon="trash"
-                            aria-label={t('DELETE')}
-                            onClick={() => {
-                              if (window.confirm(t('CONFIRM_DELETE'))) {
-                                setBookmarks(
-                                  bookmarks.filter((_, i) => i !== index),
-                                );
-                              }
-                            }}
-                          />
-                        </>
-                      }
-                    />
-                  ))}
-              </ul>
-            </section>
-          ))}
+          <div ref={listRef} className="space-y-2">
+            {visibleSubgroups.map(group => (
+              <section key={group} className="space-y-2">
+                <h2 className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {group || t('UNGROUPED')}
+                </h2>
+                <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+                  {bookmarks
+                    .map((link, index) => ({ link, index }))
+                    .filter(
+                      ({ link }) =>
+                        matchesSearch(link) && (link.subgroup ?? '') === group,
+                    )
+                    .map(({ link, index }) => (
+                      <SearchableListRow
+                        key={index}
+                        entry={{ label: link.label, value: link.target }}
+                        onActivate={() => openEdit(index)}
+                        onKeyDown={moveFocus}
+                        actions={
+                          <>
+                            <IconButton
+                              variant="ghost"
+                              icon="edit"
+                              aria-label={t('EDIT')}
+                              onClick={() => openEdit(index)}
+                            />
+                            <IconButton
+                              variant="ghost"
+                              icon="trash"
+                              aria-label={t('DELETE')}
+                              onClick={() => {
+                                if (window.confirm(t('CONFIRM_DELETE'))) {
+                                  setBookmarks(
+                                    bookmarks.filter((_, i) => i !== index),
+                                  );
+                                }
+                              }}
+                            />
+                          </>
+                        }
+                      />
+                    ))}
+                </ul>
+              </section>
+            ))}
+          </div>
         </TabsContent>
         <TabsContent value={TAB.SETTINGS} className="space-y-3">
           <h2 className="text-sm font-medium">{t('APPEARANCE')}</h2>

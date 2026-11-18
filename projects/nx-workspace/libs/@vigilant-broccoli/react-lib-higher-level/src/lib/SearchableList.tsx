@@ -145,13 +145,13 @@ export const SearchableListRow = ({
   /** Replaces the default favorite, open and copy buttons. */
   actions?: ReactNode;
 }) => (
-  <li className="flex min-h-11 items-center bg-card text-card-foreground [&_button]:min-h-11 [&_button]:shrink-0 [&_button]:focus-visible:outline-none [&_button]:focus-visible:ring-2 [&_button]:focus-visible:ring-inset [&_button]:focus-visible:ring-ring [&_button]:active:bg-muted">
+  <li className="flex min-h-11 items-center bg-card text-card-foreground has-[[data-quick-link-item=true]:focus-visible]:ring-2 has-[[data-quick-link-item=true]:focus-visible]:ring-inset has-[[data-quick-link-item=true]:focus-visible]:ring-ring [&_button]:min-h-11 [&_button]:shrink-0 [&_button]:focus-visible:outline-none [&_button]:focus-visible:ring-2 [&_button]:focus-visible:ring-inset [&_button]:focus-visible:ring-ring [&_button]:active:bg-muted">
     <button
       type="button"
       {...{ [QUICK_LINK_ITEM_ATTR]: 'true' }}
       onClick={onActivate}
       onKeyDown={onKeyDown}
-      className="flex min-w-0 flex-1 flex-col justify-center px-3 py-1.5 text-left transition-colors hover:bg-accent active:bg-muted"
+      className="flex min-w-0 flex-1 flex-col justify-center px-3 py-1.5 text-left outline-none transition-colors hover:bg-accent active:bg-muted"
     >
       <span className="w-full truncate text-sm font-medium" title={entry.label}>
         {entry.label}

@@ -37,6 +37,7 @@
   "DROP_TO_ADD": "Drop a link to add a bookmark",
   "HELP": "Help",
   "HELP_DROP": "Drag a link from the address bar or another page onto this window to add it as a bookmark.",
+  "HELP_KEYBOARD": "Use the Up and Down arrow keys to move through the bookmark list, from the search field into the rows and back. This works in Bookmarks (rows view) and in Manage Bookmarks.",
   "HELP_FAVORITES": "In Bookmarks, star a link to pin it to a Favorites group at the top. Favorites are kept separately from the bookmark list.",
   "HELP_STORAGE": "Everything is stored in this browser only. There is no sync between devices or sites, and clearing browser data removes it. Export to keep a copy.",
   "HELP_IMPORT": "Import accepts a JSON file exported here. Merge skips exact duplicates; Replace swaps the whole list.",
