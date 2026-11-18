@@ -34,5 +34,11 @@
   "NO_SUBGROUP": "No subsection",
   "NEW_SUBGROUP": "New subsection…",
   "NEW_SUBGROUP_NAME": "New subsection name",
+  "DROP_TO_ADD": "Drop a link to add a bookmark",
+  "HELP": "Help",
+  "HELP_DROP": "Drag a link from the address bar or another page onto this window to add it as a bookmark.",
+  "HELP_FAVORITES": "In Bookmarks, star a link to pin it to a Favorites group at the top. Favorites are kept separately from the bookmark list.",
+  "HELP_STORAGE": "Everything is stored in this browser only. There is no sync between devices or sites, and clearing browser data removes it. Export to keep a copy.",
+  "HELP_IMPORT": "Import accepts a JSON file exported here. Merge skips exact duplicates; Replace swaps the whole list.",
   "SEARCH": "Search bookmarks"
 }

@@ -1,4 +1,10 @@
-import { useRef, useState, type FormEvent, type ChangeEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ChangeEvent,
+} from 'react';
 import {
   Bookmark,
   ListChecks,
@@ -18,6 +24,7 @@ import {
   DialogTitle,
   IconButton,
   Input,
+  Popover,
   SegmentedControl,
   Select,
   ThemeProvider,
@@ -34,6 +41,7 @@ import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-quick-links';
 import { I18nProvider, useTranslation } from './i18n';
 import { usePageTitle } from './use-page-title';
 import { parseBookmarks, TAB, useBookmarks } from './use-bookmarks';
+import { readDroppedLink } from './dropped-link';
 
 const THEME_STORAGE_KEY = 'bookmarks-react-theme';
 const EMPTY_FORM = { label: '', target: '', subgroup: '' };
@@ -47,6 +55,12 @@ const TAB_TITLE_KEYS = {
   [TAB.MANAGE]: 'MANAGE',
   [TAB.SETTINGS]: 'SETTINGS',
 } as const;
+const HELP_KEYS = [
+  'HELP_DROP',
+  'HELP_FAVORITES',
+  'HELP_STORAGE',
+  'HELP_IMPORT',
+] as const;
 // Radix Select items cannot have an empty value, so the "none" and "new" choices use sentinels.
 const NO_SUBGROUP = '__none__';
 const NEW_SUBGROUP = '__new__';
@@ -63,6 +77,7 @@ function BookmarksPage() {
   const [search, setSearch] = useState('');
   const [pendingImport, setPendingImport] = useState<QuickLink[] | null>(null);
   const [confirming, setConfirming] = useState<Confirm | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const importInput = useRef<HTMLInputElement>(null);
   const { preference, setPreference } = useTheme();
   const themeOptions: SegmentedControlOption<ThemePreference>[] = [
@@ -134,6 +149,58 @@ function BookmarksPage() {
     setError('');
     setIsDialogOpen(true);
   };
+  const openDropped = (link: { label: string; target: string }) => {
+    setTab(TAB.MANAGE);
+    setEditing(null);
+    setForm({ ...EMPTY_FORM, ...link });
+    setIsNewSubgroup(false);
+    setError('');
+    setIsDialogOpen(true);
+  };
+  const onDropLink = useRef(openDropped);
+  onDropLink.current = openDropped;
+  useEffect(() => {
+    let depth = 0;
+    const isEditable = (target: EventTarget | null) =>
+      target instanceof HTMLElement &&
+      target.closest('input, textarea, [contenteditable]') !== null;
+    const hasLink = (event: DragEvent) =>
+      !isEditable(event.target) &&
+      !!event.dataTransfer &&
+      (event.dataTransfer.types.includes('text/uri-list') ||
+        event.dataTransfer.types.includes('text/plain'));
+    const onEnter = (event: DragEvent) => {
+      if (!hasLink(event)) return;
+      depth += 1;
+      setIsDragging(true);
+    };
+    const onOver = (event: DragEvent) => {
+      if (hasLink(event)) event.preventDefault();
+    };
+    const onLeave = (event: DragEvent) => {
+      if (!hasLink(event)) return;
+      depth = Math.max(0, depth - 1);
+      if (!depth) setIsDragging(false);
+    };
+    const onDrop = (event: DragEvent) => {
+      depth = 0;
+      setIsDragging(false);
+      if (!hasLink(event) || !event.dataTransfer) return;
+      event.preventDefault();
+      const link = readDroppedLink(event.dataTransfer);
+      if (link) onDropLink.current(link);
+    };
+    window.addEventListener('dragenter', onEnter);
+    window.addEventListener('dragover', onOver);
+    window.addEventListener('dragleave', onLeave);
+    window.addEventListener('drop', onDrop);
+    return () => {
+      window.removeEventListener('dragenter', onEnter);
+      window.removeEventListener('dragover', onOver);
+      window.removeEventListener('dragleave', onLeave);
+      window.removeEventListener('drop', onDrop);
+    };
+  }, []);
   const submit = (event: FormEvent) => {
     event.preventDefault();
     try {
@@ -190,25 +257,53 @@ function BookmarksPage() {
   return (
     <main className="min-h-dvh bg-background px-4 pb-4 pt-2 text-foreground sm:px-8 sm:pb-8 sm:pt-4">
       <h1 className="sr-only">{t('TITLE')}</h1>
+      {isDragging && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center border-4 border-dashed border-primary bg-background/80 text-lg font-medium"
+        >
+          {t('DROP_TO_ADD')}
+        </div>
+      )}
       <Tabs
         value={tab}
         onValueChange={setTab}
         className="mx-auto max-w-2xl space-y-6"
       >
-        <TabsList>
-          <TabsTrigger value={TAB.BOOKMARKS}>
-            <Bookmark size={ICON_SIZE} />
-            {t('BOOKMARKS')}
-          </TabsTrigger>
-          <TabsTrigger value={TAB.MANAGE}>
-            <ListChecks size={ICON_SIZE} />
-            {t('MANAGE')}
-          </TabsTrigger>
-          <TabsTrigger value={TAB.SETTINGS}>
-            <Settings size={ICON_SIZE} />
-            {t('SETTINGS')}
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex items-center gap-2">
+          <TabsList>
+            <TabsTrigger value={TAB.BOOKMARKS}>
+              <Bookmark size={ICON_SIZE} />
+              {t('BOOKMARKS')}
+            </TabsTrigger>
+            <TabsTrigger value={TAB.MANAGE}>
+              <ListChecks size={ICON_SIZE} />
+              {t('MANAGE')}
+            </TabsTrigger>
+            <TabsTrigger value={TAB.SETTINGS}>
+              <Settings size={ICON_SIZE} />
+              {t('SETTINGS')}
+            </TabsTrigger>
+          </TabsList>
+          <Popover.Root>
+            <Popover.Trigger>
+              <IconButton
+                variant="ghost"
+                icon="help"
+                aria-label={t('HELP')}
+                className="ml-auto"
+              />
+            </Popover.Trigger>
+            <Popover.Content align="end" className="w-80 space-y-2 text-sm">
+              <h2 className="font-medium">{t('HELP')}</h2>
+              <ul className="list-disc space-y-1 pl-4">
+                {HELP_KEYS.map(key => (
+                  <li key={key}>{t(key)}</li>
+                ))}
+              </ul>
+            </Popover.Content>
+          </Popover.Root>
+        </div>
         {storageError && <p role="status">{t('STORAGE_ERROR')}</p>}
         <TabsContent value={TAB.BOOKMARKS}>
           {bookmarks.length ? (
