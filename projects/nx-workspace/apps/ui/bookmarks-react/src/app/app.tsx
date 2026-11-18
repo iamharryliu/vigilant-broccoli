@@ -10,6 +10,7 @@ import {
 import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
 import {
   Button,
+  DeleteItemConfirmationDialog,
   Dialog,
   DialogContent,
   DialogFooter,
@@ -39,6 +40,8 @@ const EMPTY_FORM = { label: '', target: '', subgroup: '' };
 const EXPORT_FILENAME = 'bookmarks.json';
 const JSON_TYPE = 'application/json';
 const ICON_SIZE = 14;
+const CONFIRM = { CLEAR_ALL: 'clear-all', RESET_TO_DEFAULT: 'reset' } as const;
+type Confirm = (typeof CONFIRM)[keyof typeof CONFIRM];
 const TAB_TITLE_KEYS = {
   [TAB.BOOKMARKS]: 'BOOKMARKS',
   [TAB.MANAGE]: 'MANAGE',
@@ -58,6 +61,7 @@ function BookmarksPage() {
   const [editing, setEditing] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [pendingImport, setPendingImport] = useState<QuickLink[] | null>(null);
+  const [confirming, setConfirming] = useState<Confirm | null>(null);
   const importInput = useRef<HTMLInputElement>(null);
   const { preference, setPreference } = useTheme();
   const themeOptions: SegmentedControlOption<ThemePreference>[] = [
@@ -183,6 +187,7 @@ function BookmarksPage() {
         onValueChange={setTab}
         className="mx-auto max-w-2xl space-y-6"
       >
+        <h1 className="sr-only">{t('TITLE')}</h1>
         <TabsList>
           <TabsTrigger value={TAB.BOOKMARKS}>
             <Bookmark size={ICON_SIZE} />
@@ -244,21 +249,35 @@ function BookmarksPage() {
                 icon="trash"
                 aria-label={t('CLEAR_ALL')}
                 disabled={!bookmarks.length}
-                onClick={() => {
-                  if (window.confirm(t('CONFIRM_CLEAR_ALL'))) {
-                    setBookmarks([]);
-                  }
-                }}
+                onClick={() => setConfirming(CONFIRM.CLEAR_ALL)}
               />
               <IconButton
                 variant="destructive-ghost"
                 icon="rotate-ccw"
                 aria-label={t('RESET_TO_DEFAULT')}
-                onClick={() => {
-                  if (window.confirm(t('CONFIRM_RESET_TO_DEFAULT'))) {
-                    resetBookmarks();
-                  }
-                }}
+                onClick={() => setConfirming(CONFIRM.RESET_TO_DEFAULT)}
+              />
+              <DeleteItemConfirmationDialog
+                open={confirming === CONFIRM.CLEAR_ALL}
+                onOpenChange={open =>
+                  setConfirming(open ? CONFIRM.CLEAR_ALL : null)
+                }
+                title={t('CLEAR_ALL')}
+                description={t('CONFIRM_CLEAR_ALL')}
+                confirmLabel={t('CLEAR_ALL')}
+                cancelLabel={t('CANCEL')}
+                deleteItem={async () => setBookmarks([])}
+              />
+              <DeleteItemConfirmationDialog
+                open={confirming === CONFIRM.RESET_TO_DEFAULT}
+                onOpenChange={open =>
+                  setConfirming(open ? CONFIRM.RESET_TO_DEFAULT : null)
+                }
+                title={t('RESET_TO_DEFAULT')}
+                description={t('CONFIRM_RESET_TO_DEFAULT')}
+                confirmLabel={t('RESET_TO_DEFAULT')}
+                cancelLabel={t('CANCEL')}
+                deleteItem={async () => resetBookmarks()}
               />
             </div>
           </div>
