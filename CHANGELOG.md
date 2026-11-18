@@ -78,6 +78,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### bookmarks-react
 
+- The flat list view without group headers is gone from the view switcher, leaving Grouped and Rows; a saved List choice falls back to the default view. Quick Links in the local manager loses it too ([#1679](https://github.com/iamharryliu/vigilant-broccoli/pull/1679)).
 - Badges at the left and right edges of the badge views are no longer cut off on hover or focus: they show an inset ring instead of growing, which also applies to the other pages that use badge buttons ([#1678](https://github.com/iamharryliu/vigilant-broccoli/pull/1678)).
 - Every dialog on phones, including full-page ones like Add bookmark and the Help dialog, is inset slightly with rounded corners so it reads as a dialog; the shared dialog change also applies to Hearth, the mobile manager and the image carousel ([#1677](https://github.com/iamharryliu/vigilant-broccoli/pull/1677)). Dialog headers are left-aligned with the close button centered on the title, and tall dialogs scroll their body while the header and close button stay in place.
 - Import is two steps: paste or load JSON (the rules are in the textarea hint, with Choose file beside Set to default JSON), then Submit and choose Merge or Replace with an explanation and counts for each ([#1677](https://github.com/iamharryliu/vigilant-broccoli/pull/1677)).
