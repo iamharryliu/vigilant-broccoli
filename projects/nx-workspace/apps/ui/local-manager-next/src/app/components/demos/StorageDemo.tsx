@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  DeleteItemConfirmationDialog,
+} from '@vigilant-broccoli/react-lib';
 import { authFetch } from '../../../../libs/auth';
 
 interface BucketFile {
@@ -24,6 +27,7 @@ export function StorageDemo() {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [provider, setProvider] = useState<Provider>('local');
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
   const fetchFiles = async () => {
     setLoading(true);
@@ -81,7 +85,6 @@ export function StorageDemo() {
   };
 
   const handleDelete = async (fileName: string) => {
-    if (!confirm(`Delete ${fileName}?`)) return;
     const response = await authFetch(
       `/api/bucket?fileName=${encodeURIComponent(fileName)}&provider=${provider}`,
       { method: 'DELETE' },
@@ -177,7 +180,7 @@ export function StorageDemo() {
                     <Button
                       variant="destructive-ghost"
                       size="sm"
-                      onClick={() => handleDelete(file.name)}
+                      onClick={() => setPendingDelete(file.name)}
                     >
                       Delete
                     </Button>
@@ -188,6 +191,15 @@ export function StorageDemo() {
           </table>
         )}
       </div>
+      <DeleteItemConfirmationDialog
+        open={pendingDelete !== null}
+        onOpenChange={open => !open && setPendingDelete(null)}
+        title="Delete file"
+        description={`Delete ${pendingDelete}?`}
+        deleteItem={async () => {
+          if (pendingDelete) await handleDelete(pendingDelete);
+        }}
+      />
     </div>
   );
 }
