@@ -35,7 +35,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── chat.harryliu.dev                     Chat — Vercel `production-chat` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; gated by Vercel Authentication)
 ├── staging-chat.harryliu.dev             Chat (staging) — same as `chat.harryliu.dev` on `staging-chat`
 ├── hearth.harryliu.dev                   Hearth — Vercel `production-hearth` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; public, sign-in via Supabase)
-├── bookmarks.harryliu.dev                Bookmarks — Cloudflare Pages `production-bookmarks-react` (domain + CNAME: Terraform `cloudflare-bookmarks.tf`; browser-local data, no backend or auth)
+├── bookmarks.vigilant-broccoli.app       Bookmarks — Cloudflare Pages `production-bookmarks-react` (domain + CNAME in the `vigilant-broccoli.app` zone, looked up by name: Terraform `cloudflare-bookmarks.tf`; browser-local data, no backend or auth; no redirect from the old `bookmarks.harryliu.dev`)
 ├── photography.harryliu.dev              Photography — Cloudflare Pages `production-photography-react` (domain + CNAME: Terraform `cloudflare-photography.tf`; public, no Access gating; albums and photo bytes come from VB Express `GET /api/public/photography/*` at `api.harryliu.dev` (staging Pages → `staging-vb-express.fly.dev`), allowed by the same narrowly scoped public-prefix CORS rule as Calendars; content is the `photography/` folder of the default R2 bucket, managed in local-manager `/cms`)
 ├── pomodoro.harryliu.dev                 Pomodoro — Cloudflare Pages `production-pomodoro-react` (domain + CNAME: Terraform `cloudflare-pomodoro.tf`; browser-local settings, no backend or auth)
 ├── sandbox.harryliu.dev                  Sandbox — Cloudflare Pages `production-sandbox` (single environment deployed from `main`, no staging; domain + CNAME + owner-email-only Cloudflare Access also covering `production-sandbox.pages.dev` and its aliases: Terraform `cloudflare-sandbox.tf`; Google sign-in test against staging VB Express Better Auth at `staging-api.harryliu.dev`, whose credentialed CORS for this origin is scoped to `/api/auth/`)
@@ -109,7 +109,7 @@ github.io                                 GitHub Pages (custom domain projects.h
 | Production hostname | Staging hostname | Existing staging project | Provider |
 | --- | --- | --- | --- |
 | balloono.harryliu.dev | staging-balloono.harryliu.dev | `staging-balloono` | Vercel |
-| bookmarks.harryliu.dev | staging-bookmarks.harryliu.dev | `staging-bookmarks-react` | Pages |
+| bookmarks.vigilant-broccoli.app | staging-bookmarks.vigilant-broccoli.app | `staging-bookmarks-react` | Pages |
 | calendar.harryliu.dev | staging-calendar.harryliu.dev | `staging-calendars` | Pages |
 | chat.harryliu.dev | staging-chat.harryliu.dev | `staging-chat` | Vercel |
 | cloud8skate.com | staging.cloud8skate.com | `staging-cloud-8-skate-react` | Pages |

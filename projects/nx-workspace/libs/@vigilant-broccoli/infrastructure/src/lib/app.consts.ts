@@ -24,8 +24,8 @@ export const VB_APP_URL = {
   },
   BOOKMARKS: {
     NAME: 'Bookmarks',
-    URL: 'https://bookmarks.harryliu.dev/',
-    STAGING_URL: 'https://staging-bookmarks.harryliu.dev/',
+    URL: 'https://bookmarks.vigilant-broccoli.app/',
+    STAGING_URL: 'https://staging-bookmarks.vigilant-broccoli.app/',
   },
   POMODORO: {
     NAME: 'Pomodoro',
