@@ -78,6 +78,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### bookmarks-react
 
+- Bookmarks and Settings moved from the top tabs into hearth's sidebar, which becomes a menu drawer on phones. Each row in the rows view has a ⋯ menu with Edit and Delete in place of the pencil edit mode and the external-link button, since clicking a row already opens it (PR: pending).
 - Bookmarks are managed in a dialog, with curated defaults and a Reset to default action ([#1437](https://github.com/iamharryliu/vigilant-broccoli/pull/1437)).
 - The tabs, now Bookmarks, Manage Bookmarks and Settings with icons, sit at the top left. Settings picks System, Light or Dark, and Add, Export, Import, Clear all and Reset to default are icon buttons in one row that confirm in a dialog. The default list drops the repo's own links ([#1665](https://github.com/iamharryliu/vigilant-broccoli/pull/1665)).
 - Manage Bookmarks has a search bar that filters bookmarks by label or link, and the page sits closer to the tabs with tighter spacing between the buttons and lists ([#1667](https://github.com/iamharryliu/vigilant-broccoli/pull/1667)).

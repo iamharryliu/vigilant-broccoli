@@ -4,11 +4,11 @@ export const TAB = {
   BOOKMARKS: 'bookmarks',
   SETTINGS: 'settings',
 } as const;
-type Tab = (typeof TAB)[keyof typeof TAB];
+export type Tab = (typeof TAB)[keyof typeof TAB];
 
 // BASE_URL keeps previews served from a sub-path working; it always ends with "/".
 const BASE_PATH = import.meta.env.BASE_URL;
-const TAB_PATH = {
+export const TAB_PATH = {
   [TAB.BOOKMARKS]: BASE_PATH,
   [TAB.SETTINGS]: `${BASE_PATH}settings`,
 } as const;
@@ -28,8 +28,7 @@ export function useRouteTab() {
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
-  const setTab = (value: string) => {
-    const next = value === TAB.SETTINGS ? TAB.SETTINGS : TAB.BOOKMARKS;
+  const setTab = (next: Tab) => {
     if (next !== tab) window.history.pushState(null, '', TAB_PATH[next]);
     setTabState(next);
   };

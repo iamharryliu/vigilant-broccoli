@@ -1,20 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import {
-  LayoutList,
-  List,
-  Pencil,
-  Rows3,
-  Star,
-  type LucideIcon,
-} from 'lucide-react';
+import { LayoutList, List, Rows3, Star, type LucideIcon } from 'lucide-react';
 import {
   type ButtonConfig,
   ButtonList,
   ClearableInput,
   CopyButton,
   type Direction,
+  EllipsisCTA,
+  type EllipsisAction,
   fuzzyMatch,
   IconButton,
   moveQuickLinkFocusByDirection,
@@ -45,6 +40,8 @@ export type SearchableListItem = {
   onFavoriteToggle?: () => void;
   /** Replaces the default row buttons (favorite, open, copy) in the rows view. */
   actions?: ReactNode;
+  /** Rows view: shows an ellipsis menu with these actions in place of the open button, since clicking the row already opens it. */
+  menuActions?: EllipsisAction[];
 };
 
 export type SearchableListGroup = {
@@ -57,8 +54,6 @@ export type SearchableListGroup = {
 const SEARCH_PLACEHOLDER = 'Search...';
 const EMPTY_MESSAGE = 'No entries found.';
 const VIEW_TOGGLE_LABEL = 'View';
-const EDIT_VALUE = 'edit';
-const EDIT_LABEL = 'Edit';
 const WINDOW_TARGET_BLANK = '_blank';
 const URL_PREFIX = 'http';
 const ENTER_KEY = 'Enter';
@@ -178,7 +173,7 @@ export const SearchableListRow = ({
       {actions ?? entry.actions ?? (
         <>
           {entry.onFavoriteToggle && <FavoriteButton entry={entry} />}
-          {(entry.onOpen || isUrl(entry.value)) && (
+          {!entry.menuActions && (entry.onOpen || isUrl(entry.value)) && (
             <IconButton
               variant="ghost"
               icon="external-link"
@@ -186,6 +181,7 @@ export const SearchableListRow = ({
             />
           )}
           <CopyButton text={entry.value} />
+          {entry.menuActions && <EllipsisCTA actions={entry.menuActions} />}
         </>
       )}
     </div>
@@ -227,7 +223,6 @@ export const SearchableList = ({
   storageKey,
   onEntryOpen,
   autoFocusSearch = false,
-  editMode,
 }: {
   groups: SearchableListGroup[];
   searchPlaceholder?: string;
@@ -236,12 +231,9 @@ export const SearchableList = ({
   storageKey?: string;
   onEntryOpen?: () => void;
   autoFocusSearch?: boolean;
-  /** Adds a pencil to the view switcher; while active the list shows rows and the saved view is untouched. */
-  editMode?: { active: boolean; onChange: (active: boolean) => void };
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [view, setView] = useState<SearchableListView>(defaultView);
-  const activeView = editMode?.active ? SEARCHABLE_LIST_VIEW.ROWS : view;
   const searchInputRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -347,7 +339,7 @@ export const SearchableList = ({
 
   const renderGroup = (group: (typeof searched)[number], index: number) => {
     const items = group.scored.map(({ entry }) => entry);
-    const isRows = activeView === SEARCHABLE_LIST_VIEW.ROWS;
+    const isRows = view === SEARCHABLE_LIST_VIEW.ROWS;
     return (
       <div
         key={`${group.name}-${index}`}
@@ -395,15 +387,8 @@ export const SearchableList = ({
           />
         </div>
         <Tabs
-          value={editMode?.active ? EDIT_VALUE : view}
-          onValueChange={next => {
-            if (next === EDIT_VALUE) {
-              editMode?.onChange(true);
-              return;
-            }
-            editMode?.onChange(false);
-            handleViewChange(next as SearchableListView);
-          }}
+          value={view}
+          onValueChange={next => handleViewChange(next as SearchableListView)}
         >
           <TabsList aria-label={VIEW_TOGGLE_LABEL} className="h-11">
             {VIEW_OPTIONS.map(({ value, label, description, Icon }) => (
@@ -417,16 +402,6 @@ export const SearchableList = ({
                 <Icon size={VIEW_ICON_SIZE} />
               </TabsTrigger>
             ))}
-            {editMode && (
-              <TabsTrigger
-                value={EDIT_VALUE}
-                aria-label={EDIT_LABEL}
-                title={EDIT_LABEL}
-                className="px-2"
-              >
-                <Pencil size={VIEW_ICON_SIZE} />
-              </TabsTrigger>
-            )}
           </TabsList>
         </Tabs>
       </div>
@@ -439,9 +414,9 @@ export const SearchableList = ({
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
           <div
             ref={contentRef}
-            className={`flex flex-col py-3 ${activeView === SEARCHABLE_LIST_VIEW.ROWS ? 'gap-3' : 'gap-4'}`}
+            className={`flex flex-col py-3 ${view === SEARCHABLE_LIST_VIEW.ROWS ? 'gap-3' : 'gap-4'}`}
           >
-            {activeView === SEARCHABLE_LIST_VIEW.LIST ? (
+            {view === SEARCHABLE_LIST_VIEW.LIST ? (
               <>
                 {entries.some(entry => entry.isFavorite) && (
                   <div className="flex flex-col gap-2">
