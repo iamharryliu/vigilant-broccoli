@@ -40,6 +40,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - Applications can be searched, marked as applied and colored by status, and runs execute concurrently in a capped queue ([#1462](https://github.com/iamharryliu/vigilant-broccoli/pull/1462), [#1501](https://github.com/iamharryliu/vigilant-broccoli/pull/1501), [#1430](https://github.com/iamharryliu/vigilant-broccoli/pull/1430)).
 - New Notes, Tasks and Matches pages: Matches scores LinkedIn search results against career skills, with inline sort and filters ([#1577](https://github.com/iamharryliu/vigilant-broccoli/pull/1577), [#1579](https://github.com/iamharryliu/vigilant-broccoli/pull/1579), [#1584](https://github.com/iamharryliu/vigilant-broccoli/pull/1584)).
 - Tasks: new items go to the top, can be dragged to reorder and refresh when the tab regains focus. Deleting a task asks for confirmation, and delete is hidden in demo mode ([#1587](https://github.com/iamharryliu/vigilant-broccoli/pull/1587), [#1588](https://github.com/iamharryliu/vigilant-broccoli/pull/1588), [#1607](https://github.com/iamharryliu/vigilant-broccoli/pull/1607)).
+- Matches recognises Go and C (matched case-sensitively), merges related tools such as Next.js, GitHub Actions and Terraform into one skill, and adds observability, multi-tenancy, MCP and computer vision. A scan now records the cards it skipped, with the reason, in the database and the server log, and Clear all has trash icons (PR: pending).
 
 ### grind-75-react
 

@@ -1,6 +1,7 @@
 import {
   JOB_APPLICATION_BOOKMARKLET,
   JOB_MATCHES_PROGRESS_STATE,
+  JOB_MATCHES_SKIP_REASON,
 } from '@vigilant-broccoli/common-js';
 import { APP_TAB, ROOT_PATH } from '../app.const';
 
@@ -132,6 +133,9 @@ export const buildMatchesBookmarklet = (appTarget: string) => {
     `var o=${escapeUnsafeJsChars(JSON.stringify(origin))};`,
     `var w=window.open(${escapeUnsafeJsChars(JSON.stringify(target))});`,
     'var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};',
+    // Cards dropped without a capture are otherwise invisible; the console
+    // shows why each one was skipped.
+    "var log=function(){console.log.apply(console,['[job-hunt]'].concat([].slice.call(arguments)))};",
     "var link=function(el){return el.matches('a[href]')?el:el.querySelector('a[href]')};",
     'var jobId=function(el){var a=link(el);var m=a&&(a.href.match(/\\/jobs\\/view\\/(\\d+)/)||a.href.match(/currentJobId=(\\d+)/));return m?m[1]:el.getAttribute("data-occludable-job-id")||el.getAttribute("data-job-id")};',
     'var byId=function(){var seen={},out=[];document.querySelectorAll(\'li[data-occludable-job-id],[data-job-id],a[href*="/jobs/view/"]\').forEach(function(el){var id=jobId(el);if(id&&!seen[id]){seen[id]=1;out.push({id:id,key:id,el:el})}});return out};',
@@ -141,10 +145,12 @@ export const buildMatchesBookmarklet = (appTarget: string) => {
     // the app acknowledges it; messages queue until then.
     `var ready=false,queue=[];var msg=function(items,state){return{source:'${JOB_APPLICATION_BOOKMARKLET.MESSAGE_SOURCE}',postings:items,progress:{state:state,captured:postings.length,seen:Object.keys(seen).length}}};`,
     'var flush=function(){while(queue.length)w.postMessage(queue.shift(),o)};',
-    'var send=function(m){queue.push(m);if(ready)flush()};',
+    // Skips ride on the next queued message, so they reach the app in order.
+    'var skips=[];var send=function(m){m.skipped=skips.splice(0);queue.push(m);if(ready)flush()};',
     `var hello=setInterval(function(){w.postMessage(msg([],'${JOB_MATCHES_PROGRESS_STATE.RUNNING}'),o)},${BOOKMARKLET_RETRY_MS});`,
     `window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${JOB_APPLICATION_BOOKMARKLET.ACK}'&&!ready){ready=true;clearInterval(hello);flush()}});`,
     `setTimeout(function(){clearInterval(hello)},${MATCHES_HELLO_GIVE_UP_MS});`,
+    // Commands come from the app (or its embedding page); a cancel is final.
     'var findBox=function(){var f=cards()[0];var b=f&&f.el.parentElement;while(b&&b.scrollHeight<=b.clientHeight+10)b=b.parentElement;return b};',
     'var box=findBox();if(box)box.scrollTop=0;',
     'var postings=[],seen={},stuck=0,pos=0;',
@@ -170,9 +176,11 @@ export const buildMatchesBookmarklet = (appTarget: string) => {
     `var easy=/Easy Apply/i.test(lines.join(' '))||/Easy Apply/i.test(t.slice(Math.max(0,at-${MATCHES_EASY_APPLY_LOOKBACK}),at));`,
     // LinkedIn shows the age ("Reposted 2 days ago") above the description.
     `var ages=t.slice(Math.max(0,at-${MATCHES_AGE_LOOKBACK}),at).match(/\\d+\\s+(?:minute|hour|day|week|month)s?\\s+ago/gi);`,
-    'if(at<0)continue;',
-    `var url=c.id?location.origin+'/jobs/view/'+c.id+'/':(location.href.match(/(?:currentJobId=|\\/jobs\\/view\\/)(\\d+)/)?location.origin+'/jobs/view/'+RegExp.$1+'/':location.href+'#'+c.key);if(postings.some(function(p){return p.url===url}))continue;postings.push({url:url,title:[name,company].filter(Boolean).join(' | '),posted:ages?ages[ages.length-1]:'',easyApply:easy,text:t.slice(at,at+${MATCHES_DESCRIPTION_LIMIT})});send(msg([postings[postings.length-1]],'${JOB_MATCHES_PROGRESS_STATE.RUNNING}'))}`,
+    `if(at<0){log('skipped: no About the job text after click',name,'| card key:',c.key);skips.push({title:name,reason:'${JOB_MATCHES_SKIP_REASON.NO_DESCRIPTION}',detail:String(c.key)});continue}`,
+    `var url=c.id?location.origin+'/jobs/view/'+c.id+'/':(location.href.match(/(?:currentJobId=|\\/jobs\\/view\\/)(\\d+)/)?location.origin+'/jobs/view/'+RegExp.$1+'/':location.href+'#'+c.key);if(postings.some(function(p){return p.url===url})){log('skipped: duplicate url (detail pane may not have changed)',name,url);skips.push({title:name,reason:'${JOB_MATCHES_SKIP_REASON.DUPLICATE_URL}',detail:url});continue}postings.push({url:url,title:[name,company].filter(Boolean).join(' | '),posted:ages?ages[ages.length-1]:'',easyApply:easy,text:t.slice(at,at+${MATCHES_DESCRIPTION_LIMIT})});send(msg([postings[postings.length-1]],'${JOB_MATCHES_PROGRESS_STATE.RUNNING}'))}`,
     'await ensureList();',
+    "log('done: captured',postings.length,'of',Object.keys(seen).length,'cards seen; cards visible now:',cards().length,'; stopped by',postings.length>=" +
+      `${MATCHES_MAX_POSTINGS}?'posting cap':'no new cards');`,
     `send(msg([],'${JOB_MATCHES_PROGRESS_STATE.DONE}'));`,
   ].join('');
   // The async wrapper returns a promise, which a `javascript:` URL would

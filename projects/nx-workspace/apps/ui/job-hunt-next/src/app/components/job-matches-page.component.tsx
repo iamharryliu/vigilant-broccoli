@@ -2,7 +2,14 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowUpDown, Filter, Loader2, Sparkles, X } from 'lucide-react';
+import {
+  ArrowUpDown,
+  Filter,
+  Loader2,
+  Sparkles,
+  Trash2,
+  X,
+} from 'lucide-react';
 import type { StoredJobMatchesPosting } from '@vigilant-broccoli/common-js';
 import {
   Badge,
@@ -347,6 +354,7 @@ export const JobMatchesPage = () => {
               {t('MATCHES.SUGGEST')}
             </Button>
             <Button variant="outline" onClick={() => setConfirmingClear(true)}>
+              <Trash2 />
               {t('MATCHES.CLEAR')}
             </Button>
           </div>
@@ -405,6 +413,7 @@ export const JobMatchesPage = () => {
               {t('MATCHES.CANCEL')}
             </Button>
             <Button variant="destructive" onClick={clearAll}>
+              <Trash2 />
               {t('MATCHES.CLEAR')}
             </Button>
           </DialogFooter>
