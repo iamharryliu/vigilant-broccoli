@@ -23,6 +23,6 @@ The sandbox sidebar nests one group per React lib, labelled with the lib name an
 
 - An entry belongs to the lib exporting the component it mainly showcases (check the demo's imports). Ids never change, so stored selections survive regrouping.
 - Mobile Home sits under `react-lib-higher-level`, which owns its `TabbedView` shell; its `CalendarAgenda` comes from `react-lib-calendar`.
-- Docs Explorer sits under `docs-explorer`, which exports `DocsExplorer`. The demo itself lives only in react-sandbox (a link to docs.harryliu.dev), so it is the closest-lib choice.
+- Docs Explorer sits under `docs-explorer`, which exports `DocsExplorer`. The demo itself lives only in react-sandbox (a link to docs.vigilant-broccoli.app), so it is the closest-lib choice.
 - Notepad sits under `react-lib` (`SyncedTextEditor`); Tasks sits under `react-lib-tasks` and Quick Links under `react-lib-quick-links`.
 - Adding a lib means adding it to `LIB` (declaration order is sidebar order) with a distinct lucide icon in `LIB_ICON`, and its source glob to the component-library `tailwind.config.js`.

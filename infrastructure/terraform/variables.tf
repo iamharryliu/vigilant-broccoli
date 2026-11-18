@@ -253,11 +253,6 @@ variable "nx_cache_r2_ttl_seconds" {
   default = 604800
 }
 
-variable "docs_domain" {
-  type    = string
-  default = "docs.harryliu.dev"
-}
-
 variable "docs_pages_project" {
   type    = string
   default = "production-docs-md"
@@ -268,11 +263,6 @@ variable "docs_pages_project" {
 variable "docs_pages_subdomain" {
   type    = string
   default = "production-docs-md.pages.dev"
-}
-
-variable "grind_75_domain" {
-  type    = string
-  default = "grind-75.harryliu.dev"
 }
 
 variable "grind_75_pages_project" {
@@ -287,11 +277,6 @@ variable "grind_75_pages_subdomain" {
   default = "production-grind-75-react.pages.dev"
 }
 
-variable "context_domain" {
-  type    = string
-  default = "context.harryliu.dev"
-}
-
 variable "context_pages_project" {
   type    = string
   default = "production-context-md"
@@ -300,11 +285,6 @@ variable "context_pages_project" {
 variable "context_pages_subdomain" {
   type    = string
   default = "production-context-md.pages.dev"
-}
-
-variable "text_tools_domain" {
-  type    = string
-  default = "text-tools.harryliu.dev"
 }
 
 variable "text_tools_pages_project" {
@@ -317,11 +297,6 @@ variable "text_tools_pages_subdomain" {
   default = "production-text-tools-ui.pages.dev"
 }
 
-variable "utilities_domain" {
-  type    = string
-  default = "utilities.harryliu.dev"
-}
-
 variable "utilities_pages_project" {
   type    = string
   default = "production-utilities-ui"
@@ -330,11 +305,6 @@ variable "utilities_pages_project" {
 variable "utilities_pages_subdomain" {
   type    = string
   default = "production-utilities-ui.pages.dev"
-}
-
-variable "waiting_domain" {
-  type    = string
-  default = "waiting.harryliu.dev"
 }
 
 variable "waiting_pages_project" {
@@ -408,11 +378,6 @@ variable "upptime_https_enforced" {
   description = "Enforce HTTPS on the Upptime Pages site. Set true only after GitHub has issued a certificate covering the custom domain; the API rejects it earlier."
 }
 
-variable "component_library_domain" {
-  type    = string
-  default = "components.harryliu.dev"
-}
-
 variable "component_library_pages_project" {
   type    = string
   default = "production-component-library"
@@ -424,13 +389,9 @@ variable "component_library_pages_subdomain" {
 }
 
 variable "vigilant_broccoli_domain" {
-  type    = string
-  default = "vigilant-broccoli.app"
-}
-
-variable "bookmarks_domain" {
-  type    = string
-  default = "bookmarks.vigilant-broccoli.app"
+  type        = string
+  default     = "vigilant-broccoli.app"
+  description = "Zone for the public Pages tool sites; their hostnames are derived from it in cloudflare-vigilant-broccoli-app.tf."
 }
 
 variable "bookmarks_pages_project" {
@@ -441,11 +402,6 @@ variable "bookmarks_pages_project" {
 variable "bookmarks_pages_subdomain" {
   type    = string
   default = "production-bookmarks-react.pages.dev"
-}
-
-variable "pomodoro_domain" {
-  type    = string
-  default = "pomodoro.harryliu.dev"
 }
 
 variable "pomodoro_pages_project" {

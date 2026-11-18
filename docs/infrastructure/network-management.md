@@ -37,16 +37,16 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── hearth.harryliu.dev                   Hearth — Vercel `production-hearth` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; public, sign-in via Supabase)
 ├── bookmarks.vigilant-broccoli.app       Bookmarks — Cloudflare Pages `production-bookmarks-react` (domain + CNAME in the `vigilant-broccoli.app` zone, looked up by name: Terraform `cloudflare-bookmarks.tf`; browser-local data, no backend or auth; no redirect from the old `bookmarks.harryliu.dev`)
 ├── photography.harryliu.dev              Photography — Cloudflare Pages `production-photography-react` (domain + CNAME: Terraform `cloudflare-photography.tf`; public, no Access gating; albums and photo bytes come from VB Express `GET /api/public/photography/*` at `api.harryliu.dev` (staging Pages → `staging-vb-express.fly.dev`), allowed by the same narrowly scoped public-prefix CORS rule as Calendars; content is the `photography/` folder of the default R2 bucket, managed in local-manager `/cms`)
-├── pomodoro.harryliu.dev                 Pomodoro — Cloudflare Pages `production-pomodoro-react` (domain + CNAME: Terraform `cloudflare-pomodoro.tf`; browser-local settings, no backend or auth)
+├── pomodoro.vigilant-broccoli.app                 Pomodoro — Cloudflare Pages `production-pomodoro-react` (domain + CNAME: Terraform `cloudflare-pomodoro.tf`; browser-local settings, no backend or auth)
 ├── sandbox.harryliu.dev                  Sandbox — Cloudflare Pages `production-sandbox` (single environment deployed from `main`, no staging; domain + CNAME + owner-email-only Cloudflare Access also covering `production-sandbox.pages.dev` and its aliases: Terraform `cloudflare-sandbox.tf`; Google sign-in test against staging VB Express Better Auth at `staging-api.harryliu.dev`, whose credentialed CORS for this origin is scoped to `/api/auth/`)
-├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
-├── grind-75.harryliu.dev                 Grind 75 — Cloudflare Pages `production-grind-75-react` (domain + CNAME: Terraform `cloudflare-grind-75.tf`; deployed by deploy-grind-75-react.yml because the solutions snapshot lives outside the nx graph; public, no Access gating)
-├── context.harryliu.dev                  Agent Context — Cloudflare Pages `production-context-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-context-md.yml because the agent-context snapshot lives outside the nx graph; public, no Access gating)
-├── components.harryliu.dev        Component Library — Cloudflare Pages `production-component-library` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating).
+├── docs.vigilant-broccoli.app                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
+├── grind-75.vigilant-broccoli.app                 Grind 75 — Cloudflare Pages `production-grind-75-react` (domain + CNAME: Terraform `cloudflare-grind-75.tf`; deployed by deploy-grind-75-react.yml because the solutions snapshot lives outside the nx graph; public, no Access gating)
+├── context.vigilant-broccoli.app                  Agent Context — Cloudflare Pages `production-context-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-context-md.yml because the agent-context snapshot lives outside the nx graph; public, no Access gating)
+├── components.vigilant-broccoli.app        Component Library — Cloudflare Pages `production-component-library` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating).
 ├── calendar.harryliu.dev                 Calendars — Cloudflare Pages `production-calendars` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; lists public event calendars from VB Express `GET /api/public/event-calendars` at `api.harryliu.dev` (staging Pages → `staging-vb-express.fly.dev`), allowed by a narrowly scoped CORS rule on that route only)
-├── text-tools.harryliu.dev               Text Tools UI — Cloudflare Pages `production-text-tools-ui` (domain + CNAME: Terraform `cloudflare-text-tools.tf`; public, no Access gating; embedded by the manager Dev Dashboard via `frame-ancestors`)
-├── utilities.harryliu.dev                Utilities UI — Cloudflare Pages `production-utilities-ui` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating)
-├── waiting.harryliu.dev                  Waiting Games — Cloudflare Pages `production-waiting-games` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; stateless passive games, no backend)
+├── text-tools.vigilant-broccoli.app               Text Tools UI — Cloudflare Pages `production-text-tools-ui` (domain + CNAME: Terraform `cloudflare-text-tools.tf`; public, no Access gating; embedded by the manager Dev Dashboard via `frame-ancestors`)
+├── utilities.vigilant-broccoli.app                Utilities UI — Cloudflare Pages `production-utilities-ui` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating)
+├── waiting.vigilant-broccoli.app                  Waiting Games — Cloudflare Pages `production-waiting-games` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; stateless passive games, no backend)
 ├── git.harryliu.dev                      Gitea — OCI VM (A record, proxied + Cloudflare Access; web UI gated by owner email, git/CI over HTTPS via service token, git-SSH on :2222 direct). Also the read surface for the private journal notes — browsed directly in Gitea rather than mirrored to a Pages site, so the notes never leave the VM
 ├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for ci-health-check /healthz origin probes)
 ├── shell.harryliu.dev                    Web terminal — same OCI VM and Caddy as code-server, served by the `web-terminal` s6 service in the code-server image on internal port 7681, never published on the host (A record, proxied + its own owner-only Cloudflare Access application with a 4h session; the server re-verifies the Access JWT on every request and WebSocket upgrade; Terraform `oci-code-server.tf`)
@@ -113,21 +113,21 @@ github.io                                 GitHub Pages (custom domain projects.h
 | calendar.harryliu.dev | staging-calendar.harryliu.dev | `staging-calendars` | Pages |
 | chat.harryliu.dev | staging-chat.harryliu.dev | `staging-chat` | Vercel |
 | cloud8skate.com | staging.cloud8skate.com | `staging-cloud-8-skate-react` | Pages |
-| components.harryliu.dev | staging-components.harryliu.dev | `staging-component-library` | Pages |
-| context.harryliu.dev | staging-context.harryliu.dev | `staging-context-md` | Pages |
-| docs.harryliu.dev | staging-docs.harryliu.dev | `staging-docs-md` | Pages |
+| components.vigilant-broccoli.app | staging-components.vigilant-broccoli.app | `staging-component-library` | Pages |
+| context.vigilant-broccoli.app | staging-context.vigilant-broccoli.app | `staging-context-md` | Pages |
+| docs.vigilant-broccoli.app | staging-docs.vigilant-broccoli.app | `staging-docs-md` | Pages |
 | findme.harryliu.dev | staging-findme.harryliu.dev | `staging-findme` | Pages |
 | gravity-guy.harryliu.dev | staging-gravity-guy.harryliu.dev | `staging-gravity-guy` | Vercel |
-| grind-75.harryliu.dev | staging-grind-75.harryliu.dev | `staging-grind-75-react` | Pages |
+| grind-75.vigilant-broccoli.app | staging-grind-75.vigilant-broccoli.app | `staging-grind-75-react` | Pages |
 | harryliu.dev | staging.harryliu.dev | `staging-harryliu-dev-react` | Pages |
 | hearth.harryliu.dev | staging-hearth.harryliu.dev | `staging-hearth` | Vercel |
 | manager.harryliu.dev | staging-manager.harryliu.dev | `staging-vb-manager-next-mobile` | Vercel |
 | photography.harryliu.dev | staging-photography.harryliu.dev | `staging-photography-react` | Pages |
-| pomodoro.harryliu.dev | staging-pomodoro.harryliu.dev | `staging-pomodoro-react` | Pages |
+| pomodoro.vigilant-broccoli.app | staging-pomodoro.vigilant-broccoli.app | `staging-pomodoro-react` | Pages |
 | tasks.harryliu.dev | staging-tasks.harryliu.dev | `staging-tasks-next` | Vercel |
-| text-tools.harryliu.dev | staging-text-tools.harryliu.dev | `staging-text-tools-ui` | Pages |
-| utilities.harryliu.dev | staging-utilities.harryliu.dev | `staging-utilities-ui` | Pages |
-| waiting.harryliu.dev | staging-waiting.harryliu.dev | `staging-waiting-games` | Pages |
+| text-tools.vigilant-broccoli.app | staging-text-tools.vigilant-broccoli.app | `staging-text-tools-ui` | Pages |
+| utilities.vigilant-broccoli.app | staging-utilities.vigilant-broccoli.app | `staging-utilities-ui` | Pages |
+| waiting.vigilant-broccoli.app | staging-waiting.vigilant-broccoli.app | `staging-waiting-games` | Pages |
 | weather.harryliu.dev | staging-weather.harryliu.dev | `staging-weather-next` | Vercel |
 | whiteboard.harryliu.dev | staging-whiteboard.harryliu.dev | `staging-whiteboard` | Pages |
 

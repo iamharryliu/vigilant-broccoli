@@ -11,14 +11,14 @@ Everyday utility components for React apps: timers, converters and a weather clo
 
 | Component | Demo |
 | --- | --- |
-| Alarm | [View](https://components.harryliu.dev/alarm) |
-| Calculator | [View](https://components.harryliu.dev/calculator) |
-| Cooking Conversions | [View](https://components.harryliu.dev/cooking-conversions) |
-| Currency Converter | [View](https://components.harryliu.dev/currency-converter) |
-| Pomodoro | [View](https://components.harryliu.dev/pomodoro) |
-| Stopwatch | [View](https://components.harryliu.dev/stopwatch) |
-| Timer | [View](https://components.harryliu.dev/timer) |
-| Weather Clock Card | [View](https://components.harryliu.dev/weather-clock-card) |
+| Alarm | [View](https://components.vigilant-broccoli.app/alarm) |
+| Calculator | [View](https://components.vigilant-broccoli.app/calculator) |
+| Cooking Conversions | [View](https://components.vigilant-broccoli.app/cooking-conversions) |
+| Currency Converter | [View](https://components.vigilant-broccoli.app/currency-converter) |
+| Pomodoro | [View](https://components.vigilant-broccoli.app/pomodoro) |
+| Stopwatch | [View](https://components.vigilant-broccoli.app/stopwatch) |
+| Timer | [View](https://components.vigilant-broccoli.app/timer) |
+| Weather Clock Card | [View](https://components.vigilant-broccoli.app/weather-clock-card) |
 
 ## Stack
 

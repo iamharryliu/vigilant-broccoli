@@ -12,7 +12,7 @@ Generic create, update and delete list (`CRUDItemList`) and its form dialog (`CR
 
 | Component | Demo |
 | --- | --- |
-| CRUD List Management | [View](https://components.harryliu.dev/crud-list) |
+| CRUD List Management | [View](https://components.vigilant-broccoli.app/crud-list) |
 
 ## Features
 

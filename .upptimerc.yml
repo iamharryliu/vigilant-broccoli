@@ -3,15 +3,15 @@ repo: uptime
 
 sites:
   - name: staging-docs
-    url: https://staging-docs.harryliu.dev/
+    url: https://staging-docs.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-grind-75
-    url: https://staging-grind-75.harryliu.dev/
+    url: https://staging-grind-75.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-context
-    url: https://staging-context.harryliu.dev/
+    url: https://staging-context.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-bookmarks
@@ -23,7 +23,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-pomodoro
-    url: https://staging-pomodoro.harryliu.dev/
+    url: https://staging-pomodoro.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-cloud-8-skate
@@ -51,19 +51,19 @@ sites:
   - name: staging-media-service
     url: https://staging-media-service.fly.dev/
   - name: staging-component-library
-    url: https://staging-components.harryliu.dev/
+    url: https://staging-components.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-text-tools
-    url: https://staging-text-tools.harryliu.dev/
+    url: https://staging-text-tools.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-utilities
-    url: https://staging-utilities.harryliu.dev/
+    url: https://staging-utilities.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-waiting-games
-    url: https://staging-waiting.harryliu.dev/
+    url: https://staging-waiting.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-whiteboard
@@ -133,13 +133,13 @@ sites:
   - name: production-media-service
     url: https://production-media-service.fly.dev/
   - name: production-component-library
-    url: https://components.harryliu.dev/
+    url: https://components.vigilant-broccoli.app/
   - name: production-text-tools
-    url: https://text-tools.harryliu.dev/
+    url: https://text-tools.vigilant-broccoli.app/
   - name: production-utilities
-    url: https://utilities.harryliu.dev/
+    url: https://utilities.vigilant-broccoli.app/
   - name: production-waiting-games
-    url: https://waiting.harryliu.dev/
+    url: https://waiting.vigilant-broccoli.app/
   - name: production-whiteboard
     url: https://whiteboard.harryliu.dev/
   - name: production-weather
@@ -171,17 +171,17 @@ sites:
   - name: production-uptime
     url: https://uptime.harryliu.dev/
   - name: production-docs
-    url: https://docs.harryliu.dev/
+    url: https://docs.vigilant-broccoli.app/
   - name: production-grind-75
-    url: https://grind-75.harryliu.dev/
+    url: https://grind-75.vigilant-broccoli.app/
   - name: production-context
-    url: https://context.harryliu.dev/
+    url: https://context.vigilant-broccoli.app/
   - name: production-bookmarks
     url: https://bookmarks.vigilant-broccoli.app/
   - name: production-photography
     url: https://photography.harryliu.dev/
   - name: production-pomodoro
-    url: https://pomodoro.harryliu.dev/
+    url: https://pomodoro.vigilant-broccoli.app/
   - name: demo-employee-handler-ui
     url: https://demo-employee-handler-ui.vercel.app/
   - name: demo-job-hunt-next

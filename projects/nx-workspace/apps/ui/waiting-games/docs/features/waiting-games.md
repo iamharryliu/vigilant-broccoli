@@ -1,6 +1,6 @@
 # Waiting Games
 
-Passive, no-input games for `waiting.harryliu.dev`. Rounds start on load and cycle forever; viewers think of an answer and watch it be revealed.
+Passive, no-input games for `waiting.vigilant-broccoli.app`. Rounds start on load and cycle forever; viewers think of an answer and watch it be revealed.
 
 ## Table of Contents
 

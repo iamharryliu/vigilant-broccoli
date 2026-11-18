@@ -19,17 +19,17 @@ locals {
 
   staging_pages_domains = {
     staging-calendars          = "staging-calendar.harryliu.dev"
-    staging-component-library  = "staging-components.harryliu.dev"
-    staging-context-md         = "staging-context.harryliu.dev"
-    staging-docs-md            = "staging-docs.harryliu.dev"
+    staging-component-library  = "staging-components.${var.vigilant_broccoli_domain}"
+    staging-context-md         = "staging-context.${var.vigilant_broccoli_domain}"
+    staging-docs-md            = "staging-docs.${var.vigilant_broccoli_domain}"
     staging-findme             = "staging-findme.harryliu.dev"
-    staging-grind-75-react     = "staging-grind-75.harryliu.dev"
+    staging-grind-75-react     = "staging-grind-75.${var.vigilant_broccoli_domain}"
     staging-harryliu-dev-react = "staging.harryliu.dev"
     staging-photography-react  = "staging-photography.harryliu.dev"
-    staging-pomodoro-react     = "staging-pomodoro.harryliu.dev"
-    staging-text-tools-ui      = "staging-text-tools.harryliu.dev"
-    staging-utilities-ui       = "staging-utilities.harryliu.dev"
-    staging-waiting-games      = "staging-waiting.harryliu.dev"
+    staging-pomodoro-react     = "staging-pomodoro.${var.vigilant_broccoli_domain}"
+    staging-text-tools-ui      = "staging-text-tools.${var.vigilant_broccoli_domain}"
+    staging-utilities-ui       = "staging-utilities.${var.vigilant_broccoli_domain}"
+    staging-waiting-games      = "staging-waiting.${var.vigilant_broccoli_domain}"
     staging-whiteboard         = "staging-whiteboard.harryliu.dev"
   }
 }
@@ -86,7 +86,7 @@ resource "cloudflare_pages_domain" "staging_ui" {
 
 resource "cloudflare_dns_record" "staging_ui" {
   for_each   = local.staging_pages_domains
-  zone_id    = var.cloudflare_zone_id
+  zone_id    = endswith(each.value, ".${var.vigilant_broccoli_domain}") ? data.cloudflare_zones.vigilant_broccoli.result[0].id : var.cloudflare_zone_id
   name       = each.value
   content    = "${each.key}.pages.dev"
   type       = "CNAME"

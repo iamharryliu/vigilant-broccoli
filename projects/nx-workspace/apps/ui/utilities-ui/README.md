@@ -1,6 +1,6 @@
 # Utilities UI
 
-Searchable web page of everyday utilities, served at utilities.harryliu.dev.
+Searchable web page of everyday utilities, served at utilities.vigilant-broccoli.app.
 
 ## Table of Contents
 

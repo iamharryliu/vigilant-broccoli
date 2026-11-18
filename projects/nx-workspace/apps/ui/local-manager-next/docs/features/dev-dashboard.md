@@ -10,7 +10,7 @@
 
 ## Text Tools
 
-- The Text Tools tab iframes the static `text-tools-ui` site (`VB_APP_URL.TEXT_TOOLS.URL`, `text-tools.harryliu.dev`). The site's `_headers` allows framing only from `https://manager.vigilant-broccoli.app`, so the tab does not render from other origins. See [text-tools.md](../../../text-tools-ui/docs/features/text-tools.md).
+- The Text Tools tab iframes the static `text-tools-ui` site (`VB_APP_URL.TEXT_TOOLS.URL`, `text-tools.vigilant-broccoli.app`). The site's `_headers` allows framing only from `https://manager.vigilant-broccoli.app`, so the tab does not render from other origins. See [text-tools.md](../../../text-tools-ui/docs/features/text-tools.md).
 
 ## TODO
 

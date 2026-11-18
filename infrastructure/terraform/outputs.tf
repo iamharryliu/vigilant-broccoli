@@ -65,7 +65,7 @@ output "loki_push_url" {
 }
 
 output "docs_url" {
-  value = "https://${var.docs_domain}"
+  value = "https://${local.vb_app_domains.docs}"
 }
 
 output "nx_cache_url" {
