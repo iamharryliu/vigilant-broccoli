@@ -96,6 +96,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - Notepad and whiteboard text persists with its Yjs state, so reloads and rejoins no longer lose edits ([#1503](https://github.com/iamharryliu/vigilant-broccoli/pull/1503)).
 - Global shortcuts are ignored while typing or with a dialog open ([#1397](https://github.com/iamharryliu/vigilant-broccoli/pull/1397)).
 - `FileExplorer` is no longer exported. It moved to its own library, so the next release drops it from react-lib ([#1596](https://github.com/iamharryliu/vigilant-broccoli/pull/1596)).
+- `SegmentedControl` now matches `Tabs` (muted track with a sliding selection pill) and selects with the arrow keys, Home and End. The new `ToggleGroup` holds that shared look ([#1664](https://github.com/iamharryliu/vigilant-broccoli/pull/1664)).
 
 ### react-lib-media
 

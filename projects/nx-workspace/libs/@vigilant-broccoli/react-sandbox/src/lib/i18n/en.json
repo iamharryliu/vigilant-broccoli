@@ -50,7 +50,7 @@
     },
     "SEGMENTED_CONTROL": {
       "NAME": "Segmented Control",
-      "SUMMARY": "Controlled selection in both sizes, with icons, short labels and a selected-value readout."
+      "SUMMARY": "Picks one value for a setting, like a theme preference, in both sizes, with icons, short labels and a selected-value readout. It does not switch views; use Tabs for that."
     }
   },
   "FOUNDATION_DEMO": {
@@ -116,15 +116,15 @@
     "SEGMENTED_DEFAULT": "Default size",
     "SEGMENTED_RESPONSIVE": "Icons and short labels",
     "SEGMENTED_FULL_WIDTH": "Full width with icons and labels",
-    "VIEW": {
-      "LIST": "List view",
-      "GRID": "Grid view",
-      "TIMELINE": "Timeline view"
+    "THEME": {
+      "LIGHT": "Light theme",
+      "DARK": "Dark theme",
+      "SYSTEM": "System theme"
     },
-    "SHORT_VIEW": {
-      "LIST": "List",
-      "GRID": "Grid",
-      "TIMELINE": "Time"
+    "SHORT_THEME": {
+      "LIGHT": "Light",
+      "DARK": "Dark",
+      "SYSTEM": "Auto"
     }
   },
   "DEMO_SECTION": {
