@@ -1,6 +1,6 @@
 # status, career, deployments and games hostnames share a
 # Cloudflare Worker that reverse-proxies the pages-index GitHub Pages
-# deployment at projects.harryliu.dev. The app renders StatusPage (status
+# deployment at projects.vigilant-broccoli.app. The app renders StatusPage (status
 # host), CareerPage (career host) or DeploymentsPage (deployments host) at the
 # root (GamesPage on the games host); the Worker only
 # carries the HTML and static assets, preserving upstream status codes and
@@ -21,7 +21,7 @@ resource "cloudflare_workers_script" "status_proxy" {
     {
       name = "UPSTREAM_ORIGIN"
       type = "plain_text"
-      text = "https://${var.projects_domain}"
+      text = "https://${cloudflare_dns_record.projects.name}"
     },
   ]
 

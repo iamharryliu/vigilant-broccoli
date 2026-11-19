@@ -55,6 +55,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### pages-index
 
+- The projects site moved to projects.vigilant-broccoli.app. Old projects.harryliu.dev links redirect there and keep their page (PR: pending).
 - New Changelog page lists these entries, linked from the home page ([#1586](https://github.com/iamharryliu/vigilant-broccoli/pull/1586)).
 - New Private section after Demo lists owner-only apps, and Web Terminal moved there ([#1606](https://github.com/iamharryliu/vigilant-broccoli/pull/1606)).
 - The Changelog page shows each month as a collapsible section titled like November 2026, newest open and animated as it toggles ([#1660](https://github.com/iamharryliu/vigilant-broccoli/pull/1660)).
