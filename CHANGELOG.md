@@ -8,6 +8,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 <details>
 <summary>November 2026</summary>
 
+### entry-directory
+
+- Group headings in `EntryDirectory` (Bookmarks) now use one medium-weight heading style in every view, including Rows ([#1699](https://github.com/iamharryliu/vigilant-broccoli/pull/1699)).
+
 ### dotfiles
 
 - `localcleanup` now removes Claude worktrees instantly by renaming each to a hidden `.trash-*` directory and deleting it in the background, measuring their sizes in parallel and sweeping leftovers from an interrupted run; `--keep-dirty` and locked worktrees are still skipped ([#1690](https://github.com/iamharryliu/vigilant-broccoli/pull/1690)).
@@ -84,6 +88,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### bookmarks-react
 
+- A new Manage page in the sidebar holds Add bookmark and Clear all bookmarks on one row, then one Export and import section with both buttons inline, so Settings keeps only the theme. The Add dialog accepts several URLs at once, one per line. The sidebar Add item is replaced by a + button at the top right of the phone top bar. Manage and Settings open with a visible page heading ([#1699](https://github.com/iamharryliu/vigilant-broccoli/pull/1699)).
 - The flat list view without group headers is gone from the view switcher, leaving Grouped and Rows; a saved List choice falls back to the default view. Quick Links in the local manager loses it too ([#1679](https://github.com/iamharryliu/vigilant-broccoli/pull/1679)).
 - Badges at the left and right edges of the badge views are no longer cut off on hover or focus: they show an inset ring instead of growing, which also applies to the other pages that use badge buttons ([#1678](https://github.com/iamharryliu/vigilant-broccoli/pull/1678)).
 - Every dialog on phones, including full-page ones like Add bookmark and the Help dialog, is inset slightly with rounded corners so it reads as a dialog; the shared dialog change also applies to Hearth, the mobile manager and the image carousel ([#1677](https://github.com/iamharryliu/vigilant-broccoli/pull/1677)). Dialog headers are left-aligned with the close button centered on the title, and tall dialogs scroll their body while the header and close button stay in place.
@@ -170,6 +175,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - The Tasks tab embeds tasks.harryliu.dev inside a matching border. Voice input, AI task creation and the bottom-sheet create dialog are gone from it ([#1602](https://github.com/iamharryliu/vigilant-broccoli/pull/1602), [#1612](https://github.com/iamharryliu/vigilant-broccoli/pull/1612)).
 - Google Tasks and Calendar stay connected past the hourly token expiry ([#1524](https://github.com/iamharryliu/vigilant-broccoli/pull/1524)).
 - Clearing seen words in language learning asks for confirmation in a dialog instead of a browser prompt ([#1672](https://github.com/iamharryliu/vigilant-broccoli/pull/1672)).
+- The Tasks and Weather tabs no longer show blank gaps between tasks or oversized weather rows on iPhone when the page loads while another tab is open ([#1702](https://github.com/iamharryliu/vigilant-broccoli/pull/1702)).
 
 ### media-service
 
@@ -186,6 +192,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### findme
 
 - FindMe now lives at findme.vigilant-broccoli.app, with staging at staging-findme.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve ([#1694](https://github.com/iamharryliu/vigilant-broccoli/pull/1694)).
+
+### vb-express
+
+- Calendar parsing now works out each time's UTC offset from the place where it happens, including daylight saving, so a Copenhagen to Keflavík flight no longer shifts by an hour, from pasted text or a screenshot. Repeated legs and invented whole-trip events are dropped ([#1700](https://github.com/iamharryliu/vigilant-broccoli/pull/1700), [#1701](https://github.com/iamharryliu/vigilant-broccoli/pull/1701)).
 
 </details>
 
