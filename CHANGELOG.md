@@ -119,7 +119,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### web-terminal
 
-- The web terminal moved to shell.vigilant-broccoli.app, alongside code-server at code.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve (PR: pending).
+- The web terminal moved to shell.vigilant-broccoli.app, alongside code-server at code.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve ([#1708](https://github.com/iamharryliu/vigilant-broccoli/pull/1708)).
 - The Dev menu page holds every repo skill, including `/local-create-pr-claude` and `/local-update-pr-claude`; `/local-session-status` and `/local-session-retry-publish` run on tap while the PR skills still wait for a prompt ([#1682](https://github.com/iamharryliu/vigilant-broccoli/pull/1682)).
 - The bar is a two-row grid so every key shows without scrolling, with the arrows laid out as on a keyboard and Esc at the top right, and the Claude PR skills moved to the Dev tab ([#1655](https://github.com/iamharryliu/vigilant-broccoli/pull/1655)).
 - The mobile toolbar keeps the keys in use, with arrows and Tab on the bar, shortcut buttons for agent and Claude Code commands, and a full-screen All keys sheet ([#1481](https://github.com/iamharryliu/vigilant-broccoli/pull/1481), [#1484](https://github.com/iamharryliu/vigilant-broccoli/pull/1484), [#1502](https://github.com/iamharryliu/vigilant-broccoli/pull/1502), [#1504](https://github.com/iamharryliu/vigilant-broccoli/pull/1504), [#1505](https://github.com/iamharryliu/vigilant-broccoli/pull/1505), [#1507](https://github.com/iamharryliu/vigilant-broccoli/pull/1507)).
