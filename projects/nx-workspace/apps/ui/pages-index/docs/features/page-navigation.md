@@ -13,9 +13,9 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 
 ## Hosts
 
-- `status.harryliu.dev` — the same `StatusPage` at the host root. `app.tsx` picks the status route table when `window.location.hostname` is `STATUS_HOST` (`src/app/consts/hosts.ts`); other hash routes redirect to `/`. The Home breadcrumb and any other pages-index link there are explicit `https://projects.harryliu.dev/#/…` URLs, built with `toProjectsUrl`.
+- `status.harryliu.dev` — the same `StatusPage` at the host root. `app.tsx` picks the status route table when `window.location.hostname` is `STATUS_HOST` (`src/app/consts/hosts.ts`); other hash routes redirect to `/`. The Home breadcrumb and any other pages-index link there are explicit `https://projects.vigilant-broccoli.app/#/…` URLs, built with `toProjectsUrl`.
 - `deployments.harryliu.dev` — `DeploymentsPage` at the host root. `app.tsx` picks the deployments route table when the hostname is `DEPLOYMENTS_HOST`; other hash routes redirect to `/`, and the Home breadcrumb is a `toProjectsUrl` link. Details: [deployments-page.md](./deployments-page.md).
-- `career.harryliu.dev` — `CareerPage` at the host root (cards: Resume → `harryliu.dev/resume`, Personal Software Career Experience, `projects.harryliu.dev`, `harryliu.dev`, GitHub, LinkedIn). `app.tsx` picks the career route table when the hostname is `CAREER_HOST`; other hash routes redirect to `/`.
+- `career.harryliu.dev` — `CareerPage` at the host root (cards: Resume → `harryliu.dev/resume`, Personal Software Career Experience, `projects.vigilant-broccoli.app`, `harryliu.dev`, GitHub, LinkedIn). `app.tsx` picks the career route table when the hostname is `CAREER_HOST`; other hash routes redirect to `/`.
   - `/personal-software-career-experience` — renders `notes/personal/career/career-experience.md` from `raw.githubusercontent.com`; its breadcrumb returns to the career root.
 
 ## Deployments, status and repo timeline
@@ -52,7 +52,7 @@ The Job Hunt demo card opens the public, read-only sample deployment at `demo-jo
 
 ### Activation
 
-- After merge, wait for the main pages-index GitHub Pages deployment, then verify `https://projects.harryliu.dev/#/games`.
+- After merge, wait for the main pages-index GitHub Pages deployment, then verify `https://projects.vigilant-broccoli.app/#/games`.
 - From an authenticated local checkout run `pnpm tf:plan`; review the plan for `cloudflare_workers_custom_domain.games` and exclude unrelated drift before running `pnpm tf:apply`. The custom domain provisions DNS/TLS on the existing Worker; no new app or Worker script is needed.
 - Verify HTTPS at `https://games.harryliu.dev/`, `#/games`, a game About page and its breadcrumbs; open all three production games. Confirm status, career and deployments roots still render correctly.
 - Confirm the Upptime configuration sync and production-games check after merge; no provider dashboard edits are needed.

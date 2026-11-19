@@ -352,11 +352,6 @@ variable "photography_pages_subdomain" {
   default = "production-photography-react.pages.dev"
 }
 
-variable "projects_domain" {
-  type    = string
-  default = "projects.harryliu.dev"
-}
-
 variable "career_domain" {
   type    = string
   default = "career.harryliu.dev"

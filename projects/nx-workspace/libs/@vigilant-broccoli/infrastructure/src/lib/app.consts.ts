@@ -137,4 +137,8 @@ export const VB_APP_URL = {
     NAME: 'Career',
     URL: 'https://career.harryliu.dev/',
   },
+  PAGES_INDEX: {
+    NAME: 'Pages Index',
+    URL: `https://projects.${VB_APP_DOMAIN}/`,
+  },
 } as const;

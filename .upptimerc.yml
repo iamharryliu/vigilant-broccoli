@@ -166,6 +166,8 @@ sites:
     url: https://career.harryliu.dev/
   - name: production-deployments
     url: https://deployments.harryliu.dev/
+  - name: production-pages-index
+    url: https://projects.vigilant-broccoli.app/
   - name: production-status
     url: https://status.harryliu.dev/
   - name: production-uptime

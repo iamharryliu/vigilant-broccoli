@@ -106,7 +106,7 @@ const DEVELOPMENT_APPS: AppEntry[] = [
   },
   {
     label: 'Projects',
-    webUrl: 'https://projects.harryliu.dev',
+    webUrl: 'https://projects.vigilant-broccoli.app',
     tileColor: 'bg-emerald-600',
     icon: FolderGit2,
   },
