@@ -55,7 +55,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   gitea:restore [zip|gs://]   Restore Gitea from a local dump zip or GCS (default: latest GCS backup)
 
 💻 CODE SERVER
-  code-server:open            Open code.harryliu.dev
+  code-server:open            Open code.vigilant-broccoli.app
   code-server:password        Copy code-server password to clipboard
   code-server:ssh             SSH into code-server VM
   code-server:logs            Follow code-server container logs
@@ -64,7 +64,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   code-server:replace         Replace the VM via terraform (fresh host)
 
 📁 SEAFILE
-  seafile:open                Open drive.harryliu.dev
+  seafile:open                Open drive.vigilant-broccoli.app
   seafile:password            Copy Seafile admin password to clipboard
   seafile:ssh                 SSH into Seafile VM
   seafile:logs                Follow Seafile container logs
@@ -82,7 +82,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   immich:replace              Replace the VM via terraform (fresh host)
 
 📈 GRAFANA (observability VM)
-  grafana:open                Open grafana.harryliu.dev
+  grafana:open                Open grafana.vigilant-broccoli.app
   grafana:password            Copy Grafana admin password to clipboard
   grafana:ssh                 SSH into Grafana/Loki VM
   grafana:dashboards:push     Sync grafana-dashboards/*.json to the VM

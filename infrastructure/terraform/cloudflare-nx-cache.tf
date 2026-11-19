@@ -105,7 +105,7 @@ resource "cloudflare_workers_script" "nx_cache" {
 # which each own an explicit cloudflare_dns_record.
 resource "cloudflare_workers_custom_domain" "nx_cache" {
   account_id = var.cloudflare_account_id
-  zone_id    = var.cloudflare_zone_id
+  zone_id    = data.cloudflare_zones.vigilant_broccoli.result[0].id
   hostname   = var.nx_cache_domain
   service    = cloudflare_workers_script.nx_cache.script_name
 }

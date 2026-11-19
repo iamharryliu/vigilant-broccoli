@@ -78,7 +78,7 @@ const CALENDAR_PREVIEW_ORIGIN =
   /^https:\/\/[a-z0-9-]+\.preview-calendars\.pages\.dev$/;
 
 const AUTH_API_PREFIX = '/api/auth/';
-const AUTH_CLIENT_ORIGINS = ['https://sandbox.harryliu.dev'];
+const AUTH_CLIENT_ORIGINS = ['https://sandbox.vigilant-broccoli.app'];
 
 const privateCorsOptions = createCorsOptions(ALLOWED_ORIGINS);
 const authCorsOptions = createCorsOptions([

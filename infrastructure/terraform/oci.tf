@@ -139,7 +139,7 @@ resource "oci_core_instance" "rabbitmq" {
 }
 
 resource "cloudflare_dns_record" "socket_server" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.socket_server_domain
   content = oci_core_instance.rabbitmq.public_ip
   type    = "A"
@@ -182,7 +182,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "rabbitmq" {
 }
 
 resource "cloudflare_dns_record" "rabbitmq_management" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.rabbitmq_management_domain
   content = "${cloudflare_zero_trust_tunnel_cloudflared.rabbitmq.id}.cfargotunnel.com"
   type    = "CNAME"

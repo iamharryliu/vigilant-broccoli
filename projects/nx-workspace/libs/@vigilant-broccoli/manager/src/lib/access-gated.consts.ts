@@ -7,15 +7,15 @@ export const ACCESS_GATED_URL = {
   },
   CODE_SERVER: {
     NAME: 'Code Server',
-    URL: 'https://code.harryliu.dev/',
+    URL: 'https://code.vigilant-broccoli.app/',
   },
   DRIVE: {
     NAME: 'Drive',
-    URL: 'https://drive.harryliu.dev/',
+    URL: 'https://drive.vigilant-broccoli.app/',
   },
   GIT: {
     NAME: 'Git',
-    URL: 'https://git.harryliu.dev/',
+    URL: 'https://git.vigilant-broccoli.app/',
   },
   MOBILE_MANAGER_NEXT: {
     NAME: 'Mobile Manager Next',
@@ -24,10 +24,10 @@ export const ACCESS_GATED_URL = {
   },
   SANDBOX: {
     NAME: 'Sandbox',
-    URL: 'https://sandbox.harryliu.dev/',
+    URL: 'https://sandbox.vigilant-broccoli.app/',
   },
   WEB_TERMINAL: {
     NAME: 'Web Terminal',
-    URL: 'https://shell.harryliu.dev/',
+    URL: 'https://shell.vigilant-broccoli.app/',
   },
 } as const;

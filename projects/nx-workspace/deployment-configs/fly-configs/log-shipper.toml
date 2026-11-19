@@ -16,7 +16,7 @@ primary_region = 'yyz'
 [env]
   ORG = 'personal'
   SUBJECT = 'logs.>'
-  LOKI_URL = 'https://loki.harryliu.dev'
+  LOKI_URL = 'https://loki.vigilant-broccoli.app'
   LOKI_USERNAME = 'fly-log-shipper'
 
 # No [[services]] block at all. The shipper only dials out (NATS in from Fly's

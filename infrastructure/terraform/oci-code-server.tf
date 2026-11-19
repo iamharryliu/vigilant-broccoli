@@ -146,7 +146,7 @@ resource "cloudflare_origin_ca_certificate" "code_server" {
 }
 
 resource "cloudflare_dns_record" "code_server" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.code_server_domain
   content = oci_core_instance.code_server.public_ip
   type    = "A"
@@ -201,7 +201,7 @@ resource "cloudflare_zero_trust_access_application" "code_server" {
 }
 
 resource "cloudflare_dns_record" "web_terminal" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.web_terminal_domain
   content = oci_core_instance.code_server.public_ip
   type    = "A"

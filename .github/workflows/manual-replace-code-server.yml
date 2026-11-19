@@ -89,7 +89,7 @@ jobs:
 
       - name: Sync CODE_SERVER_VM_IP to Vault
         env:
-          VAULT_ADDR: https://vault.harryliu.dev
+          VAULT_ADDR: https://vault.vigilant-broccoli.app
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
         run: |

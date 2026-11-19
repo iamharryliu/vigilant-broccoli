@@ -119,6 +119,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### web-terminal
 
+- The web terminal moved to shell.vigilant-broccoli.app, alongside code-server at code.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve (PR: pending).
 - The Dev menu page holds every repo skill, including `/local-create-pr-claude` and `/local-update-pr-claude`; `/local-session-status` and `/local-session-retry-publish` run on tap while the PR skills still wait for a prompt ([#1682](https://github.com/iamharryliu/vigilant-broccoli/pull/1682)).
 - The bar is a two-row grid so every key shows without scrolling, with the arrows laid out as on a keyboard and Esc at the top right, and the Claude PR skills moved to the Dev tab ([#1655](https://github.com/iamharryliu/vigilant-broccoli/pull/1655)).
 - The mobile toolbar keeps the keys in use, with arrows and Tab on the bar, shortcut buttons for agent and Claude Code commands, and a full-screen All keys sheet ([#1481](https://github.com/iamharryliu/vigilant-broccoli/pull/1481), [#1484](https://github.com/iamharryliu/vigilant-broccoli/pull/1484), [#1502](https://github.com/iamharryliu/vigilant-broccoli/pull/1502), [#1504](https://github.com/iamharryliu/vigilant-broccoli/pull/1504), [#1505](https://github.com/iamharryliu/vigilant-broccoli/pull/1505), [#1507](https://github.com/iamharryliu/vigilant-broccoli/pull/1507)).
@@ -196,6 +197,11 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### vb-express
 
 - Calendar parsing now works out each time's UTC offset from the place where it happens, including daylight saving, so a Copenhagen to Keflavík flight no longer shifts by an hour, from pasted text or a screenshot. Repeated legs and invented whole-trip events are dropped ([#1700](https://github.com/iamharryliu/vigilant-broccoli/pull/1700), [#1701](https://github.com/iamharryliu/vigilant-broccoli/pull/1701)).
+- The API moved to api.vigilant-broccoli.app, with staging at staging-api.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve (PR: pending).
+
+### sandbox
+
+- The Google sign-in test page moved to sandbox.vigilant-broccoli.app so it stays same-site with the staging API; the old harryliu.dev host no longer resolves (PR: pending).
 
 </details>
 

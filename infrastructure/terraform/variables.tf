@@ -109,15 +109,15 @@ variable "rabbitmq_user" {
 
 variable "gitea_domain" {
   type    = string
-  default = "git.harryliu.dev"
+  default = "git.vigilant-broccoli.app"
 }
 
-# DNS-only (grey-cloud) hostname for git-over-SSH on :2222. The apex git.harryliu.dev
+# DNS-only (grey-cloud) hostname for git-over-SSH on :2222. The apex git host
 # is Cloudflare-proxied for the Access-gated web UI, and the proxy doesn't forward
 # :2222 — so SSH needs a direct-to-VM hostname.
 variable "gitea_ssh_domain" {
   type    = string
-  default = "ssh.git.harryliu.dev"
+  default = "ssh.git.vigilant-broccoli.app"
 }
 
 variable "gitea_allowed_emails" {
@@ -137,14 +137,14 @@ variable "cloudflare_zone_id" {
 
 variable "code_server_domain" {
   type    = string
-  default = "code.harryliu.dev"
+  default = "code.vigilant-broccoli.app"
 }
 
 # Served by the web-terminal s6 service inside the code-server image, behind the
 # same Caddy and its own Access application.
 variable "web_terminal_domain" {
   type    = string
-  default = "shell.harryliu.dev"
+  default = "shell.vigilant-broccoli.app"
 }
 
 # Cloudflare Zero Trust team domain the web-terminal server validates Access JWT
@@ -179,7 +179,7 @@ variable "claude_code_oauth_token" {
 
 variable "seafile_domain" {
   type    = string
-  default = "drive.harryliu.dev"
+  default = "drive.vigilant-broccoli.app"
 }
 
 variable "seafile_allowed_emails" {
@@ -204,14 +204,14 @@ variable "immich_allowed_emails" {
 
 variable "grafana_domain" {
   type    = string
-  default = "grafana.harryliu.dev"
+  default = "grafana.vigilant-broccoli.app"
 }
 
 # Loki push endpoint for machine clients (Fly log shipper); same tunnel and VM
 # as Grafana, gated by nginx basic auth instead of Cloudflare Access.
 variable "loki_domain" {
   type    = string
-  default = "loki.harryliu.dev"
+  default = "loki.vigilant-broccoli.app"
 }
 
 variable "loki_push_user" {
@@ -233,17 +233,17 @@ variable "grafana_instance_type" {
 
 variable "vault_domain" {
   type    = string
-  default = "vault.harryliu.dev"
+  default = "vault.vigilant-broccoli.app"
 }
 
 variable "socket_server_domain" {
   type    = string
-  default = "socket.harryliu.dev"
+  default = "socket.vigilant-broccoli.app"
 }
 
 variable "nx_cache_domain" {
   type    = string
-  default = "nx-cache.harryliu.dev"
+  default = "nx-cache.vigilant-broccoli.app"
 }
 
 # 7 days: a cache miss just rebuilds, so a short TTL trades a little compute
@@ -401,7 +401,7 @@ variable "pomodoro_pages_subdomain" {
 
 variable "sandbox_domain" {
   type    = string
-  default = "sandbox.harryliu.dev"
+  default = "sandbox.vigilant-broccoli.app"
 }
 
 variable "sandbox_pages_project" {
@@ -446,7 +446,7 @@ variable "harryliu_dev_pages_subdomain" {
 
 variable "rabbitmq_management_domain" {
   type    = string
-  default = "queue.harryliu.dev"
+  default = "queue.vigilant-broccoli.app"
 }
 
 variable "rabbitmq_allowed_emails" {

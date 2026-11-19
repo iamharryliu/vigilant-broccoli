@@ -92,7 +92,7 @@ jobs:
 
           echo ""
           echo "[Gitea — GITEA_TOKEN]"
-          auth_check "gitea (GITEA_TOKEN)" "https://git.harryliu.dev/api/v1/repos/iamharryliu/journal" \
+          auth_check "gitea (GITEA_TOKEN)" "https://git.vigilant-broccoli.app/api/v1/repos/iamharryliu/journal" \
             -H "CF-Access-Client-Id: ${GITEA_CF_ACCESS_CLIENT_ID}" \
             -H "CF-Access-Client-Secret: ${GITEA_CF_ACCESS_CLIENT_SECRET}" \
             -H "Authorization: token ${GITEA_TOKEN}"
