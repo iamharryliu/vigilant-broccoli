@@ -1,10 +1,9 @@
 'use client';
 
 import { Sidebar, SidebarCTA } from '@vigilant-broccoli/sidebar';
-import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
+import { signInWithGoogle, useAuth } from '../../../libs/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  LogOut,
   LogIn,
   Bell,
   Settings,
@@ -103,14 +102,7 @@ export const RightSidebar = ({
       isActive: pathname === SETTINGS_PATH,
     },
     ...(session
-      ? [
-          {
-            label: 'Sign Out',
-            icon: LogOut,
-            title: 'Sign Out',
-            onClick: () => signOut(),
-          },
-        ]
+      ? []
       : [
           {
             label: 'Sign In',

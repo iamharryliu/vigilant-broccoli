@@ -238,6 +238,7 @@ export const BUILT_WITH: Record<string, BuiltWithItem[]> = {
     { name: 'Text', entryId: 'typography' },
   ],
   'segmented-control': [{ name: 'ToggleGroup', entryId: 'toggle-group' }],
+  'sign-out-button': [{ name: 'Button', entryId: 'buttons' }],
   skeleton: [
     { name: 'Card', entryId: 'card' },
     { name: 'Text', entryId: 'typography' },

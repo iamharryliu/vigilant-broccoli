@@ -47,6 +47,7 @@ Shared React component library.
 | Segmented Control | [View](https://components.vigilant-broccoli.app/segmented-control) |
 | Select | [View](https://components.vigilant-broccoli.app/select) |
 | Skeleton | [View](https://components.vigilant-broccoli.app/skeleton) |
+| Sign Out Button | [View](https://components.vigilant-broccoli.app/sign-out-button) |
 | Speech To Text Toggle Button | [View](https://components.vigilant-broccoli.app/speech-to-text-toggle-button) |
 | Stacked Images | [View](https://components.vigilant-broccoli.app/stacked-images) |
 | Status Card List | [View](https://components.vigilant-broccoli.app/status-card-list) |
