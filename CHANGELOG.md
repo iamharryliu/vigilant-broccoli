@@ -197,11 +197,11 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### vb-express
 
 - Calendar parsing now works out each time's UTC offset from the place where it happens, including daylight saving, so a Copenhagen to Keflavík flight no longer shifts by an hour, from pasted text or a screenshot. Repeated legs and invented whole-trip events are dropped ([#1700](https://github.com/iamharryliu/vigilant-broccoli/pull/1700), [#1701](https://github.com/iamharryliu/vigilant-broccoli/pull/1701)).
-- The API is now served at api.vigilant-broccoli.app, with staging at staging-api.vigilant-broccoli.app; the old harryliu.dev hosts keep working until they are retired (PR: pending).
+- The API is now served at api.vigilant-broccoli.app, with staging at staging-api.vigilant-broccoli.app; the old harryliu.dev hosts keep working until they are retired ([#1712](https://github.com/iamharryliu/vigilant-broccoli/pull/1712)).
 
 ### sandbox
 
-- The Google sign-in test page moved to sandbox.vigilant-broccoli.app so it stays same-site with the staging API; the old harryliu.dev host no longer resolves (PR: pending).
+- The Google sign-in test page moved to sandbox.vigilant-broccoli.app so it stays same-site with the staging API; the old harryliu.dev host no longer resolves ([#1712](https://github.com/iamharryliu/vigilant-broccoli/pull/1712)).
 
 </details>
 
