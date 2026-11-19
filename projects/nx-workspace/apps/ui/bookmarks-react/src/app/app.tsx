@@ -70,6 +70,13 @@ const mergeBookmarks = (current: QuickLink[], incoming: QuickLink[]) =>
         : [...merged, link],
     current,
   );
+const getHostname = (target: string) => {
+  try {
+    return new URL(target).hostname;
+  } catch {
+    return '';
+  }
+};
 const TAB_TITLE_KEYS = {
   [TAB.BOOKMARKS]: 'BOOKMARKS',
   [TAB.MANAGE]: 'MANAGE',
@@ -273,14 +280,35 @@ function BookmarksPage() {
       },
     },
   ];
+  const addUrls = form.target
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+  const isMultiAdd = addUrls.length > 1;
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    if (editing === null) {
+      try {
+        const links = parseBookmarks(
+          addUrls.map(target => ({
+            ...form,
+            label: form.label.trim() || (isMultiAdd ? getHostname(target) : ''),
+            target,
+            type: OPEN_TYPE.BROWSER,
+          })),
+        );
+        if (!links.length) throw new Error('No URLs');
+        setBookmarks(mergeBookmarks(bookmarks, links));
+        closeDialog();
+      } catch {
+        setError(t(isMultiAdd ? 'INVALID_LINE' : 'INVALID'));
+      }
+      return;
+    }
     try {
       const [link] = parseBookmarks([{ ...form, type: OPEN_TYPE.BROWSER }]);
       setBookmarks(
-        editing === null
-          ? [...bookmarks, link]
-          : bookmarks.map((old, index) => (index === editing ? link : old)),
+        bookmarks.map((old, index) => (index === editing ? link : old)),
       );
       closeDialog();
     } catch {
@@ -408,17 +436,14 @@ function BookmarksPage() {
                 </Button>
               </div>
               <hr className="border-border" />
-              <h2 className="text-sm font-medium">{t('EXPORT_HEADING')}</h2>
-              <div>
+              <h2 className="text-sm font-medium">
+                {t('EXPORT_IMPORT_HEADING')}
+              </h2>
+              <div className="flex flex-wrap gap-2">
                 <Button variant="outline" onClick={exportBookmarks}>
                   <Download size={ICON_SIZE} />
                   {t('EXPORT')}
                 </Button>
-              </div>
-              <h2 className="pt-3 text-sm font-medium">
-                {t('IMPORT_HEADING')}
-              </h2>
-              <div>
                 <Button variant="outline" onClick={() => setIsImportOpen(true)}>
                   <Upload size={ICON_SIZE} />
                   {t('IMPORT')}
@@ -471,20 +496,41 @@ function BookmarksPage() {
                 <label className="block">
                   {t('LABEL')}
                   <Input
-                    required
+                    required={editing !== null || !isMultiAdd}
                     value={form.label}
                     onChange={e => setForm({ ...form, label: e.target.value })}
                   />
                 </label>
-                <label className="block">
-                  {t('URL')}
-                  <Input
-                    required
-                    type="url"
-                    value={form.target}
-                    onChange={e => setForm({ ...form, target: e.target.value })}
-                  />
-                </label>
+                {editing === null ? (
+                  <label className="block">
+                    {t('URLS')}
+                    <Textarea
+                      required
+                      value={form.target}
+                      onChange={e =>
+                        setForm({ ...form, target: e.target.value })
+                      }
+                      placeholder={t('URLS_PLACEHOLDER')}
+                      spellCheck={false}
+                      className="min-h-24"
+                    />
+                    <span className="block text-xs text-muted-foreground">
+                      {t('URLS_HINT')}
+                    </span>
+                  </label>
+                ) : (
+                  <label className="block">
+                    {t('URL')}
+                    <Input
+                      required
+                      type="url"
+                      value={form.target}
+                      onChange={e =>
+                        setForm({ ...form, target: e.target.value })
+                      }
+                    />
+                  </label>
+                )}
                 <div className="space-y-1">
                   <span className="block">{t('SUBGROUP')}</span>
                   <Select
