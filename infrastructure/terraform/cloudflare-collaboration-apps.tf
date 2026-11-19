@@ -1,5 +1,5 @@
 locals {
-  collaboration_pages_apps = toset(["findme", "whiteboard"])
+  collaboration_pages_apps = toset(["findme"])
 }
 
 resource "cloudflare_pages_domain" "collaboration_app" {
@@ -13,11 +13,6 @@ resource "cloudflare_pages_domain" "collaboration_app" {
 moved {
   from = cloudflare_dns_record.vercel_app["findme"]
   to   = cloudflare_dns_record.collaboration_app["findme"]
-}
-
-moved {
-  from = cloudflare_dns_record.vercel_app["whiteboard"]
-  to   = cloudflare_dns_record.collaboration_app["whiteboard"]
 }
 
 resource "cloudflare_dns_record" "collaboration_app" {

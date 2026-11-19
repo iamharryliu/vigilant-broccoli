@@ -21,7 +21,7 @@ locals {
     staging-calendars          = "staging-calendar.harryliu.dev"
     staging-component-library  = "staging-components.${var.vigilant_broccoli_domain}"
     staging-context-md         = "staging-context.${var.vigilant_broccoli_domain}"
-    staging-docs-md            = "staging-docs.${var.vigilant_broccoli_domain}"
+    staging-docs-md            = "staging-docs.harryliu.dev"
     staging-findme             = "staging-findme.harryliu.dev"
     staging-grind-75-react     = "staging-grind-75.${var.vigilant_broccoli_domain}"
     staging-harryliu-dev-react = "staging.harryliu.dev"
@@ -30,7 +30,7 @@ locals {
     staging-text-tools-ui      = "staging-text-tools.${var.vigilant_broccoli_domain}"
     staging-utilities-ui       = "staging-utilities.${var.vigilant_broccoli_domain}"
     staging-waiting-games      = "staging-waiting.${var.vigilant_broccoli_domain}"
-    staging-whiteboard         = "staging-whiteboard.harryliu.dev"
+    staging-whiteboard         = "staging-whiteboard.${var.vigilant_broccoli_domain}"
   }
 }
 

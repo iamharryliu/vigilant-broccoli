@@ -42,11 +42,11 @@
     },
     {
       "id": "docs-md",
-      "href": "https://docs.vigilant-broccoli.app/",
+      "href": "https://docs.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/docs-md/README.md",
-      "stagingHref": "https://staging-docs.vigilant-broccoli.app/"
+      "stagingHref": "https://staging-docs.harryliu.dev/"
     },
     {
       "id": "find-me",
@@ -66,7 +66,7 @@
     },
     {
       "id": "gravity-guy",
-      "href": "https://gravity-guy.harryliu.dev/",
+      "href": "https://gravity-guy.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/gravity-guy/README.md",
@@ -74,7 +74,7 @@
     },
     {
       "id": "gravity-guy-staging",
-      "href": "https://staging-gravity-guy.harryliu.dev/",
+      "href": "https://staging-gravity-guy.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY_STAGING.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY_STAGING.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/gravity-guy/README.md"
@@ -138,19 +138,19 @@
     },
     {
       "id": "weather",
-      "href": "https://weather.harryliu.dev/",
+      "href": "https://weather.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WEATHER.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/weather-next/README.md",
-      "stagingHref": "https://staging-weather.harryliu.dev/"
+      "stagingHref": "https://staging-weather.vigilant-broccoli.app/"
     },
     {
       "id": "whiteboard",
-      "href": "https://whiteboard.harryliu.dev/",
+      "href": "https://whiteboard.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/whiteboard/README.md",
-      "stagingHref": "https://staging-whiteboard.harryliu.dev/"
+      "stagingHref": "https://staging-whiteboard.vigilant-broccoli.app/"
     },
     {
       "id": "bookmarks",

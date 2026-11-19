@@ -1,8 +1,8 @@
 import { ExternalLink } from 'lucide-react';
 import { buttonVariants } from '@vigilant-broccoli/react-lib';
 
-const DOCS_URL = 'https://docs.vigilant-broccoli.app/';
-const VISIT_LABEL = 'Open docs.vigilant-broccoli.app';
+const DOCS_URL = 'https://docs.harryliu.dev/';
+const VISIT_LABEL = 'Open docs.harryliu.dev';
 
 export const DocsExplorerDemo = () => (
   <a

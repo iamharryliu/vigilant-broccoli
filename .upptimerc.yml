@@ -3,7 +3,7 @@ repo: uptime
 
 sites:
   - name: staging-docs
-    url: https://staging-docs.vigilant-broccoli.app/
+    url: https://staging-docs.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-grind-75
@@ -67,11 +67,11 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-whiteboard
-    url: https://staging-whiteboard.harryliu.dev/
+    url: https://staging-whiteboard.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-weather
-    url: https://staging-weather.harryliu.dev/
+    url: https://staging-weather.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-tasks
@@ -83,7 +83,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-gravity-guy
-    url: https://staging-gravity-guy.harryliu.dev/
+    url: https://staging-gravity-guy.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-calendars
@@ -141,15 +141,15 @@ sites:
   - name: production-waiting-games
     url: https://waiting.vigilant-broccoli.app/
   - name: production-whiteboard
-    url: https://whiteboard.harryliu.dev/
+    url: https://whiteboard.vigilant-broccoli.app/
   - name: production-weather
-    url: https://weather.harryliu.dev/
+    url: https://weather.vigilant-broccoli.app/
   - name: production-tasks
     url: https://tasks.harryliu.dev/
   - name: production-balloono
     url: https://balloono.harryliu.dev/
   - name: production-gravity-guy
-    url: https://gravity-guy.harryliu.dev/
+    url: https://gravity-guy.vigilant-broccoli.app/
   - name: production-calendars
     url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile
@@ -165,13 +165,15 @@ sites:
   - name: production-career
     url: https://career.harryliu.dev/
   - name: production-deployments
-    url: https://deployments.harryliu.dev/
+    url: https://deployments.vigilant-broccoli.app/
+  - name: production-pages-index
+    url: https://projects.vigilant-broccoli.app/
   - name: production-status
     url: https://status.harryliu.dev/
   - name: production-uptime
     url: https://uptime.harryliu.dev/
   - name: production-docs
-    url: https://docs.vigilant-broccoli.app/
+    url: https://docs.harryliu.dev/
   - name: production-grind-75
     url: https://grind-75.vigilant-broccoli.app/
   - name: production-context

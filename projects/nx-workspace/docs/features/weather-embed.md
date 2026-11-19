@@ -22,5 +22,5 @@ The Weather cards in local-manager-next and mobile-manager-next are weather-next
 ## Parent states
 
 - A skeleton shows until the first `HEIGHT`; the frame loads transparently over it (not hidden, since Chrome throttles invisible cross-origin frames).
-- Without a `HEIGHT` in 15 seconds the card shows a failure message with a link to weather.harryliu.dev and Retry, which remounts the frame.
+- Without a `HEIGHT` in 15 seconds the card shows a failure message with a link to weather.vigilant-broccoli.app and Retry, which remounts the frame.
 - The card's loading glow is clipped by the frame edge.
