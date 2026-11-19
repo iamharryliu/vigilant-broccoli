@@ -1,5 +1,6 @@
 # Public tool sites (Cloudflare Pages, plus the GitHub Pages projects index) hosted in the vigilant-broccoli.app zone. Each per-site
-# cloudflare-<site>.tf reads its hostname from here, so moving the sites to another
+# cloudflare-<site>.tf reads its hostname from here (Vercel apps in this zone are in
+# cloudflare-vercel-apps.tf), so moving the sites to another
 # zone is one change to `vigilant_broccoli_domain`. The zone is a separate Cloudflare
 # zone, looked up by name, and must exist in the account before the first apply.
 data "cloudflare_zones" "vigilant_broccoli" {

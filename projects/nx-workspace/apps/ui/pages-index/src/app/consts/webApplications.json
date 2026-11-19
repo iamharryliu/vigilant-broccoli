@@ -138,11 +138,11 @@
     },
     {
       "id": "weather",
-      "href": "https://weather.harryliu.dev/",
+      "href": "https://weather.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WEATHER.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/weather-next/README.md",
-      "stagingHref": "https://staging-weather.harryliu.dev/"
+      "stagingHref": "https://staging-weather.vigilant-broccoli.app/"
     },
     {
       "id": "whiteboard",
