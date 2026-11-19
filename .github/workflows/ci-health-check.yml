@@ -179,7 +179,7 @@ jobs:
           CODE_SERVER_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
             -H "CF-Access-Client-Id: ${CODE_SERVER_CF_ACCESS_CLIENT_ID}" \
             -H "CF-Access-Client-Secret: ${CODE_SERVER_CF_ACCESS_CLIENT_SECRET}" \
-            "https://code.harryliu.dev/healthz" 2>/dev/null) || CODE_SERVER_CODE="timeout"
+            "https://code.vigilant-broccoli.app/healthz" 2>/dev/null) || CODE_SERVER_CODE="timeout"
           if [ "$CODE_SERVER_CODE" = "200" ]; then
             check "code-server" "ok"
           elif [ "$CODE_SERVER_CODE" = "302" ]; then

@@ -30,7 +30,7 @@
     "gitea:backup:cloud": "./infrastructure/terraform/packer/scripts/backup-gitea.sh \"gs://vigilant-broccoli-backup/gitea-backup-$(date -u +%Y-%m-%d).zip\"",
     "gitea:restore": "./infrastructure/terraform/packer/scripts/restore-gitea.sh",
     "code-server:ssh": "./scripts/shell/oci-ssh.sh oci_code_server_public_ip",
-    "code-server:open": "open https://code.harryliu.dev",
+    "code-server:open": "open https://code.vigilant-broccoli.app",
     "code-server:password": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform state pull | jq -r '.resources[] | select(.type == \"random_password\" and .name == \"code_server_password\") | .instances[0].attributes.result' | pbcopy && echo 'Code server password copied to clipboard.'",
     "code-server:logs": "./scripts/shell/oci-ssh.sh oci_code_server_public_ip 'sudo docker logs -f code-server'",
     "code-server:logs:cloud-init": "./scripts/shell/oci-ssh.sh oci_code_server_public_ip 'tail -f /var/log/cloud-init-output.log'",

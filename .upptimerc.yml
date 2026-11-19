@@ -107,9 +107,9 @@ sites:
   - name: production-git
     url: https://git.harryliu.dev/
   - name: production-code-server
-    url: https://code.harryliu.dev/login
+    url: https://code.vigilant-broccoli.app/login
   - name: production-web-terminal
-    url: https://shell.harryliu.dev/
+    url: https://shell.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-sandbox

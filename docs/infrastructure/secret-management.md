@@ -137,7 +137,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `VB_VM_WG_*` | GCP Secret Manager (Tier 0) | WireGuard keys for laptop access to Vault at `10.0.1.1:8200`. |
 | `VERCEL_TOKEN` | Vault `kv/data/secrets` | Deploys the Vercel apps (e.g. hearth) from CI. |
 
-The web terminal at `shell.harryliu.dev` adds no secret: Terraform passes its Access team domain and application AUD, which appear in every Access JWT, to the code-server container as `CF_ACCESS_TEAM_DOMAIN` and `CF_ACCESS_AUD` through cloud-init. Its authentication is the signed `Cf-Access-Jwt-Assertion` header, verified against the team JWKS.
+The web terminal at `shell.vigilant-broccoli.app` adds no secret: Terraform passes its Access team domain and application AUD, which appear in every Access JWT, to the code-server container as `CF_ACCESS_TEAM_DOMAIN` and `CF_ACCESS_AUD` through cloud-init. Its authentication is the signed `Cf-Access-Jwt-Assertion` header, verified against the team JWKS.
 
 ## Secret Rotation
 
