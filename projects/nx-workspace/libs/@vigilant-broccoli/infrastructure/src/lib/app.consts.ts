@@ -58,8 +58,8 @@ export const VB_APP_URL = {
   },
   FIND_ME: {
     NAME: 'Find Me',
-    URL: 'https://findme.harryliu.dev/',
-    STAGING_URL: 'https://staging-findme.harryliu.dev/',
+    URL: `https://findme.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-findme.${VB_APP_DOMAIN}/`,
   },
   WHITEBOARD: {
     NAME: 'Whiteboard',

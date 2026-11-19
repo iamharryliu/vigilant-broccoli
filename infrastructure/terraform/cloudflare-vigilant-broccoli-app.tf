@@ -14,6 +14,7 @@ locals {
     component_library = "components.${var.vigilant_broccoli_domain}"
     context           = "context.${var.vigilant_broccoli_domain}"
     deployments       = "deployments.${var.vigilant_broccoli_domain}"
+    findme            = "findme.${var.vigilant_broccoli_domain}"
     games             = "games.${var.vigilant_broccoli_domain}"
     grind_75          = "grind-75.${var.vigilant_broccoli_domain}"
     pomodoro          = "pomodoro.${var.vigilant_broccoli_domain}"

@@ -39,7 +39,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-findme
-    url: https://staging-findme.harryliu.dev/
+    url: https://staging-findme.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-hearth
@@ -125,7 +125,7 @@ sites:
   - name: production-socket-server
     url: https://socket.harryliu.dev/health
   - name: production-findme
-    url: https://findme.harryliu.dev/
+    url: https://findme.vigilant-broccoli.app/
   - name: production-hearth
     url: https://hearth.harryliu.dev/login
   - name: production-service-manager

@@ -74,7 +74,7 @@ const STAGING_HOSTS = {
   calendars: 'staging-calendar.harryliu.dev',
   whiteboard: `staging-whiteboard.${VB_APP_DOMAIN}`,
   'mobile-manager-next': 'staging-manager.harryliu.dev',
-  findme: 'staging-findme.harryliu.dev',
+  findme: `staging-findme.${VB_APP_DOMAIN}`,
   hearth: 'staging-hearth.harryliu.dev',
   chat: 'staging-chat.harryliu.dev',
   'component-library': `staging-components.${VB_APP_DOMAIN}`,

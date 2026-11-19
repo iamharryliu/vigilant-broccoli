@@ -183,6 +183,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - Whiteboard and its staging site moved from `harryliu.dev` to `whiteboard.vigilant-broccoli.app` and `staging-whiteboard.vigilant-broccoli.app` with no redirect from the old addresses ([#1686](https://github.com/iamharryliu/vigilant-broccoli/pull/1686)).
 
+### findme
+
+- FindMe now lives at findme.vigilant-broccoli.app, with staging at staging-findme.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve ([#1694](https://github.com/iamharryliu/vigilant-broccoli/pull/1694)).
+
 </details>
 
 <details>
