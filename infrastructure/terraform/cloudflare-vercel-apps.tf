@@ -9,11 +9,11 @@ locals {
     balloono               = "balloono.harryliu.dev"
     vb-manager-next-mobile = "manager.harryliu.dev"
     hearth                 = "hearth.harryliu.dev"
-    gravity-guy            = "gravity-guy.harryliu.dev"
     chat                   = "chat.harryliu.dev"
     tasks-next             = "tasks.harryliu.dev"
   }
   vb_app_vercel_subdomains = {
+    gravity-guy  = "gravity-guy.${var.vigilant_broccoli_domain}"
     weather-next = "weather.${var.vigilant_broccoli_domain}"
   }
 }

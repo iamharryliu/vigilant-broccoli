@@ -73,8 +73,8 @@ export const VB_APP_URL = {
   },
   GRAVITY_GUY: {
     NAME: 'Gravity Guy',
-    URL: 'https://gravity-guy.harryliu.dev/',
-    STAGING_URL: 'https://staging-gravity-guy.harryliu.dev/',
+    URL: `https://gravity-guy.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-gravity-guy.${VB_APP_DOMAIN}/`,
   },
   DOCS: {
     NAME: 'Docs',

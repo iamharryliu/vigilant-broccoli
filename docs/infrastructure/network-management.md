@@ -29,7 +29,6 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── findme.harryliu.dev                   FindMe — Cloudflare Pages `production-findme` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── tasks.harryliu.dev                    Tasks — Vercel `production-tasks-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; `frame-ancestors` limited to the manager apps)
 ├── balloono.harryliu.dev                 Balloono — Vercel `production-balloono` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; online rooms run over public Supabase Realtime channels, no backend of its own)
-├── gravity-guy.harryliu.dev              Gravity Guy — Vercel `production-gravity-guy` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; stateless, browser-local settings and scores)
 ├── manager.harryliu.dev                  Mobile Manager Next — Vercel `production-vb-manager-next-mobile` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; gated by Vercel Authentication)
 ├── chat.harryliu.dev                     Chat — Vercel `production-chat` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; gated by Vercel Authentication)
 ├── staging-chat.harryliu.dev             Chat (staging) — same as `chat.harryliu.dev` on `staging-chat`
@@ -46,6 +45,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── text-tools.vigilant-broccoli.app               Text Tools UI — Cloudflare Pages `production-text-tools-ui` (domain + CNAME: Terraform `cloudflare-text-tools.tf`; public, no Access gating; embedded by the manager Dev Dashboard via `frame-ancestors`)
 ├── utilities.vigilant-broccoli.app                Utilities UI — Cloudflare Pages `production-utilities-ui` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating)
 ├── waiting.vigilant-broccoli.app                  Waiting Games — Cloudflare Pages `production-waiting-games` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; stateless passive games, no backend)
+├── gravity-guy.vigilant-broccoli.app       Gravity Guy — Vercel `production-gravity-guy` (CNAME to cname.vercel-dns.com, DNS-only, in the `vigilant-broccoli.app` zone: Terraform `cloudflare-vercel-apps.tf`; domain also added on the Vercel project; stateless, browser-local settings and scores)
 ├── weather.vigilant-broccoli.app         Weather — Vercel `production-weather-next` (CNAME to cname.vercel-dns.com in the `vigilant-broccoli.app` zone, DNS-only: Terraform `cloudflare-vercel-apps.tf`; domain also added on the Vercel project; no redirect from the old `harryliu.dev` hosts)
 ├── whiteboard.vigilant-broccoli.app               Whiteboard — Cloudflare Pages `production-whiteboard` (domain + CNAME: Terraform `cloudflare-whiteboard.tf`; live rooms over Supabase Realtime, no sign-in)
 ├── git.harryliu.dev                      Gitea — OCI VM (A record, proxied + Cloudflare Access; web UI gated by owner email, git/CI over HTTPS via service token, git-SSH on :2222 direct). Also the read surface for the private journal notes — browsed directly in Gitea rather than mirrored to a Pages site, so the notes never leave the VM
@@ -118,7 +118,7 @@ github.io                                 GitHub Pages (custom domain projects.v
 | context.vigilant-broccoli.app | staging-context.vigilant-broccoli.app | `staging-context-md` | Pages |
 | docs.harryliu.dev | staging-docs.harryliu.dev | `staging-docs-md` | Pages |
 | findme.harryliu.dev | staging-findme.harryliu.dev | `staging-findme` | Pages |
-| gravity-guy.harryliu.dev | staging-gravity-guy.harryliu.dev | `staging-gravity-guy` | Vercel |
+| gravity-guy.vigilant-broccoli.app | staging-gravity-guy.vigilant-broccoli.app | `staging-gravity-guy` | Vercel |
 | grind-75.vigilant-broccoli.app | staging-grind-75.vigilant-broccoli.app | `staging-grind-75-react` | Pages |
 | harryliu.dev | staging.harryliu.dev | `staging-harryliu-dev-react` | Pages |
 | hearth.harryliu.dev | staging-hearth.harryliu.dev | `staging-hearth` | Vercel |
