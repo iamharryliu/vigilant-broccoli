@@ -3,7 +3,7 @@ set -u
 
 URLS=(
   https://staging-vb-express.fly.dev/
-  https://api.harryliu.dev/
+  https://api.vigilant-broccoli.app/
   https://staging-media-service.fly.dev/
   https://production-media-service.fly.dev/
 )
