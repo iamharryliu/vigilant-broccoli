@@ -188,7 +188,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### vb-express
 
-- Calendar parsing now keeps each flight and train time in the local time of its departure or arrival place, so a Copenhagen to Keflavík flight no longer shifts by an hour, and drops repeated legs (PR: pending).
+- Calendar parsing now keeps each flight and train time in the local time of its departure or arrival place, so a Copenhagen to Keflavík flight no longer shifts by an hour, and drops repeated legs ([#1700](https://github.com/iamharryliu/vigilant-broccoli/pull/1700)).
 
 </details>
 
