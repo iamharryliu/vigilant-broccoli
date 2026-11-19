@@ -2,11 +2,11 @@
   "applications": [
     {
       "id": "balloono",
-      "href": "https://balloono.harryliu.dev/",
+      "href": "https://balloono.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.BALLOONO.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.BALLOONO.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/balloono/README.md",
-      "stagingHref": "https://staging-balloono.harryliu.dev/",
+      "stagingHref": "https://staging-balloono.vigilant-broccoli.app/",
       "game": true
     },
     {
@@ -50,11 +50,11 @@
     },
     {
       "id": "find-me",
-      "href": "https://findme.harryliu.dev/",
+      "href": "https://findme.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.FIND_ME.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.FIND_ME.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/findme/README.md",
-      "stagingHref": "https://staging-findme.harryliu.dev/"
+      "stagingHref": "https://staging-findme.vigilant-broccoli.app/"
     },
     {
       "id": "grind-75-react",
@@ -178,7 +178,7 @@
     },
     {
       "id": "games",
-      "href": "https://games.harryliu.dev/",
+      "href": "https://games.vigilant-broccoli.app/",
       "titleKey": "GAMES_PAGE.TITLE",
       "descriptionKey": "GAMES_PAGE.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/pages-index/README.md"

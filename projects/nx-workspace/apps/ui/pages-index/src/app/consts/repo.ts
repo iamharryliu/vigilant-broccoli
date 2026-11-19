@@ -12,7 +12,7 @@ export const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
 export const UPTIME_REPO_NAME = 'uptime';
 export const UPTIME_REPO_URL = `https://github.com/${REPO_OWNER}/${UPTIME_REPO_NAME}`;
 
-export const UPTIME_SITE_URL = 'https://uptime.harryliu.dev';
+export const UPTIME_SITE_URL = 'https://uptime.vigilant-broccoli.app';
 
 export const UPTIME_SUMMARY_URL = toUpptimeSummaryUrl(
   REPO_OWNER,

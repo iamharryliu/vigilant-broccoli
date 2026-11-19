@@ -60,6 +60,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### pages-index
 
+- The Games page moved to games.vigilant-broccoli.app and the Upptime history site to uptime.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve ([#1694](https://github.com/iamharryliu/vigilant-broccoli/pull/1694)).
 - The projects site moved to projects.vigilant-broccoli.app. Old projects.harryliu.dev links redirect there and keep their page ([#1684](https://github.com/iamharryliu/vigilant-broccoli/pull/1684)).
 - New Changelog page lists these entries, linked from the home page ([#1586](https://github.com/iamharryliu/vigilant-broccoli/pull/1586)).
 - New Private section after Demo lists owner-only apps, and Web Terminal moved there ([#1606](https://github.com/iamharryliu/vigilant-broccoli/pull/1606)).
@@ -109,6 +110,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### balloono
 
+- Balloono now lives at balloono.vigilant-broccoli.app, with staging at staging-balloono.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve ([#1694](https://github.com/iamharryliu/vigilant-broccoli/pull/1694)).
 - Landscape handheld mode on mobile with a settings menu for mute, restart, CPU count and difficulty, and power-up levels in the HUD ([#1518](https://github.com/iamharryliu/vigilant-broccoli/pull/1518)).
 
 ### gravity-guy
@@ -186,6 +188,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### whiteboard
 
 - Whiteboard and its staging site moved from `harryliu.dev` to `whiteboard.vigilant-broccoli.app` and `staging-whiteboard.vigilant-broccoli.app` with no redirect from the old addresses ([#1686](https://github.com/iamharryliu/vigilant-broccoli/pull/1686)).
+
+### findme
+
+- FindMe now lives at findme.vigilant-broccoli.app, with staging at staging-findme.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve ([#1694](https://github.com/iamharryliu/vigilant-broccoli/pull/1694)).
 
 ### vb-express
 

@@ -6,13 +6,13 @@
 
 locals {
   vercel_app_subdomains = {
-    balloono               = "balloono.harryliu.dev"
     vb-manager-next-mobile = "manager.harryliu.dev"
     hearth                 = "hearth.harryliu.dev"
     chat                   = "chat.harryliu.dev"
     tasks-next             = "tasks.harryliu.dev"
   }
   vb_app_vercel_subdomains = {
+    balloono     = "balloono.${var.vigilant_broccoli_domain}"
     gravity-guy  = "gravity-guy.${var.vigilant_broccoli_domain}"
     weather-next = "weather.${var.vigilant_broccoli_domain}"
   }

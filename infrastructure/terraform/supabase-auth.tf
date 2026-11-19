@@ -51,10 +51,10 @@ resource "supabase_settings" "vb_auth" {
       "http://localhost:3000/*",                                            # local-manager-next local dev
       "http://127.0.0.1:3000/*",                                            # local-manager-next local dev (127.0.0.1 form)
       "https://manager.vigilant-broccoli.app/*",                            # local-manager-next prod (PM2)
-      "https://staging-balloono.harryliu.dev/auth/callback",                # balloono staging (custom domain)
+      "https://staging-balloono.vigilant-broccoli.app/auth/callback",       # balloono staging (custom domain)
       "https://staging-balloono.vercel.app/*",                              # balloono staging
       "https://production-balloono.vercel.app/*",                           # balloono prod
-      "https://balloono.harryliu.dev/*",                                    # balloono prod (custom domain)
+      "https://balloono.vigilant-broccoli.app/*",                           # balloono prod (custom domain)
       "https://staging-manager.harryliu.dev/auth/callback",                 # mobile manager staging (custom domain)
       "https://staging-vb-manager-next-mobile.vercel.app/auth/callback",    # vb-manager-next mobile staging
       "https://production-vb-manager-next-mobile.vercel.app/auth/callback", # vb-manager-next mobile prod

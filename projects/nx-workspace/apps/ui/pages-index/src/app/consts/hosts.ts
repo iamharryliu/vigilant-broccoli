@@ -20,6 +20,6 @@ export const isDeploymentsHost = (
 
 export const toProjectsUrl = (route: string) => `${PROJECTS_URL}#${route}`;
 
-export const GAMES_HOST = 'games.harryliu.dev';
+export const GAMES_HOST = 'games.vigilant-broccoli.app';
 export const isGamesHost = (hostname: string = window.location.hostname) =>
   hostname === GAMES_HOST;

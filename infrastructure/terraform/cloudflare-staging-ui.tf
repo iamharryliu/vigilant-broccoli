@@ -22,7 +22,7 @@ locals {
     staging-component-library  = "staging-components.${var.vigilant_broccoli_domain}"
     staging-context-md         = "staging-context.${var.vigilant_broccoli_domain}"
     staging-docs-md            = "staging-docs.harryliu.dev"
-    staging-findme             = "staging-findme.harryliu.dev"
+    staging-findme             = "staging-findme.${var.vigilant_broccoli_domain}"
     staging-grind-75-react     = "staging-grind-75.${var.vigilant_broccoli_domain}"
     staging-harryliu-dev-react = "staging.harryliu.dev"
     staging-photography-react  = "staging-photography.harryliu.dev"
