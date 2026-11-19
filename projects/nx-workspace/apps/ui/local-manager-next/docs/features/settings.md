@@ -4,13 +4,12 @@
 
 - Accessible via the "Settings" item in the right sidebar (above Sign In/Out)
 - Route: `/settings`
-- Contains a dark mode toggle button and the keyboard shortcuts cheatsheet
+- Contains the theme picker and the keyboard shortcuts cheatsheet
 
-## Dark Mode Toggle
+## Theme Picker
 
-- Button at the top of the settings page, using `useTheme()` from `@vigilant-broccoli/react-lib`
-- Label/icon flip between "Dark mode" (Moon icon) and "Light mode" (Sun icon) depending on `appearance`
-- The global `d` shortcut, bound by react-lib's `ThemeProvider` in `src/app/layout.tsx`, toggles the same theme state independently of this button; the choice persists as `vb-manager-next-theme` (retained across the app rename for saved-theme compatibility)
+- react-lib's `ThemePreferenceControl` (System/Light/Dark) at the top of the settings page; System follows the OS and clears the saved override
+- The global `d` shortcut, bound by react-lib's `ThemeProvider` in `src/app/layout.tsx`, toggles the same theme state; the choice persists as `vb-manager-next-theme` (retained across the app rename for saved-theme compatibility)
 
 ## Keyboard Shortcuts Cheatsheet
 
@@ -30,7 +29,7 @@
 
 - Sidebar entry: `src/app/components/right-sidebar.component.tsx` (`Settings` icon, routes to `/settings`)
 - Route: `src/app/(pages)/settings/page.tsx`
-- Page: `src/app/components/pages/SettingsPage.tsx` (dark mode toggle + keyboard shortcuts cheatsheet)
+- Page: `src/app/components/pages/SettingsPage.tsx` (theme picker + keyboard shortcuts cheatsheet)
 - Overlay: `src/app/components/shortcuts-overlay.component.tsx`
 - Overlay keybinding: `src/app/(pages)/layout.tsx`
 - Shortcuts content: `src/app/content/keyboard-shortcuts.md.ts`
