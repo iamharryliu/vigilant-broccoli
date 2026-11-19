@@ -182,7 +182,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "rabbitmq" {
 }
 
 resource "cloudflare_dns_record" "rabbitmq_management" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.rabbitmq_management_domain
   content = "${cloudflare_zero_trust_tunnel_cloudflared.rabbitmq.id}.cfargotunnel.com"
   type    = "CNAME"

@@ -446,7 +446,7 @@ variable "harryliu_dev_pages_subdomain" {
 
 variable "rabbitmq_management_domain" {
   type    = string
-  default = "queue.harryliu.dev"
+  default = "queue.vigilant-broccoli.app"
 }
 
 variable "rabbitmq_allowed_emails" {
