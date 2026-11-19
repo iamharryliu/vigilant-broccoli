@@ -3,7 +3,7 @@ repo: uptime
 
 sites:
   - name: staging-docs
-    url: https://staging-docs.vigilant-broccoli.app/
+    url: https://staging-docs.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-grind-75
@@ -171,7 +171,7 @@ sites:
   - name: production-uptime
     url: https://uptime.harryliu.dev/
   - name: production-docs
-    url: https://docs.vigilant-broccoli.app/
+    url: https://docs.harryliu.dev/
   - name: production-grind-75
     url: https://grind-75.vigilant-broccoli.app/
   - name: production-context

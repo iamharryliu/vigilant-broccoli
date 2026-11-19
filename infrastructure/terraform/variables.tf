@@ -253,6 +253,11 @@ variable "nx_cache_r2_ttl_seconds" {
   default = 604800
 }
 
+variable "docs_domain" {
+  type    = string
+  default = "docs.harryliu.dev"
+}
+
 variable "docs_pages_project" {
   type    = string
   default = "production-docs-md"

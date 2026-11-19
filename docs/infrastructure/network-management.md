@@ -39,7 +39,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── photography.harryliu.dev              Photography — Cloudflare Pages `production-photography-react` (domain + CNAME: Terraform `cloudflare-photography.tf`; public, no Access gating; albums and photo bytes come from VB Express `GET /api/public/photography/*` at `api.harryliu.dev` (staging Pages → `staging-vb-express.fly.dev`), allowed by the same narrowly scoped public-prefix CORS rule as Calendars; content is the `photography/` folder of the default R2 bucket, managed in local-manager `/cms`)
 ├── pomodoro.vigilant-broccoli.app                 Pomodoro — Cloudflare Pages `production-pomodoro-react` (domain + CNAME: Terraform `cloudflare-pomodoro.tf`; browser-local settings, no backend or auth)
 ├── sandbox.harryliu.dev                  Sandbox — Cloudflare Pages `production-sandbox` (single environment deployed from `main`, no staging; domain + CNAME + owner-email-only Cloudflare Access also covering `production-sandbox.pages.dev` and its aliases: Terraform `cloudflare-sandbox.tf`; Google sign-in test against staging VB Express Better Auth at `staging-api.harryliu.dev`, whose credentialed CORS for this origin is scoped to `/api/auth/`)
-├── docs.vigilant-broccoli.app                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
+├── docs.harryliu.dev                      Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
 ├── grind-75.vigilant-broccoli.app                 Grind 75 — Cloudflare Pages `production-grind-75-react` (domain + CNAME: Terraform `cloudflare-grind-75.tf`; deployed by deploy-grind-75-react.yml because the solutions snapshot lives outside the nx graph; public, no Access gating)
 ├── context.vigilant-broccoli.app                  Agent Context — Cloudflare Pages `production-context-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-context-md.yml because the agent-context snapshot lives outside the nx graph; public, no Access gating)
 ├── components.vigilant-broccoli.app        Component Library — Cloudflare Pages `production-component-library` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating).
@@ -115,7 +115,7 @@ github.io                                 GitHub Pages (custom domain projects.h
 | cloud8skate.com | staging.cloud8skate.com | `staging-cloud-8-skate-react` | Pages |
 | components.vigilant-broccoli.app | staging-components.vigilant-broccoli.app | `staging-component-library` | Pages |
 | context.vigilant-broccoli.app | staging-context.vigilant-broccoli.app | `staging-context-md` | Pages |
-| docs.vigilant-broccoli.app | staging-docs.vigilant-broccoli.app | `staging-docs-md` | Pages |
+| docs.harryliu.dev | staging-docs.harryliu.dev | `staging-docs-md` | Pages |
 | findme.harryliu.dev | staging-findme.harryliu.dev | `staging-findme` | Pages |
 | gravity-guy.harryliu.dev | staging-gravity-guy.harryliu.dev | `staging-gravity-guy` | Vercel |
 | grind-75.vigilant-broccoli.app | staging-grind-75.vigilant-broccoli.app | `staging-grind-75-react` | Pages |

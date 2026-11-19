@@ -78,8 +78,8 @@ export const VB_APP_URL = {
   },
   DOCS: {
     NAME: 'Docs',
-    URL: `https://docs.${VB_APP_DOMAIN}/`,
-    STAGING_URL: `https://staging-docs.${VB_APP_DOMAIN}/`,
+    URL: 'https://docs.harryliu.dev/',
+    STAGING_URL: 'https://staging-docs.harryliu.dev/',
   },
   GRIND_75: {
     NAME: 'Grind 75',

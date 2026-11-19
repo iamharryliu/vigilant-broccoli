@@ -584,7 +584,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     id: 'docs-explorer',
     label: 'Docs Explorer',
     description:
-      'The docs explorer is the file-tree + search shell behind docs.vigilant-broccoli.app. It is not mounted here - it needs a notes tree to browse - so this page links to the live site.',
+      'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site.',
     lib: LIB.DOCS_EXPLORER,
     content: <DocsExplorerDemo />,
   },

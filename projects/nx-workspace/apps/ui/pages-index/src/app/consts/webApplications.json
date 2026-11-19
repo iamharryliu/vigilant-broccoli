@@ -42,11 +42,11 @@
     },
     {
       "id": "docs-md",
-      "href": "https://docs.vigilant-broccoli.app/",
+      "href": "https://docs.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/docs-md/README.md",
-      "stagingHref": "https://staging-docs.vigilant-broccoli.app/"
+      "stagingHref": "https://staging-docs.harryliu.dev/"
     },
     {
       "id": "find-me",
