@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import {
+  cn,
   Tabs,
   TabsContent,
   TabsList,
@@ -11,6 +12,13 @@ import {
 // px-2 keeps seven 36px-wide, 44px-tall triggers plus the actions button
 // inside a 360px phone without horizontal overflow; px-3 needs about 34px more.
 const TAB_TOUCH_CLASS = 'px-2';
+// Inactive force-mounted panels stay laid out at the active panel's size
+// (top-14 = the h-11 tab row plus gap-3) instead of display:none. A frame
+// that renders inside a display:none panel lays out at zero width, and WebKit
+// keeps the resulting tall grid row heights after the panel is shown, leaving
+// blank gaps between task rows and weather tiles in the embeds.
+const INACTIVE_FORCE_MOUNTED_CLASS =
+  'invisible absolute inset-x-0 bottom-0 top-14 overflow-hidden';
 
 export interface TabbedViewTab<T extends string> {
   value: T;
@@ -38,7 +46,7 @@ export const TabbedView = <T extends string>({
   <Tabs
     value={value}
     onValueChange={next => onValueChange(next as T)}
-    className="flex h-full min-h-0 w-full flex-col gap-3"
+    className="relative flex h-full min-h-0 w-full flex-col gap-3"
   >
     <div className="flex shrink-0 items-center justify-between gap-2">
       <TabsList className="h-11">
@@ -63,8 +71,10 @@ export const TabbedView = <T extends string>({
           key={tab.value}
           forceMount
           value={tab.value}
-          className="mt-0 flex min-h-0 flex-1 flex-col"
-          style={{ display: value === tab.value ? undefined : 'none' }}
+          className={cn(
+            'mt-0 flex min-h-0 flex-1 flex-col',
+            value !== tab.value && INACTIVE_FORCE_MOUNTED_CLASS,
+          )}
           aria-hidden={value !== tab.value}
         >
           {tab.content}
