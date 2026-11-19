@@ -62,7 +62,7 @@ const VB_APP_DOMAIN = 'vigilant-broccoli.app';
 
 const STAGING_HOSTS = {
   'personal-website-react': 'staging.harryliu.dev',
-  'docs-md': `staging-docs.${VB_APP_DOMAIN}`,
+  'docs-md': 'staging-docs.harryliu.dev',
   'context-md': `staging-context.${VB_APP_DOMAIN}`,
   'utilities-ui': `staging-utilities.${VB_APP_DOMAIN}`,
   'bookmarks-react': `staging-bookmarks.${VB_APP_DOMAIN}`,

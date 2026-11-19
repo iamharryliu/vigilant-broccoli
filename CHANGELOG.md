@@ -69,6 +69,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - The graph opens without a top bar and stays open on the start page, keeps the open note centered and highlights it and hovered notes with soft glows. Its settings add color schemes from Sanzo Wada's _A Dictionary of Color Combinations_ (No. 321 by default) and a node glow switch, and it now defaults to 4 hops ([#1657](https://github.com/iamharryliu/vigilant-broccoli/pull/1657)).
 
 - Docs MD, Agent Context, Grind 75, Component Library, Text Tools, Utilities, Waiting Games and Pomodoro, with their staging sites, moved from `harryliu.dev` to `<site>.vigilant-broccoli.app` (`components`, `context`, `docs`, `grind-75`, `pomodoro`, `text-tools`, `utilities`, `waiting`) with no redirect from the old addresses ([#1673](https://github.com/iamharryliu/vigilant-broccoli/pull/1673)).
+- Docs MD moved back to `docs.harryliu.dev` (staging `staging-docs.harryliu.dev`), with no redirect from `docs.vigilant-broccoli.app`; the other tool sites stay on `vigilant-broccoli.app` ([#1683](https://github.com/iamharryliu/vigilant-broccoli/pull/1683)).
 
 ### context-md
 

@@ -11,7 +11,6 @@ locals {
     bookmarks         = "bookmarks.${var.vigilant_broccoli_domain}"
     component_library = "components.${var.vigilant_broccoli_domain}"
     context           = "context.${var.vigilant_broccoli_domain}"
-    docs              = "docs.${var.vigilant_broccoli_domain}"
     grind_75          = "grind-75.${var.vigilant_broccoli_domain}"
     pomodoro          = "pomodoro.${var.vigilant_broccoli_domain}"
     text_tools        = "text-tools.${var.vigilant_broccoli_domain}"
