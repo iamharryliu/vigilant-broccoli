@@ -11,7 +11,7 @@ export const ACCESS_GATED_URL = {
   },
   DRIVE: {
     NAME: 'Drive',
-    URL: 'https://drive.harryliu.dev/',
+    URL: 'https://drive.vigilant-broccoli.app/',
   },
   GIT: {
     NAME: 'Git',

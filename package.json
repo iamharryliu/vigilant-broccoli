@@ -37,7 +37,7 @@
     "code-server:replace": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply -replace=oci_core_instance.code_server && ssh-keygen -R $(terraform output -raw oci_code_server_public_ip) && ./scripts/sync-code-server-ip.sh",
     "code-server:reset": "./scripts/shell/oci-ssh.sh oci_code_server_public_ip 'cd /opt/code-server && sudo docker compose down -v && sudo docker compose up -d'",
     "seafile:ssh": "./scripts/shell/oci-ssh.sh aws_seafile_public_ip",
-    "seafile:open": "open https://drive.harryliu.dev",
+    "seafile:open": "open https://drive.vigilant-broccoli.app",
     "seafile:password": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform state pull | jq -r '.resources[] | select(.type == \"random_password\" and .name == \"seafile_admin_password\") | .instances[0].attributes.result' | pbcopy && echo 'Seafile admin password copied to clipboard (login email: harryliu1995@gmail.com).'",
     "seafile:logs": "./scripts/shell/oci-ssh.sh aws_seafile_public_ip 'sudo docker logs -f seafile'",
     "seafile:gc": "./scripts/shell/oci-ssh.sh aws_seafile_public_ip 'sudo systemctl start seafile-gc.service; sudo journalctl -u seafile-gc.service -n 30 --no-pager; df -h /mnt/seafile-data'",

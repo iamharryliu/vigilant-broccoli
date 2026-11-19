@@ -117,7 +117,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-drive
-    url: https://drive.harryliu.dev/
+    url: https://drive.vigilant-broccoli.app/
   - name: production-nx-cache
     url: https://nx-cache.vigilant-broccoli.app/health
   - name: production-observability-vm
