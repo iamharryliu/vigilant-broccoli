@@ -135,7 +135,7 @@ jobs:
           HEALTH=$(curl -s \
             -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
             -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}" \
-            https://vault.harryliu.dev/v1/sys/health) || HEALTH=""
+            https://vault.vigilant-broccoli.app/v1/sys/health) || HEALTH=""
           if [ -n "$HEALTH" ]; then
             SEALED=$(echo "$HEALTH" | jq -r '.sealed')
             INITIALIZED=$(echo "$HEALTH" | jq -r '.initialized')

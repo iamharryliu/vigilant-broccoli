@@ -233,7 +233,7 @@ variable "grafana_instance_type" {
 
 variable "vault_domain" {
   type    = string
-  default = "vault.harryliu.dev"
+  default = "vault.vigilant-broccoli.app"
 }
 
 variable "socket_server_domain" {

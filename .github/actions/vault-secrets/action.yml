@@ -1,5 +1,5 @@
 name: Vault Secrets
-description: Import secrets from Vault at vault.harryliu.dev (cloudflared tunnel, Cloudflare Access service token fetched from GCP Secret Manager via WIF).
+description: Import secrets from Vault at vault.vigilant-broccoli.app (cloudflared tunnel, Cloudflare Access service token fetched from GCP Secret Manager via WIF).
 
 inputs:
   gcp_workload_identity_provider:
@@ -40,7 +40,7 @@ runs:
     - name: Import Secrets from Vault
       uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4
       with:
-        url: https://vault.harryliu.dev
+        url: https://vault.vigilant-broccoli.app
         method: jwt
         role: ${{ inputs.role }}
         jwtGithubAudience: https://github.com/iamharryliu/vigilant-broccoli
