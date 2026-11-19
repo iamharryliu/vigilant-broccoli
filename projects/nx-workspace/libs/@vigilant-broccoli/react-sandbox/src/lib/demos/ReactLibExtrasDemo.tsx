@@ -10,6 +10,7 @@ import {
   KeyboardAccessoryToolbar,
   Popover,
   SearchInput,
+  SignOutButton,
   SpeechToTextToggleButton,
   Text,
   ThemePreferenceControl,
@@ -137,6 +138,24 @@ export const SpeechToTextToggleButtonDemo = () => {
     />
   );
 };
+
+const SIGN_OUT_DELAY_MS = 1500;
+
+export const SignOutButtonDemo = () => (
+  <>
+    <Toaster />
+    <div className="flex flex-wrap items-center gap-3">
+      <SignOutButton onClick={notify('Signed out')} />
+      <SignOutButton
+        label="Sign out (async)"
+        onClick={async () => {
+          await new Promise(resolve => setTimeout(resolve, SIGN_OUT_DELAY_MS));
+          toast('Signed out');
+        }}
+      />
+    </div>
+  </>
+);
 
 export const ThemePreferenceControlDemo = () => (
   <div className="flex max-w-md flex-col gap-3">

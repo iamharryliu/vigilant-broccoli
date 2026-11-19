@@ -118,6 +118,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- New `SignOutButton`, the standard sign-out action with a logout icon and a pending state for async handlers, with a demo in the component library ([#1693](https://github.com/iamharryliu/vigilant-broccoli/pull/1693)).
 - New `ThemePreferenceControl`, a shared System/Light/Dark picker. Bookmarks and Hearth settings use it in place of their own copies, and Job Hunt's theme dropdown becomes the same segmented control ([#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
 - `SearchableList` moved out of `react-lib-higher-level` into its own `@vigilant-broccoli/entry-directory` library and is now `EntryDirectory` (`EntryDirectoryRow`, `ENTRY_DIRECTORY_VIEW` and the matching types), and `Sidebar` moved into its own `@vigilant-broccoli/sidebar` library; apps import it from there. The chatbot library now exports `ConfirmDeleteDialog` ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680)).
 
@@ -146,6 +147,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### local-manager-next
 
+- Settings is now split into Appearance, Keyboard Shortcuts and Account sections. The keyboard shortcuts cheatsheet is a table, and Sign Out moved from the sidebar to the Account section ([#1693](https://github.com/iamharryliu/vigilant-broccoli/pull/1693)).
 - New CMS page browses, previews, uploads to and deletes from Cloudflare R2, including whole folders ([#1512](https://github.com/iamharryliu/vigilant-broccoli/pull/1512), [#1593](https://github.com/iamharryliu/vigilant-broccoli/pull/1593)).
 - The chatbot has a RAG knowledge base with drag-and-drop uploads, Markdown code blocks and confirmed chat deletion ([#1556](https://github.com/iamharryliu/vigilant-broccoli/pull/1556), [#1560](https://github.com/iamharryliu/vigilant-broccoli/pull/1560), [#1557](https://github.com/iamharryliu/vigilant-broccoli/pull/1557), [#1563](https://github.com/iamharryliu/vigilant-broccoli/pull/1563)).
 - New file converter, connection world map, security news page, and iCal and web page event sources ([#1472](https://github.com/iamharryliu/vigilant-broccoli/pull/1472), [#1379](https://github.com/iamharryliu/vigilant-broccoli/pull/1379), [#1399](https://github.com/iamharryliu/vigilant-broccoli/pull/1399)).

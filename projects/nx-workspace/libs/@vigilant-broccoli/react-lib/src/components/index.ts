@@ -53,6 +53,7 @@ export * from './ChatSendButton';
 export * from './ThemeProvider';
 export * from './ThemePreferenceControl';
 export * from './DarkModeIconButton';
+export * from './SignOutButton';
 export * from './HoneypotField';
 export * from './VisuallyHidden';
 export * from './Skeleton';

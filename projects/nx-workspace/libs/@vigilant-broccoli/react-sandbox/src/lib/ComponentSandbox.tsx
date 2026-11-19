@@ -77,6 +77,7 @@ import {
   KeyboardAccessoryToolbarDemo,
   PopoverDemo,
   SearchInputDemo,
+  SignOutButtonDemo,
   SpeechToTextToggleButtonDemo,
   ThemePreferenceControlDemo,
   ToggleGroupDemo,
@@ -444,6 +445,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Select bound to string, number and object options, each with its own selected-value rendering.',
     lib: LIB.REACT_LIB,
     content: <SelectDemo />,
+  },
+  {
+    id: 'sign-out-button',
+    label: 'Sign Out Button',
+    description:
+      'Standard sign-out action with a logout icon; an async handler shows the pending state.',
+    lib: LIB.REACT_LIB,
+    content: <SignOutButtonDemo />,
   },
   {
     id: 'status-card-list',

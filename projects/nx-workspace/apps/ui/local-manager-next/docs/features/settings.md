@@ -2,9 +2,10 @@
 
 ## Overview
 
-- Accessible via the "Settings" item in the right sidebar (above Sign In/Out)
+- Accessible via the "Settings" item in the right sidebar (above Sign In when signed out)
 - Route: `/settings`
-- Contains the theme picker and the keyboard shortcuts cheatsheet
+- Sections separated by rules: Appearance (theme picker), Keyboard Shortcuts (cheatsheet) and, when signed in, Account with react-lib's `SignOutButton` (the sidebar only shows Sign In when signed out)
+- The page's section header replaces the cheatsheet Markdown's own `# Keyboard Shortcuts` title (`h1` is disallowed there); the hold-`?` overlay still shows it
 
 ## Theme Picker
 
@@ -29,7 +30,7 @@
 
 - Sidebar entry: `src/app/components/right-sidebar.component.tsx` (`Settings` icon, routes to `/settings`)
 - Route: `src/app/(pages)/settings/page.tsx`
-- Page: `src/app/components/pages/SettingsPage.tsx` (theme picker + keyboard shortcuts cheatsheet)
+- Page: `src/app/components/pages/SettingsPage.tsx` (Appearance, Keyboard Shortcuts and Account sections)
 - Overlay: `src/app/components/shortcuts-overlay.component.tsx`
 - Overlay keybinding: `src/app/(pages)/layout.tsx`
 - Shortcuts content: `src/app/content/keyboard-shortcuts.md.ts`
