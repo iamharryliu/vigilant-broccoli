@@ -173,6 +173,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - The Tasks tab embeds tasks.harryliu.dev inside a matching border. Voice input, AI task creation and the bottom-sheet create dialog are gone from it ([#1602](https://github.com/iamharryliu/vigilant-broccoli/pull/1602), [#1612](https://github.com/iamharryliu/vigilant-broccoli/pull/1612)).
 - Google Tasks and Calendar stay connected past the hourly token expiry ([#1524](https://github.com/iamharryliu/vigilant-broccoli/pull/1524)).
 - Clearing seen words in language learning asks for confirmation in a dialog instead of a browser prompt ([#1672](https://github.com/iamharryliu/vigilant-broccoli/pull/1672)).
+- The Tasks and Weather tabs no longer show blank gaps between tasks or oversized weather rows on iPhone when the page loads while another tab is open ([#1702](https://github.com/iamharryliu/vigilant-broccoli/pull/1702)).
 
 ### media-service
 
