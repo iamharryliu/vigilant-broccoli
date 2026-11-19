@@ -47,7 +47,7 @@ The repo already has two remote-access patterns, and both are a poor fit:
   are native apps — Android TV, iOS, Kodi — which cannot complete an Access
   login, and streaming video through the Cloudflare proxy is outside what the
   free plan is for. This is the same constraint that already forced
-  `loki.harryliu.dev` off Access and onto basic auth
+  `loki.vigilant-broccoli.app` off Access and onto basic auth
   ([network-management.md](./network-management.md)).
 - **WireGuard** (GCP Vault VM). Hand-managed keys and endpoints for one
   point-to-point tunnel; adding every phone, TV and laptop that should reach

@@ -204,14 +204,14 @@ variable "immich_allowed_emails" {
 
 variable "grafana_domain" {
   type    = string
-  default = "grafana.harryliu.dev"
+  default = "grafana.vigilant-broccoli.app"
 }
 
 # Loki push endpoint for machine clients (Fly log shipper); same tunnel and VM
 # as Grafana, gated by nginx basic auth instead of Cloudflare Access.
 variable "loki_domain" {
   type    = string
-  default = "loki.harryliu.dev"
+  default = "loki.vigilant-broccoli.app"
 }
 
 variable "loki_push_user" {

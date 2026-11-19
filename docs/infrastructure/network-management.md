@@ -53,8 +53,8 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── shell.harryliu.dev                    Web terminal — same OCI VM and Caddy as code-server, served by the `web-terminal` s6 service in the code-server image on internal port 7681, never published on the host (A record, proxied + its own owner-only Cloudflare Access application with a 4h session; the server re-verifies the Access JWT on every request and WebSocket upgrade; Terraform `oci-code-server.tf`)
 ├── drive.harryliu.dev                    Seafile — AWS EC2 VM (A record, proxied + Cloudflare Access, owner-email only; kept off the OCI Ampere pool — its 50GB-per-boot-volume floor left no free-tier storage headroom for a 4th/5th OCI VM)
 ├── images.harryliu.dev                   Immich — AWS EC2 VM (CNAME to cfargotunnel.com, proxied + Cloudflare Access owner-email only; reached via an outbound-only cloudflared tunnel like vault.harryliu.dev, not a direct A record like drive — no inbound 80/443 on the box at all)
-├── grafana.harryliu.dev                  Grafana — AWS EC2 observability VM (`aws-grafana.tf`; CNAME to cfargotunnel.com, proxied + Cloudflare Access owner-email only; same tunnel pattern as images)
-├── loki.harryliu.dev                     Loki push endpoint — same VM and tunnel as grafana (CNAME, proxied, **no Access app**: nginx basic auth on `/loki/api/v1/push`, unauthenticated `/health` (VM liveness, polled by Upptime) and `/ready`, everything else 404; client is the `vb-log-shipper` fly app. Access is not usable here — the shipper is Vector, whose Loki sink supports only basic/bearer auth, not the `CF-Access-Client-Id`/`Secret` header pair)
+├── grafana.vigilant-broccoli.app                  Grafana — AWS EC2 observability VM (`aws-grafana.tf`; CNAME to cfargotunnel.com, proxied + Cloudflare Access owner-email only; same tunnel pattern as images)
+├── loki.vigilant-broccoli.app                     Loki push endpoint — same VM and tunnel as grafana (CNAME, proxied, **no Access app**: nginx basic auth on `/loki/api/v1/push`, unauthenticated `/health` (VM liveness, polled by Upptime) and `/ready`, everything else 404; client is the `vb-log-shipper` fly app. Access is not usable here — the shipper is Vector, whose Loki sink supports only basic/bearer auth, not the `CF-Access-Client-Id`/`Secret` header pair)
 ├── queue.vigilant-broccoli.app                    RabbitMQ management UI — OCI RabbitMQ VM (`oci.tf`; CNAME to cfargotunnel.com, proxied + Cloudflare Access owner-email only; cloudflared runs in the VM's Compose stack and reaches `https://rabbitmq:15671` over the private-CA cert, so 15671 is not published or open in the security list)
 ├── socket.harryliu.dev                   Socket server — OCI RabbitMQ VM (A record, DNS-only)
 └── vault.harryliu.dev                    Vault — GCP vb-free-vm via cloudflared tunnel (CNAME, proxied + Cloudflare Access service token, CI-only)
@@ -66,7 +66,7 @@ fly.dev                                   Fly.io API services (production apps c
 ├── demo-office-presence-service.fly.dev          Office Presence Service (demo only) — Slack Events API Request URLs and the demo UI API
 ├── staging-vb-express.fly.dev                    VB Express (staging) — origin behind `staging-api.harryliu.dev`
 ├── production-vb-express.fly.dev                 VB Express (production) — origin behind `api.harryliu.dev`; clients should not call it directly
-└── vb-log-shipper                                Fly log shipper (no hostname, no public IP — outbound only: Fly NATS log stream → https://loki.harryliu.dev)
+└── vb-log-shipper                                Fly log shipper (no hostname, no public IP — outbound only: Fly NATS log stream → https://loki.vigilant-broccoli.app)
 
 vercel.app                                Vercel (production projects created on first production dispatch)
 ├── staging-hearth.vercel.app                 Hearth (staging)

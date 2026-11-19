@@ -332,7 +332,7 @@ export const VB_LINKS: QuickLink[] = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   ...toQuickLinks(LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI, [
-    { NAME: 'Grafana (Cloud)', URL: 'https://grafana.harryliu.dev/' },
+    { NAME: 'Grafana (Cloud)', URL: 'https://grafana.vigilant-broccoli.app/' },
   ]),
 ];
 
