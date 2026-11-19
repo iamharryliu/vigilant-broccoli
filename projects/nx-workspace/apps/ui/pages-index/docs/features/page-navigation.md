@@ -20,7 +20,7 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 
 ## Deployments, status and repo timeline
 
-- `/status` — service health grouped by Production / Staging / Demo / Personal Apps from `iamharryliu/uptime`; unavailable monitoring data displays an error. Each service row shows 24h/7d/30d/1y uptime, a 30-day downtime strip and the response time from `summary.json`. A "Full uptime history" card links to `uptime.harryliu.dev` (the Upptime site), and GitHub Actions badges for both repositories follow the list.
+- `/status` — service health grouped by Production / Staging / Demo / Personal Apps from `iamharryliu/uptime`; unavailable monitoring data displays an error. Each service row shows 24h/7d/30d/1y uptime, a 30-day downtime strip and the response time from `summary.json`. A "Full uptime history" card links to `uptime.vigilant-broccoli.app` (the Upptime site), and GitHub Actions badges for both repositories follow the list.
 - `/deployments` — open PRs with a deployed Cloudflare Pages preview (also the root of `deployments.vigilant-broccoli.app`), linked from the home page's Monitoring section; see [deployments-page.md](./deployments-page.md).
 - `/repo-timeline` — lines of code, commits, PRs merged, lines added/deleted per day / month / year, shown as a horizontally scrollable bar chart or as react-lib's `ScrollTimeline`. Data is `public/repo-timeline.json`, generated from `git log --numstat` by the `generate-repo-timeline` target (`scripts/generate-repo-timeline.ts`, lockfiles and >100K-line single-file changes excluded) and copied into `_site` on each Pages deploy.
 
@@ -47,12 +47,12 @@ The Job Hunt demo card opens the public, read-only sample deployment at `demo-jo
 - `/games` shows production Balloono, Gravity Guy and Waiting Games, sorted by translated title, with direct play cards. `/games/:app` README pages remain available by route.
 - Membership is the `game: true` flag on entries in the shared applications registry; demos, staging duplicates and the Games portal itself are excluded. The full applications and demo lists retain their existing detail behavior.
 - Home links to Games; the Games breadcrumb returns to Home.
-- `games.harryliu.dev` serves Games at `/` and `#/games`; `#/games/:app` keeps README navigation on this host, with Games as its local breadcrumb parent and Home linking to the projects host. Unknown hash routes return to root.
+- `games.vigilant-broccoli.app` serves Games at `/` and `#/games`; `#/games/:app` keeps README navigation on this host, with Games as its local breadcrumb parent and Home linking to the projects host. Unknown hash routes return to root.
 - The Games portal also appears in the full applications registry and shared browser quick links, with a production Upptime check.
 
 ### Activation
 
 - After merge, wait for the main pages-index GitHub Pages deployment, then verify `https://projects.vigilant-broccoli.app/#/games`.
 - From an authenticated local checkout run `pnpm tf:plan`; review the plan for `cloudflare_workers_custom_domain.games` and exclude unrelated drift before running `pnpm tf:apply`. The custom domain provisions DNS/TLS on the existing Worker; no new app or Worker script is needed.
-- Verify HTTPS at `https://games.harryliu.dev/`, `#/games`, a game About page and its breadcrumbs; open all three production games. Confirm status, career and deployments roots still render correctly.
+- Verify HTTPS at `https://games.vigilant-broccoli.app/`, `#/games`, a game About page and its breadcrumbs; open all three production games. Confirm status, career and deployments roots still render correctly.
 - Confirm the Upptime configuration sync and production-games check after merge; no provider dashboard edits are needed.

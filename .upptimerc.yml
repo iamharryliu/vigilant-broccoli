@@ -79,7 +79,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-balloono
-    url: https://staging-balloono.harryliu.dev/
+    url: https://staging-balloono.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-gravity-guy
@@ -147,7 +147,7 @@ sites:
   - name: production-tasks
     url: https://tasks.harryliu.dev/
   - name: production-balloono
-    url: https://balloono.harryliu.dev/
+    url: https://balloono.vigilant-broccoli.app/
   - name: production-gravity-guy
     url: https://gravity-guy.vigilant-broccoli.app/
   - name: production-calendars
@@ -161,7 +161,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-games
-    url: https://games.harryliu.dev/
+    url: https://games.vigilant-broccoli.app/
   - name: production-career
     url: https://career.harryliu.dev/
   - name: production-deployments
@@ -171,7 +171,7 @@ sites:
   - name: production-status
     url: https://status.vigilant-broccoli.app/
   - name: production-uptime
-    url: https://uptime.harryliu.dev/
+    url: https://uptime.vigilant-broccoli.app/
   - name: production-docs
     url: https://docs.harryliu.dev/
   - name: production-grind-75
@@ -193,7 +193,7 @@ sites:
 
 user-agent: upptime-vigilant-broccoli
 status-website:
-  cname: uptime.harryliu.dev
+  cname: uptime.vigilant-broccoli.app
   name: Harry Liu Status
 
 skipDescriptionUpdate: true

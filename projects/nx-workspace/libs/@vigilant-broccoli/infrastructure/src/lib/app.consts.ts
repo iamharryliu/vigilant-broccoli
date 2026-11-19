@@ -5,7 +5,7 @@ import { PROJECT_LINK } from '@harry/personal';
 const VB_APP_DOMAIN = 'vigilant-broccoli.app';
 
 export const VB_APP_URL = {
-  GAMES: { NAME: 'Games', URL: 'https://games.harryliu.dev/' },
+  GAMES: { NAME: 'Games', URL: `https://games.${VB_APP_DOMAIN}/` },
   COMPONENT_LIBRARY: {
     NAME: 'Component Library',
     URL: `https://components.${VB_APP_DOMAIN}/`,
@@ -68,8 +68,8 @@ export const VB_APP_URL = {
   },
   BALLOONO: {
     NAME: 'Balloono',
-    URL: 'https://balloono.harryliu.dev/',
-    STAGING_URL: 'https://staging-balloono.harryliu.dev/',
+    URL: `https://balloono.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-balloono.${VB_APP_DOMAIN}/`,
   },
   GRAVITY_GUY: {
     NAME: 'Gravity Guy',

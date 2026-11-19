@@ -87,10 +87,19 @@ resource "github_actions_variable" "upptime_monitoring_enabled" {
   value         = tostring(var.upptime_migration_complete)
 }
 
+resource "cloudflare_dns_record" "upptime" {
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
+  name    = local.vb_app_domains.uptime
+  content = "${var.github_owner}.github.io"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = false
+}
+
 resource "github_repository_pages" "upptime" {
   repository = github_repository.upptime.name
   build_type = "legacy"
-  cname      = cloudflare_dns_record.harryliu_dev_uptime.name
+  cname      = cloudflare_dns_record.upptime.name
 
   https_enforced = var.upptime_https_enforced
 

@@ -70,7 +70,7 @@ const STAGING_HOSTS = {
   'pomodoro-react': `staging-pomodoro.${VB_APP_DOMAIN}`,
   'waiting-games': `staging-waiting.${VB_APP_DOMAIN}`,
   'weather-next': `staging-weather.${VB_APP_DOMAIN}`,
-  balloono: 'staging-balloono.harryliu.dev',
+  balloono: `staging-balloono.${VB_APP_DOMAIN}`,
   calendars: 'staging-calendar.harryliu.dev',
   whiteboard: `staging-whiteboard.${VB_APP_DOMAIN}`,
   'mobile-manager-next': 'staging-manager.harryliu.dev',

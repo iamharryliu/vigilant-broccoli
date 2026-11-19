@@ -127,12 +127,3 @@ resource "cloudflare_dns_record" "harryliu_dev_staging_api_fly_ownership" {
   ttl     = 1
   proxied = false
 }
-
-resource "cloudflare_dns_record" "harryliu_dev_uptime" {
-  zone_id = var.cloudflare_zone_id
-  name    = var.uptime_domain
-  content = "${var.github_owner}.github.io"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = false
-}

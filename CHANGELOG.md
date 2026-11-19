@@ -56,6 +56,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### pages-index
 
+- The Games page moved to games.vigilant-broccoli.app and the Upptime history site to uptime.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve (PR: pending).
 - The projects site moved to projects.vigilant-broccoli.app. Old projects.harryliu.dev links redirect there and keep their page ([#1684](https://github.com/iamharryliu/vigilant-broccoli/pull/1684)).
 - New Changelog page lists these entries, linked from the home page ([#1586](https://github.com/iamharryliu/vigilant-broccoli/pull/1586)).
 - New Private section after Demo lists owner-only apps, and Web Terminal moved there ([#1606](https://github.com/iamharryliu/vigilant-broccoli/pull/1606)).
@@ -104,6 +105,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### balloono
 
+- Balloono now lives at balloono.vigilant-broccoli.app, with staging at staging-balloono.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve (PR: pending).
 - Landscape handheld mode on mobile with a settings menu for mute, restart, CPU count and difficulty, and power-up levels in the HUD ([#1518](https://github.com/iamharryliu/vigilant-broccoli/pull/1518)).
 
 ### gravity-guy

@@ -2,11 +2,11 @@
   "applications": [
     {
       "id": "balloono",
-      "href": "https://balloono.harryliu.dev/",
+      "href": "https://balloono.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.BALLOONO.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.BALLOONO.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/balloono/README.md",
-      "stagingHref": "https://staging-balloono.harryliu.dev/",
+      "stagingHref": "https://staging-balloono.vigilant-broccoli.app/",
       "game": true
     },
     {
@@ -178,7 +178,7 @@
     },
     {
       "id": "games",
-      "href": "https://games.harryliu.dev/",
+      "href": "https://games.vigilant-broccoli.app/",
       "titleKey": "GAMES_PAGE.TITLE",
       "descriptionKey": "GAMES_PAGE.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/pages-index/README.md"

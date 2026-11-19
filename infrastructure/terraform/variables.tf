@@ -357,11 +357,6 @@ variable "career_domain" {
   default = "career.harryliu.dev"
 }
 
-variable "uptime_domain" {
-  type    = string
-  default = "uptime.harryliu.dev"
-}
-
 variable "upptime_https_enforced" {
   type        = bool
   default     = true
@@ -457,9 +452,4 @@ variable "rabbitmq_management_domain" {
 variable "rabbitmq_allowed_emails" {
   type    = list(string)
   default = ["harryliu1995@gmail.com"]
-}
-
-variable "games_domain" {
-  type    = string
-  default = "games.harryliu.dev"
 }

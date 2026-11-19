@@ -4,9 +4,9 @@
 # host), CareerPage (career host) or DeploymentsPage (deployments host) at the
 # root (GamesPage on the games host); the Worker only
 # carries the HTML and static assets, preserving upstream status codes and
-# content types. The status and deployments hosts live in the vigilant-broccoli.app
-# zone (cloudflare-vigilant-broccoli-app.tf); career and games stay in harryliu.dev.
-# Upptime's generated history site is separate, at uptime.harryliu.dev.
+# content types. The status, deployments and games hosts live in the vigilant-broccoli.app
+# zone (cloudflare-vigilant-broccoli-app.tf); career stays in harryliu.dev.
+# Upptime's generated history site is separate, at uptime.vigilant-broccoli.app.
 
 resource "cloudflare_workers_script" "status_proxy" {
   account_id  = var.cloudflare_account_id
@@ -70,7 +70,7 @@ resource "cloudflare_workers_custom_domain" "deployments" {
 
 resource "cloudflare_workers_custom_domain" "games" {
   account_id = var.cloudflare_account_id
-  zone_id    = var.cloudflare_zone_id
-  hostname   = var.games_domain
+  zone_id    = data.cloudflare_zones.vigilant_broccoli.result[0].id
+  hostname   = local.vb_app_domains.games
   service    = cloudflare_workers_script.status_proxy.script_name
 }

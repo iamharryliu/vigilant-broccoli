@@ -21,6 +21,6 @@ export const VB_MONITORING_URL = {
   },
   UPTIME: {
     NAME: 'Uptime',
-    URL: 'https://uptime.harryliu.dev/',
+    URL: 'https://uptime.vigilant-broccoli.app/',
   },
 } as const;
