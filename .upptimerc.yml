@@ -71,7 +71,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-weather
-    url: https://staging-weather.harryliu.dev/
+    url: https://staging-weather.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-tasks
@@ -143,7 +143,7 @@ sites:
   - name: production-whiteboard
     url: https://whiteboard.harryliu.dev/
   - name: production-weather
-    url: https://weather.harryliu.dev/
+    url: https://weather.vigilant-broccoli.app/
   - name: production-tasks
     url: https://tasks.harryliu.dev/
   - name: production-balloono

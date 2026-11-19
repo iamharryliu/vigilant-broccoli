@@ -1,6 +1,6 @@
 import { PROJECT_LINK } from '@harry/personal';
 
-// Zone for the public Pages tool sites; keep in sync with `vigilant_broccoli_domain`
+// Zone for the public tool sites and Weather; keep in sync with `vigilant_broccoli_domain`
 // in infrastructure/terraform/variables.tf.
 const VB_APP_DOMAIN = 'vigilant-broccoli.app';
 
@@ -48,8 +48,8 @@ export const VB_APP_URL = {
   },
   WEATHER: {
     NAME: 'Weather',
-    URL: 'https://weather.harryliu.dev/',
-    STAGING_URL: 'https://staging-weather.harryliu.dev/',
+    URL: `https://weather.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-weather.${VB_APP_DOMAIN}/`,
   },
   TASKS: {
     NAME: 'Tasks',
