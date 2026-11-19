@@ -1,6 +1,6 @@
 import { PROJECT_LINK } from '@harry/personal';
 
-// Zone for the public Pages tool sites; keep in sync with `vigilant_broccoli_domain`
+// Zone for the public tool sites and Weather; keep in sync with `vigilant_broccoli_domain`
 // in infrastructure/terraform/variables.tf.
 const VB_APP_DOMAIN = 'vigilant-broccoli.app';
 
@@ -48,8 +48,8 @@ export const VB_APP_URL = {
   },
   WEATHER: {
     NAME: 'Weather',
-    URL: 'https://weather.harryliu.dev/',
-    STAGING_URL: 'https://staging-weather.harryliu.dev/',
+    URL: `https://weather.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-weather.${VB_APP_DOMAIN}/`,
   },
   TASKS: {
     NAME: 'Tasks',
@@ -63,8 +63,8 @@ export const VB_APP_URL = {
   },
   WHITEBOARD: {
     NAME: 'Whiteboard',
-    URL: 'https://whiteboard.harryliu.dev/',
-    STAGING_URL: 'https://staging-whiteboard.harryliu.dev/',
+    URL: `https://whiteboard.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-whiteboard.${VB_APP_DOMAIN}/`,
   },
   BALLOONO: {
     NAME: 'Balloono',
@@ -73,13 +73,13 @@ export const VB_APP_URL = {
   },
   GRAVITY_GUY: {
     NAME: 'Gravity Guy',
-    URL: 'https://gravity-guy.harryliu.dev/',
-    STAGING_URL: 'https://staging-gravity-guy.harryliu.dev/',
+    URL: `https://gravity-guy.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-gravity-guy.${VB_APP_DOMAIN}/`,
   },
   DOCS: {
     NAME: 'Docs',
-    URL: `https://docs.${VB_APP_DOMAIN}/`,
-    STAGING_URL: `https://staging-docs.${VB_APP_DOMAIN}/`,
+    URL: 'https://docs.harryliu.dev/',
+    STAGING_URL: 'https://staging-docs.harryliu.dev/',
   },
   GRIND_75: {
     NAME: 'Grind 75',
@@ -136,5 +136,9 @@ export const VB_APP_URL = {
   CAREER: {
     NAME: 'Career',
     URL: 'https://career.harryliu.dev/',
+  },
+  PAGES_INDEX: {
+    NAME: 'Pages Index',
+    URL: `https://projects.${VB_APP_DOMAIN}/`,
   },
 } as const;

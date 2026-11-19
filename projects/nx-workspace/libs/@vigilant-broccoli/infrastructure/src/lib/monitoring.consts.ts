@@ -13,7 +13,7 @@ export const VB_MONITORING_URL = {
   },
   DEPLOYMENTS: {
     NAME: 'Deployments',
-    URL: 'https://deployments.harryliu.dev/',
+    URL: 'https://deployments.vigilant-broccoli.app/',
   },
   STATUS: {
     NAME: 'Status',

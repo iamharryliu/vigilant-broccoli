@@ -55,11 +55,13 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### pages-index
 
+- The projects site moved to projects.vigilant-broccoli.app. Old projects.harryliu.dev links redirect there and keep their page ([#1684](https://github.com/iamharryliu/vigilant-broccoli/pull/1684)).
 - New Changelog page lists these entries, linked from the home page ([#1586](https://github.com/iamharryliu/vigilant-broccoli/pull/1586)).
 - New Private section after Demo lists owner-only apps, and Web Terminal moved there ([#1606](https://github.com/iamharryliu/vigilant-broccoli/pull/1606)).
 - The Changelog page shows each month as a collapsible section titled like November 2026, newest open and animated as it toggles ([#1660](https://github.com/iamharryliu/vigilant-broccoli/pull/1660)).
 - Games sit after Web Applications, and the Status page drops its updated-date line ([#1396](https://github.com/iamharryliu/vigilant-broccoli/pull/1396), [#1483](https://github.com/iamharryliu/vigilant-broccoli/pull/1483)).
 - The Deployments page refreshes itself every 5 minutes while visible, so the Refresh button is gone. Each app has one Preview link with its commit and deploy age, and an empty list says whether there are no open pull requests or none have a preview yet ([#1663](https://github.com/iamharryliu/vigilant-broccoli/pull/1663)).
+- The Deployments page moved from `harryliu.dev` to `deployments.vigilant-broccoli.app`, with no redirect from the old address ([#1687](https://github.com/iamharryliu/vigilant-broccoli/pull/1687)).
 
 ### docs-md
 
@@ -69,6 +71,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - The graph opens without a top bar and stays open on the start page, keeps the open note centered and highlights it and hovered notes with soft glows. Its settings add color schemes from Sanzo Wada's _A Dictionary of Color Combinations_ (No. 321 by default) and a node glow switch, and it now defaults to 4 hops ([#1657](https://github.com/iamharryliu/vigilant-broccoli/pull/1657)).
 
 - Docs MD, Agent Context, Grind 75, Component Library, Text Tools, Utilities, Waiting Games and Pomodoro, with their staging sites, moved from `harryliu.dev` to `<site>.vigilant-broccoli.app` (`components`, `context`, `docs`, `grind-75`, `pomodoro`, `text-tools`, `utilities`, `waiting`) with no redirect from the old addresses ([#1673](https://github.com/iamharryliu/vigilant-broccoli/pull/1673)).
+- Docs MD moved back to `docs.harryliu.dev` (staging `staging-docs.harryliu.dev`), with no redirect from `docs.vigilant-broccoli.app`; the other tool sites stay on `vigilant-broccoli.app` ([#1683](https://github.com/iamharryliu/vigilant-broccoli/pull/1683)).
 
 ### context-md
 
@@ -95,10 +98,15 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### weather-next
 
 - The weather card is embedded in the local and mobile managers from one deployed source, and any site may frame it ([#1549](https://github.com/iamharryliu/vigilant-broccoli/pull/1549), [#1552](https://github.com/iamharryliu/vigilant-broccoli/pull/1552)).
+- Weather and its staging site moved to `weather.vigilant-broccoli.app` and `staging-weather.vigilant-broccoli.app` with no redirect from the `harryliu.dev` addresses ([#1685](https://github.com/iamharryliu/vigilant-broccoli/pull/1685)).
 
 ### balloono
 
 - Landscape handheld mode on mobile with a settings menu for mute, restart, CPU count and difficulty, and power-up levels in the HUD ([#1518](https://github.com/iamharryliu/vigilant-broccoli/pull/1518)).
+
+### gravity-guy
+
+- Gravity Guy and its staging site moved from `harryliu.dev` to `gravity-guy.vigilant-broccoli.app` and `staging-gravity-guy.vigilant-broccoli.app`, with no redirect from the old addresses ([#1688](https://github.com/iamharryliu/vigilant-broccoli/pull/1688)).
 
 ### web-terminal
 
@@ -158,6 +166,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### socket-server-socketio
 
 - New SSE transport with HTTP publishing for one-way consumers ([#1543](https://github.com/iamharryliu/vigilant-broccoli/pull/1543)).
+
+### whiteboard
+
+- Whiteboard and its staging site moved from `harryliu.dev` to `whiteboard.vigilant-broccoli.app` and `staging-whiteboard.vigilant-broccoli.app` with no redirect from the old addresses ([#1686](https://github.com/iamharryliu/vigilant-broccoli/pull/1686)).
 
 </details>
 

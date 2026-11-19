@@ -53,7 +53,7 @@ const LEISURE_APPS: AppEntry[] = [
 const UTILITY_APPS: AppEntry[] = [
   {
     label: 'Docs',
-    webUrl: 'https://docs.vigilant-broccoli.app',
+    webUrl: 'https://docs.harryliu.dev',
     tileColor: 'bg-blue-600',
     icon: FileText,
   },
@@ -92,7 +92,7 @@ const DEVELOPMENT_APPS: AppEntry[] = [
   },
   {
     label: 'Deployments',
-    webUrl: 'https://deployments.harryliu.dev',
+    webUrl: 'https://deployments.vigilant-broccoli.app',
     tileColor: 'bg-amber-600',
     icon: Rocket,
   },
@@ -106,7 +106,7 @@ const DEVELOPMENT_APPS: AppEntry[] = [
   },
   {
     label: 'Projects',
-    webUrl: 'https://projects.harryliu.dev',
+    webUrl: 'https://projects.vigilant-broccoli.app',
     tileColor: 'bg-emerald-600',
     icon: FolderGit2,
   },

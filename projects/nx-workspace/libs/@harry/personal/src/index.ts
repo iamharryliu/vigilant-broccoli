@@ -76,7 +76,7 @@ export const PROJECT_LINK = {
   },
   SOFTWARE_PROJECTS: {
     NAME: 'Software Projects',
-    URL: 'https://projects.harryliu.dev/',
+    URL: 'https://projects.vigilant-broccoli.app/',
   },
 } as const;
 

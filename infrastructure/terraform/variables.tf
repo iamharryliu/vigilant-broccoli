@@ -253,6 +253,11 @@ variable "nx_cache_r2_ttl_seconds" {
   default = 604800
 }
 
+variable "docs_domain" {
+  type    = string
+  default = "docs.harryliu.dev"
+}
+
 variable "docs_pages_project" {
   type    = string
   default = "production-docs-md"
@@ -347,19 +352,9 @@ variable "photography_pages_subdomain" {
   default = "production-photography-react.pages.dev"
 }
 
-variable "projects_domain" {
-  type    = string
-  default = "projects.harryliu.dev"
-}
-
 variable "career_domain" {
   type    = string
   default = "career.harryliu.dev"
-}
-
-variable "deployments_domain" {
-  type    = string
-  default = "deployments.harryliu.dev"
 }
 
 variable "status_domain" {
