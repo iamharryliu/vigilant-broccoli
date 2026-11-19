@@ -161,7 +161,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### whiteboard
 
-- Whiteboard and its staging site moved from `harryliu.dev` to `whiteboard.vigilant-broccoli.app` and `staging-whiteboard.vigilant-broccoli.app` with no redirect from the old addresses (PR: pending).
+- Whiteboard and its staging site moved from `harryliu.dev` to `whiteboard.vigilant-broccoli.app` and `staging-whiteboard.vigilant-broccoli.app` with no redirect from the old addresses ([#1686](https://github.com/iamharryliu/vigilant-broccoli/pull/1686)).
 
 </details>
 
