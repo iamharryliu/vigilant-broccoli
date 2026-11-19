@@ -123,7 +123,7 @@ sites:
   - name: production-observability-vm
     url: https://loki.vigilant-broccoli.app/health
   - name: production-socket-server
-    url: https://socket.harryliu.dev/health
+    url: https://socket.vigilant-broccoli.app/health
   - name: production-findme
     url: https://findme.vigilant-broccoli.app/
   - name: production-hearth

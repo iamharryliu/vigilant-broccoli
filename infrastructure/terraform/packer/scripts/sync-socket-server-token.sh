@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
 source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
-SOCKET_SERVER_HOST="socket.harryliu.dev"
+SOCKET_SERVER_HOST="socket.vigilant-broccoli.app"
 SOCKET_SERVER_COMPOSE_FILE="/opt/socket-server/docker-compose.yml"
 
 # CI mode (VAULT_ADDR set by the rotate-secrets workflow): SHARED_APP_TOKEN is
