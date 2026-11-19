@@ -11,6 +11,7 @@ import {
 import {
   Bookmark,
   CircleHelp,
+  Database,
   Download,
   Menu,
   Plus,
@@ -69,8 +70,16 @@ const mergeBookmarks = (current: QuickLink[], incoming: QuickLink[]) =>
         : [...merged, link],
     current,
   );
+const getHostname = (target: string) => {
+  try {
+    return new URL(target).hostname;
+  } catch {
+    return '';
+  }
+};
 const TAB_TITLE_KEYS = {
   [TAB.BOOKMARKS]: 'BOOKMARKS',
+  [TAB.MANAGE]: 'MANAGE',
   [TAB.SETTINGS]: 'SETTINGS',
 } as const;
 const HELP_KEYS = [
@@ -138,7 +147,13 @@ function BookmarksPage() {
       isActive: tab === TAB.BOOKMARKS,
       onClick: event => selectTab(event, TAB.BOOKMARKS),
     },
-    { label: t('ADD'), icon: Plus, onClick: () => openAdd() },
+    {
+      label: t('MANAGE'),
+      icon: Database,
+      href: TAB_PATH[TAB.MANAGE],
+      isActive: tab === TAB.MANAGE,
+      onClick: event => selectTab(event, TAB.MANAGE),
+    },
     {
       label: t('SETTINGS'),
       icon: Settings,
@@ -265,14 +280,35 @@ function BookmarksPage() {
       },
     },
   ];
+  const addUrls = form.target
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+  const isMultiAdd = addUrls.length > 1;
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    if (editing === null) {
+      try {
+        const links = parseBookmarks(
+          addUrls.map(target => ({
+            ...form,
+            label: form.label.trim() || (isMultiAdd ? getHostname(target) : ''),
+            target,
+            type: OPEN_TYPE.BROWSER,
+          })),
+        );
+        if (!links.length) throw new Error('No URLs');
+        setBookmarks(mergeBookmarks(bookmarks, links));
+        closeDialog();
+      } catch {
+        setError(t(isMultiAdd ? 'INVALID_LINE' : 'INVALID'));
+      }
+      return;
+    }
     try {
       const [link] = parseBookmarks([{ ...form, type: OPEN_TYPE.BROWSER }]);
       setBookmarks(
-        editing === null
-          ? [...bookmarks, link]
-          : bookmarks.map((old, index) => (index === editing ? link : old)),
+        bookmarks.map((old, index) => (index === editing ? link : old)),
       );
       closeDialog();
     } catch {
@@ -329,7 +365,7 @@ function BookmarksPage() {
         onMobileClose={() => setIsSidebarOpen(false)}
       />
       <main className="min-h-dvh bg-background px-4 pb-4 pt-2 text-foreground transition-[padding] duration-200 sm:px-8 sm:pb-8 sm:pt-4 md:pl-[5.5rem] md:peer-hover:pl-56">
-        <h1 className="sr-only">{t('TITLE')}</h1>
+        {tab === TAB.BOOKMARKS && <h1 className="sr-only">{t('TITLE')}</h1>}
         {isDragging && (
           <div
             aria-hidden="true"
@@ -339,31 +375,38 @@ function BookmarksPage() {
           </div>
         )}
         <div className="mx-auto max-w-2xl space-y-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2 md:hidden">
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
               aria-label={t('MENU')}
               onClick={() => setIsSidebarOpen(open => !open)}
             >
               <Menu size={ICON_SIZE} />
             </Button>
-            <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-              <DialogContent scrollable aria-describedby={undefined}>
-                <DialogHeader>
-                  <DialogTitle>{t('HELP')}</DialogTitle>
-                </DialogHeader>
-                <DialogBody>
-                  <ul className="list-disc space-y-4 pl-5 text-sm">
-                    {HELP_KEYS.map(key => (
-                      <li key={key}>{t(key)}</li>
-                    ))}
-                  </ul>
-                </DialogBody>
-              </DialogContent>
-            </Dialog>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('ADD')}
+              onClick={openAdd}
+            >
+              <Plus size={ICON_SIZE} />
+            </Button>
           </div>
+          <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+            <DialogContent scrollable aria-describedby={undefined}>
+              <DialogHeader>
+                <DialogTitle>{t('HELP')}</DialogTitle>
+              </DialogHeader>
+              <DialogBody>
+                <ul className="list-disc space-y-4 pl-5 text-sm">
+                  {HELP_KEYS.map(key => (
+                    <li key={key}>{t(key)}</li>
+                  ))}
+                </ul>
+              </DialogBody>
+            </DialogContent>
+          </Dialog>
           {storageError && <p role="status">{t('STORAGE_ERROR')}</p>}
           {tab === TAB.BOOKMARKS ? (
             bookmarks.length ? (
@@ -376,27 +419,13 @@ function BookmarksPage() {
             ) : (
               !isLoadingDefaults && <p className="py-8">{t('EMPTY')}</p>
             )
-          ) : (
+          ) : tab === TAB.MANAGE ? (
             <div className="space-y-3">
-              <h2 className="text-sm font-medium">{t('APPEARANCE')}</h2>
-              <ThemePreferenceControl
-                label={t('THEME')}
-                labels={{
-                  system: t('THEME_SYSTEM'),
-                  light: t('THEME_LIGHT'),
-                  dark: t('THEME_DARK'),
-                }}
-                fullWidth
-              />
-              <h2 className="pt-3 text-sm font-medium">{t('DATA')}</h2>
+              <h1 className="text-2xl font-semibold">{t('MANAGE_HEADING')}</h1>
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" onClick={exportBookmarks}>
-                  <Download size={ICON_SIZE} />
-                  {t('EXPORT')}
-                </Button>
-                <Button variant="outline" onClick={() => setIsImportOpen(true)}>
-                  <Upload size={ICON_SIZE} />
-                  {t('IMPORT')}
+                <Button onClick={openAdd}>
+                  <Plus size={ICON_SIZE} />
+                  {t('ADD')}
                 </Button>
                 <Button
                   variant="destructive"
@@ -407,6 +436,34 @@ function BookmarksPage() {
                   {t('CLEAR_ALL')}
                 </Button>
               </div>
+              <hr className="border-border" />
+              <h2 className="text-sm font-medium">
+                {t('EXPORT_IMPORT_HEADING')}
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" onClick={exportBookmarks}>
+                  <Download size={ICON_SIZE} />
+                  {t('EXPORT')}
+                </Button>
+                <Button variant="outline" onClick={() => setIsImportOpen(true)}>
+                  <Upload size={ICON_SIZE} />
+                  {t('IMPORT')}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <h1 className="text-2xl font-semibold">{t('SETTINGS')}</h1>
+              <h2 className="text-sm font-medium">{t('APPEARANCE')}</h2>
+              <ThemePreferenceControl
+                label={t('THEME')}
+                labels={{
+                  system: t('THEME_SYSTEM'),
+                  light: t('THEME_LIGHT'),
+                  dark: t('THEME_DARK'),
+                }}
+                fullWidth
+              />
             </div>
           )}
         </div>
@@ -441,20 +498,41 @@ function BookmarksPage() {
                 <label className="block">
                   {t('LABEL')}
                   <Input
-                    required
+                    required={editing !== null || !isMultiAdd}
                     value={form.label}
                     onChange={e => setForm({ ...form, label: e.target.value })}
                   />
                 </label>
-                <label className="block">
-                  {t('URL')}
-                  <Input
-                    required
-                    type="url"
-                    value={form.target}
-                    onChange={e => setForm({ ...form, target: e.target.value })}
-                  />
-                </label>
+                {editing === null ? (
+                  <label className="block">
+                    {t('URLS')}
+                    <Textarea
+                      required
+                      value={form.target}
+                      onChange={e =>
+                        setForm({ ...form, target: e.target.value })
+                      }
+                      placeholder={t('URLS_PLACEHOLDER')}
+                      spellCheck={false}
+                      className="min-h-24"
+                    />
+                    <span className="block text-xs text-muted-foreground">
+                      {t('URLS_HINT')}
+                    </span>
+                  </label>
+                ) : (
+                  <label className="block">
+                    {t('URL')}
+                    <Input
+                      required
+                      type="url"
+                      value={form.target}
+                      onChange={e =>
+                        setForm({ ...form, target: e.target.value })
+                      }
+                    />
+                  </label>
+                )}
                 <div className="space-y-1">
                   <span className="block">{t('SUBGROUP')}</span>
                   <Select

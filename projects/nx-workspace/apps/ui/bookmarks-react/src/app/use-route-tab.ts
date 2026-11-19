@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 export const TAB = {
   BOOKMARKS: 'bookmarks',
+  MANAGE: 'manage',
   SETTINGS: 'settings',
 } as const;
 export type Tab = (typeof TAB)[keyof typeof TAB];
@@ -10,14 +11,15 @@ export type Tab = (typeof TAB)[keyof typeof TAB];
 const BASE_PATH = import.meta.env.BASE_URL;
 export const TAB_PATH = {
   [TAB.BOOKMARKS]: BASE_PATH,
+  [TAB.MANAGE]: `${BASE_PATH}manage`,
   [TAB.SETTINGS]: `${BASE_PATH}settings`,
 } as const;
 const trimSlash = (path: string) => path.replace(/\/+$/, '');
 
 const tabFromPath = (pathname: string): Tab =>
-  trimSlash(pathname) === trimSlash(TAB_PATH[TAB.SETTINGS])
-    ? TAB.SETTINGS
-    : TAB.BOOKMARKS;
+  Object.values(TAB).find(
+    tab => trimSlash(pathname) === trimSlash(TAB_PATH[tab]),
+  ) ?? TAB.BOOKMARKS;
 
 export function useRouteTab() {
   const [tab, setTabState] = useState(() =>
