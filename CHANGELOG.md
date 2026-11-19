@@ -10,7 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### dotfiles
 
-- `localcleanup` now removes Claude worktrees instantly by renaming each to a hidden `.trash-*` directory and deleting it in the background, measuring their sizes in parallel and sweeping leftovers from an interrupted run; `--keep-dirty` and locked worktrees are still skipped (PR: pending).
+- `localcleanup` now removes Claude worktrees instantly by renaming each to a hidden `.trash-*` directory and deleting it in the background, measuring their sizes in parallel and sweeping leftovers from an interrupted run; `--keep-dirty` and locked worktrees are still skipped ([#1690](https://github.com/iamharryliu/vigilant-broccoli/pull/1690)).
 - `localcleanup` also deletes local branches except main and any still checked out in a worktree, and its summary lists how many were deleted and kept. It now removes worktrees with uncommitted changes by default; `--keep-dirty` skips them ([#1656](https://github.com/iamharryliu/vigilant-broccoli/pull/1656)).
 - `cheatsheet` and `pnpm cheatsheet` open an interactive picker: arrow keys browse header groups, typing filters every command, Enter runs the pick (asking for arguments first when it takes any), and Esc or Ctrl-C quits ([#1659](https://github.com/iamharryliu/vigilant-broccoli/pull/1659)).
 
