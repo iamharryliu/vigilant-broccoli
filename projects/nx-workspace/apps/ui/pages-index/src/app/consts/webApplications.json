@@ -146,11 +146,11 @@
     },
     {
       "id": "whiteboard",
-      "href": "https://whiteboard.harryliu.dev/",
+      "href": "https://whiteboard.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/whiteboard/README.md",
-      "stagingHref": "https://staging-whiteboard.harryliu.dev/"
+      "stagingHref": "https://staging-whiteboard.vigilant-broccoli.app/"
     },
     {
       "id": "bookmarks",

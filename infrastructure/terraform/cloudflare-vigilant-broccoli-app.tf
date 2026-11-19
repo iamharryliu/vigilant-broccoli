@@ -18,5 +18,6 @@ locals {
     text_tools        = "text-tools.${var.vigilant_broccoli_domain}"
     utilities         = "utilities.${var.vigilant_broccoli_domain}"
     waiting           = "waiting.${var.vigilant_broccoli_domain}"
+    whiteboard        = "whiteboard.${var.vigilant_broccoli_domain}"
   }
 }

@@ -30,7 +30,7 @@ locals {
     staging-text-tools-ui      = "staging-text-tools.${var.vigilant_broccoli_domain}"
     staging-utilities-ui       = "staging-utilities.${var.vigilant_broccoli_domain}"
     staging-waiting-games      = "staging-waiting.${var.vigilant_broccoli_domain}"
-    staging-whiteboard         = "staging-whiteboard.harryliu.dev"
+    staging-whiteboard         = "staging-whiteboard.${var.vigilant_broccoli_domain}"
   }
 }
 

@@ -72,7 +72,7 @@ const STAGING_HOSTS = {
   'weather-next': `staging-weather.${VB_APP_DOMAIN}`,
   balloono: 'staging-balloono.harryliu.dev',
   calendars: 'staging-calendar.harryliu.dev',
-  whiteboard: 'staging-whiteboard.harryliu.dev',
+  whiteboard: `staging-whiteboard.${VB_APP_DOMAIN}`,
   'mobile-manager-next': 'staging-manager.harryliu.dev',
   findme: 'staging-findme.harryliu.dev',
   hearth: 'staging-hearth.harryliu.dev',
