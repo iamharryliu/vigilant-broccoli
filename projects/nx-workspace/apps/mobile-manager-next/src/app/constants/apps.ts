@@ -92,7 +92,7 @@ const DEVELOPMENT_APPS: AppEntry[] = [
   },
   {
     label: 'Deployments',
-    webUrl: 'https://deployments.harryliu.dev',
+    webUrl: 'https://deployments.vigilant-broccoli.app',
     tileColor: 'bg-amber-600',
     icon: Rocket,
   },

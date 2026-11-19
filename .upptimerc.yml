@@ -165,7 +165,7 @@ sites:
   - name: production-career
     url: https://career.harryliu.dev/
   - name: production-deployments
-    url: https://deployments.harryliu.dev/
+    url: https://deployments.vigilant-broccoli.app/
   - name: production-pages-index
     url: https://projects.vigilant-broccoli.app/
   - name: production-status
