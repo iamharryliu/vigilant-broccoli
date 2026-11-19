@@ -63,8 +63,8 @@ export const VB_APP_URL = {
   },
   WHITEBOARD: {
     NAME: 'Whiteboard',
-    URL: 'https://whiteboard.harryliu.dev/',
-    STAGING_URL: 'https://staging-whiteboard.harryliu.dev/',
+    URL: `https://whiteboard.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-whiteboard.${VB_APP_DOMAIN}/`,
   },
   BALLOONO: {
     NAME: 'Balloono',

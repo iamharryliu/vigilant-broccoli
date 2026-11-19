@@ -26,7 +26,6 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── staging-api.harryliu.dev              VB Express (staging) — proxied CNAME to `staging-vb-express.fly.dev` (Terraform `cloudflare-harryliu-dev.tf`); same `deploy.yml` cert step (`flyctl certs add staging-api.harryliu.dev -a staging-vb-express`). Exists so `*.harryliu.dev` Better Auth clients (sandbox) get same-site cookies, which `fly.dev`, a public suffix, cannot give; Upptime and quick links use it, while calendars and photography staging still call the fly.dev host
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
 ├── findme.harryliu.dev                   FindMe — Cloudflare Pages `production-findme` (domain + CNAME: Terraform, infrastructure/terraform/)
-├── whiteboard.harryliu.dev               Whiteboard — Cloudflare Pages `production-whiteboard` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── weather.harryliu.dev           Weather — Vercel `production-weather-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── tasks.harryliu.dev                    Tasks — Vercel `production-tasks-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; `frame-ancestors` limited to the manager apps)
 ├── balloono.harryliu.dev                 Balloono — Vercel `production-balloono` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; online rooms run over public Supabase Realtime channels, no backend of its own)
@@ -47,6 +46,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── text-tools.vigilant-broccoli.app               Text Tools UI — Cloudflare Pages `production-text-tools-ui` (domain + CNAME: Terraform `cloudflare-text-tools.tf`; public, no Access gating; embedded by the manager Dev Dashboard via `frame-ancestors`)
 ├── utilities.vigilant-broccoli.app                Utilities UI — Cloudflare Pages `production-utilities-ui` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating)
 ├── waiting.vigilant-broccoli.app                  Waiting Games — Cloudflare Pages `production-waiting-games` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; stateless passive games, no backend)
+├── whiteboard.vigilant-broccoli.app               Whiteboard — Cloudflare Pages `production-whiteboard` (domain + CNAME: Terraform `cloudflare-whiteboard.tf`; live rooms over Supabase Realtime, no sign-in)
 ├── git.harryliu.dev                      Gitea — OCI VM (A record, proxied + Cloudflare Access; web UI gated by owner email, git/CI over HTTPS via service token, git-SSH on :2222 direct). Also the read surface for the private journal notes — browsed directly in Gitea rather than mirrored to a Pages site, so the notes never leave the VM
 ├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for ci-health-check /healthz origin probes)
 ├── shell.harryliu.dev                    Web terminal — same OCI VM and Caddy as code-server, served by the `web-terminal` s6 service in the code-server image on internal port 7681, never published on the host (A record, proxied + its own owner-only Cloudflare Access application with a 4h session; the server re-verifies the Access JWT on every request and WebSocket upgrade; Terraform `oci-code-server.tf`)
@@ -129,7 +129,7 @@ github.io                                 GitHub Pages (custom domain projects.h
 | utilities.vigilant-broccoli.app | staging-utilities.vigilant-broccoli.app | `staging-utilities-ui` | Pages |
 | waiting.vigilant-broccoli.app | staging-waiting.vigilant-broccoli.app | `staging-waiting-games` | Pages |
 | weather.harryliu.dev | staging-weather.harryliu.dev | `staging-weather-next` | Vercel |
-| whiteboard.harryliu.dev | staging-whiteboard.harryliu.dev | `staging-whiteboard` | Pages |
+| whiteboard.vigilant-broccoli.app | staging-whiteboard.vigilant-broccoli.app | `staging-whiteboard` | Pages |
 
 These are configured destinations, requiring the post-merge activation below; this inventory does not assert live DNS or certificate readiness. Provider aliases remain available and protected. `staging.cloud8skate.com` lives in the separate `cloud8skate.com` zone (`cloudflare-cloud8skate.tf`) and its Sanity CORS origin and reCAPTCHA domain are dashboard settings outside this repo. Infrastructure/API hosts, demos and dedicated previews have no new staging domain. Pages Index has no separate staging deployment.
 
