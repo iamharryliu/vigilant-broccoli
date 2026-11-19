@@ -1,6 +1,12 @@
 'use client';
 
-import { Card, Select, Heading, Text } from '@vigilant-broccoli/react-lib';
+import {
+  Card,
+  Select,
+  Heading,
+  Text,
+  ThemePreferenceControl,
+} from '@vigilant-broccoli/react-lib';
 import { LOCALES, useI18n, useTranslation } from '../../i18n';
 import { usePageTitle } from '../../use-page-title';
 
@@ -46,6 +52,26 @@ export default function SettingsPage() {
               triggerClassName={LANGUAGE_SELECT_CLASS}
             />
           </div>
+        </div>
+      </Card>
+      <Card>
+        <div className="space-y-4 p-4">
+          <div>
+            <Text weight="bold" size="3" as="p">
+              {t('SETTINGS.THEME.TITLE')}
+            </Text>
+            <Text size="2" color="gray" as="p">
+              {t('SETTINGS.THEME.DESCRIPTION')}
+            </Text>
+          </div>
+          <ThemePreferenceControl
+            label={t('SETTINGS.THEME.LABEL')}
+            labels={{
+              system: t('SETTINGS.THEME.OPTION.SYSTEM'),
+              light: t('SETTINGS.THEME.OPTION.LIGHT'),
+              dark: t('SETTINGS.THEME.OPTION.DARK'),
+            }}
+          />
         </div>
       </Card>
     </div>

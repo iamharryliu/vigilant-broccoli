@@ -13,21 +13,19 @@ import {
   ListChecks,
   Menu,
   MessageSquare,
-  Moon,
   Music,
   Package,
   PanelLeft,
   Search,
   Settings as SettingsIcon,
-  Sun,
   Trophy,
   Type as TypeIcon,
   Wrench,
 } from 'lucide-react';
 import {
   ButtonList,
+  ThemePreferenceControl,
   ThemeProvider,
-  useTheme,
   useDocumentTitle,
   Switch,
   Heading,
@@ -161,11 +159,10 @@ const OVERVIEW_LABEL = 'Components';
 // Components in the sidebar instead of inside the react-lib group.
 const TYPOGRAPHY_ID = 'typography';
 
-const SETTINGS_LABEL = {
-  GROUP: 'Settings',
-  DARK_MODE_ON: 'Light Mode',
-  DARK_MODE_OFF: 'Dark Mode',
-} as const;
+// Not an entry id either; served at `/settings` and only when the sandbox owns
+// its ThemeProvider (`wrapInTheme`).
+const SETTINGS_ID = 'settings';
+const SETTINGS_LABEL = 'Settings';
 
 const PACKAGE_SCOPE_GROUP_ID = '@vigilant-broccoli';
 const PACKAGE_SCOPE = `${PACKAGE_SCOPE_GROUP_ID}/`;
@@ -1071,28 +1068,25 @@ const buildSidebarItems = ({
   ];
 };
 
-type BuildSettingsGroupArgs = {
-  dark: boolean;
-  onToggleDark: () => void;
-};
-
-// Kept separate from buildSidebarItems - these are app-chrome toggles, not
-// browsable demo content.
-const buildSettingsGroup = ({
-  dark,
-  onToggleDark,
-}: BuildSettingsGroupArgs): SidebarCTA => ({
-  id: 'settings',
-  label: SETTINGS_LABEL.GROUP,
+// Kept separate from buildSidebarItems - app chrome, not browsable demo
+// content.
+const buildSettingsItem = ({
+  selectedId,
+  onSelect,
+}: Omit<BuildSidebarItemsArgs, 'entries'>): SidebarCTA => ({
+  id: SETTINGS_ID,
+  label: SETTINGS_LABEL,
   icon: SettingsIcon,
-  children: [
-    {
-      label: dark ? SETTINGS_LABEL.DARK_MODE_ON : SETTINGS_LABEL.DARK_MODE_OFF,
-      icon: dark ? Sun : Moon,
-      onClick: onToggleDark,
-    },
-  ],
+  isActive: selectedId === SETTINGS_ID,
+  onClick: () => onSelect(SETTINGS_ID),
 });
+
+const SandboxSettings = () => (
+  <div className="flex max-w-md flex-col gap-6">
+    <Heading size="7">{SETTINGS_LABEL}</Heading>
+    <ThemePreferenceControl fullWidth />
+  </div>
+);
 
 const SandboxEntryFrame = ({
   entry,
@@ -1233,16 +1227,16 @@ interface SandboxBodyProps {
   siteName?: string;
   title?: string;
   subtitle?: string;
-  dark: boolean;
-  setDark: (v: boolean) => void;
-  showThemeToggle: boolean;
+  showSettings: boolean;
 }
 
 // Each entry lives at `/<entry id>` (e.g. `/crud-list`) so READMEs can link
 // straight to a component; `/` is the overview. Unknown paths fall back to the
 // overview because Cloudflare Pages serves index.html for them (no 404.html).
 const isSelectableId = (id: string | null): id is string =>
-  id === OVERVIEW_ID || ALL_ENTRIES.some(entry => entry.id === id);
+  id === OVERVIEW_ID ||
+  id === SETTINGS_ID ||
+  ALL_ENTRIES.some(entry => entry.id === id);
 
 const pathFor = (id: string) => (id === OVERVIEW_ID ? '/' : `/${id}`);
 
@@ -1271,12 +1265,25 @@ const isPlainLeftClick = (event: MouseEvent<HTMLAnchorElement>) =>
   !event.shiftKey &&
   !event.altKey;
 
-const resolveSelection = (entries: SandboxEntry[], selectedId: string) => {
-  if (selectedId === OVERVIEW_ID) {
+const resolveSelection = (
+  entries: SandboxEntry[],
+  selectedId: string,
+  showSettings: boolean,
+) => {
+  if (selectedId === SETTINGS_ID && showSettings) {
+    return {
+      selectedEntry: undefined,
+      selectedLabel: SETTINGS_LABEL,
+      openGroupId: null,
+      isSettings: true,
+    };
+  }
+  if (selectedId === OVERVIEW_ID || selectedId === SETTINGS_ID) {
     return {
       selectedEntry: undefined,
       selectedLabel: OVERVIEW_LABEL,
       openGroupId: null,
+      isSettings: false,
     };
   }
   const entry = entries.find(e => e.id === selectedId) ?? entries[0];
@@ -1284,6 +1291,7 @@ const resolveSelection = (entries: SandboxEntry[], selectedId: string) => {
     selectedEntry: entry,
     selectedLabel: entry.label,
     openGroupId: PACKAGE_SCOPE_GROUP_ID,
+    isSettings: false,
   };
 };
 
@@ -1296,9 +1304,7 @@ const SandboxBody = ({
   siteName,
   title,
   subtitle,
-  dark,
-  setDark,
-  showThemeToggle,
+  showSettings,
 }: SandboxBodyProps) => {
   const { t: translateSandbox } = useSandboxTranslation();
   const entries = useMemo(
@@ -1333,10 +1339,8 @@ const SandboxBody = ({
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  const { selectedEntry, selectedLabel, openGroupId } = resolveSelection(
-    entries,
-    selectedId,
-  );
+  const { selectedEntry, selectedLabel, openGroupId, isSettings } =
+    resolveSelection(entries, selectedId, showSettings);
 
   const selectId = (id: string) => {
     setSelectedId(id);
@@ -1353,11 +1357,11 @@ const SandboxBody = ({
         selectedId,
         onSelect: selectId,
       }),
-      ...(showThemeToggle
-        ? [buildSettingsGroup({ dark, onToggleDark: () => setDark(!dark) })]
+      ...(showSettings
+        ? [buildSettingsItem({ selectedId, onSelect: selectId })]
         : []),
     ],
-    [entries, selectedId, dark, showThemeToggle, setDark],
+    [entries, selectedId, showSettings],
   );
 
   return (
@@ -1392,7 +1396,9 @@ const SandboxBody = ({
               {subtitle}
             </Text>
           )}
-          {selectedEntry ? (
+          {isSettings ? (
+            <SandboxSettings />
+          ) : selectedEntry ? (
             <SandboxEntryFrame entry={selectedEntry} onSelect={selectId} />
           ) : (
             <SandboxOverview entries={entries} onSelect={selectId} />
@@ -1403,43 +1409,19 @@ const SandboxBody = ({
   );
 };
 
-function ThemedSandbox({
-  title,
-  subtitle,
-  siteName,
-}: ComponentSandboxProps): ReactNode {
-  const { appearance, toggleTheme } = useTheme();
-  return (
-    <div className="w-full h-screen overflow-hidden">
-      <SandboxBody
-        siteName={siteName}
-        title={title}
-        subtitle={subtitle}
-        dark={appearance === 'dark'}
-        setDark={toggleTheme}
-        showThemeToggle
-      />
-    </div>
-  );
-}
-
 function ComponentSandboxContent({
   wrapInTheme = false,
   themeStorageKey,
   ...props
 }: ComponentSandboxProps): ReactNode {
-  const [dark, setDark] = useState(false);
   return wrapInTheme ? (
     <ThemeProvider storageKey={themeStorageKey}>
-      <ThemedSandbox {...props} />
+      <div className="w-full h-screen overflow-hidden">
+        <SandboxBody {...props} showSettings />
+      </div>
     </ThemeProvider>
   ) : (
-    <SandboxBody
-      {...props}
-      dark={dark}
-      setDark={setDark}
-      showThemeToggle={false}
-    />
+    <SandboxBody {...props} showSettings={false} />
   );
 }
 

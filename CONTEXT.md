@@ -78,6 +78,8 @@ Never use native browser dialogs (`window.confirm`, `alert`, `prompt`) unless ex
 
 Build task and checklist UIs on react-lib's `CheckList` and follow its [completion contract](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/checklist-completion.md#consumer-contract): mount after first load, stable ids or `transitionFromId`, optimistic updates with `isRemoving` while pending, rollback on failure, and row deletion through the ellipsis menu (`onDeleteItem`, extra commands in `itemActions`).
 
+Theme control is react-lib's `ThemeProvider` plus `ThemePreferenceControl` (System/Light/Dark) on the app's settings page, as in Hearth, Job Hunt and the component library's `/settings`; never add sidebar/navbar dark-mode toggles, two-state buttons or app-specific theme contexts.
+
 ### API
 
 Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-pattern.md) before changing Fly services (`apps/api/*`), smoke targets, Fly configs or image delivery. Services expose `/docs` through `createDocsPlugin` from `@vigilant-broccoli/fastify`. Keep the `createSwaggerSpec` in `src/libs/swagger.ts` (`src/swagger.ts` for email services) in sync with route paths, methods, request/response shapes and auth.
