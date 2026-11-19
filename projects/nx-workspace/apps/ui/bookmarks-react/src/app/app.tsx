@@ -11,6 +11,7 @@ import {
 import {
   Bookmark,
   CircleHelp,
+  Database,
   Download,
   Menu,
   Plus,
@@ -71,6 +72,7 @@ const mergeBookmarks = (current: QuickLink[], incoming: QuickLink[]) =>
   );
 const TAB_TITLE_KEYS = {
   [TAB.BOOKMARKS]: 'BOOKMARKS',
+  [TAB.MANAGE]: 'MANAGE',
   [TAB.SETTINGS]: 'SETTINGS',
 } as const;
 const HELP_KEYS = [
@@ -138,7 +140,13 @@ function BookmarksPage() {
       isActive: tab === TAB.BOOKMARKS,
       onClick: event => selectTab(event, TAB.BOOKMARKS),
     },
-    { label: t('ADD'), icon: Plus, onClick: () => openAdd() },
+    {
+      label: t('MANAGE'),
+      icon: Database,
+      href: TAB_PATH[TAB.MANAGE],
+      isActive: tab === TAB.MANAGE,
+      onClick: event => selectTab(event, TAB.MANAGE),
+    },
     {
       label: t('SETTINGS'),
       icon: Settings,
@@ -339,31 +347,38 @@ function BookmarksPage() {
           </div>
         )}
         <div className="mx-auto max-w-2xl space-y-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2 md:hidden">
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
               aria-label={t('MENU')}
               onClick={() => setIsSidebarOpen(open => !open)}
             >
               <Menu size={ICON_SIZE} />
             </Button>
-            <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-              <DialogContent scrollable aria-describedby={undefined}>
-                <DialogHeader>
-                  <DialogTitle>{t('HELP')}</DialogTitle>
-                </DialogHeader>
-                <DialogBody>
-                  <ul className="list-disc space-y-4 pl-5 text-sm">
-                    {HELP_KEYS.map(key => (
-                      <li key={key}>{t(key)}</li>
-                    ))}
-                  </ul>
-                </DialogBody>
-              </DialogContent>
-            </Dialog>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('ADD')}
+              onClick={openAdd}
+            >
+              <Plus size={ICON_SIZE} />
+            </Button>
           </div>
+          <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+            <DialogContent scrollable aria-describedby={undefined}>
+              <DialogHeader>
+                <DialogTitle>{t('HELP')}</DialogTitle>
+              </DialogHeader>
+              <DialogBody>
+                <ul className="list-disc space-y-4 pl-5 text-sm">
+                  {HELP_KEYS.map(key => (
+                    <li key={key}>{t(key)}</li>
+                  ))}
+                </ul>
+              </DialogBody>
+            </DialogContent>
+          </Dialog>
           {storageError && <p role="status">{t('STORAGE_ERROR')}</p>}
           {tab === TAB.BOOKMARKS ? (
             bookmarks.length ? (
@@ -376,20 +391,14 @@ function BookmarksPage() {
             ) : (
               !isLoadingDefaults && <p className="py-8">{t('EMPTY')}</p>
             )
-          ) : (
+          ) : tab === TAB.MANAGE ? (
             <div className="space-y-3">
-              <h2 className="text-sm font-medium">{t('APPEARANCE')}</h2>
-              <ThemePreferenceControl
-                label={t('THEME')}
-                labels={{
-                  system: t('THEME_SYSTEM'),
-                  light: t('THEME_LIGHT'),
-                  dark: t('THEME_DARK'),
-                }}
-                fullWidth
-              />
-              <h2 className="pt-3 text-sm font-medium">{t('DATA')}</h2>
+              <h2 className="text-sm font-medium">{t('DATA')}</h2>
               <div className="flex flex-wrap gap-2">
+                <Button onClick={openAdd}>
+                  <Plus size={ICON_SIZE} />
+                  {t('ADD')}
+                </Button>
                 <Button variant="outline" onClick={exportBookmarks}>
                   <Download size={ICON_SIZE} />
                   {t('EXPORT')}
@@ -407,6 +416,19 @@ function BookmarksPage() {
                   {t('CLEAR_ALL')}
                 </Button>
               </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <h2 className="text-sm font-medium">{t('APPEARANCE')}</h2>
+              <ThemePreferenceControl
+                label={t('THEME')}
+                labels={{
+                  system: t('THEME_SYSTEM'),
+                  light: t('THEME_LIGHT'),
+                  dark: t('THEME_DARK'),
+                }}
+                fullWidth
+              />
             </div>
           )}
         </div>
