@@ -34,7 +34,7 @@ jobs:
             hostname: images.harryliu.dev
             origin_ip_secret: ''
           - name: rabbitmq
-            hostname: queue.harryliu.dev
+            hostname: queue.vigilant-broccoli.app
             origin_ip_secret: ''
           - name: sandbox
             hostname: sandbox.harryliu.dev,production-sandbox.pages.dev
