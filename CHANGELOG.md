@@ -134,7 +134,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### component-library
 
 - Every shared component now has a page, including new chatbot and file-explorer groups, and Button List, Icon Button, Input, Textarea and Toggle Group are split into their own pages. Each page has a Demo section and, for composed components, a Built with button list that opens the pages of the components it uses. Typography moved to the top of the sidebar, above Components ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680)). The Theme Preference Control has its own page ([#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
-- The sidebar dark mode toggle is replaced by a Settings page with a System/Light/Dark theme picker (PR: pending).
+- The sidebar dark mode toggle is replaced by a Settings page with a System/Light/Dark theme picker ([#1692](https://github.com/iamharryliu/vigilant-broccoli/pull/1692)).
 
 ### react-lib-media
 
@@ -153,11 +153,11 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - The home Tasks card embeds tasks.harryliu.dev in place of the native list ([#1600](https://github.com/iamharryliu/vigilant-broccoli/pull/1600), [#1601](https://github.com/iamharryliu/vigilant-broccoli/pull/1601)).
 - Deleting a storage demo file asks for confirmation in a dialog instead of a browser prompt ([#1672](https://github.com/iamharryliu/vigilant-broccoli/pull/1672)).
 - Kanban and to-do lists delete through the standard ellipsis menu ([#1607](https://github.com/iamharryliu/vigilant-broccoli/pull/1607)).
-- The settings page's dark mode button is now a System/Light/Dark theme picker, which also sets the theme for cloud services, local services and music (PR: pending).
+- The settings page's dark mode button is now a System/Light/Dark theme picker, which also sets the theme for cloud services, local services and music ([#1692](https://github.com/iamharryliu/vigilant-broccoli/pull/1692)).
 
 ### employee-handler
 
-- The sidebar dark mode toggle is gone; the theme is picked (System/Light/Dark) on the Settings page instead (PR: pending).
+- The sidebar dark mode toggle is gone; the theme is picked (System/Light/Dark) on the Settings page instead ([#1692](https://github.com/iamharryliu/vigilant-broccoli/pull/1692)).
 
 ### mobile-manager-next
 
