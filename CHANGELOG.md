@@ -102,7 +102,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### gravity-guy
 
-- Gravity Guy and its staging site moved from `harryliu.dev` to `gravity-guy.vigilant-broccoli.app` and `staging-gravity-guy.vigilant-broccoli.app`, with no redirect from the old addresses (PR: pending).
+- Gravity Guy and its staging site moved from `harryliu.dev` to `gravity-guy.vigilant-broccoli.app` and `staging-gravity-guy.vigilant-broccoli.app`, with no redirect from the old addresses ([#1688](https://github.com/iamharryliu/vigilant-broccoli/pull/1688)).
 
 ### web-terminal
 
