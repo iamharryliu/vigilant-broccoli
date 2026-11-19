@@ -337,16 +337,11 @@ export const EntryDirectory = ({
         key={`${group.name}-${index}`}
         className={`flex flex-col ${isRows ? 'gap-1' : 'gap-2'}`}
       >
-        {group.name &&
-          (isRows ? (
-            <h2 className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              {group.name}
-            </h2>
-          ) : (
-            <Text size="3" weight="medium">
-              {group.name}
-            </Text>
-          ))}
+        {group.name && (
+          <h2 className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {group.name}
+          </h2>
+        )}
         {isRows ? (
           <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
             {items.map((entry, entryIndex) => (

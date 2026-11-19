@@ -8,6 +8,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 <details>
 <summary>November 2026</summary>
 
+### entry-directory
+
+- Group headings in `EntryDirectory` (Bookmarks) now use the same small uppercase muted style in the rows and grouped views (PR: pending)
+
 ### dotfiles
 
 - `localcleanup` now removes Claude worktrees instantly by renaming each to a hidden `.trash-*` directory and deleting it in the background, measuring their sizes in parallel and sweeping leftovers from an interrupted run; `--keep-dirty` and locked worktrees are still skipped ([#1690](https://github.com/iamharryliu/vigilant-broccoli/pull/1690)).
