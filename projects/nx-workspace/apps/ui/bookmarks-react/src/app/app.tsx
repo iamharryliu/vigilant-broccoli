@@ -365,7 +365,7 @@ function BookmarksPage() {
         onMobileClose={() => setIsSidebarOpen(false)}
       />
       <main className="min-h-dvh bg-background px-4 pb-4 pt-2 text-foreground transition-[padding] duration-200 sm:px-8 sm:pb-8 sm:pt-4 md:pl-[5.5rem] md:peer-hover:pl-56">
-        <h1 className="sr-only">{t('TITLE')}</h1>
+        {tab === TAB.BOOKMARKS && <h1 className="sr-only">{t('TITLE')}</h1>}
         {isDragging && (
           <div
             aria-hidden="true"
@@ -421,6 +421,7 @@ function BookmarksPage() {
             )
           ) : tab === TAB.MANAGE ? (
             <div className="space-y-3">
+              <h1 className="text-2xl font-semibold">{t('MANAGE_HEADING')}</h1>
               <div className="flex flex-wrap gap-2">
                 <Button onClick={openAdd}>
                   <Plus size={ICON_SIZE} />
@@ -452,6 +453,7 @@ function BookmarksPage() {
             </div>
           ) : (
             <div className="space-y-3">
+              <h1 className="text-2xl font-semibold">{t('SETTINGS')}</h1>
               <h2 className="text-sm font-medium">{t('APPEARANCE')}</h2>
               <ThemePreferenceControl
                 label={t('THEME')}
