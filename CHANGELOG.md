@@ -100,6 +100,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - Landscape handheld mode on mobile with a settings menu for mute, restart, CPU count and difficulty, and power-up levels in the HUD ([#1518](https://github.com/iamharryliu/vigilant-broccoli/pull/1518)).
 
+### gravity-guy
+
+- Gravity Guy and its staging site moved from `harryliu.dev` to `gravity-guy.vigilant-broccoli.app` and `staging-gravity-guy.vigilant-broccoli.app`, with no redirect from the old addresses (PR: pending).
+
 ### web-terminal
 
 - The Dev menu page holds every repo skill, including `/local-create-pr-claude` and `/local-update-pr-claude`; `/local-session-status` and `/local-session-retry-publish` run on tap while the PR skills still wait for a prompt ([#1682](https://github.com/iamharryliu/vigilant-broccoli/pull/1682)).
