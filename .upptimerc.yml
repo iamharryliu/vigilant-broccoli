@@ -169,7 +169,7 @@ sites:
   - name: production-pages-index
     url: https://projects.vigilant-broccoli.app/
   - name: production-status
-    url: https://status.harryliu.dev/
+    url: https://status.vigilant-broccoli.app/
   - name: production-uptime
     url: https://uptime.harryliu.dev/
   - name: production-docs

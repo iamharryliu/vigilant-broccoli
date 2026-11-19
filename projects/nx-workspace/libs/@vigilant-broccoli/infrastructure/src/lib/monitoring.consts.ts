@@ -17,7 +17,7 @@ export const VB_MONITORING_URL = {
   },
   STATUS: {
     NAME: 'Status',
-    URL: 'https://status.harryliu.dev/',
+    URL: 'https://status.vigilant-broccoli.app/',
   },
   UPTIME: {
     NAME: 'Uptime',

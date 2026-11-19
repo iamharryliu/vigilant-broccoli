@@ -357,11 +357,6 @@ variable "career_domain" {
   default = "career.harryliu.dev"
 }
 
-variable "status_domain" {
-  type    = string
-  default = "status.harryliu.dev"
-}
-
 variable "uptime_domain" {
   type    = string
   default = "uptime.harryliu.dev"
