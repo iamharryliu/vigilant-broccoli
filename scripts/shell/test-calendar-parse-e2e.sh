@@ -98,6 +98,51 @@ else
 fi
 
 echo ""
+echo "Testing /api/calendar/parse (flights across time zones)..."
+FLIGHTS_FIXTURE="$(dirname "$0")/fixtures/calendar-parse-flights.txt"
+FLIGHTS_RESPONSE=$(curl -s -X POST "${VB_EXPRESS_URL}/api/calendar/parse" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: ${VB_EXPRESS_API_KEY}" \
+  -d "$(jq -n --rawfile text "$FLIGHTS_FIXTURE" --arg timeZone "$TIME_ZONE" '{ text: $text, timeZone: $timeZone }')")
+
+echo "Response: $FLIGHTS_RESPONSE"
+echo ""
+
+FLIGHT_LABELS=(
+  "flights return one event per leg"
+  "Copenhagen departure is 12:55 at +01:00"
+  "Keflavík arrival is 15:25 at +00:00"
+  "Keflavík departure is 17:00 at +00:00"
+  "Toronto arrival is 18:15 at -05:00"
+)
+
+if echo "$FLIGHTS_RESPONSE" | grep -qiE "$BILLING_ERROR_PATTERN"; then
+  for label in "${FLIGHT_LABELS[@]}"; do
+    echo "✓ $label [skipped: billing quota exhausted]"
+    PASS=$((PASS + 1))
+  done
+elif [ "$(echo "$FLIGHTS_RESPONSE" | jq -r 'type == "object" and has("events")' 2>/dev/null || echo false)" != "true" ]; then
+  echo "✗ flights response has no events array — cannot assert against it"
+  FAIL=$((FAIL + 1))
+else
+  # Times in a travel listing are local to each airport, so each end carries its
+  # own offset; a single shared offset shifts one of them by an hour.
+  FLIGHT_COUNT=$(echo "$FLIGHTS_RESPONSE" | jq -r '.events | length')
+  check "${FLIGHT_LABELS[0]}" "$([ "$FLIGHT_COUNT" -eq 2 ] && echo true || echo false)"
+
+  # Matches the instant's wall time and offset on either flight; "-00:00" and
+  # "+00:00" are the same offset.
+  flight_has() {
+    echo "$FLIGHTS_RESPONSE" | jq -r --arg field "$1" --arg pattern "$2" \
+      '[.events[] | select(.[$field] | test($pattern))] | length' 2>/dev/null || echo "0"
+  }
+  check "${FLIGHT_LABELS[1]}" "$([ "$(flight_has start 'T12:55:00[+]01:00$')" -ge 1 ] && echo true || echo false)"
+  check "${FLIGHT_LABELS[2]}" "$([ "$(flight_has end 'T15:25:00[+-]00:00$')" -ge 1 ] && echo true || echo false)"
+  check "${FLIGHT_LABELS[3]}" "$([ "$(flight_has start 'T17:00:00[+-]00:00$')" -ge 1 ] && echo true || echo false)"
+  check "${FLIGHT_LABELS[4]}" "$([ "$(flight_has end 'T18:15:00-05:00$')" -ge 1 ] && echo true || echo false)"
+fi
+
+echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 
 if [ "$FAIL" -gt 0 ]; then
