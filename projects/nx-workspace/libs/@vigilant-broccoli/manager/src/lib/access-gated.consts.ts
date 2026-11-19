@@ -15,7 +15,7 @@ export const ACCESS_GATED_URL = {
   },
   GIT: {
     NAME: 'Git',
-    URL: 'https://git.harryliu.dev/',
+    URL: 'https://git.vigilant-broccoli.app/',
   },
   MOBILE_MANAGER_NEXT: {
     NAME: 'Mobile Manager Next',
