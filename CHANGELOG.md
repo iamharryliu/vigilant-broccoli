@@ -10,7 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### entry-directory
 
-- Group headings in `EntryDirectory` (Bookmarks) now use the same small uppercase muted style in the rows and grouped views (PR: pending)
+- Group headings in `EntryDirectory` (Bookmarks) now use the same small uppercase muted style in the rows and grouped views ([#1697](https://github.com/iamharryliu/vigilant-broccoli/pull/1697))
 
 ### dotfiles
 
