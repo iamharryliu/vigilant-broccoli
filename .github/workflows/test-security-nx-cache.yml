@@ -32,7 +32,7 @@ jobs:
           NX_CACHE_WRITE_TOKEN: ${{ env.NX_CACHE_WRITE_TOKEN }}
         run: |
           chmod +x scripts/shell/test-nx-cache-security.sh
-          scripts/shell/test-nx-cache-security.sh https://nx-cache.harryliu.dev
+          scripts/shell/test-nx-cache-security.sh https://nx-cache.vigilant-broccoli.app
       - name: Notify on failure
         if: failure()
         run: |

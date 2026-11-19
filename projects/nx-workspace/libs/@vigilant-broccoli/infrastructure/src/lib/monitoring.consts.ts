@@ -1,7 +1,7 @@
 export const VB_MONITORING_URL = {
   NX_CACHE: {
     NAME: 'Nx Cache Health',
-    URL: 'https://nx-cache.harryliu.dev/health',
+    URL: 'https://nx-cache.vigilant-broccoli.app/health',
   },
   LOKI: {
     NAME: 'Loki Health',

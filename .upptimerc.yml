@@ -119,7 +119,7 @@ sites:
   - name: production-drive
     url: https://drive.harryliu.dev/
   - name: production-nx-cache
-    url: https://nx-cache.harryliu.dev/health
+    url: https://nx-cache.vigilant-broccoli.app/health
   - name: production-observability-vm
     url: https://loki.harryliu.dev/health
   - name: production-socket-server
