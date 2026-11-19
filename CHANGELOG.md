@@ -63,6 +63,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - Games sit after Web Applications, and the Status page drops its updated-date line ([#1396](https://github.com/iamharryliu/vigilant-broccoli/pull/1396), [#1483](https://github.com/iamharryliu/vigilant-broccoli/pull/1483)).
 - The Deployments page refreshes itself every 5 minutes while visible, so the Refresh button is gone. Each app has one Preview link with its commit and deploy age, and an empty list says whether there are no open pull requests or none have a preview yet ([#1663](https://github.com/iamharryliu/vigilant-broccoli/pull/1663)).
 - The Deployments page moved from `harryliu.dev` to `deployments.vigilant-broccoli.app`, with no redirect from the old address ([#1687](https://github.com/iamharryliu/vigilant-broccoli/pull/1687)).
+- The Status page moved from `harryliu.dev` to `status.vigilant-broccoli.app`, with no redirect from the old address ([#1691](https://github.com/iamharryliu/vigilant-broccoli/pull/1691)).
 
 ### docs-md
 

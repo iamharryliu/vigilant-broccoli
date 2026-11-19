@@ -118,7 +118,7 @@ const DEVELOPMENT_APPS: AppEntry[] = [
   },
   {
     label: 'Status',
-    webUrl: 'https://status.harryliu.dev',
+    webUrl: 'https://status.vigilant-broccoli.app',
     tileColor: 'bg-teal-600',
     icon: Activity,
   },

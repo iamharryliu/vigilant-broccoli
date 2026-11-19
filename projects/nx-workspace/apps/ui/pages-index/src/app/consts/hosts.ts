@@ -1,6 +1,6 @@
 import { PROJECT_LINK } from '@harry/personal';
 
-export const STATUS_HOST = 'status.harryliu.dev';
+export const STATUS_HOST = 'status.vigilant-broccoli.app';
 
 export const DEPLOYMENTS_HOST = 'deployments.vigilant-broccoli.app';
 

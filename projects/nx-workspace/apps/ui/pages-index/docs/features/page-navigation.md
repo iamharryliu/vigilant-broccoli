@@ -13,7 +13,7 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 
 ## Hosts
 
-- `status.harryliu.dev` — the same `StatusPage` at the host root. `app.tsx` picks the status route table when `window.location.hostname` is `STATUS_HOST` (`src/app/consts/hosts.ts`); other hash routes redirect to `/`. The Home breadcrumb and any other pages-index link there are explicit `https://projects.vigilant-broccoli.app/#/…` URLs, built with `toProjectsUrl`.
+- `status.vigilant-broccoli.app` — the same `StatusPage` at the host root. `app.tsx` picks the status route table when `window.location.hostname` is `STATUS_HOST` (`src/app/consts/hosts.ts`); other hash routes redirect to `/`. The Home breadcrumb and any other pages-index link there are explicit `https://projects.vigilant-broccoli.app/#/…` URLs, built with `toProjectsUrl`.
 - `deployments.vigilant-broccoli.app` — `DeploymentsPage` at the host root. `app.tsx` picks the deployments route table when the hostname is `DEPLOYMENTS_HOST`; other hash routes redirect to `/`, and the Home breadcrumb is a `toProjectsUrl` link. Details: [deployments-page.md](./deployments-page.md).
 - `career.harryliu.dev` — `CareerPage` at the host root (cards: Resume → `harryliu.dev/resume`, Personal Software Career Experience, `projects.vigilant-broccoli.app`, `harryliu.dev`, GitHub, LinkedIn). `app.tsx` picks the career route table when the hostname is `CAREER_HOST`; other hash routes redirect to `/`.
   - `/personal-software-career-experience` — renders `notes/personal/career/career-experience.md` from `raw.githubusercontent.com`; its breadcrumb returns to the career root.
