@@ -25,7 +25,7 @@
 | Location | Description | Badge |
 | --- | --- | --- |
 | Apple Photos | Mainly for iPhone content | ![Apple Photos](https://img.shields.io/badge/Apple%20Photos-000000?logo=apple&logoColor=white) |
-| drive.vigilant-broccoli.app | Self-hosted Seafile file sync on an AWS EC2 VM behind Cloudflare Access | ![drive.vigilant-broccoli.app](https://img.shields.io/badge/drive.vigilant-broccoli.app-FF9800) |
+| drive.harryliu.dev | Self-hosted Seafile file sync on an AWS EC2 VM behind Cloudflare Access | ![drive.harryliu.dev](https://img.shields.io/badge/drive.harryliu.dev-FF9800) |
 | Gitea | Self-hosted Git on an OCI VM behind Cloudflare Access; hosts the journal repo | ![Gitea](https://img.shields.io/badge/Gitea-609926?logo=gitea&logoColor=white) |
 | GitHub | Hosts the vigilant-broccoli repo | ![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white) |
 | Google Drive | Google content only: Docs, Sheets, Slides, etc. | ![Google Drive](https://img.shields.io/badge/Google%20Drive-4285F4?logo=googledrive&logoColor=white) |
@@ -64,7 +64,7 @@ flowchart LR
     GOOGLE_DRIVE["Google<br/>Drive"]
     MACBOOK_PRO --> GOOGLE_DRIVE
     IMAGES_HARRYLIU_DEV["images.harryliu.dev"]
-    DRIVE_HARRYLIU_DEV["drive.vigilant-broccoli.app"]
+    DRIVE_HARRYLIU_DEV["drive.harryliu.dev"]
     IPHONE --> IMAGES_HARRYLIU_DEV
     MACBOOK_PRO --> IMAGES_HARRYLIU_DEV
     IPHONE --> DRIVE_HARRYLIU_DEV

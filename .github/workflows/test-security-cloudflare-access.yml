@@ -40,7 +40,7 @@ jobs:
             hostname: sandbox.vigilant-broccoli.app,production-sandbox.pages.dev
             origin_ip_secret: ''
           - name: seafile
-            hostname: drive.vigilant-broccoli.app
+            hostname: drive.harryliu.dev
             origin_ip_secret: ''
           # Mirrors the protected provider and custom hosts in cloudflare-staging-ui.tf.
           - name: staging-pages
