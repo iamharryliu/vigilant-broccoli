@@ -1,23 +1,17 @@
-import {
-  KeyboardEvent,
-  PointerEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import {
-  forceCollide,
-  forceLink,
-  forceManyBody,
-  forceSimulation,
-  forceX,
-  forceY,
-  SimulationNodeDatum,
-} from 'd3-force';
-import { Maximize, X, ZoomIn, ZoomOut } from 'lucide-react';
+import { X } from 'lucide-react';
 import { SegmentedControl } from '@vigilant-broccoli/react-lib';
+import {
+  GRAPH_COLOR_SCHEMES,
+  GraphSettingsFields,
+  GraphSettingsMenu,
+  GraphView,
+  useGraphSettings,
+  type GraphColorScheme,
+  type GraphSettings,
+  type NoteGraph,
+} from '@vigilant-broccoli/docs-explorer';
 import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
 import { FULL_HEIGHT_PAGE_CLASS } from '../consts/layout';
@@ -25,7 +19,6 @@ import { useAppearance } from '../theme';
 import {
   Adjacency,
   buildAdjacency,
-  getNeighbors,
   getVisibleProjects,
   GRAPH_PALETTE,
   GraphDependency,
@@ -78,478 +71,120 @@ function useGraphParams() {
   };
 }
 
-const APP_RADIUS = 9;
-const LIB_HALF_SIZE = 7;
-const NODE_SIZE: Record<ProjectType, number> = {
-  [PROJECT_TYPE.APP]: APP_RADIUS,
-  [PROJECT_TYPE.LIB]: LIB_HALF_SIZE,
-};
-const LABEL_OFFSET = 4;
-const LABEL_FONT_SIZE = 11;
-const ARROW_GAP = 3;
-const LAYOUT_TICKS = 300;
-const LINK_DISTANCE = 80;
-const CHARGE_STRENGTH = -300;
-// Caps repulsion so isolated projects are not pushed far out, which would
-// shrink the fitted graph.
-const CHARGE_DISTANCE_MAX = 300;
-const COLLIDE_RADIUS = 36;
-// Apps settle above libs so dependency arrows mostly point downward.
-const TYPE_BAND_OFFSET = 200;
-const TYPE_BAND_STRENGTH = 0.12;
-const CENTER_STRENGTH = 0.06;
-// Room for labels, which extend to the right of each node.
-const VIEW_PADDING = { LEFT: 16, RIGHT: 120, Y: 16 };
-const DIMMED_OPACITY = 0.18;
-const ZOOM = { MIN: 0.3, MAX: 6, STEP: 1.25, WHEEL_SENSITIVITY: 0.0015 };
-const KEY_PAN_STEP = 40;
-const CLICK_MOVE_TOLERANCE = 4;
-const MARKER_ID = {
-  DEFAULT: 'project-graph-arrow',
-  ACTIVE: 'project-graph-arrow-active',
-};
 const ICON_CLASS = 'h-4 w-4 shrink-0';
 const EMPTY_LIST: string[] = [];
+const PRIMARY_VAR = '--pages-primary';
+const GRAPH_SETTINGS_STORAGE_PREFIX = 'project-graph';
+// The page's own app/lib colors are the default; docs graphs default to a
+// Wada palette instead.
+const HUES_SCHEME_ID = GRAPH_COLOR_SCHEMES.find(
+  scheme => scheme.colors === null,
+)?.id;
 
-interface LayoutNode extends SimulationNodeDatum {
-  id: string;
-  type: ProjectType;
-}
+type GroupColors = Record<ProjectType, string>;
 
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface LayoutPoint extends Point {
-  type: ProjectType;
-}
-
-interface DragStart extends Point {
-  project: string | null;
-}
-
-interface GraphLayout {
-  positions: Map<string, LayoutPoint>;
-  edges: GraphDependency[];
-  viewBox: { x: number; y: number; width: number; height: number };
-}
-
-const computeLayout = (
-  projects: GraphProject[],
-  dependencies: GraphDependency[],
-): GraphLayout => {
-  const ids = new Set(projects.map(project => project.name));
-  const edges = dependencies.filter(
-    ({ source, target }) => ids.has(source) && ids.has(target),
-  );
-  const nodes: LayoutNode[] = projects.map(project => ({
-    id: project.name,
-    type: project.type,
-  }));
-
-  forceSimulation(nodes)
-    .force(
-      'link',
-      forceLink<LayoutNode, { source: string; target: string }>(
-        edges.map(edge => ({ ...edge })),
-      )
-        .id(node => node.id)
-        .distance(LINK_DISTANCE),
-    )
-    .force(
-      'charge',
-      forceManyBody()
-        .strength(CHARGE_STRENGTH)
-        .distanceMax(CHARGE_DISTANCE_MAX),
-    )
-    .force('collide', forceCollide(COLLIDE_RADIUS))
-    .force(
-      'band',
-      forceY<LayoutNode>(node =>
-        node.type === PROJECT_TYPE.APP ? -TYPE_BAND_OFFSET : TYPE_BAND_OFFSET,
-      ).strength(TYPE_BAND_STRENGTH),
-    )
-    .force('center', forceX(0).strength(CENTER_STRENGTH))
-    .stop()
-    .tick(LAYOUT_TICKS);
-
-  const positions = new Map(
-    nodes.map(node => [
-      node.id,
-      { x: node.x ?? 0, y: node.y ?? 0, type: node.type },
-    ]),
-  );
-  const xs = nodes.map(node => node.x ?? 0);
-  const ys = nodes.map(node => node.y ?? 0);
-  const minX = Math.min(0, ...xs) - VIEW_PADDING.LEFT;
-  const minY = Math.min(0, ...ys) - VIEW_PADDING.Y;
-  const maxX = Math.max(0, ...xs) + VIEW_PADDING.RIGHT;
-  const maxY = Math.max(0, ...ys) + VIEW_PADDING.Y;
-
-  return {
-    positions,
-    edges,
-    viewBox: { x: minX, y: minY, width: maxX - minX, height: maxY - minY },
-  };
+// Concrete fallback: GraphView's glows add alpha to the color, so an
+// unresolved `hsl(var(...))` would make the canvas gradient throw.
+const FALLBACK_APP_COLOR = '#0ea5e9';
+const readPrimaryColor = () => {
+  const primary = getComputedStyle(document.documentElement)
+    .getPropertyValue(PRIMARY_VAR)
+    .trim();
+  return primary ? `hsl(${primary})` : FALLBACK_APP_COLOR;
 };
 
-interface Transform {
-  x: number;
-  y: number;
-  k: number;
+// GraphView draws on a canvas, which cannot resolve CSS variables, so the app
+// color is read from the document once the theme class is applied. A chosen
+// scheme assigns its first two colors to apps and libs by position: palettes
+// are picked by name hash, and `app` and `lib` hash to the same slot.
+function useGroupColors(colorScheme: GraphColorScheme): GroupColors {
+  const appearance = useAppearance();
+  const palette = GRAPH_PALETTE[appearance];
+  const [appColor, setAppColor] = useState(readPrimaryColor);
+
+  useEffect(() => setAppColor(readPrimaryColor()), [appearance]);
+
+  return useMemo(() => {
+    const [schemeApp, schemeLib] = colorScheme.colors ?? [];
+    return {
+      [PROJECT_TYPE.APP]: schemeApp ?? appColor,
+      [PROJECT_TYPE.LIB]: schemeLib ?? palette.lib,
+    };
+  }, [colorScheme, appColor, palette.lib]);
 }
-
-const IDENTITY: Transform = { x: 0, y: 0, k: 1 };
-
-const clampZoom = (k: number) => Math.min(ZOOM.MAX, Math.max(ZOOM.MIN, k));
-
-// Scales around `focus` (viewBox coordinates) so that point stays in place.
-const zoomAround = (transform: Transform, factor: number, focus: Point) => {
-  const k = clampZoom(transform.k * factor);
-  const ratio = k / transform.k;
-  return {
-    k,
-    x: focus.x - (focus.x - transform.x) * ratio,
-    y: focus.y - (focus.y - transform.y) * ratio,
-  };
-};
-
-const toViewBoxPoint = (
-  svg: SVGSVGElement,
-  clientX: number,
-  clientY: number,
-) => {
-  const matrix = svg.getScreenCTM();
-  if (!matrix) return { x: 0, y: 0 };
-  const point = new DOMPoint(clientX, clientY).matrixTransform(
-    matrix.inverse(),
-  );
-  return { x: point.x, y: point.y };
-};
-
-const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.y - b.y);
-const midpoint = (a: Point, b: Point) => ({
-  x: (a.x + b.x) / 2,
-  y: (a.y + b.y) / 2,
-});
-
-const KEY_ACTIONS: Record<
-  string,
-  (transform: Transform, center: Point) => Transform
-> = {
-  ArrowLeft: t => ({ ...t, x: t.x + KEY_PAN_STEP }),
-  ArrowRight: t => ({ ...t, x: t.x - KEY_PAN_STEP }),
-  ArrowUp: t => ({ ...t, y: t.y + KEY_PAN_STEP }),
-  ArrowDown: t => ({ ...t, y: t.y - KEY_PAN_STEP }),
-  '+': (t, center) => zoomAround(t, ZOOM.STEP, center),
-  '=': (t, center) => zoomAround(t, ZOOM.STEP, center),
-  '-': (t, center) => zoomAround(t, 1 / ZOOM.STEP, center),
-  '0': () => IDENTITY,
-};
-
-const ZOOM_BUTTON_CLASS =
-  'flex h-9 w-9 items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-sky-500 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100';
 
 interface GraphCanvasProps {
   projects: GraphProject[];
   dependencies: GraphDependency[];
-  adjacency: Adjacency;
   selected: string | null;
   onSelect: (name: string | null) => void;
+  groupColors: GroupColors;
+  settings: GraphSettings;
 }
 
 function GraphCanvas({
   projects,
   dependencies,
-  adjacency,
   selected,
   onSelect,
+  groupColors,
+  settings,
 }: GraphCanvasProps) {
   const { t } = useTranslation();
-  const palette = GRAPH_PALETTE[useAppearance()];
-  const svgRef = useRef<SVGSVGElement>(null);
-  const pointers = useRef(new Map<number, Point>());
-  const dragStart = useRef<DragStart | null>(null);
-  const [transform, setTransform] = useState<Transform>(IDENTITY);
-  const [hovered, setHovered] = useState<string | null>(null);
 
-  const layout = useMemo(
-    () => computeLayout(projects, dependencies),
-    [projects, dependencies],
-  );
-  const { viewBox } = layout;
-  const center = {
-    x: viewBox.x + viewBox.width / 2,
-    y: viewBox.y + viewBox.height / 2,
-  };
-
-  useEffect(() => setTransform(IDENTITY), [layout]);
-
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    // React registers wheel listeners as passive, so preventDefault needs a native one.
-    const onWheel = (event: WheelEvent) => {
-      event.preventDefault();
-      const focus = toViewBoxPoint(svg, event.clientX, event.clientY);
-      setTransform(current =>
-        zoomAround(
-          current,
-          Math.exp(-event.deltaY * ZOOM.WHEEL_SENSITIVITY),
-          focus,
-        ),
-      );
+  const graph = useMemo<NoteGraph>(() => {
+    const visible = new Set(projects.map(project => project.name));
+    return {
+      nodes: projects.map(project => ({
+        id: project.name,
+        name: toShortName(project.name),
+        group: project.type,
+      })),
+      links: dependencies.filter(
+        ({ source, target }) => visible.has(source) && visible.has(target),
+      ),
     };
-    svg.addEventListener('wheel', onWheel, { passive: false });
-    return () => svg.removeEventListener('wheel', onWheel);
-  }, []);
+  }, [projects, dependencies]);
 
-  const active =
-    hovered ?? (selected && layout.positions.has(selected) ? selected : null);
-  const related = useMemo(
-    () =>
-      active ? new Set([active, ...getNeighbors(adjacency, active)]) : null,
-    [active, adjacency],
+  // GraphView rebuilds its simulation when onSelect changes, so the callback
+  // stays stable and reads the current selection from a ref.
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
+  const onSelectRef = useRef(onSelect);
+  onSelectRef.current = onSelect;
+  const handleSelect = useCallback(
+    (name: string) =>
+      onSelectRef.current(name === selectedRef.current ? null : name),
+    [],
   );
-
-  // Pointer capture retargets later events to the svg, so the pressed node is
-  // read here rather than on pointerup.
-  const onPointerDown = (event: PointerEvent<SVGSVGElement>) => {
-    const project =
-      (event.target as Element)
-        .closest('[data-project]')
-        ?.getAttribute('data-project') ?? null;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    pointers.current.set(event.pointerId, {
-      x: event.clientX,
-      y: event.clientY,
-    });
-    dragStart.current = { x: event.clientX, y: event.clientY, project };
-  };
-
-  const onPointerMove = (event: PointerEvent<SVGSVGElement>) => {
-    const previous = pointers.current.get(event.pointerId);
-    if (!previous) return;
-    const svg = event.currentTarget;
-    const nextPoint = { x: event.clientX, y: event.clientY };
-    const others = [...pointers.current.entries()].filter(
-      ([id]) => id !== event.pointerId,
-    );
-    pointers.current.set(event.pointerId, nextPoint);
-
-    if (others.length === 1) {
-      const [, other] = others[0];
-      const previousSpan = distance(previous, other);
-      if (previousSpan === 0) return;
-      const mid = midpoint(nextPoint, other);
-      setTransform(current =>
-        zoomAround(
-          current,
-          distance(nextPoint, other) / previousSpan,
-          toViewBoxPoint(svg, mid.x, mid.y),
-        ),
-      );
-      return;
-    }
-
-    const from = toViewBoxPoint(svg, previous.x, previous.y);
-    const to = toViewBoxPoint(svg, nextPoint.x, nextPoint.y);
-    setTransform(current => ({
-      ...current,
-      x: current.x + to.x - from.x,
-      y: current.y + to.y - from.y,
-    }));
-  };
-
-  const onPointerUp = (event: PointerEvent<SVGSVGElement>) => {
-    pointers.current.delete(event.pointerId);
-    const start = dragStart.current;
-    const isClick =
-      start &&
-      pointers.current.size === 0 &&
-      distance(start, { x: event.clientX, y: event.clientY }) <=
-        CLICK_MOVE_TOLERANCE;
-    if (!isClick) return;
-    onSelect(
-      start.project && start.project !== selected ? start.project : null,
-    );
-  };
-
-  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    const action = KEY_ACTIONS[event.key];
-    if (!action) return;
-    event.preventDefault();
-    setTransform(current => action(current, center));
-  };
-
-  const onNodeKeyDown = (event: KeyboardEvent<SVGGElement>, name: string) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    event.preventDefault();
-    event.stopPropagation();
-    onSelect(name === selected ? null : name);
-  };
-
-  const zoomBy = (factor: number) =>
-    setTransform(current => zoomAround(current, factor, center));
+  const clearSelection = useCallback(() => {
+    if (selectedRef.current !== null) onSelectRef.current(null);
+  }, []);
 
   return (
     <div
       role="group"
       aria-label={t('PROJECT_GRAPH_PAGE.GRAPH_LABEL')}
-      tabIndex={0}
-      onKeyDown={onKeyDown}
-      className="relative min-h-64 flex-1 overflow-hidden rounded-lg border border-gray-200 bg-white focus-visible:outline-2 focus-visible:outline-sky-500 dark:border-gray-700 dark:bg-gray-800"
+      className="relative min-h-64 flex-1 overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
     >
-      <svg
-        ref={svgRef}
-        viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
-        className="h-full w-full cursor-grab touch-none select-none active:cursor-grabbing"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={event => pointers.current.delete(event.pointerId)}
-      >
-        <defs>
-          {[
-            { id: MARKER_ID.DEFAULT, color: palette.edge },
-            { id: MARKER_ID.ACTIVE, color: palette.edgeActive },
-          ].map(marker => (
-            <marker
-              key={marker.id}
-              id={marker.id}
-              viewBox="0 0 10 10"
-              refX={10}
-              refY={5}
-              markerWidth={6}
-              markerHeight={6}
-              orient="auto-start-reverse"
-            >
-              <path d="M0,0 L10,5 L0,10 z" fill={marker.color} />
-            </marker>
-          ))}
-        </defs>
-        <g
-          transform={`translate(${transform.x} ${transform.y}) scale(${transform.k})`}
-        >
-          {layout.edges.map(({ source, target }) => {
-            const from = layout.positions.get(source);
-            const to = layout.positions.get(target);
-            if (!from || !to) return null;
-            const length = distance(from, to) || 1;
-            const inset = NODE_SIZE[to.type] + ARROW_GAP;
-            const isActive = active === source || active === target;
-            return (
-              <line
-                key={`${source}->${target}`}
-                x1={from.x}
-                y1={from.y}
-                x2={to.x - ((to.x - from.x) / length) * inset}
-                y2={to.y - ((to.y - from.y) / length) * inset}
-                stroke={isActive ? palette.edgeActive : palette.edge}
-                strokeWidth={isActive ? 1.5 : 1}
-                markerEnd={`url(#${isActive ? MARKER_ID.ACTIVE : MARKER_ID.DEFAULT})`}
-                opacity={active && !isActive ? DIMMED_OPACITY : 1}
-              />
-            );
-          })}
-          {projects.map(project => {
-            const position = layout.positions.get(project.name);
-            if (!position) return null;
-            const isSelected = project.name === selected;
-            const size = NODE_SIZE[project.type];
-            const fill =
-              project.type === PROJECT_TYPE.APP ? palette.app : palette.lib;
-            const ring = isSelected
-              ? { stroke: palette.selectedRing, strokeWidth: 2.5 }
-              : {};
-            return (
-              <g
-                key={project.name}
-                data-project={project.name}
-                role="button"
-                tabIndex={0}
-                aria-pressed={isSelected}
-                aria-label={t('PROJECT_GRAPH_PAGE.NODE_LABEL', {
-                  name: project.name,
-                  type: t(PROJECT_TYPE_LABEL_KEY[project.type]),
-                })}
-                transform={`translate(${position.x} ${position.y})`}
-                opacity={
-                  related && !related.has(project.name) ? DIMMED_OPACITY : 1
-                }
-                className="cursor-pointer outline-none [&:focus-visible>.node-shape]:stroke-sky-500 [&:focus-visible>.node-shape]:[stroke-width:3px]"
-                onPointerEnter={() => setHovered(project.name)}
-                onPointerLeave={() => setHovered(null)}
-                onFocus={() => setHovered(project.name)}
-                onBlur={() => setHovered(null)}
-                onKeyDown={event => onNodeKeyDown(event, project.name)}
-              >
-                {project.type === PROJECT_TYPE.APP ? (
-                  <circle
-                    className="node-shape"
-                    r={size}
-                    fill={fill}
-                    {...ring}
-                  />
-                ) : (
-                  <rect
-                    className="node-shape"
-                    x={-size}
-                    y={-size}
-                    width={size * 2}
-                    height={size * 2}
-                    rx={2}
-                    fill={fill}
-                    {...ring}
-                  />
-                )}
-                <text
-                  x={size + LABEL_OFFSET}
-                  dy="0.35em"
-                  fontSize={LABEL_FONT_SIZE}
-                  fontWeight={isSelected ? 600 : 400}
-                  fill={palette.label}
-                  stroke={palette.labelHalo}
-                  strokeWidth={3}
-                  paintOrder="stroke"
-                >
-                  {toShortName(project.name)}
-                </text>
-              </g>
-            );
-          })}
-        </g>
-      </svg>
-
-      <div className="absolute bottom-2 right-2 flex flex-col overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
-        <button
-          type="button"
-          aria-label={t('PROJECT_GRAPH_PAGE.ZOOM_IN')}
-          title={t('PROJECT_GRAPH_PAGE.ZOOM_IN')}
-          className={ZOOM_BUTTON_CLASS}
-          onClick={() => zoomBy(ZOOM.STEP)}
-        >
-          <ZoomIn className={ICON_CLASS} />
-        </button>
-        <button
-          type="button"
-          aria-label={t('PROJECT_GRAPH_PAGE.ZOOM_OUT')}
-          title={t('PROJECT_GRAPH_PAGE.ZOOM_OUT')}
-          className={ZOOM_BUTTON_CLASS}
-          onClick={() => zoomBy(1 / ZOOM.STEP)}
-        >
-          <ZoomOut className={ICON_CLASS} />
-        </button>
-        <button
-          type="button"
-          aria-label={t('PROJECT_GRAPH_PAGE.RESET_VIEW')}
-          title={t('PROJECT_GRAPH_PAGE.RESET_VIEW')}
-          className={ZOOM_BUTTON_CLASS}
-          onClick={() => setTransform(IDENTITY)}
-        >
-          <Maximize className={ICON_CLASS} />
-        </button>
+      <GraphView
+        graph={graph}
+        activePath={selected ?? undefined}
+        onSelect={handleSelect}
+        groupColors={groupColors}
+        forces={settings.appliedForces}
+        showNodeGlow={settings.showNodeGlow}
+        onBackgroundClick={clearSelection}
+        zoomControls={{
+          zoomIn: t('PROJECT_GRAPH_PAGE.ZOOM_IN'),
+          zoomOut: t('PROJECT_GRAPH_PAGE.ZOOM_OUT'),
+          reset: t('PROJECT_GRAPH_PAGE.RESET_VIEW'),
+        }}
+      />
+      <div className="absolute right-2 top-2 z-10">
+        <GraphSettingsMenu>
+          <GraphSettingsFields settings={settings} />
+        </GraphSettingsMenu>
       </div>
     </div>
   );
@@ -649,27 +284,19 @@ function DetailPanel({
   );
 }
 
-function Legend() {
+function Legend({ colors }: { colors: GroupColors }) {
   const { t } = useTranslation();
-  const palette = GRAPH_PALETTE[useAppearance()];
   return (
     <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-300">
       <span className="flex items-center gap-1">
         <svg aria-hidden width={12} height={12} viewBox="-6 -6 12 12">
-          <circle r={5} fill={palette.app} />
+          <circle r={5} fill={colors[PROJECT_TYPE.APP]} />
         </svg>
         {t('PROJECT_GRAPH_PAGE.TYPE_APP')}
       </span>
       <span className="flex items-center gap-1">
         <svg aria-hidden width={12} height={12} viewBox="-6 -6 12 12">
-          <rect
-            x={-4.5}
-            y={-4.5}
-            width={9}
-            height={9}
-            rx={1.5}
-            fill={palette.lib}
-          />
+          <circle r={5} fill={colors[PROJECT_TYPE.LIB]} />
         </svg>
         {t('PROJECT_GRAPH_PAGE.TYPE_LIB')}
       </span>
@@ -682,6 +309,11 @@ export function ProjectGraphPage() {
   const [data, setData] = useState<ProjectGraphData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { selected, typeFilter, search, update } = useGraphParams();
+  const settings = useGraphSettings(
+    GRAPH_SETTINGS_STORAGE_PREFIX,
+    HUES_SCHEME_ID,
+  );
+  const groupColors = useGroupColors(settings.colorScheme);
 
   useEffect(() => {
     (async () => {
@@ -762,7 +394,7 @@ export function ProjectGraphPage() {
             />
           </div>
           <div className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-2">
-            <Legend />
+            <Legend colors={groupColors} />
             <p
               className="text-xs text-gray-500 dark:text-gray-400"
               aria-live="polite"
@@ -783,9 +415,10 @@ export function ProjectGraphPage() {
               <GraphCanvas
                 projects={visibleProjects}
                 dependencies={data.dependencies}
-                adjacency={adjacency}
                 selected={selectedProject ? selectedProject.name : null}
                 onSelect={name => update({ [PARAM.PROJECT]: name })}
+                groupColors={groupColors}
+                settings={settings}
               />
             )}
             {selectedProject && (

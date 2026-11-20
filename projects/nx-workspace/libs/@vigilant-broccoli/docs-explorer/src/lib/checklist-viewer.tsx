@@ -10,6 +10,7 @@ const LIST_ID_PREFIX = 'list';
 const NESTED_LIST_SUFFIX = 'l';
 const STRIP_P_RE = /^<p>|<\/p>\n?$/g;
 const ANCHOR_TAG = 'A';
+const EMPTY_ANCESTORS: ChecklistItem[] = [];
 
 const COPY = {
   RESET: 'Reset',
@@ -80,7 +81,23 @@ const buildItems = (
     return { id, html, children };
   });
 
-// Only top-level lists become checkboxes; everything else renders as normal markdown.
+const TOC_HEADING_RE = /^(table of contents|contents|toc)$/i;
+const IN_PAGE_LINK_RE = /^\[[^\]]*\]\(#[^)]*\)$/;
+
+// A list is a table of contents when every item, at every depth, is just a
+// link to an anchor on the page.
+const isAnchorOnlyList = (list: Tokens.List): boolean =>
+  list.items.every(item =>
+    item.tokens.every(token =>
+      token.type === 'list'
+        ? isAnchorOnlyList(token as Tokens.List)
+        : token.type === 'space' || IN_PAGE_LINK_RE.test(token.raw.trim()),
+    ),
+  );
+
+// Only top-level lists become checkboxes; everything else renders as normal
+// markdown, including a table of contents: the list under a "Table of
+// Contents" heading, or one made only of in-page links.
 const parseContent = (content: string): ContentBlock[] => {
   // marked.parser()'s options replace marked.defaults entirely rather than merging with it,
   // and a fresh renderer per call keeps heading-id dedup state isolated per parse (see
@@ -92,15 +109,27 @@ const parseContent = (content: string): ContentBlock[] => {
   };
   const tokens = marked.lexer(content);
   let listIndex = 0;
+  let previousHeading: string | null = null;
 
   return tokens.map(token => {
     if (token.type === 'list') {
+      // A table of contents still takes its list number, so lists after it
+      // keep the ids their saved checks are stored under.
       const idPrefix = `${LIST_ID_PREFIX}${listIndex++}`;
+      const list = token as Tokens.List;
+      const isToc =
+        (previousHeading !== null && TOC_HEADING_RE.test(previousHeading)) ||
+        isAnchorOnlyList(list);
+      previousHeading = null;
+      if (isToc) return { kind: 'html', html: marked.parser([token], opts) };
       return {
         kind: 'list',
-        items: buildItems((token as Tokens.List).items, idPrefix, opts),
+        items: buildItems(list.items, idPrefix, opts),
       };
     }
+    if (token.type === 'heading')
+      previousHeading = (token as Tokens.Heading).text.trim();
+    else if (token.type !== 'space') previousHeading = null;
     return { kind: 'html', html: marked.parser([token], opts) };
   });
 };
@@ -135,30 +164,61 @@ const saveChecked = (filePath: string, checked: Set<string>) => {
   );
 };
 
+// Checking an item sets everything nested under it to the same state, then
+// each ancestor, nearest first, is checked exactly when all its children are,
+// so unchecking one sub-step also unchecks the items above it.
+const applyToggle = (
+  prev: Set<string>,
+  item: ChecklistItem,
+  ancestors: ChecklistItem[],
+): Set<string> => {
+  const next = new Set(prev);
+  const value = !prev.has(item.id);
+  for (const id of collectIds([item])) {
+    if (value) next.add(id);
+    else next.delete(id);
+  }
+  for (const ancestor of [...ancestors].reverse()) {
+    if (ancestor.children.every(child => next.has(child.id)))
+      next.add(ancestor.id);
+    else next.delete(ancestor.id);
+  }
+  return next;
+};
+
 interface ItemRowProps {
   item: ChecklistItem;
+  ancestors: ChecklistItem[];
   checked: Set<string>;
-  toggle: (id: string) => void;
+  toggle: (item: ChecklistItem, ancestors: ChecklistItem[]) => void;
   filePath: string;
   onNavigate?: (path: string) => void;
 }
 
 const ItemRow = ({
   item,
+  ancestors,
   checked,
   toggle,
   filePath,
   onNavigate,
 }: ItemRowProps) => {
   const isChecked = checked.has(item.id);
+  const isPartial =
+    !isChecked && collectIds(item.children).some(id => checked.has(id));
   const handleLinkClick = createNoteLinkClickHandler(filePath, onNavigate);
+  const childAncestors = [...ancestors, item];
   return (
     <li className="list-none">
       <label className={CLS.ROW_LABEL}>
         <input
           type="checkbox"
           checked={isChecked}
-          onChange={() => toggle(item.id)}
+          // `indeterminate` has no attribute form, so it is set on the node.
+          ref={el => {
+            if (el) el.indeterminate = isPartial;
+          }}
+          onChange={() => toggle(item, ancestors)}
           className={CLS.CHECKBOX}
         />
         <span
@@ -178,6 +238,7 @@ const ItemRow = ({
             <ItemRow
               key={child.id}
               item={child}
+              ancestors={childAncestors}
               checked={checked}
               toggle={toggle}
               filePath={filePath}
@@ -212,11 +273,9 @@ export function ChecklistViewer({
       : undefined;
   }, [blocks]);
 
-  const toggle = (id: string) => {
+  const toggle = (item: ChecklistItem, ancestors: ChecklistItem[]) => {
     setChecked(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      const next = applyToggle(prev, item, ancestors);
       saveChecked(filePath, next);
       return next;
     });
@@ -267,6 +326,7 @@ export function ChecklistViewer({
                 <ItemRow
                   key={item.id}
                   item={item}
+                  ancestors={EMPTY_ANCESTORS}
                   checked={checked}
                   toggle={toggle}
                   filePath={filePath}

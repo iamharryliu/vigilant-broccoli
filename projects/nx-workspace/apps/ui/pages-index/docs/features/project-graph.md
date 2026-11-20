@@ -1,6 +1,6 @@
 # Project Graph
 
-`/project-graph` — `ProjectGraphPage.tsx`, filtering and palette in `consts/projectGraph.ts`.
+`/project-graph` — `ProjectGraphPage.tsx`, filtering and palette in `consts/projectGraph.ts`. The canvas is docs-explorer's shared `GraphView` (see its [note-graph.md](../../../../libs/@vigilant-broccoli/docs-explorer/docs/features/note-graph.md)).
 
 ## Data
 
@@ -11,20 +11,21 @@
 
 ## View
 
-- Default is the full graph, laid out synchronously with `d3-force` (300 ticks) and fitted to the SVG `viewBox`; apps are pulled above libs so arrows mostly point down
-- Apps are circles in `--pages-primary`, libs squares in a violet tuned per `useAppearance`
-- Hover or focus a node to highlight its direct edges and neighbors and dim the rest; with nothing hovered, the selected node is highlighted
+- Projects map to `GraphView` nodes (`id` = project name, label = short name, `group` = type); only edges between visible projects are passed in. Nodes are circles sized by link count, laid out by the force simulation; edges have no arrowheads, so direction lives in the detail panel
+- Apps use `--pages-primary` and libs a violet tuned per `useAppearance`, passed as `groupColors`. The canvas cannot read CSS variables, so the app color is resolved from the document with a concrete fallback: an unresolved `hsl(var(...))` would make the glow gradients throw
+- The gear menu (`GraphSettingsMenu`) holds color scheme, node glow and forces, saved under the `project-graph:` prefix, separate from docs graphs. The default is the hue option (the page's own colors); a Wada scheme gives apps its first color and libs its second by position, since `app` and `lib` hash to the same palette slot. The legend follows the active colors
+- Hover dims all but a node and its neighbors; the selected project is highlighted and opens the detail panel
 - Search keeps matching projects plus their direct neighbors; the Apps/Libs filter applies first
 - The detail panel lists Depends on and Depended on by from the full data; picking a project hidden by the filters clears them so it appears on the canvas
 - `project`, `type` and `q` live in the hash query (`#/project-graph?project=hearth&q=hearth`); defaults are omitted from the URL
 
 ## Interaction
 
-- Drag pans, wheel or pinch zooms around the pointer, and the corner buttons zoom in, out and reset
-- With the graph focused: arrow keys pan, `+`/`-` zoom, `0` resets; nodes are tabbable and Enter/Space toggles selection
-- A click is a pointer press that moves at most 4px; clicking the background clears the selection
+- Drag pans, wheel zooms around the pointer, and the corner buttons zoom in, out and reset (`zoomControls`); dragging a node repositions it
+- Clicking a node selects it and clicking it again deselects; clicking empty canvas (a press that moves at most 4px) also deselects, through `onBackgroundClick`
+- The camera follows the layout only until it first settles; later force changes and drags move the nodes, not the view, until reset
 
 ## Gotchas
 
-- The svg captures the pointer on press, so later events target the svg: the pressed node is read on `pointerdown`, not `pointerup`
-- The wheel listener is attached natively with `passive: false`, because React's `onWheel` is passive and cannot stop page scroll
+- `GraphView` rebuilds its simulation when `graph` or `onSelect` changes identity, so the page memoizes the graph and passes stable callbacks that read the current selection from refs
+- The canvas has no per-node keyboard focus; only the zoom buttons and the panel are keyboard-reachable
