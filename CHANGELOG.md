@@ -20,6 +20,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### hearth
 
+- On phones the home page is one tabbed view with Tasks first and selected by default, plus Whiteboard and Calendar, replacing the separate Whiteboard, Tasks and Calendar entries under Home in the menu; only the task list scrolls, recurring tasks are highlighted yellow, and the progress bar counts only today's recurring tasks (PR: pending).
 - New Whiteboard and Tasks tabs on the home page with recurring and one-off tasks stored per home, assignable to members, with each recurring occurrence its own instance and carried-over ones labeled missed ([#1485](https://github.com/iamharryliu/vigilant-broccoli/pull/1485), [#1493](https://github.com/iamharryliu/vigilant-broccoli/pull/1493), [#1495](https://github.com/iamharryliu/vigilant-broccoli/pull/1495), [#1508](https://github.com/iamharryliu/vigilant-broccoli/pull/1508), [#1561](https://github.com/iamharryliu/vigilant-broccoli/pull/1561)).
 - New checklist, leisure and task items go to the top of their lists and can be dragged to reorder, and lists refresh when the tab regains focus ([#1387](https://github.com/iamharryliu/vigilant-broccoli/pull/1387), [#1486](https://github.com/iamharryliu/vigilant-broccoli/pull/1486), [#1587](https://github.com/iamharryliu/vigilant-broccoli/pull/1587), [#1588](https://github.com/iamharryliu/vigilant-broccoli/pull/1588)).
 - The recurring-task reset is replaced by Export and Import. Import matches tasks by title and never deletes anything. Deleting a recurring task now archives it, so its completed history stays ([#1591](https://github.com/iamharryliu/vigilant-broccoli/pull/1591)).
@@ -126,6 +127,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- New `CheckListPanel` pins a task list's controls and scrolls only the list; `CardContainer` gains `fill` to fill a height-bound parent and its `title` is now optional. `GoogleTasks` and Hearth's task list use the panel (PR: pending).
 - New `SignOutButton`, the standard sign-out action with a logout icon and a pending state for async handlers, with a demo in the component library ([#1693](https://github.com/iamharryliu/vigilant-broccoli/pull/1693)).
 - New `ThemePreferenceControl`, a shared System/Light/Dark picker. Bookmarks and Hearth settings use it in place of their own copies, and Job Hunt's theme dropdown becomes the same segmented control ([#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
 - `SearchableList` moved out of `react-lib-higher-level` into its own `@vigilant-broccoli/entry-directory` library and is now `EntryDirectory` (`EntryDirectoryRow`, `ENTRY_DIRECTORY_VIEW` and the matching types), and `Sidebar` moved into its own `@vigilant-broccoli/sidebar` library; apps import it from there. The chatbot library now exports `ConfirmDeleteDialog` ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680)).

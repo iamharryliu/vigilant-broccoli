@@ -35,6 +35,7 @@ export * from './StackedImages';
 export * from './CollapsibleList';
 export * from './CheckList';
 export * from './CheckListBase';
+export * from './CheckListPanel';
 export * from './MonospaceText';
 export * from './Text';
 export * from './Heading';
