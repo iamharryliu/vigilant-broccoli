@@ -71,6 +71,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - The Deployments page moved from `harryliu.dev` to `deployments.vigilant-broccoli.app`, with no redirect from the old address ([#1687](https://github.com/iamharryliu/vigilant-broccoli/pull/1687)).
 - The Status page moved from `harryliu.dev` to `status.vigilant-broccoli.app`, with no redirect from the old address ([#1691](https://github.com/iamharryliu/vigilant-broccoli/pull/1691)).
 - New Project Graph page, linked from the home page, draws the public apps and the libs they depend on as an interactive graph you can search, filter, zoom and click through to see each project's dependencies and dependents. It uses the notes graph's look, with zoom buttons, a settings menu for colors and forces, arrows showing each dependency's direction, keyboard navigation between projects, and a click on empty space to clear the selection ([#1718](https://github.com/iamharryliu/vigilant-broccoli/pull/1718)).
+- The Project Graph's zoom buttons, `+`/`-` keys and reset now glide instead of jumping, and quick repeated clicks add up; reduced motion keeps them instant ([#1721](https://github.com/iamharryliu/vigilant-broccoli/pull/1721)).
 
 ### docs-md
 
