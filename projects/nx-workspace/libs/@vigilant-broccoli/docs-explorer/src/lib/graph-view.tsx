@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Maximize, ZoomIn, ZoomOut } from 'lucide-react';
 import {
   forceCenter,
   forceCollide,
@@ -130,6 +131,9 @@ const EVENT = {
   POINTER_CANCEL: 'pointercancel',
   WHEEL: 'wheel',
   CHANGE: 'change',
+  KEY_DOWN: 'keydown',
+  FOCUS: 'focus',
+  BLUR: 'blur',
 } as const;
 
 const groupHash = (group: string): number => {
@@ -145,7 +149,9 @@ const nodeColor = (
   group: string,
   dark: boolean,
   palette: readonly string[] | undefined,
+  groupColors?: Readonly<Record<string, string>>,
 ): string => {
+  if (groupColors?.[group]) return groupColors[group];
   if (!group) return dark ? COLOR.ROOT_DARK : COLOR.ROOT_LIGHT;
   if (palette?.length) return palette[groupHash(group) % palette.length];
   return `hsl(${groupHash(group) % 360} 65% ${dark ? 62 : 46}%)`;
@@ -174,6 +180,30 @@ const addFadeStops = (
       withAlpha(color, peak * (0.5 + 0.5 * Math.cos(Math.PI * t))),
     );
   }
+};
+
+// A glow is the same faded disc for a given color and peak, so it is rendered
+// once to an offscreen canvas and scaled with drawImage. Building a fresh
+// many-stop radial gradient per node per frame dominated each draw.
+const GLOW_SPRITE_PX = 256;
+const glowSprites = new Map<string, HTMLCanvasElement>();
+const glowSprite = (color: string, peak: number): HTMLCanvasElement => {
+  const key = `${color}|${peak}`;
+  const cached = glowSprites.get(key);
+  if (cached) return cached;
+  const sprite = document.createElement('canvas');
+  sprite.width = GLOW_SPRITE_PX;
+  sprite.height = GLOW_SPRITE_PX;
+  const spriteCtx = sprite.getContext('2d');
+  if (spriteCtx) {
+    const r = GLOW_SPRITE_PX / 2;
+    const glow = spriteCtx.createRadialGradient(r, r, 0, r, r, r);
+    addFadeStops(glow, color, peak);
+    spriteCtx.fillStyle = glow;
+    spriteCtx.fillRect(0, 0, GLOW_SPRITE_PX, GLOW_SPRITE_PX);
+  }
+  glowSprites.set(key, sprite);
+  return sprite;
 };
 
 const nodeRadius = (degree: number): number =>
@@ -239,9 +269,66 @@ export interface GraphViewProps {
   forces?: GraphForces;
   // Omitted keeps the hashed per-group hues.
   palette?: readonly string[];
+  // Fixed colors for named groups, checked before the palette and hashed hues;
+  // must be #rrggbb or hsl() so the glows can add alpha.
+  groupColors?: Readonly<Record<string, string>>;
   // The faint per-node glows; the open-note and hover highlights always draw.
   showNodeGlow?: boolean;
+  // Labels for corner zoom in/out/reset buttons; omitted renders no buttons.
+  zoomControls?: GraphZoomControlLabels;
+  // A click (not a pan) on empty canvas, e.g. to clear a selection.
+  onBackgroundClick?: () => void;
+  // Draws an arrowhead at each link's target end (source depends on target).
+  directed?: boolean;
+  // Makes the canvas keyboard-operable under this accessible name: arrows
+  // pan, +/-/0 zoom and reset, Tab/Shift+Tab step through nodes by name,
+  // Enter/Space select, Escape clears node focus.
+  keyboardLabel?: string;
 }
+
+export interface GraphZoomControlLabels {
+  zoomIn: string;
+  zoomOut: string;
+  reset: string;
+}
+
+const ZOOM_BUTTON_CLASS =
+  'flex h-9 w-9 items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-sky-500 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100';
+const ZOOM_ICON_CLASS = 'h-4 w-4 shrink-0';
+
+// Arrowheads keep a fixed on-screen size so they stay legible at any zoom,
+// and sit just outside the target node so the circle does not hide them.
+const ARROW = { LENGTH_PX: 7, HALF_WIDTH_PX: 3.5, GAP_PX: 1.5 } as const;
+const addArrowhead = (
+  path: Path2D,
+  from: { sx: number; sy: number },
+  to: { sx: number; sy: number },
+  targetRadius: number,
+) => {
+  const dx = to.sx - from.sx;
+  const dy = to.sy - from.sy;
+  const length = Math.hypot(dx, dy);
+  if (length <= targetRadius + ARROW.LENGTH_PX) return;
+  const ux = dx / length;
+  const uy = dy / length;
+  const tipX = to.sx - ux * (targetRadius + ARROW.GAP_PX);
+  const tipY = to.sy - uy * (targetRadius + ARROW.GAP_PX);
+  const baseX = tipX - ux * ARROW.LENGTH_PX;
+  const baseY = tipY - uy * ARROW.LENGTH_PX;
+  path.moveTo(tipX, tipY);
+  path.lineTo(
+    baseX - uy * ARROW.HALF_WIDTH_PX,
+    baseY + ux * ARROW.HALF_WIDTH_PX,
+  );
+  path.lineTo(
+    baseX + uy * ARROW.HALF_WIDTH_PX,
+    baseY - ux * ARROW.HALF_WIDTH_PX,
+  );
+  path.closePath();
+};
+
+const KEY_PAN_STEP_PX = 40;
+const FOCUS_RING = { GAP_PX: 3, WIDTH_PX: 2 } as const;
 
 export function GraphView({
   graph,
@@ -249,10 +336,25 @@ export function GraphView({
   onSelect,
   forces = DEFAULT_FORCES,
   palette,
+  groupColors,
   showNodeGlow = true,
+  zoomControls,
+  onBackgroundClick,
+  directed = false,
+  keyboardLabel,
 }: GraphViewProps) {
+  const directedRef = useRef(directed);
+  directedRef.current = directed;
+  // Spoken name of the keyboard-focused node, for the live region.
+  const [announcement, setAnnouncement] = useState('');
+  // Read through a ref so a new callback each render does not rebuild the
+  // simulation, which the mount effect keys on.
+  const onBackgroundClickRef = useRef(onBackgroundClick);
+  onBackgroundClickRef.current = onBackgroundClick;
   const paletteRef = useRef(palette);
   paletteRef.current = palette;
+  const groupColorsRef = useRef(groupColors);
+  groupColorsRef.current = groupColors;
   const showNodeGlowRef = useRef(showNodeGlow);
   showNodeGlowRef.current = showNodeGlow;
   const drawRef = useRef<(() => void) | null>(null);
@@ -268,6 +370,7 @@ export function GraphView({
   const xForceRef = useRef<ForceX<SimNode> | null>(null);
   const yForceRef = useRef<ForceY<SimNode> | null>(null);
   const refitRef = useRef<(() => void) | null>(null);
+  const zoomByRef = useRef<((factor: number) => void) | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -296,6 +399,11 @@ export function GraphView({
     let growFrame: number | null = null;
     let growLastTs = 0;
     let userInteracted = false;
+    let followLayout = true;
+    // Keyboard focus moves through nodes in name order; only drawn while the
+    // canvas itself has focus.
+    let keyboardFocusId: string | null = null;
+    let canvasFocused = false;
     let width = container.clientWidth;
     let height = container.clientHeight;
 
@@ -338,9 +446,27 @@ export function GraphView({
       transform.y = height / 2 - cy * transform.k;
     };
 
+    // isDarkTheme reads computed styles up the ancestor chain, which forces a
+    // style recalculation; it runs only on mount and on theme changes.
+    let darkTheme = isDarkTheme(container);
+
     const draw = () => {
-      const dark = isDarkTheme(container);
+      const dark = darkTheme;
       const dpr = window.devicePixelRatio || 1;
+      const groupColorCache = new Map<string, string>();
+      const colorFor = (group: string) => {
+        let color = groupColorCache.get(group);
+        if (color === undefined) {
+          color = nodeColor(
+            group,
+            dark,
+            paletteRef.current,
+            groupColorsRef.current,
+          );
+          groupColorCache.set(group, color);
+        }
+        return color;
+      };
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
 
@@ -362,15 +488,16 @@ export function GraphView({
         if (n.id === activeId) continue;
         const { sx, sy } = toScreen(n);
         const glowR = drawnRadius(n) * CFG.NODE_GLOW_SCALE;
-        const color = nodeColor(n.group, dark, paletteRef.current);
-        const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, glowR);
-        addFadeStops(
-          glow,
-          color,
-          nodeGlowAlpha * (isLit(n.id) ? 1 : COLOR.DIM_ALPHA),
+        ctx.drawImage(
+          glowSprite(
+            colorFor(n.group),
+            nodeGlowAlpha * (isLit(n.id) ? 1 : COLOR.DIM_ALPHA),
+          ),
+          sx - glowR,
+          sy - glowR,
+          glowR * 2,
+          glowR * 2,
         );
-        ctx.fillStyle = glow;
-        ctx.fillRect(sx - glowR, sy - glowR, glowR * 2, glowR * 2);
       }
 
       const drawGlow = (node: SimNode, scale: number, style: GlowStyle) => {
@@ -380,14 +507,16 @@ export function GraphView({
             CFG.ACTIVE_GLOW_RADIUS * transform.k,
             CFG.ACTIVE_GLOW_MIN_PX,
           ) * scale;
-        const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, glowR);
-        addFadeStops(
-          glow,
-          dark ? style.DARK : style.LIGHT,
-          dark ? style.PEAK_DARK : style.PEAK_LIGHT,
+        ctx.drawImage(
+          glowSprite(
+            dark ? style.DARK : style.LIGHT,
+            dark ? style.PEAK_DARK : style.PEAK_LIGHT,
+          ),
+          sx - glowR,
+          sy - glowR,
+          glowR * 2,
+          glowR * 2,
         );
-        ctx.fillStyle = glow;
-        ctx.fillRect(sx - glowR, sy - glowR, glowR * 2, glowR * 2);
       };
       const activeNode = activeId ? nodeById.get(activeId) : undefined;
       if (activeNode) drawGlow(activeNode, 1, ACTIVE_GLOW);
@@ -397,30 +526,64 @@ export function GraphView({
           : undefined;
       if (hoveredNode) drawGlow(hoveredNode, CFG.HOVER_GLOW_SCALE, HOVER_GLOW);
 
+      // Links sharing a stroke style, width and alpha go into one path, so a
+      // frame strokes a handful of paths instead of one per link.
+      const linkColor = dark ? COLOR.LINK_DARK : COLOR.LINK_LIGHT;
+      const linkBatches = new Map<
+        string,
+        {
+          style: string;
+          width: number;
+          alpha: number;
+          path: Path2D;
+          arrows: Path2D;
+        }
+      >();
+      const directedLinks = directedRef.current;
       for (const link of links) {
         const s = nodeById.get(endpointId(link.source));
         const t = nodeById.get(endpointId(link.target));
         if (!s || !t) continue;
-        ctx.lineWidth = linkWidth(link.value);
         const touchesFocus =
           focusId != null && (s.id === focusId || t.id === focusId);
-        if (dimming && !touchesFocus) {
-          ctx.globalAlpha = COLOR.DIM_ALPHA;
-          ctx.strokeStyle = dark ? COLOR.LINK_DARK : COLOR.LINK_LIGHT;
-        } else {
-          ctx.globalAlpha = 1;
-          ctx.strokeStyle = touchesFocus
-            ? COLOR.LINK_HL
-            : dark
-              ? COLOR.LINK_DARK
-              : COLOR.LINK_LIGHT;
+        const dimmed = dimming && !touchesFocus;
+        const style = !dimmed && touchesFocus ? COLOR.LINK_HL : linkColor;
+        const alpha = dimmed ? COLOR.DIM_ALPHA : 1;
+        const width = linkWidth(link.value);
+        const key = `${style}|${width}|${alpha}`;
+        let batch = linkBatches.get(key);
+        if (!batch) {
+          batch = {
+            style,
+            width,
+            alpha,
+            path: new Path2D(),
+            arrows: new Path2D(),
+          };
+          linkBatches.set(key, batch);
         }
         const a = toScreen(s);
         const b = toScreen(t);
-        ctx.beginPath();
-        ctx.moveTo(a.sx, a.sy);
-        ctx.lineTo(b.sx, b.sy);
-        ctx.stroke();
+        batch.path.moveTo(a.sx, a.sy);
+        batch.path.lineTo(b.sx, b.sy);
+        if (directedLinks) addArrowhead(batch.arrows, a, b, drawnRadius(t));
+      }
+      // Dimmed links first and highlighted last, matching what drawing in
+      // link order produced: the focus edges stay on top.
+      const batchOrder = (batch: { style: string; alpha: number }) =>
+        batch.style === COLOR.LINK_HL ? 2 : batch.alpha < 1 ? 0 : 1;
+      const orderedBatches = [...linkBatches.values()].sort(
+        (a, b) => batchOrder(a) - batchOrder(b),
+      );
+      for (const { style, width, alpha, path, arrows } of orderedBatches) {
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = style;
+        ctx.lineWidth = width;
+        ctx.stroke(path);
+        if (directedLinks) {
+          ctx.fillStyle = style;
+          ctx.fill(arrows);
+        }
       }
 
       ctx.globalAlpha = 1;
@@ -435,11 +598,16 @@ export function GraphView({
         ctx.globalAlpha = n.id === active || lit ? 1 : COLOR.DIM_ALPHA;
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
-        ctx.fillStyle =
-          n.id === active
-            ? COLOR.ACCENT
-            : nodeColor(n.group, dark, paletteRef.current);
+        ctx.fillStyle = n.id === active ? COLOR.ACCENT : colorFor(n.group);
         ctx.fill();
+        if (canvasFocused && n.id === keyboardFocusId) {
+          ctx.globalAlpha = 1;
+          ctx.beginPath();
+          ctx.arc(sx, sy, r + FOCUS_RING.GAP_PX, 0, Math.PI * 2);
+          ctx.strokeStyle = COLOR.ACCENT;
+          ctx.lineWidth = FOCUS_RING.WIDTH_PX;
+          ctx.stroke();
+        }
         const isFocusNeighbor =
           hoveredId != null && (focusSet?.has(n.id) ?? false);
         const labelled =
@@ -488,8 +656,13 @@ export function GraphView({
         ),
       )
       .on('tick', () => {
-        if (!userInteracted) fitToView();
+        if (followLayout && !userInteracted) fitToView();
         draw();
+      })
+      // After the first settle the camera stays put: later force changes and
+      // drags move the nodes, not the view. Reset refits explicitly.
+      .on('end', () => {
+        followLayout = false;
       });
     simRef.current = sim;
 
@@ -518,6 +691,18 @@ export function GraphView({
       if (growFrame != null) return;
       growLastTs = 0;
       growFrame = requestAnimationFrame(stepGrow);
+    };
+
+    // Pointer and wheel events can arrive several times per frame; drawing on
+    // each one queues redundant full repaints that a long pan or zoom falls
+    // behind on. Coalesce them into at most one draw per animation frame.
+    let drawFrame: number | null = null;
+    const scheduleDraw = () => {
+      if (drawFrame != null) return;
+      drawFrame = requestAnimationFrame(() => {
+        drawFrame = null;
+        draw();
+      });
     };
 
     drawRef.current = draw;
@@ -589,7 +774,7 @@ export function GraphView({
         if (nextHover !== hoveredId) {
           hoveredId = nextHover;
           startGrow();
-          draw();
+          scheduleDraw();
         }
         return;
       }
@@ -609,7 +794,7 @@ export function GraphView({
         transform.y += py - downY;
         downX = px;
         downY = py;
-        draw();
+        scheduleDraw();
       }
     };
 
@@ -624,36 +809,133 @@ export function GraphView({
       } else if (panning && !moved) {
         const hit = nodeAt(px, py);
         if (hit) onSelect(hit.id);
+        else onBackgroundClickRef.current?.();
       }
       panning = false;
       pointerId = null;
       canvas.style.cursor = 'grab';
     };
 
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
+    // Zooms keeping the world point under (px, py) fixed on screen.
+    const zoomAt = (px: number, py: number, factor: number) => {
       userInteracted = true;
-      const rect = canvas.getBoundingClientRect();
-      const px = e.clientX - rect.left;
-      const py = e.clientY - rect.top;
       const { wx, wy } = toWorld(px, py);
-      const factor = e.deltaY < 0 ? CFG.ZOOM_STEP : 1 / CFG.ZOOM_STEP;
       transform.k = Math.min(
         CFG.MAX_ZOOM,
         Math.max(CFG.MIN_ZOOM, transform.k * factor),
       );
       transform.x = px - wx * transform.k;
       transform.y = py - wy * transform.k;
-      draw();
+      scheduleDraw();
+    };
+    zoomByRef.current = factor => zoomAt(width / 2, height / 2, factor);
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      zoomAt(
+        e.clientX - rect.left,
+        e.clientY - rect.top,
+        e.deltaY < 0 ? CFG.ZOOM_STEP : 1 / CFG.ZOOM_STEP,
+      );
     };
 
+    // Keyboard operation only reaches the canvas when `keyboardLabel` gives
+    // it a tabIndex. Tab past the first or last node is left to the browser,
+    // so focus moves on instead of being trapped in the graph.
+    const keyOrder = [...nodes].sort((a, b) => a.name.localeCompare(b.name));
+    const focusNode = (node: SimNode | null) => {
+      keyboardFocusId = node?.id ?? null;
+      hoveredId = keyboardFocusId;
+      setAnnouncement(node?.name ?? '');
+      if (node) {
+        startGrow();
+        const { sx, sy } = toScreen(node);
+        const margin = CFG.FIT_PADDING;
+        if (
+          sx < margin ||
+          sx > width - margin ||
+          sy < margin ||
+          sy > height - margin
+        ) {
+          userInteracted = true;
+          transform.x += width / 2 - sx;
+          transform.y += height / 2 - sy;
+        }
+      }
+      scheduleDraw();
+    };
+    const PAN_BY_KEY: Record<string, [number, number]> = {
+      ArrowLeft: [KEY_PAN_STEP_PX, 0],
+      ArrowRight: [-KEY_PAN_STEP_PX, 0],
+      ArrowUp: [0, KEY_PAN_STEP_PX],
+      ArrowDown: [0, -KEY_PAN_STEP_PX],
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      const pan = PAN_BY_KEY[e.key];
+      if (pan) {
+        e.preventDefault();
+        userInteracted = true;
+        transform.x += pan[0];
+        transform.y += pan[1];
+        scheduleDraw();
+        return;
+      }
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        zoomAt(width / 2, height / 2, CFG.ZOOM_STEP);
+      } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        zoomAt(width / 2, height / 2, 1 / CFG.ZOOM_STEP);
+      } else if (e.key === '0') {
+        e.preventDefault();
+        refitRef.current?.();
+      } else if (e.key === 'Tab') {
+        const index = keyOrder.findIndex(n => n.id === keyboardFocusId);
+        const next =
+          index === -1
+            ? e.shiftKey
+              ? keyOrder.length - 1
+              : 0
+            : index + (e.shiftKey ? -1 : 1);
+        if (next < 0 || next >= keyOrder.length) {
+          focusNode(null);
+          return;
+        }
+        e.preventDefault();
+        focusNode(keyOrder[next]);
+      } else if ((e.key === 'Enter' || e.key === ' ') && keyboardFocusId) {
+        e.preventDefault();
+        onSelect(keyboardFocusId);
+      } else if (e.key === 'Escape' && keyboardFocusId) {
+        e.preventDefault();
+        focusNode(null);
+      }
+    };
+    const onFocus = () => {
+      canvasFocused = true;
+      scheduleDraw();
+    };
+    const onBlur = () => {
+      canvasFocused = false;
+      if (hoveredId === keyboardFocusId) hoveredId = null;
+      scheduleDraw();
+    };
+
+    canvas.addEventListener(EVENT.KEY_DOWN, onKeyDown);
+    canvas.addEventListener(EVENT.FOCUS, onFocus);
+    canvas.addEventListener(EVENT.BLUR, onBlur);
     canvas.addEventListener(EVENT.POINTER_DOWN, onPointerDown);
     canvas.addEventListener(EVENT.POINTER_MOVE, onPointerMove);
     canvas.addEventListener(EVENT.POINTER_UP, endPointer);
     canvas.addEventListener(EVENT.POINTER_CANCEL, endPointer);
     canvas.addEventListener(EVENT.WHEEL, onWheel, { passive: false });
 
-    const themeObserver = new MutationObserver(draw);
+    const refreshTheme = () => {
+      darkTheme = isDarkTheme(container);
+      draw();
+    };
+    const themeObserver = new MutationObserver(refreshTheme);
     // A scoped ThemeProvider flips class/style on its own wrapper, not on <html>.
     for (
       let node: HTMLElement | null = container;
@@ -666,22 +948,27 @@ export function GraphView({
       });
     }
     const media = window.matchMedia?.(PREFERS_DARK_QUERY);
-    media?.addEventListener(EVENT.CHANGE, draw);
+    media?.addEventListener(EVENT.CHANGE, refreshTheme);
 
     return () => {
       if (growFrame != null) cancelAnimationFrame(growFrame);
+      if (drawFrame != null) cancelAnimationFrame(drawFrame);
       refitRef.current = null;
+      zoomByRef.current = null;
       drawRef.current = null;
       sim.stop();
       simRef.current = null;
       resizeObserver.disconnect();
       themeObserver.disconnect();
-      media?.removeEventListener(EVENT.CHANGE, draw);
+      media?.removeEventListener(EVENT.CHANGE, refreshTheme);
       canvas.removeEventListener(EVENT.POINTER_DOWN, onPointerDown);
       canvas.removeEventListener(EVENT.POINTER_MOVE, onPointerMove);
       canvas.removeEventListener(EVENT.POINTER_UP, endPointer);
       canvas.removeEventListener(EVENT.POINTER_CANCEL, endPointer);
       canvas.removeEventListener(EVENT.WHEEL, onWheel);
+      canvas.removeEventListener(EVENT.KEY_DOWN, onKeyDown);
+      canvas.removeEventListener(EVENT.FOCUS, onFocus);
+      canvas.removeEventListener(EVENT.BLUR, onBlur);
     };
   }, [graph, onSelect]);
 
@@ -693,7 +980,7 @@ export function GraphView({
 
   useEffect(() => {
     drawRef.current?.();
-  }, [palette, showNodeGlow]);
+  }, [palette, groupColors, showNodeGlow, directed]);
 
   useEffect(() => {
     const sim = simRef.current;
@@ -705,9 +992,56 @@ export function GraphView({
     sim.alpha(CFG.ALPHA_FORCE_UPDATE).restart();
   }, [forces.center, forces.repel, forces.link, forces.linkDistance]);
 
+  const zoomButtons = zoomControls && [
+    {
+      label: zoomControls.zoomIn,
+      Icon: ZoomIn,
+      onClick: () => zoomByRef.current?.(CFG.ZOOM_STEP),
+    },
+    {
+      label: zoomControls.zoomOut,
+      Icon: ZoomOut,
+      onClick: () => zoomByRef.current?.(1 / CFG.ZOOM_STEP),
+    },
+    {
+      label: zoomControls.reset,
+      Icon: Maximize,
+      onClick: () => refitRef.current?.(),
+    },
+  ];
+
   return (
-    <div ref={containerRef} className="w-full h-full overflow-hidden">
-      <canvas ref={canvasRef} className="touch-none select-none" />
+    <div ref={containerRef} className="relative w-full h-full overflow-hidden">
+      <canvas
+        ref={canvasRef}
+        className="touch-none select-none focus-visible:outline-2 focus-visible:outline-sky-500"
+        {...(keyboardLabel && {
+          tabIndex: 0,
+          role: 'application',
+          'aria-label': keyboardLabel,
+        })}
+      />
+      {keyboardLabel && (
+        <span className="sr-only" aria-live="polite">
+          {announcement}
+        </span>
+      )}
+      {zoomButtons && (
+        <div className="absolute bottom-2 right-2 flex flex-col overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          {zoomButtons.map(({ label, Icon, onClick }) => (
+            <button
+              key={label}
+              type="button"
+              aria-label={label}
+              title={label}
+              className={ZOOM_BUTTON_CLASS}
+              onClick={onClick}
+            >
+              <Icon className={ZOOM_ICON_CLASS} />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
