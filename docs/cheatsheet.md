@@ -55,7 +55,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   gitea:restore [zip|gs://]   Restore Gitea from a local dump zip or GCS (default: latest GCS backup)
 
 💻 CODE SERVER
-  code-server:open            Open code.harryliu.dev
+  code-server:open            Open code.vigilant-broccoli.app
   code-server:password        Copy code-server password to clipboard
   code-server:ssh             SSH into code-server VM
   code-server:logs            Follow code-server container logs

@@ -137,14 +137,14 @@ variable "cloudflare_zone_id" {
 
 variable "code_server_domain" {
   type    = string
-  default = "code.harryliu.dev"
+  default = "code.vigilant-broccoli.app"
 }
 
 # Served by the web-terminal s6 service inside the code-server image, behind the
 # same Caddy and its own Access application.
 variable "web_terminal_domain" {
   type    = string
-  default = "shell.harryliu.dev"
+  default = "shell.vigilant-broccoli.app"
 }
 
 # Cloudflare Zero Trust team domain the web-terminal server validates Access JWT
