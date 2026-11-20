@@ -16,6 +16,7 @@ import {
   Badge,
   Button,
   CheckList,
+  CheckListPanel,
   CheckListItem,
   Input,
   Progress,
@@ -47,6 +48,11 @@ import {
 const ASSIGN_LABEL = 'Assign';
 const ACCEPTED_STATUS = 'accepted';
 const LOADING_LABEL = 'Loading tasks';
+// Same yellow as the Q3 Eisenhower highlight in react-lib-tasks'
+// QUADRANT_COLORS, repeated here so Hearth's Tailwind build generates it.
+// Only the left border is yellow: dense rows keep their gray bottom divider.
+const RECURRING_ROW_CLASS =
+  'bg-yellow-100 dark:bg-yellow-900/20 border-l-4 border-l-yellow-500 pl-2';
 
 const splitArchived = (list: unknown): [RecurringTask[], RecurringTask[]] => {
   const tasks: RecurringTask[] = Array.isArray(list) ? list : [];
@@ -194,15 +200,12 @@ export function TaskList() {
     isRemoving: pendingIds.has(item.id),
   }));
 
-  // Instances completed on an earlier day stay listed but are left out of
-  // today's progress.
+  // Progress counts only today's recurring instances: one-off tasks and
+  // instances completed on an earlier day stay listed but are left out.
   const progressItems = items.filter(item => {
     const completion = completions.find(({ id }) => id === item.id);
     if (completion) return completion.date === todayYmd;
-    const oneOff = oneOffTasks.find(task => task.id === item.id);
-    return (
-      !oneOff?.completedAt || toYmd(new Date(oneOff.completedAt)) === todayYmd
-    );
+    return !isOneOff(item.id);
   });
   const completedCount = progressItems.filter(item => item.checked).length;
   const progress = progressItems.length
@@ -488,6 +491,11 @@ export function TaskList() {
     ) : null;
   };
 
+  // Recurring rows, pending and completed instances alike, are highlighted so
+  // they read apart from one-off tasks.
+  const itemClassName = (item: CheckListItem) =>
+    isOneOff(item.id) ? '' : RECURRING_ROW_CLASS;
+
   const itemActions = (item: CheckListItem) => [
     { label: ASSIGN_LABEL, onSelect: () => setAssigningItem(item) },
   ];
@@ -495,75 +503,84 @@ export function TaskList() {
   if (!homeId) return null;
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-3">
-        {loading ? (
+    <>
+      <CheckListPanel
+        className="min-h-0 flex-1 gap-3"
+        header={
           <>
-            <Skeleton className="h-2 w-full rounded-full" />
-            <Skeleton className="h-4 w-8 shrink-0 rounded-full" />
+            <div className="flex items-center gap-3">
+              {loading ? (
+                <>
+                  <Skeleton className="h-2 w-full rounded-full" />
+                  <Skeleton className="h-4 w-8 shrink-0 rounded-full" />
+                </>
+              ) : (
+                <>
+                  <Progress value={progress} aria-label="Tasks completed" />
+                  <Text size="1" color="gray" className="shrink-0">
+                    {completedCount}/{progressItems.length}
+                  </Text>
+                </>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                className="grow"
+                placeholder="Add a task"
+                value={newTitle}
+                onChange={e => setNewTitle(e.target.value)}
+                onKeyDown={onNewKeyDown}
+              />
+              <Button onClick={handleAdd} disabled={!newTitle.trim()}>
+                Add
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Manage recurring tasks"
+                onClick={() => setManagerOpen(true)}
+              >
+                <Settings size={16} />
+              </Button>
+            </div>
           </>
-        ) : (
-          <>
-            <Progress value={progress} aria-label="Tasks completed" />
-            <Text size="1" color="gray" className="shrink-0">
-              {completedCount}/{progressItems.length}
-            </Text>
-          </>
-        )}
-      </div>
-      <div className="flex gap-2">
-        <Input
-          className="grow"
-          placeholder="Add a task"
-          value={newTitle}
-          onChange={e => setNewTitle(e.target.value)}
-          onKeyDown={onNewKeyDown}
-        />
-        <Button onClick={handleAdd} disabled={!newTitle.trim()}>
-          Add
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label="Manage recurring tasks"
-          onClick={() => setManagerOpen(true)}
-        >
-          <Settings size={16} />
-        </Button>
-      </div>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
+        }
       >
-        {loading ? (
-          <ChecklistSkeleton label={LOADING_LABEL} showBadges />
-        ) : (
-          <CheckList
-            items={items}
-            enableDragDrop
-            listId="recurring-tasks"
-            editingItemId={editingId}
-            editingItemTitle={editingTitle}
-            onToggleCheck={handleToggle}
-            onStartEdit={handleStartEdit}
-            onEditChange={setEditingTitle}
-            onSaveEdit={handleSaveEdit}
-            onCancelEdit={handleCancelEdit}
-            editor="input"
-            rowVariant="dense"
-            size="3"
-            editCompleted={false}
-            storageKeyPrefix="recurring-tasks"
-            emptyLabel="No tasks due today"
-            renderItemAccessory={renderItemAccessory}
-            itemActions={itemActions}
-            // Recurring tasks are deleted from the manager dialog.
-            canDeleteItem={item => isOneOff(item.id)}
-            onDeleteItem={item => handleDeleteOneOff(item.id)}
-          />
-        )}
-      </DndContext>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          {loading ? (
+            <ChecklistSkeleton label={LOADING_LABEL} showBadges />
+          ) : (
+            <CheckList
+              items={items}
+              enableDragDrop
+              listId="recurring-tasks"
+              editingItemId={editingId}
+              editingItemTitle={editingTitle}
+              onToggleCheck={handleToggle}
+              onStartEdit={handleStartEdit}
+              onEditChange={setEditingTitle}
+              onSaveEdit={handleSaveEdit}
+              onCancelEdit={handleCancelEdit}
+              editor="input"
+              rowVariant="dense"
+              size="3"
+              editCompleted={false}
+              storageKeyPrefix="recurring-tasks"
+              emptyLabel="No tasks due today"
+              renderItemAccessory={renderItemAccessory}
+              itemClassName={itemClassName}
+              itemActions={itemActions}
+              // Recurring tasks are deleted from the manager dialog.
+              canDeleteItem={item => isOneOff(item.id)}
+              onDeleteItem={item => handleDeleteOneOff(item.id)}
+            />
+          )}
+        </DndContext>
+      </CheckListPanel>
       <TaskManagerDialog
         open={managerOpen}
         onOpenChange={setManagerOpen}
@@ -581,6 +598,6 @@ export function TaskList() {
         onAssign={handleAssign}
         onClose={() => setAssigningItem(null)}
       />
-    </div>
+    </>
   );
 }

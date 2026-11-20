@@ -6,6 +6,7 @@ Layered checklist components in `libs/@vigilant-broccoli/react-lib`.
 
 - `CheckListBase` — purely presentational: no dnd-kit. Splits items into active rows and a collapsible `Completed (n)` section (`CollapsibleList`, open state persisted under `storageKeyPrefix` + `completedSectionId`). Completed rows sort by `completedAt ?? updatedAt`, newest first, grouped inside that section under headers for the timestamp's local day ("Today", "Yesterday", else e.g. "Mon, Nov 3", with the year outside the current one; `groupCompletedByDay` in `checklist-groups.utils.ts`). Rows without a timestamp follow in a final unlabelled group, so a consumer passing neither field gets no headers. A row leaving Completed keeps its day group while it collapses. Owns the slide-in and completion transitions; see [checklist-completion.md](./checklist-completion.md) for their consumer contract.
 - `CheckList` — `CheckListBase` plus dnd-kit sorting, the `taskList` droppable, a drag-over placeholder, and per-item `notes`/`due`.
+- `CheckListPanel` — layout for a task UI in a height-bound parent: `header` (progress, add row, list picker) stays pinned and only the list in `children` scrolls (`min-h-0 flex-1 overflow-y-auto`). Every ancestor down to it must pass the height on (`h-full`, or `flex-1 min-h-0`); a `CardContainer` needs `fill`. Used by `GoogleTasks` and hearth's `TaskList`.
 
 ## CheckListBase
 
