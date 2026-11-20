@@ -14,7 +14,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### local-manager-next
 
-- Selecting a word or sentence in the Language Learning demo now speaks it immediately in the session's language at the chosen speed (PR: pending).
+- Selecting a word or sentence in the Language Learning demo now speaks it immediately in the session's language at the chosen speed ([#1719](https://github.com/iamharryliu/vigilant-broccoli/pull/1719)).
 
 ### dotfiles
 
