@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
 source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
-GITEA_HOST="git.harryliu.dev"
+GITEA_HOST="git.vigilant-broccoli.app"
 GITEA_USER="iamharryliu"
 GITEA_DB="/data/gitea/gitea.db"
 SSH_OPTS="-i $HOME/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10"

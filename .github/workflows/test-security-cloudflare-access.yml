@@ -22,7 +22,7 @@ jobs:
       matrix:
         include:
           - name: gitea
-            hostname: git.harryliu.dev
+            hostname: git.vigilant-broccoli.app
             origin_ip_secret: GITEA_VM_IP
           - name: code-server
             hostname: code.vigilant-broccoli.app
