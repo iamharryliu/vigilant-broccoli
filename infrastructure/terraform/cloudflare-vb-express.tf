@@ -1,7 +1,6 @@
 # VB Express API hosts in the vigilant-broccoli.app zone, proxied to the fly
 # apps. deploy.yml adds the matching fly certs so the origin TLS handshake
-# succeeds. The old harryliu.dev hosts in cloudflare-harryliu-dev.tf stay until
-# deployed clients have moved over.
+# succeeds.
 
 resource "cloudflare_dns_record" "vb_express_api" {
   zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
