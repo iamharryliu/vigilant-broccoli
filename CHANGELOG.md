@@ -12,6 +12,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - Group headings in `EntryDirectory` (Bookmarks) now use one medium-weight heading style in every view, including Rows ([#1699](https://github.com/iamharryliu/vigilant-broccoli/pull/1699)).
 
+### local-manager-next
+
+- Selecting a word or sentence in the Language Learning demo now speaks it immediately in the session's language at the chosen speed (PR: pending).
+
 ### dotfiles
 
 - `localcleanup` now removes Claude worktrees instantly by renaming each to a hidden `.trash-*` directory and deleting it in the background, measuring their sizes in parallel and sweeping leftovers from an interrupted run; `--keep-dirty` and locked worktrees are still skipped ([#1690](https://github.com/iamharryliu/vigilant-broccoli/pull/1690)).

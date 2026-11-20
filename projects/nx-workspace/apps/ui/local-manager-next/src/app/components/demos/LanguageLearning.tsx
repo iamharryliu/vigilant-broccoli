@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { AudioButton } from '@vigilant-broccoli/react-lib-media';
 import {
   Badge,
@@ -27,6 +27,10 @@ import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import type { LanguageLearningResult } from '@vigilant-broccoli/llm-schemas';
 import { authFetch } from '../../../../libs/auth';
+import {
+  SPEECH_LANGUAGE_ATTRIBUTE,
+  useSpeakOnSelect,
+} from '../../hooks/useSpeakOnSelect';
 
 type Word = {
   id: string;
@@ -123,6 +127,7 @@ const LABEL_SETTINGS = 'Settings';
 const LABEL_SETTINGS_HINT =
   'Choose one or more languages — each "Learn New Words" generates the same concepts in every selected language (skipping any without a good equivalent).';
 const DEFAULT_LANGUAGES: SupportedLanguage[] = ['Swedish'];
+const SELECTION_AUDIO_ID = 'selection';
 const LABEL_EXAMPLE_SENTENCE = 'Example sentence';
 const LABEL_HISTORY = 'Learn Words';
 const LABEL_MASTERED = 'Mastered';
@@ -455,7 +460,10 @@ function SessionCard({
   const targetLanguageCode = languageCode(session.language);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div
+      className="flex flex-col gap-3"
+      {...{ [SPEECH_LANGUAGE_ATTRIBUTE]: targetLanguageCode }}
+    >
       <div className="flex flex-col sm:flex-row gap-3">
         {session.words.map(({ id, word, type, definition, pinyin }) => {
           const isMastered = masteredIds.has(id);
@@ -576,6 +584,7 @@ export function LanguageLearning() {
     authFetch,
     endpoint: API_ENDPOINTS.TEXT_TO_SPEECH,
   });
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const masteredWords = new Set(
     standaloneMastered.map(r => r.word.toLowerCase()),
@@ -769,6 +778,10 @@ export function LanguageLearning() {
     setActiveAudioId(null);
   }
 
+  useSpeakOnSelect(rootRef, (text, code) =>
+    handleSpeak(text, SELECTION_AUDIO_ID, code),
+  );
+
   const currentActiveId = isSpeaking ? activeAudioId : null;
   const currentIds = new Set(currentSessions.map(s => s.id));
   const pastSessions = history.filter(s => !currentIds.has(s.id));
@@ -836,7 +849,7 @@ export function LanguageLearning() {
     pagedMasteredItems.length < filteredMasteredItems.length;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div ref={rootRef} className="flex flex-col gap-6">
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <TabsList>
@@ -1031,6 +1044,9 @@ export function LanguageLearning() {
                     <div
                       key={audioId}
                       className="border rounded-lg p-4 flex flex-col gap-2"
+                      {...{
+                        [SPEECH_LANGUAGE_ATTRIBUTE]: languageCode(language),
+                      }}
                     >
                       <div className="flex items-center gap-2">
                         <Text size="1" color="gray">
