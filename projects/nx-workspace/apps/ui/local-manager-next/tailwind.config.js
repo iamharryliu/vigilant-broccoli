@@ -18,6 +18,7 @@ module.exports = {
     '../../../libs/@vigilant-broccoli/react-lib-crud-list/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-lib-quick-links/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-lib-tasks/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/react-lib-checklist/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/common-js/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/common-browser/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/common-node/src/**/*.{tsx,ts,jsx,js,html}',

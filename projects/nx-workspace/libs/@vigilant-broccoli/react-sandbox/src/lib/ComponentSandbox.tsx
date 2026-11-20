@@ -11,6 +11,7 @@ import {
   Link2,
   List,
   ListChecks,
+  ListTodo,
   Menu,
   MessageSquare,
   Music,
@@ -171,6 +172,7 @@ const PACKAGE_SCOPE = `${PACKAGE_SCOPE_GROUP_ID}/`;
 // Declaration order is sidebar order: low-level libs first.
 const LIB = {
   REACT_LIB: 'react-lib',
+  CHECKLIST: 'react-lib-checklist',
   HIGHER_LEVEL: 'react-lib-higher-level',
   ENTRY_DIRECTORY: 'entry-directory',
   SIDEBAR: 'sidebar',
@@ -190,6 +192,7 @@ const LIB = {
 type Lib = (typeof LIB)[keyof typeof LIB];
 const LIB_ICON = {
   [LIB.REACT_LIB]: Blocks,
+  [LIB.CHECKLIST]: ListTodo,
   [LIB.HIGHER_LEVEL]: Layers,
   [LIB.ENTRY_DIRECTORY]: Search,
   [LIB.SIDEBAR]: PanelLeft,
@@ -347,7 +350,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'Checklist',
     description:
       'Checkable rows with inline editing, drag reorder and a collapsible completed section, driven entirely by caller-supplied render props.',
-    lib: LIB.REACT_LIB,
+    lib: LIB.CHECKLIST,
     content: <CheckListDemo />,
   },
   {

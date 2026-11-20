@@ -127,6 +127,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- `CheckList`, `CheckListBase` and `CheckListPanel` moved out into their own `@vigilant-broccoli/react-lib-checklist` library, so editing the checklist no longer redeploys every UI app; apps import them from there and react-lib's next npm release no longer includes them ([#1717](https://github.com/iamharryliu/vigilant-broccoli/pull/1717)).
 - New `CheckListPanel` pins a task list's controls and scrolls only the list; `CardContainer` gains `fill` to fill a height-bound parent and its `title` is now optional. `GoogleTasks` and Hearth's task list use the panel ([#1716](https://github.com/iamharryliu/vigilant-broccoli/pull/1716)).
 - New `SignOutButton`, the standard sign-out action with a logout icon and a pending state for async handlers, with a demo in the component library ([#1693](https://github.com/iamharryliu/vigilant-broccoli/pull/1693)).
 - New `ThemePreferenceControl`, a shared System/Light/Dark picker. Bookmarks and Hearth settings use it in place of their own copies, and Job Hunt's theme dropdown becomes the same segmented control ([#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
@@ -146,6 +147,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - Every shared component now has a page, including new chatbot and file-explorer groups, and Button List, Icon Button, Input, Textarea and Toggle Group are split into their own pages. Each page has a Demo section and, for composed components, a Built with button list that opens the pages of the components it uses. Typography moved to the top of the sidebar, above Components ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680)). The Theme Preference Control has its own page ([#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
 - The sidebar dark mode toggle is replaced by a Settings page with a System/Light/Dark theme picker ([#1692](https://github.com/iamharryliu/vigilant-broccoli/pull/1692)).
+- The Checklist page moved from the react-lib group to its own react-lib-checklist group ([#1717](https://github.com/iamharryliu/vigilant-broccoli/pull/1717)).
 
 ### react-lib-media
 

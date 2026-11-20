@@ -20,8 +20,6 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 import {
   Button,
-  CheckList,
-  CheckListItem as BaseChecklistItem,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
   Text,
@@ -31,6 +29,10 @@ import {
   cn,
   useRefetchOnFocus,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CheckList,
+  CheckListItem as BaseChecklistItem,
+} from '@vigilant-broccoli/react-lib-checklist';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';

@@ -1,16 +1,13 @@
 import { useTranslation } from '../i18n';
 import { DemoSection } from './DemoSection';
 import { useCallback, useState } from 'react';
+import { Button, Input, Switch, Text } from '@vigilant-broccoli/react-lib';
 import {
-  Button,
   CheckList,
   CheckListBase,
   CheckListBaseItem,
   CheckListItem,
-  Input,
-  Switch,
-  Text,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-checklist';
 
 const URGENT_PREFIX = 'URGENT:';
 

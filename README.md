@@ -201,6 +201,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/public-links](./projects/nx-workspace/libs/@vigilant-broccoli/public-links) | Generic vendor links, public quick links and the pastebin. | `type:util`, `visibility:public` |
 | [@vigilant-broccoli/react-lib-auth](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-auth) | Supabase auth provider factory and Google sign-in page for React apps. | `type:domain` |
 | [@vigilant-broccoli/react-lib-calendar](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-calendar) | Calendar list view, phone agenda, event details, Create calendar event dialog and date grouping helpers. | `type:domain` |
+| [@vigilant-broccoli/react-lib-checklist](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-checklist) | Sortable checklist with completion transitions, the presentational checklist rows and the checklist panel. | `type:primitive` |
 | [@vigilant-broccoli/react-lib-crud-list](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-crud-list) | Generic create, update and delete list with its form dialog. | `type:domain` |
 | [@vigilant-broccoli/react-lib-higher-level](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-higher-level) | Composite React components such as the notepad and the chat room. | `type:higher-level` |
 | [@vigilant-broccoli/react-lib-quick-links](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-quick-links) | Searchable quick-link panel and dialog with favorites. | `type:higher-level` |

@@ -760,6 +760,9 @@ importers:
       '@vigilant-broccoli/react-lib-calendar':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib-calendar
+      '@vigilant-broccoli/react-lib-checklist':
+        specifier: workspace:*
+        version: link:../../libs/@vigilant-broccoli/react-lib-checklist
       '@vigilant-broccoli/react-lib-media':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib-media
@@ -1158,15 +1161,6 @@ importers:
 
   libs/@vigilant-broccoli/react-lib:
     dependencies:
-      '@dnd-kit/core':
-        specifier: ^6.3.1
-        version: 6.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@dnd-kit/sortable':
-        specifier: ^10.0.0
-        version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
-      '@dnd-kit/utilities':
-        specifier: ^3.2.2
-        version: 3.2.2(react@19.2.7)
       '@radix-ui/react-accordion':
         specifier: ^1.2.16
         version: 1.2.16(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -1266,6 +1260,27 @@ importers:
       '@vigilant-broccoli/common-js':
         specifier: workspace:*
         version: link:../common-js
+      '@vigilant-broccoli/react-lib':
+        specifier: workspace:*
+        version: link:../react-lib
+      lucide-react:
+        specifier: ^0.513.0
+        version: 0.513.0(react@19.2.7)
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
+
+  libs/@vigilant-broccoli/react-lib-checklist:
+    dependencies:
+      '@dnd-kit/core':
+        specifier: ^6.3.1
+        version: 6.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@dnd-kit/sortable':
+        specifier: ^10.0.0
+        version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+      '@dnd-kit/utilities':
+        specifier: ^3.2.2
+        version: 3.2.2(react@19.2.7)
       '@vigilant-broccoli/react-lib':
         specifier: workspace:*
         version: link:../react-lib

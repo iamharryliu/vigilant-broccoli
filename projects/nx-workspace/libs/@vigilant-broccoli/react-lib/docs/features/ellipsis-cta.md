@@ -1,6 +1,6 @@
 # EllipsisCTA
 
-Row-level ellipsis menu in `libs/@vigilant-broccoli/react-lib`, shared by `CheckList` rows and `react-lib-crud-list`'s `CRUDItemList`.
+Row-level ellipsis menu in `libs/@vigilant-broccoli/react-lib`, shared by `react-lib-checklist`'s `CheckList` rows and `react-lib-crud-list`'s `CRUDItemList`.
 
 ## Props
 

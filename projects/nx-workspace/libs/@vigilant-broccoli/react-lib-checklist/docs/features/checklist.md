@@ -1,6 +1,6 @@
 # CheckList
 
-Layered checklist components in `libs/@vigilant-broccoli/react-lib`.
+Layered checklist components in `libs/@vigilant-broccoli/react-lib-checklist`, built on `react-lib` primitives.
 
 ## Layers
 
@@ -15,7 +15,7 @@ Layered checklist components in `libs/@vigilant-broccoli/react-lib`.
 - Editable titles render as buttons so keyboard users can start editing; each checkbox is labeled with its item's title.
 - `rowVariant` — `'card'` (default, hover highlight) or `'dense'` (centered rows with divider lines); `size` sets the title's text size; `editCompleted={false}` makes completed titles read-only.
 - Slots: `renderItemAccessory` (trailing), `renderItemMeta`/`renderItemDetails` (under the title), `itemClassName`, `emptyLabel` (rendered as given when no active rows), `completedFooter` (after the completed rows; keeps the Completed section rendered when it has none, e.g. `GoogleTasks`' scroll-triggered loader for older completed tasks), `completedLoading` (keeps the Completed header in place with a skeleton count and rows while completed items load separately), `completedHint` (muted text after the Completed count, e.g. "last 30 days").
-- Row menu: `onDeleteItem` adds a confirmed red Delete entry (`deleteLabel` renames it, `canDeleteItem` limits it to some rows) and `itemActions` adds entries above it, rendered as a trailing [`EllipsisCTA`](./ellipsis-cta.md) after the accessory. Rows without actions get no menu; the trigger is disabled while `isRemoving`.
+- Row menu: `onDeleteItem` adds a confirmed red Delete entry (`deleteLabel` renames it, `canDeleteItem` limits it to some rows) and `itemActions` adds entries above it, rendered as a trailing [`EllipsisCTA`](../../../react-lib/docs/features/ellipsis-cta.md) after the accessory. Rows without actions get no menu; the trigger is disabled while `isRemoving`.
 - Extension points used by `CheckList`: `rowFrame` replaces each row's outer element, `wrapActiveItems` wraps the active rows, `activeFooter` follows them.
 
 ## Compatibility

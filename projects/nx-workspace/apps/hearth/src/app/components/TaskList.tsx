@@ -15,15 +15,17 @@ import { Settings } from 'lucide-react';
 import {
   Badge,
   Button,
-  CheckList,
-  CheckListPanel,
-  CheckListItem,
   Input,
   Progress,
   Skeleton,
   Text,
   useRefetchOnFocus,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CheckList,
+  CheckListPanel,
+  CheckListItem,
+} from '@vigilant-broccoli/react-lib-checklist';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
