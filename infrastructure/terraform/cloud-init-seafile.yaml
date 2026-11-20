@@ -110,13 +110,8 @@ write_files:
         fi
         sleep 5
       done
-      # seahub_settings.py lives on the data volume, so it survives VM
-      # replacement; rewrite the host and CSRF origin rather than only adding
-      # them once, or a hostname change leaves the old origin in place.
       docker exec seafile sed -i 's#http://${seafile_domain}#https://${seafile_domain}#g' /shared/seafile/conf/seahub_settings.py
-      docker exec seafile sed -i -E 's#^((SERVICE_URL|FILE_SERVER_ROOT) = .)https?://[a-z0-9.-]+#\1https://${seafile_domain}#' /shared/seafile/conf/seahub_settings.py
-      docker exec seafile sed -i '/^CSRF_TRUSTED_ORIGINS/d' /shared/seafile/conf/seahub_settings.py
-      docker exec seafile bash -c "echo 'CSRF_TRUSTED_ORIGINS = [\"https://${seafile_domain}\"]' >> /shared/seafile/conf/seahub_settings.py"
+      docker exec seafile bash -c "grep -q CSRF_TRUSTED_ORIGINS /shared/seafile/conf/seahub_settings.py || echo 'CSRF_TRUSTED_ORIGINS = [\"https://${seafile_domain}\"]' >> /shared/seafile/conf/seahub_settings.py"
       docker compose -f /opt/seafile/docker-compose.yml restart seafile
 
   - path: /opt/seafile/fix-seafile-conf.sh
