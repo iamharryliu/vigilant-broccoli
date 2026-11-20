@@ -179,7 +179,7 @@ variable "claude_code_oauth_token" {
 
 variable "seafile_domain" {
   type    = string
-  default = "drive.vigilant-broccoli.app"
+  default = "drive.harryliu.dev"
 }
 
 variable "seafile_allowed_emails" {
