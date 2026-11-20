@@ -161,7 +161,7 @@ resource "cloudflare_origin_ca_certificate" "seafile" {
 }
 
 resource "cloudflare_dns_record" "seafile" {
-  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
+  zone_id = var.cloudflare_zone_id
   name    = var.seafile_domain
   content = aws_eip.seafile.public_ip
   type    = "A"
