@@ -14,6 +14,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
+import { EllipsisAction, Text } from '@vigilant-broccoli/react-lib';
 import {
   CheckListBase,
   CheckListBaseItem,
@@ -21,8 +22,6 @@ import {
   CheckListRowFrameProps,
   CheckListRowVariant,
 } from './CheckListBase';
-import { EllipsisAction } from './EllipsisCTA';
-import { Text } from './Text';
 
 const DRAG_OPACITY = {
   DRAGGING: 0.5,

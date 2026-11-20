@@ -73,6 +73,9 @@
       "@vigilant-broccoli/react-lib-higher-level/notepad-server": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/notepad-store.server.ts"
       ],
+      "@vigilant-broccoli/react-lib-checklist": [
+        "./libs/@vigilant-broccoli/react-lib-checklist/src/index.ts"
+      ],
       "@vigilant-broccoli/react-lib-crud-list": [
         "./libs/@vigilant-broccoli/react-lib-crud-list/src/index.ts"
       ],

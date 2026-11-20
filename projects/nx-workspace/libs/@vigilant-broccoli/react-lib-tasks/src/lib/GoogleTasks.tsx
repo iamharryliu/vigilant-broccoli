@@ -21,9 +21,6 @@ import {
   Button,
   Card,
   CardSkeleton,
-  CheckList,
-  CheckListItem,
-  CheckListPanel,
   GoogleSigninButton,
   Select,
   Skeleton,
@@ -33,6 +30,11 @@ import {
   useRefetchOnFocus,
   useSpeechToText,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CheckList,
+  CheckListItem,
+  CheckListPanel,
+} from '@vigilant-broccoli/react-lib-checklist';
 
 const TASKS_ENDPOINT = '/api/tasks';
 const TASKS_LISTS_ENDPOINT = '/api/tasks/lists';

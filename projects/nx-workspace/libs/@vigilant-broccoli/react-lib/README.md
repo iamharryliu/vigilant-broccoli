@@ -19,7 +19,6 @@ Shared React component library.
 | Callout | [View](https://components.vigilant-broccoli.app/callout) |
 | Card | [View](https://components.vigilant-broccoli.app/card) |
 | Checkbox | [View](https://components.vigilant-broccoli.app/checkbox) |
-| Checklist | [View](https://components.vigilant-broccoli.app/checklist) |
 | Clearable Input | [View](https://components.vigilant-broccoli.app/clearable-input) |
 | Collapsible List Item | [View](https://components.vigilant-broccoli.app/collapsible-list-item) |
 | Context Menu | [View](https://components.vigilant-broccoli.app/context-menu) |
