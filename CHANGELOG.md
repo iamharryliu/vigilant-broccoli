@@ -154,6 +154,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### local-manager-next
 
+- Local services now live under vigilant-broccoli.internal (manager, grafana, loki, images, headlamp, argocd and job-hunt), so they no longer share names with the public vigilant-broccoli.app hosts; update `/etc/hosts` from `infrastructure/local/hosts` and rerun the k3s apply (PR: pending).
 - Settings is now split into Appearance, Keyboard Shortcuts and Account sections. The keyboard shortcuts cheatsheet is a table, and Sign Out moved from the sidebar to the Account section ([#1693](https://github.com/iamharryliu/vigilant-broccoli/pull/1693)).
 - New CMS page browses, previews, uploads to and deletes from Cloudflare R2, including whole folders ([#1512](https://github.com/iamharryliu/vigilant-broccoli/pull/1512), [#1593](https://github.com/iamharryliu/vigilant-broccoli/pull/1593)).
 - The chatbot has a RAG knowledge base with drag-and-drop uploads, Markdown code blocks and confirmed chat deletion ([#1556](https://github.com/iamharryliu/vigilant-broccoli/pull/1556), [#1560](https://github.com/iamharryliu/vigilant-broccoli/pull/1560), [#1557](https://github.com/iamharryliu/vigilant-broccoli/pull/1557), [#1563](https://github.com/iamharryliu/vigilant-broccoli/pull/1563)).

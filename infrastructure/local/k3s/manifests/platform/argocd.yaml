@@ -22,10 +22,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - argocd.vigilant-broccoli.app
+        - argocd.vigilant-broccoli.internal
       secretName: local-tls
   rules:
-    - host: argocd.vigilant-broccoli.app
+    - host: argocd.vigilant-broccoli.internal
       http:
         paths:
           - path: /
