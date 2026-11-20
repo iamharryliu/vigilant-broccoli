@@ -129,8 +129,17 @@ const AGGREGATE_TRANSFORM: Record<AggregateMode, (content: string) => string> =
 // its section. Only the displayed content carries them; copied markdown stays
 // clean.
 const AGGREGATE_SECTION_ATTR = 'data-aggregate-section';
-const aggregateSectionMarker = (path: string) =>
-  `<div ${AGGREGATE_SECTION_ATTR}="${path.replace(/"/g, '&quot;')}"></div>\n\n`;
+// The collapsed and flat modes strip the headings the bar would show, so the
+// marker carries the note title (from the raw content) for the bar instead.
+const AGGREGATE_TITLE_ATTR = 'data-aggregate-title';
+const TITLE_HEADING_RE = /^#\s+([^\n]*)/m;
+const escapeAttribute = (value: string) =>
+  value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+const aggregateNoteTitle = (path: string, content: string) =>
+  content.match(TITLE_HEADING_RE)?.[1].trim() ||
+  (path.split('/').pop() ?? path).replace(/\.md$/, '');
+const aggregateSectionMarker = (path: string, content: string) =>
+  `<div ${AGGREGATE_SECTION_ATTR}="${escapeAttribute(path)}" ${AGGREGATE_TITLE_ATTR}="${escapeAttribute(aggregateNoteTitle(path, content))}"></div>\n\n`;
 
 const buildAggregateContent = (
   contents: string[],
@@ -141,7 +150,7 @@ const buildAggregateContent = (
     .map(
       (content, index) =>
         (markerPaths?.[index]
-          ? aggregateSectionMarker(markerPaths[index])
+          ? aggregateSectionMarker(markerPaths[index], content)
           : '') + AGGREGATE_TRANSFORM[mode](content),
     )
     .join(AGGREGATE_SEPARATOR);
@@ -469,10 +478,16 @@ export const DocsExplorer = ({
         activeSectionRef.current = sectionPath;
         setActiveSection(sectionPath);
       }
-      const text = heading?.textContent ?? '';
+      // Collapsed and flat modes leave no h1, so the section's marker title
+      // stands in, fully shown.
+      const fallbackTitle = heading
+        ? null
+        : section?.getAttribute(AGGREGATE_TITLE_ATTR);
+      const text = heading?.textContent ?? fallbackTitle ?? '';
       if (label.textContent !== text) label.textContent = text;
       if (!heading) {
-        label.style.opacity = '0';
+        label.style.opacity = fallbackTitle ? '1' : '0';
+        label.style.transform = 'none';
         return;
       }
       const { top, height } = heading.getBoundingClientRect();
