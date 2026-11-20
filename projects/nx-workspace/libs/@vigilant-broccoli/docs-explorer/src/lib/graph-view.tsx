@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Maximize, ZoomIn, ZoomOut } from 'lucide-react';
 import {
   forceCenter,
@@ -131,6 +131,9 @@ const EVENT = {
   POINTER_CANCEL: 'pointercancel',
   WHEEL: 'wheel',
   CHANGE: 'change',
+  KEY_DOWN: 'keydown',
+  FOCUS: 'focus',
+  BLUR: 'blur',
 } as const;
 
 const groupHash = (group: string): number => {
@@ -275,6 +278,12 @@ export interface GraphViewProps {
   zoomControls?: GraphZoomControlLabels;
   // A click (not a pan) on empty canvas, e.g. to clear a selection.
   onBackgroundClick?: () => void;
+  // Draws an arrowhead at each link's target end (source depends on target).
+  directed?: boolean;
+  // Makes the canvas keyboard-operable under this accessible name: arrows
+  // pan, +/-/0 zoom and reset, Tab/Shift+Tab step through nodes by name,
+  // Enter/Space select, Escape clears node focus.
+  keyboardLabel?: string;
 }
 
 export interface GraphZoomControlLabels {
@@ -287,6 +296,40 @@ const ZOOM_BUTTON_CLASS =
   'flex h-9 w-9 items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-sky-500 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100';
 const ZOOM_ICON_CLASS = 'h-4 w-4 shrink-0';
 
+// Arrowheads keep a fixed on-screen size so they stay legible at any zoom,
+// and sit just outside the target node so the circle does not hide them.
+const ARROW = { LENGTH_PX: 7, HALF_WIDTH_PX: 3.5, GAP_PX: 1.5 } as const;
+const addArrowhead = (
+  path: Path2D,
+  from: { sx: number; sy: number },
+  to: { sx: number; sy: number },
+  targetRadius: number,
+) => {
+  const dx = to.sx - from.sx;
+  const dy = to.sy - from.sy;
+  const length = Math.hypot(dx, dy);
+  if (length <= targetRadius + ARROW.LENGTH_PX) return;
+  const ux = dx / length;
+  const uy = dy / length;
+  const tipX = to.sx - ux * (targetRadius + ARROW.GAP_PX);
+  const tipY = to.sy - uy * (targetRadius + ARROW.GAP_PX);
+  const baseX = tipX - ux * ARROW.LENGTH_PX;
+  const baseY = tipY - uy * ARROW.LENGTH_PX;
+  path.moveTo(tipX, tipY);
+  path.lineTo(
+    baseX - uy * ARROW.HALF_WIDTH_PX,
+    baseY + ux * ARROW.HALF_WIDTH_PX,
+  );
+  path.lineTo(
+    baseX + uy * ARROW.HALF_WIDTH_PX,
+    baseY - ux * ARROW.HALF_WIDTH_PX,
+  );
+  path.closePath();
+};
+
+const KEY_PAN_STEP_PX = 40;
+const FOCUS_RING = { GAP_PX: 3, WIDTH_PX: 2 } as const;
+
 export function GraphView({
   graph,
   activePath,
@@ -297,7 +340,13 @@ export function GraphView({
   showNodeGlow = true,
   zoomControls,
   onBackgroundClick,
+  directed = false,
+  keyboardLabel,
 }: GraphViewProps) {
+  const directedRef = useRef(directed);
+  directedRef.current = directed;
+  // Spoken name of the keyboard-focused node, for the live region.
+  const [announcement, setAnnouncement] = useState('');
   // Read through a ref so a new callback each render does not rebuild the
   // simulation, which the mount effect keys on.
   const onBackgroundClickRef = useRef(onBackgroundClick);
@@ -351,6 +400,10 @@ export function GraphView({
     let growLastTs = 0;
     let userInteracted = false;
     let followLayout = true;
+    // Keyboard focus moves through nodes in name order; only drawn while the
+    // canvas itself has focus.
+    let keyboardFocusId: string | null = null;
+    let canvasFocused = false;
     let width = container.clientWidth;
     let height = container.clientHeight;
 
@@ -478,8 +531,15 @@ export function GraphView({
       const linkColor = dark ? COLOR.LINK_DARK : COLOR.LINK_LIGHT;
       const linkBatches = new Map<
         string,
-        { style: string; width: number; alpha: number; path: Path2D }
+        {
+          style: string;
+          width: number;
+          alpha: number;
+          path: Path2D;
+          arrows: Path2D;
+        }
       >();
+      const directedLinks = directedRef.current;
       for (const link of links) {
         const s = nodeById.get(endpointId(link.source));
         const t = nodeById.get(endpointId(link.target));
@@ -493,13 +553,20 @@ export function GraphView({
         const key = `${style}|${width}|${alpha}`;
         let batch = linkBatches.get(key);
         if (!batch) {
-          batch = { style, width, alpha, path: new Path2D() };
+          batch = {
+            style,
+            width,
+            alpha,
+            path: new Path2D(),
+            arrows: new Path2D(),
+          };
           linkBatches.set(key, batch);
         }
         const a = toScreen(s);
         const b = toScreen(t);
         batch.path.moveTo(a.sx, a.sy);
         batch.path.lineTo(b.sx, b.sy);
+        if (directedLinks) addArrowhead(batch.arrows, a, b, drawnRadius(t));
       }
       // Dimmed links first and highlighted last, matching what drawing in
       // link order produced: the focus edges stay on top.
@@ -508,11 +575,15 @@ export function GraphView({
       const orderedBatches = [...linkBatches.values()].sort(
         (a, b) => batchOrder(a) - batchOrder(b),
       );
-      for (const { style, width, alpha, path } of orderedBatches) {
+      for (const { style, width, alpha, path, arrows } of orderedBatches) {
         ctx.globalAlpha = alpha;
         ctx.strokeStyle = style;
         ctx.lineWidth = width;
         ctx.stroke(path);
+        if (directedLinks) {
+          ctx.fillStyle = style;
+          ctx.fill(arrows);
+        }
       }
 
       ctx.globalAlpha = 1;
@@ -529,6 +600,14 @@ export function GraphView({
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
         ctx.fillStyle = n.id === active ? COLOR.ACCENT : colorFor(n.group);
         ctx.fill();
+        if (canvasFocused && n.id === keyboardFocusId) {
+          ctx.globalAlpha = 1;
+          ctx.beginPath();
+          ctx.arc(sx, sy, r + FOCUS_RING.GAP_PX, 0, Math.PI * 2);
+          ctx.strokeStyle = COLOR.ACCENT;
+          ctx.lineWidth = FOCUS_RING.WIDTH_PX;
+          ctx.stroke();
+        }
         const isFocusNeighbor =
           hoveredId != null && (focusSet?.has(n.id) ?? false);
         const labelled =
@@ -761,6 +840,91 @@ export function GraphView({
       );
     };
 
+    // Keyboard operation only reaches the canvas when `keyboardLabel` gives
+    // it a tabIndex. Tab past the first or last node is left to the browser,
+    // so focus moves on instead of being trapped in the graph.
+    const keyOrder = [...nodes].sort((a, b) => a.name.localeCompare(b.name));
+    const focusNode = (node: SimNode | null) => {
+      keyboardFocusId = node?.id ?? null;
+      hoveredId = keyboardFocusId;
+      setAnnouncement(node?.name ?? '');
+      if (node) {
+        startGrow();
+        const { sx, sy } = toScreen(node);
+        const margin = CFG.FIT_PADDING;
+        if (
+          sx < margin ||
+          sx > width - margin ||
+          sy < margin ||
+          sy > height - margin
+        ) {
+          userInteracted = true;
+          transform.x += width / 2 - sx;
+          transform.y += height / 2 - sy;
+        }
+      }
+      scheduleDraw();
+    };
+    const PAN_BY_KEY: Record<string, [number, number]> = {
+      ArrowLeft: [KEY_PAN_STEP_PX, 0],
+      ArrowRight: [-KEY_PAN_STEP_PX, 0],
+      ArrowUp: [0, KEY_PAN_STEP_PX],
+      ArrowDown: [0, -KEY_PAN_STEP_PX],
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      const pan = PAN_BY_KEY[e.key];
+      if (pan) {
+        e.preventDefault();
+        userInteracted = true;
+        transform.x += pan[0];
+        transform.y += pan[1];
+        scheduleDraw();
+        return;
+      }
+      if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        zoomAt(width / 2, height / 2, CFG.ZOOM_STEP);
+      } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        zoomAt(width / 2, height / 2, 1 / CFG.ZOOM_STEP);
+      } else if (e.key === '0') {
+        e.preventDefault();
+        refitRef.current?.();
+      } else if (e.key === 'Tab') {
+        const index = keyOrder.findIndex(n => n.id === keyboardFocusId);
+        const next =
+          index === -1
+            ? e.shiftKey
+              ? keyOrder.length - 1
+              : 0
+            : index + (e.shiftKey ? -1 : 1);
+        if (next < 0 || next >= keyOrder.length) {
+          focusNode(null);
+          return;
+        }
+        e.preventDefault();
+        focusNode(keyOrder[next]);
+      } else if ((e.key === 'Enter' || e.key === ' ') && keyboardFocusId) {
+        e.preventDefault();
+        onSelect(keyboardFocusId);
+      } else if (e.key === 'Escape' && keyboardFocusId) {
+        e.preventDefault();
+        focusNode(null);
+      }
+    };
+    const onFocus = () => {
+      canvasFocused = true;
+      scheduleDraw();
+    };
+    const onBlur = () => {
+      canvasFocused = false;
+      if (hoveredId === keyboardFocusId) hoveredId = null;
+      scheduleDraw();
+    };
+
+    canvas.addEventListener(EVENT.KEY_DOWN, onKeyDown);
+    canvas.addEventListener(EVENT.FOCUS, onFocus);
+    canvas.addEventListener(EVENT.BLUR, onBlur);
     canvas.addEventListener(EVENT.POINTER_DOWN, onPointerDown);
     canvas.addEventListener(EVENT.POINTER_MOVE, onPointerMove);
     canvas.addEventListener(EVENT.POINTER_UP, endPointer);
@@ -802,6 +966,9 @@ export function GraphView({
       canvas.removeEventListener(EVENT.POINTER_UP, endPointer);
       canvas.removeEventListener(EVENT.POINTER_CANCEL, endPointer);
       canvas.removeEventListener(EVENT.WHEEL, onWheel);
+      canvas.removeEventListener(EVENT.KEY_DOWN, onKeyDown);
+      canvas.removeEventListener(EVENT.FOCUS, onFocus);
+      canvas.removeEventListener(EVENT.BLUR, onBlur);
     };
   }, [graph, onSelect]);
 
@@ -813,7 +980,7 @@ export function GraphView({
 
   useEffect(() => {
     drawRef.current?.();
-  }, [palette, groupColors, showNodeGlow]);
+  }, [palette, groupColors, showNodeGlow, directed]);
 
   useEffect(() => {
     const sim = simRef.current;
@@ -845,7 +1012,20 @@ export function GraphView({
 
   return (
     <div ref={containerRef} className="relative w-full h-full overflow-hidden">
-      <canvas ref={canvasRef} className="touch-none select-none" />
+      <canvas
+        ref={canvasRef}
+        className="touch-none select-none focus-visible:outline-2 focus-visible:outline-sky-500"
+        {...(keyboardLabel && {
+          tabIndex: 0,
+          role: 'application',
+          'aria-label': keyboardLabel,
+        })}
+      />
+      {keyboardLabel && (
+        <span className="sr-only" aria-live="polite">
+          {announcement}
+        </span>
+      )}
       {zoomButtons && (
         <div className="absolute bottom-2 right-2 flex flex-col overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
           {zoomButtons.map(({ label, Icon, onClick }) => (

@@ -84,6 +84,10 @@ const MULTI_SELECT_ICON_SIZE = 16;
 const ROW_PRESSED_CLS = 'active:bg-blue-100 dark:active:bg-blue-900';
 // About a second at 60fps for a combined view's section marker to render.
 const SECTION_SCROLL_MAX_FRAMES = 60;
+// Upper bound for a browser smooth scroll; no event marks its end.
+const SMOOTH_SCROLL_MS = 900;
+// A section counts as current once its start is within this of the bar.
+const SECTION_EDGE_PX = 8;
 
 const parseStoredPaths = (raw: string | null): string[] => {
   if (!raw) return [];
@@ -252,6 +256,7 @@ const COPY = {
   BACK_TO_PREVIOUS: 'Back to previous file',
   SELECTED_SUFFIX: 'selected',
   CLEAR_SELECTION: 'Clear',
+  BACK_TO_SELECTION: 'Back to selection',
   DELETE_SELECTED: 'Delete selected',
   DELETE_SELECTED_TITLE: 'Delete selected files',
   DELETE_SELECTED_DESCRIPTION:
@@ -334,6 +339,13 @@ export const DocsExplorer = ({
   // The section last jumped to in the combined view. The sidebar highlights it
   // there, since a jump does not change selectedPath (and its loaded content).
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  // Mirrors activeSection for the per-frame scroll handler, which updates it
+  // only when the section under the bar changes.
+  const activeSectionRef = useRef(activeSection);
+  activeSectionRef.current = activeSection;
+  // While a jump's smooth scroll runs, the sections it passes must not take
+  // over the highlight.
+  const programmaticScrollUntilRef = useRef(0);
   const [aggregateError, setAggregateError] = useState<string | null>(null);
   const [aggregateMode, setAggregateMode] = useState<AggregateMode>(
     AGGREGATE_MODE.NONE,
@@ -422,7 +434,41 @@ export const DocsExplorer = ({
     let frame = 0;
     const update = () => {
       frame = 0;
-      const heading = body.querySelector('h1');
+      const barBottom = bar.getBoundingClientRect().bottom;
+      // In the combined view the bar follows the section under it: the last
+      // marker at or above the bar's edge, else the first.
+      const markers = Array.from(
+        body.querySelectorAll<HTMLElement>(`[${AGGREGATE_SECTION_ATTR}]`),
+      );
+      let sectionIndex = -1;
+      markers.forEach((marker, index) => {
+        if (marker.getBoundingClientRect().top <= barBottom + SECTION_EDGE_PX)
+          sectionIndex = index;
+      });
+      if (markers.length > 0 && sectionIndex === -1) sectionIndex = 0;
+      const section = markers[sectionIndex];
+      const nextSection = markers[sectionIndex + 1];
+      const heading = section
+        ? Array.from(body.querySelectorAll('h1')).find(
+            h1 =>
+              section.compareDocumentPosition(h1) &
+                Node.DOCUMENT_POSITION_FOLLOWING &&
+              !(
+                nextSection &&
+                nextSection.compareDocumentPosition(h1) &
+                  Node.DOCUMENT_POSITION_FOLLOWING
+              ),
+          )
+        : body.querySelector('h1');
+      const sectionPath = section?.getAttribute(AGGREGATE_SECTION_ATTR);
+      if (
+        sectionPath &&
+        sectionPath !== activeSectionRef.current &&
+        Date.now() > programmaticScrollUntilRef.current
+      ) {
+        activeSectionRef.current = sectionPath;
+        setActiveSection(sectionPath);
+      }
       const text = heading?.textContent ?? '';
       if (label.textContent !== text) label.textContent = text;
       if (!heading) {
@@ -430,7 +476,7 @@ export const DocsExplorer = ({
         return;
       }
       const { top, height } = heading.getBoundingClientRect();
-      const hidden = bar.getBoundingClientRect().bottom - top;
+      const hidden = barBottom - top;
       const progress = Math.min(Math.max(hidden / height, 0), 1);
       label.style.opacity = String(progress);
       label.style.transform = `translateY(${(1 - progress) * 0.5}rem)`;
@@ -465,6 +511,16 @@ export const DocsExplorer = ({
   }, []);
 
   const clearSelection = () => setSelectedPaths([]);
+
+  // Shown while a single note or the graph covers the combined view; returns
+  // to it at the section the user was last on.
+  const returnToSelection = () => {
+    setViewingSelection(true);
+    setShowGraph(false);
+    setMobilePanel('content');
+    if (activeSection && selectedPaths.includes(activeSection))
+      setScrollToSection(activeSection);
+  };
 
   const toggleMultiSelectMode = () => {
     if (multiSelectMode) clearSelection();
@@ -629,6 +685,7 @@ export const DocsExplorer = ({
         scroller.getBoundingClientRect().top +
         scroller.scrollTop -
         (contentBarRef.current?.offsetHeight ?? 0);
+      programmaticScrollUntilRef.current = Date.now() + SMOOTH_SCROLL_MS;
       scroller.scrollTo({ top, behavior: 'smooth' });
       setScrollToSection(null);
     };
@@ -1109,6 +1166,15 @@ export const DocsExplorer = ({
                       : ''}
                   </span>
                   <div className="flex items-center gap-2">
+                    {hasSelection && (!viewingSelection || showGraph) && (
+                      <button
+                        type="button"
+                        onClick={returnToSelection}
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        {COPY.BACK_TO_SELECTION}
+                      </button>
+                    )}
                     {hasSelection && (
                       <button
                         type="button"

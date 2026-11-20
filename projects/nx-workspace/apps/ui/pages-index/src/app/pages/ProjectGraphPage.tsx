@@ -162,11 +162,7 @@ function GraphCanvas({
   }, []);
 
   return (
-    <div
-      role="group"
-      aria-label={t('PROJECT_GRAPH_PAGE.GRAPH_LABEL')}
-      className="relative min-h-64 flex-1 overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
-    >
+    <div className="relative min-h-64 flex-1 overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
       <GraphView
         graph={graph}
         activePath={selected ?? undefined}
@@ -175,6 +171,8 @@ function GraphCanvas({
         forces={settings.appliedForces}
         showNodeGlow={settings.showNodeGlow}
         onBackgroundClick={clearSelection}
+        directed
+        keyboardLabel={t('PROJECT_GRAPH_PAGE.GRAPH_LABEL')}
         zoomControls={{
           zoomIn: t('PROJECT_GRAPH_PAGE.ZOOM_IN'),
           zoomOut: t('PROJECT_GRAPH_PAGE.ZOOM_OUT'),
