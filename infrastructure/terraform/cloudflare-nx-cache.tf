@@ -103,9 +103,18 @@ resource "cloudflare_workers_script" "nx_cache" {
 # Cloudflare provisions and manages the DNS record for a Workers custom domain
 # itself — unlike the Pages sites in this repo (cloudflare-docs.tf etc.),
 # which each own an explicit cloudflare_dns_record.
+resource "cloudflare_workers_custom_domain" "nx_cache_vigilant_broccoli_app" {
+  account_id = var.cloudflare_account_id
+  zone_id    = data.cloudflare_zones.vigilant_broccoli.result[0].id
+  hostname   = var.nx_cache_domain
+  service    = cloudflare_workers_script.nx_cache.script_name
+}
+
+# Old host, kept so CI on branches cut before the move keeps its cache until
+# the harryliu.dev cleanup removes it.
 resource "cloudflare_workers_custom_domain" "nx_cache" {
   account_id = var.cloudflare_account_id
   zone_id    = var.cloudflare_zone_id
-  hostname   = var.nx_cache_domain
+  hostname   = "nx-cache.harryliu.dev"
   service    = cloudflare_workers_script.nx_cache.script_name
 }

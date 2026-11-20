@@ -243,7 +243,7 @@ variable "socket_server_domain" {
 
 variable "nx_cache_domain" {
   type    = string
-  default = "nx-cache.harryliu.dev"
+  default = "nx-cache.vigilant-broccoli.app"
 }
 
 # 7 days: a cache miss just rebuilds, so a short TTL trades a little compute
