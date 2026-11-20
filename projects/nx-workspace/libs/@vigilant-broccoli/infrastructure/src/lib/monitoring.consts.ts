@@ -5,7 +5,7 @@ export const VB_MONITORING_URL = {
   },
   LOKI: {
     NAME: 'Loki Health',
-    URL: 'https://loki.harryliu.dev/health',
+    URL: 'https://loki.vigilant-broccoli.app/health',
   },
   SOCKET_SERVER: {
     NAME: 'Socket Server Health',

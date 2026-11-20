@@ -28,7 +28,7 @@ jobs:
             hostname: code.harryliu.dev
             origin_ip_secret: CODE_SERVER_VM_IP
           - name: grafana
-            hostname: grafana.harryliu.dev
+            hostname: grafana.vigilant-broccoli.app
             origin_ip_secret: ''
           - name: immich
             hostname: images.harryliu.dev

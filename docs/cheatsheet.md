@@ -82,7 +82,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   immich:replace              Replace the VM via terraform (fresh host)
 
 📈 GRAFANA (observability VM)
-  grafana:open                Open grafana.harryliu.dev
+  grafana:open                Open grafana.vigilant-broccoli.app
   grafana:password            Copy Grafana admin password to clipboard
   grafana:ssh                 SSH into Grafana/Loki VM
   grafana:dashboards:push     Sync grafana-dashboards/*.json to the VM

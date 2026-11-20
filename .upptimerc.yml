@@ -121,7 +121,7 @@ sites:
   - name: production-nx-cache
     url: https://nx-cache.vigilant-broccoli.app/health
   - name: production-observability-vm
-    url: https://loki.harryliu.dev/health
+    url: https://loki.vigilant-broccoli.app/health
   - name: production-socket-server
     url: https://socket.harryliu.dev/health
   - name: production-findme
