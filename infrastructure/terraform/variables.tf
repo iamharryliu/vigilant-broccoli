@@ -238,7 +238,7 @@ variable "vault_domain" {
 
 variable "socket_server_domain" {
   type    = string
-  default = "socket.harryliu.dev"
+  default = "socket.vigilant-broccoli.app"
 }
 
 variable "nx_cache_domain" {
