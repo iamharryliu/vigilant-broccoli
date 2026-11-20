@@ -44,6 +44,7 @@ const CFG = {
   MIN_ZOOM: 0.1,
   MAX_ZOOM: 6,
   ZOOM_STEP: 1.15,
+  ZOOM_ANIMATION_MS: 200,
   FIT_PADDING: 40,
   DRAG_THRESHOLD_PX: 4,
   ALPHA_DRAG: 0.3,
@@ -208,6 +209,8 @@ const glowSprite = (color: string, peak: number): HTMLCanvasElement => {
 
 const nodeRadius = (degree: number): number =>
   CFG.NODE_MIN_R + Math.sqrt(degree) * CFG.NODE_R_STEP;
+
+type Transform = { k: number; x: number; y: number };
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
@@ -392,7 +395,7 @@ export function GraphView({
       target.degree++;
     }
 
-    const transform = { k: 1, x: 0, y: 0 };
+    const transform: Transform = { k: 1, x: 0, y: 0 };
     let hoveredId: string | null = null;
     // Hover grow progress (0–1) per node; nodes leave the map once shrunk back.
     const growth = new Map<string, number>();
@@ -418,8 +421,8 @@ export function GraphView({
 
     // Centers on the open note when there is one, zooming out far enough that
     // the farthest node on each axis still fits; otherwise fits the bounding box.
-    const fitToView = () => {
-      if (nodes.length === 0) return;
+    const computeFit = (): Transform | null => {
+      if (nodes.length === 0) return null;
       const active = activePathRef.current;
       const anchor = active ? nodeById.get(active) : undefined;
       let minX = Infinity,
@@ -441,9 +444,13 @@ export function GraphView({
         (height - CFG.FIT_PADDING * 2) / spanY,
         CFG.MAX_ZOOM,
       );
-      transform.k = Math.max(k, CFG.MIN_ZOOM);
-      transform.x = width / 2 - cx * transform.k;
-      transform.y = height / 2 - cy * transform.k;
+      const fitK = Math.max(k, CFG.MIN_ZOOM);
+      return { k: fitK, x: width / 2 - cx * fitK, y: height / 2 - cy * fitK };
+    };
+    const fitToView = () => {
+      cancelZoomAnimation();
+      const fit = computeFit();
+      if (fit) Object.assign(transform, fit);
     };
 
     // isDarkTheme reads computed styles up the ancestor chain, which forces a
@@ -693,6 +700,52 @@ export function GraphView({
       growFrame = requestAnimationFrame(stepGrow);
     };
 
+    // Button and keyboard zoom glide; the in-flight target is kept so repeated
+    // presses compose instead of restarting from the half-way transform.
+    let zoomAnim: { from: Transform; to: Transform; start: number } | null =
+      null;
+    let zoomFrame: number | null = null;
+    function cancelZoomAnimation() {
+      if (zoomFrame != null) cancelAnimationFrame(zoomFrame);
+      zoomFrame = null;
+      zoomAnim = null;
+    }
+    const stepZoomAnimation = (ts: number) => {
+      if (!zoomAnim) return;
+      if (!zoomAnim.start) zoomAnim.start = ts;
+      const t = Math.min((ts - zoomAnim.start) / CFG.ZOOM_ANIMATION_MS, 1);
+      const e = easeOutCubic(t);
+      const { from, to } = zoomAnim;
+      transform.k = from.k + (to.k - from.k) * e;
+      transform.x = from.x + (to.x - from.x) * e;
+      transform.y = from.y + (to.y - from.y) * e;
+      draw();
+      if (t < 1) zoomFrame = requestAnimationFrame(stepZoomAnimation);
+      else cancelZoomAnimation();
+    };
+    const animateTo = (target: Transform) => {
+      if (window.matchMedia(REDUCED_MOTION_QUERY).matches) {
+        cancelZoomAnimation();
+        Object.assign(transform, target);
+        scheduleDraw();
+        return;
+      }
+      cancelZoomAnimation();
+      zoomAnim = { from: { ...transform }, to: target, start: 0 };
+      zoomFrame = requestAnimationFrame(stepZoomAnimation);
+    };
+    const zoomCenterBy = (factor: number) => {
+      userInteracted = true;
+      const base = zoomAnim?.to ?? transform;
+      const k = Math.min(CFG.MAX_ZOOM, Math.max(CFG.MIN_ZOOM, base.k * factor));
+      const ratio = k / base.k;
+      animateTo({
+        k,
+        x: width / 2 - (width / 2 - base.x) * ratio,
+        y: height / 2 - (height / 2 - base.y) * ratio,
+      });
+    };
+
     // Pointer and wheel events can arrive several times per frame; drawing on
     // each one queues redundant full repaints that a long pan or zoom falls
     // behind on. Coalesce them into at most one draw per animation frame.
@@ -708,8 +761,9 @@ export function GraphView({
     drawRef.current = draw;
     refitRef.current = () => {
       userInteracted = false;
-      fitToView();
-      draw();
+      const fit = computeFit();
+      if (fit) animateTo(fit);
+      else draw();
     };
 
     const resize = () => {
@@ -751,6 +805,7 @@ export function GraphView({
 
     const onPointerDown = (e: PointerEvent) => {
       const { px, py } = localPoint(e);
+      cancelZoomAnimation();
       pointerId = e.pointerId;
       canvas.setPointerCapture(e.pointerId);
       downX = px;
@@ -818,6 +873,7 @@ export function GraphView({
 
     // Zooms keeping the world point under (px, py) fixed on screen.
     const zoomAt = (px: number, py: number, factor: number) => {
+      cancelZoomAnimation();
       userInteracted = true;
       const { wx, wy } = toWorld(px, py);
       transform.k = Math.min(
@@ -828,7 +884,7 @@ export function GraphView({
       transform.y = py - wy * transform.k;
       scheduleDraw();
     };
-    zoomByRef.current = factor => zoomAt(width / 2, height / 2, factor);
+    zoomByRef.current = zoomCenterBy;
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -858,6 +914,7 @@ export function GraphView({
           sy < margin ||
           sy > height - margin
         ) {
+          cancelZoomAnimation();
           userInteracted = true;
           transform.x += width / 2 - sx;
           transform.y += height / 2 - sy;
@@ -875,6 +932,7 @@ export function GraphView({
       const pan = PAN_BY_KEY[e.key];
       if (pan) {
         e.preventDefault();
+        cancelZoomAnimation();
         userInteracted = true;
         transform.x += pan[0];
         transform.y += pan[1];
@@ -883,10 +941,10 @@ export function GraphView({
       }
       if (e.key === '+' || e.key === '=') {
         e.preventDefault();
-        zoomAt(width / 2, height / 2, CFG.ZOOM_STEP);
+        zoomCenterBy(CFG.ZOOM_STEP);
       } else if (e.key === '-' || e.key === '_') {
         e.preventDefault();
-        zoomAt(width / 2, height / 2, 1 / CFG.ZOOM_STEP);
+        zoomCenterBy(1 / CFG.ZOOM_STEP);
       } else if (e.key === '0') {
         e.preventDefault();
         refitRef.current?.();
@@ -951,6 +1009,7 @@ export function GraphView({
     media?.addEventListener(EVENT.CHANGE, refreshTheme);
 
     return () => {
+      cancelZoomAnimation();
       if (growFrame != null) cancelAnimationFrame(growFrame);
       if (drawFrame != null) cancelAnimationFrame(drawFrame);
       refitRef.current = null;
