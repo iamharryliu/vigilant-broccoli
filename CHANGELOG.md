@@ -204,7 +204,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### agent-sandbox
 
-- Agent runs no longer fail at start-up when GitHub rate-limits the shared runner address: the firewall check treats any reply from api.github.com as reachable and only fails when it cannot connect (PR: pending).
+- Agent runs no longer fail at start-up when GitHub rate-limits the shared runner address: the firewall check treats any reply from api.github.com as reachable and only fails when it cannot connect ([#1720](https://github.com/iamharryliu/vigilant-broccoli/pull/1720)).
 
 </details>
 
