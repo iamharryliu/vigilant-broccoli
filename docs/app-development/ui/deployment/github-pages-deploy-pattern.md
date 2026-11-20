@@ -1,6 +1,6 @@
 # GitHub Pages deploy pattern
 
-One GitHub Pages site — `projects.vigilant-broccoli.app` — assembled from a shared `_site/` staging directory. Its only app is `pages-index`, at the root; new static UIs go to Cloudflare Pages instead ([cloudflare-pages-deploy-pattern.md](./cloudflare-pages-deploy-pattern.md)).
+One GitHub Pages site — `projects.vigilant-broccoli.app` — assembled from a shared `_site/` staging directory. Its only app is `pages-index`, at the root; new static UIs go to Cloudflare Pages instead ([cloudflare-pages-deploy-pattern.md](./cloudflare-pages-deploy-pattern.md)). `pages-index` also deploys to `staging-pages-index` and `production-pages-index` on Cloudflare Pages; this site keeps serving its production hostnames until they move there.
 
 GitHub Pages permits one custom domain per site, so `status.vigilant-broccoli.app`, `career.harryliu.dev` and `deployments.vigilant-broccoli.app` serve the same `pages-index` build through the `status-proxy` Cloudflare Worker rather than a second Pages attachment; a separate static deployment was not needed because the Worker passes assets, content types and errors through unchanged (see [network-management.md](../../../infrastructure/network-management.md#dns-urls)).
 
