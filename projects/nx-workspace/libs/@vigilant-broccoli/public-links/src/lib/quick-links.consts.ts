@@ -309,6 +309,10 @@ export const VB_LINKS: QuickLink[] = [
     VB_MONITORING_URL.SOCKET_SERVER,
     VB_APP_URL.CAREER,
     VB_APP_URL.PAGES_INDEX,
+    {
+      NAME: `${VB_APP_URL.PAGES_INDEX.NAME} (Staging)`,
+      URL: VB_APP_URL.PAGES_INDEX.STAGING_URL,
+    },
   ]),
   {
     label: VB_MONITORING_URL.DEPLOYMENTS.NAME,

@@ -22,4 +22,6 @@
   - `react-lib-higher-level`
   - `react-lib-media`
 - Cloud services
+  - Cloudflare Pages
   - GitHub API
+  - GitHub Pages
