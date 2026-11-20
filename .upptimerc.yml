@@ -47,7 +47,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-service-manager
-    url: https://staging-api.harryliu.dev/
+    url: https://staging-api.vigilant-broccoli.app/
   - name: staging-media-service
     url: https://staging-media-service.fly.dev/
   - name: staging-component-library
@@ -113,7 +113,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-sandbox
-    url: https://sandbox.harryliu.dev/
+    url: https://sandbox.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-drive
@@ -129,7 +129,7 @@ sites:
   - name: production-hearth
     url: https://hearth.harryliu.dev/login
   - name: production-service-manager
-    url: https://api.harryliu.dev/
+    url: https://api.vigilant-broccoli.app/
   - name: production-media-service
     url: https://production-media-service.fly.dev/
   - name: production-component-library

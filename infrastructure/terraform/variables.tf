@@ -401,7 +401,7 @@ variable "pomodoro_pages_subdomain" {
 
 variable "sandbox_domain" {
   type    = string
-  default = "sandbox.harryliu.dev"
+  default = "sandbox.vigilant-broccoli.app"
 }
 
 variable "sandbox_pages_project" {

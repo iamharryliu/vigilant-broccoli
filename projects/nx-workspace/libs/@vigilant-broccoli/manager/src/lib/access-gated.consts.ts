@@ -24,7 +24,7 @@ export const ACCESS_GATED_URL = {
   },
   SANDBOX: {
     NAME: 'Sandbox',
-    URL: 'https://sandbox.harryliu.dev/',
+    URL: 'https://sandbox.vigilant-broccoli.app/',
   },
   WEB_TERMINAL: {
     NAME: 'Web Terminal',

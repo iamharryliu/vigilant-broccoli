@@ -37,7 +37,7 @@ jobs:
             hostname: queue.vigilant-broccoli.app
             origin_ip_secret: ''
           - name: sandbox
-            hostname: sandbox.harryliu.dev,production-sandbox.pages.dev
+            hostname: sandbox.vigilant-broccoli.app,production-sandbox.pages.dev
             origin_ip_secret: ''
           - name: seafile
             hostname: drive.harryliu.dev
