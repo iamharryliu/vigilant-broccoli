@@ -24,7 +24,7 @@ Household storage inventory — record storage areas by hand or from photos, AI 
 - Update photos reorder by drag and drop (mouse, long-press on touch, keyboard); the order persists to `where_is_images.sort_order`
 - Removing a photo asks for confirmation first
 - Image processing — resize to 1920px max, convert to JPEG, strip EXIF
-- Each saved photo also gets a 256px list thumbnail (media-service `/api/where-is/thumbnail`, stored at `<key>.thumb.jpg`); generating it is best effort and never fails the save
+- Each saved photo also gets a 256px list thumbnail (media-service `/api/where-is/thumbnail`, stored at `<key>.thumb.jpg`), on save and on import; generating it is best effort and never fails the save or import
 - The list shows one photo per item: the first photo's thumbnail, or the full image when it has none. While the list loads, the search box and placeholder rows show
 - Image links are presigned in one batch per request (`POST /api/storage/download-urls` on vb-express, which bucket-service signs locally): the list signs only each item's cover, and `?id=` signs the item's full-size photos too. An edit opened from the list fetches its item once for those full-size links
 - AI suggests tags from images on demand via a Suggest tags badge at the end of the tag list (create analyzes the new photos, update re-analyzes stored plus new ones); suggestions not already on the item appear as a checklist with Select all / Clear all, and only confirmed tags are added; it never touches the user-entered description
@@ -60,7 +60,7 @@ Household storage inventory — record storage areas by hand or from photos, AI 
 - `POST /api/where-is/analyze` — AI tag suggestions from images
 - `POST /api/where-is/reanalyze` — AI tag suggestions from an item's stored images plus any newly added ones
 - `GET /api/where-is/export?homeId=` — export all items + images as JSON (base64-embedded)
-- `POST /api/where-is/import` — import items + images from export JSON
+- `POST /api/where-is/import` — import items + images from export JSON, creating a list thumbnail per image
 
 ## Env Vars
 

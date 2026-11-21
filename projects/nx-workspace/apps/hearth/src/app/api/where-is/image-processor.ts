@@ -51,7 +51,7 @@ export const compressForLlm = async (
 };
 
 export const createThumbnail = async (
-  image: ProcessedImage,
+  image: StagedImage,
 ): Promise<ProcessedImage> => {
   const res = await callMediaService(
     MEDIA_SERVICE_ENDPOINT.WHERE_IS_THUMBNAIL,
