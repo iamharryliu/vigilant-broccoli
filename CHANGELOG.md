@@ -208,6 +208,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - New `POST /api/storage/download-urls` signs many storage download links in one request, backed by a matching bucket-service endpoint ([#1724](https://github.com/iamharryliu/vigilant-broccoli/pull/1724)).
 - Calendar parsing now works out each time's UTC offset from the place where it happens, including daylight saving, so a Copenhagen to Keflavík flight no longer shifts by an hour, from pasted text or a screenshot. Repeated legs and invented whole-trip events are dropped ([#1700](https://github.com/iamharryliu/vigilant-broccoli/pull/1700), [#1701](https://github.com/iamharryliu/vigilant-broccoli/pull/1701)).
 
+### agent-sandbox
+
+- Agent runs no longer fail at start-up when GitHub rate-limits the shared runner address: the firewall check treats any reply from api.github.com as reachable and only fails when it cannot connect ([#1720](https://github.com/iamharryliu/vigilant-broccoli/pull/1720)).
+
 </details>
 
 <details>
