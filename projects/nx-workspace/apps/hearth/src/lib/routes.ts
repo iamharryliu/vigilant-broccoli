@@ -1,5 +1,6 @@
 export const WHERE_IS_ITEM_PARAM = 'item';
 export const WHERE_IS_ENDPOINT = '/api/where-is';
+export const WHERE_IS_ROOMS_ENDPOINT = '/api/where-is/rooms';
 
 export const ROUTES = {
   HOME: '/',

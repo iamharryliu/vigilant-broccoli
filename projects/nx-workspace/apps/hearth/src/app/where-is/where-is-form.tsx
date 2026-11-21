@@ -42,6 +42,7 @@ import { useAuth } from '../providers/auth-provider';
 import { WHERE_IS_ENDPOINT } from '../../lib/routes';
 import { WhereIsItem } from '../../lib/types';
 import { sortTags } from './where-is-tags';
+import { WhereIsRoomField, usePinRoomWhileEditing } from './where-is-rooms';
 
 const ERROR_SAVE_FALLBACK = 'Saving failed. Please try again.';
 const ERROR_ANALYZE = 'Analysis failed. Please try again.';
@@ -97,6 +98,7 @@ export type WhereIsFormValues = {
   title: string;
   description: string;
   tags: string[];
+  roomId: string | null;
   images: PreviewImage[];
   imageUrls?: string[];
   imageKeys?: string[];
@@ -161,6 +163,7 @@ const savedSnapshot = (values: WhereIsFormValues) =>
     values.title,
     values.description,
     values.tags,
+    values.roomId,
     values.imageKeys ?? [],
   ]);
 
@@ -431,6 +434,7 @@ export const WhereIsFormComponent = ({
   const [title, setTitle] = useState(initialFormValues.title);
   const [description, setDescription] = useState(initialFormValues.description);
   const [tags, setTags] = useState<string[]>(initialFormValues.tags);
+  const [roomId, setRoomId] = useState(initialFormValues.roomId);
   const [tagInput, setTagInput] = useState('');
   const [previews, setPreviews] = useState<PreviewImage[]>(
     initialFormValues.images,
@@ -484,6 +488,7 @@ export const WhereIsFormComponent = ({
     title,
     description,
     tags,
+    roomId,
     images: previews,
     imageUrls: existing.map(img => img.url),
     imageKeys: existing.map(img => img.key),
@@ -581,7 +586,9 @@ export const WhereIsFormComponent = ({
 
   useEffect(() => {
     if (isUpdate) runSave();
-  }, [isUpdate, runSave, tags, previews, existing]);
+  }, [isUpdate, runSave, tags, roomId, previews, existing]);
+
+  usePinRoomWhileEditing(initialFormValues.id, isUpdate);
 
   useEffect(() => {
     if (!isUpdate) return;
@@ -729,6 +736,7 @@ export const WhereIsFormComponent = ({
           rows={3}
         />
       </div>
+      <WhereIsRoomField roomId={roomId} onChange={setRoomId} />
       <div>
         <Text size="1" weight="medium" as="p" mb="1">
           Tags
