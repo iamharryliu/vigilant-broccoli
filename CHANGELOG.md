@@ -10,7 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### docs-explorer
 
-- Notes in the Docs Explorer can be shared: a Share item in the note's ellipsis menu (when the host supplies a link) opens a dialog with a copyable link and a QR code (PR: pending).
+- Notes in the Docs Explorer can be shared: a Share item in the note's ellipsis menu (when the host supplies a link) opens a dialog with a copyable link and a QR code ([#1726](https://github.com/iamharryliu/vigilant-broccoli/pull/1726)).
 
 ### entry-directory
 
