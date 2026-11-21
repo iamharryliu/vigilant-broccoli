@@ -8,6 +8,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 <details>
 <summary>November 2026</summary>
 
+### docs-explorer
+
+- Notes in the Docs Explorer can be shared: a Share item in the note's ellipsis menu (when the host supplies a link) opens a dialog with a copyable link and a QR code (PR: pending).
+
 ### entry-directory
 
 - Group headings in `EntryDirectory` (Bookmarks) now use one medium-weight heading style in every view, including Rows ([#1699](https://github.com/iamharryliu/vigilant-broccoli/pull/1699)).
