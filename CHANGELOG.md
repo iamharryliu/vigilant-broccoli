@@ -213,6 +213,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - New `POST /api/storage/download-urls` signs many storage download links in one request, backed by a matching bucket-service endpoint ([#1724](https://github.com/iamharryliu/vigilant-broccoli/pull/1724)).
 - Calendar parsing now works out each time's UTC offset from the place where it happens, including daylight saving, so a Copenhagen to Keflavík flight no longer shifts by an hour, from pasted text or a screenshot. Repeated legs and invented whole-trip events are dropped ([#1700](https://github.com/iamharryliu/vigilant-broccoli/pull/1700), [#1701](https://github.com/iamharryliu/vigilant-broccoli/pull/1701)).
 
+### cron-backup
+
+- Every nightly backup (repo, Gitea, MongoDB, Supabase) is now written to both Google Cloud Storage and a private Cloudflare R2 bucket, each pruned to the last 7, and the weekly restore check verifies freshness and restores from both copies (PR: pending).
+
 </details>
 
 <details>
