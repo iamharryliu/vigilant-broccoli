@@ -1,5 +1,9 @@
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
-import { API_KEY_HEADER, HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import {
+  API_KEY_HEADER,
+  CONTENT_TYPE_HEADER,
+  HTTP_METHOD,
+} from '@vigilant-broccoli/common-js';
 
 const BUCKET_API = `${getEnvironmentVariable('STORAGE_SERVICE_URL')}/api/bucket`;
 const API_HEADERS = {
@@ -8,7 +12,9 @@ const API_HEADERS = {
 
 const UPLOAD_URL_PATH = 'upload-url';
 const DOWNLOAD_URL_PATH = 'download-url';
+const DOWNLOAD_URLS_PATH = 'download-urls';
 const DELETE_PATH = 'file';
+const CONTENT_TYPE_JSON = 'application/json';
 
 const assertOk = (res: Response, operation: string) => {
   if (!res.ok) {
@@ -33,6 +39,19 @@ export const getUploadUrl = (params: URLSearchParams) =>
 
 export const getDownloadUrl = (params: URLSearchParams) =>
   presignedUrl(DOWNLOAD_URL_PATH, params);
+
+export const getDownloadUrls = async (
+  params: URLSearchParams,
+  body: unknown,
+): Promise<{ urls: string[] }> => {
+  const res = await fetch(`${BUCKET_API}/${DOWNLOAD_URLS_PATH}?${params}`, {
+    method: HTTP_METHOD.POST,
+    headers: { ...API_HEADERS, [CONTENT_TYPE_HEADER]: CONTENT_TYPE_JSON },
+    body: JSON.stringify(body),
+  });
+  assertOk(res, DOWNLOAD_URLS_PATH);
+  return (await res.json()) as { urls: string[] };
+};
 
 export const listFiles = async (params: URLSearchParams): Promise<unknown> => {
   const res = await fetch(`${BUCKET_API}?${params}`, { headers: API_HEADERS });

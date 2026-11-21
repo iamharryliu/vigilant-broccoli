@@ -36,6 +36,8 @@ export const IMAGE_PROFILE = {
     llmMaxDimension: 512,
     llmJpegQuality: 60,
     llmAutoOrient: false,
+    thumbnailDimension: 256,
+    thumbnailJpegQuality: 75,
   },
 };
 
@@ -82,7 +84,7 @@ export const compressForLlm = async (buffer: Buffer, profile: ImageProfile) => {
   return { base64: compressed.toString('base64'), mimeType: MIME_TYPE_JPEG };
 };
 
-export const processImage = async (
+const assertImage = async (
   buffer: Buffer,
   mimeType: string,
   profile: ImageProfile,
@@ -103,8 +105,30 @@ export const processImage = async (
   if (!metadata.width || !metadata.height) {
     throw new MediaValidationError('Invalid image: could not read dimensions.');
   }
+};
 
+export const processImage = async (
+  buffer: Buffer,
+  mimeType: string,
+  profile: ImageProfile,
+) => {
+  await assertImage(buffer, mimeType, profile);
   return toArchiveJpeg(buffer, profile.maxDimension, profile.jpegQuality);
+};
+
+// Sized for list rows (64px CSS at up to 4x density), so a list page downloads
+// kilobytes per item instead of the full archive copy.
+export const createThumbnail = async (
+  buffer: Buffer,
+  mimeType: string,
+  profile: typeof IMAGE_PROFILE.WHERE_IS,
+) => {
+  await assertImage(buffer, mimeType, profile);
+  return toArchiveJpeg(
+    buffer,
+    profile.thumbnailDimension,
+    profile.thumbnailJpegQuality,
+  );
 };
 
 export const processFile = async (

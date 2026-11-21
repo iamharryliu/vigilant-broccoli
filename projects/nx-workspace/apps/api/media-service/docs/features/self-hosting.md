@@ -19,7 +19,7 @@ docker run --platform linux/amd64 \
   iamharryliu/media-service:latest
 ```
 
-Send a multipart upload with a `file` part and `x-api-key: <token>` to `POST /api/receipts/image`, `/api/receipts/llm-image`, `/api/where-is/image`, `/api/where-is/llm-image` or `/api/docs/file`. `GET /` and the API reference at `/docs` need no key.
+Send a multipart upload with a `file` part and `x-api-key: <token>` to `POST /api/receipts/image`, `/api/receipts/llm-image`, `/api/where-is/image`, `/api/where-is/llm-image`, `/api/where-is/thumbnail` or `/api/docs/file`. `GET /` and the API reference at `/docs` need no key.
 
 ## Environment Variables
 
