@@ -1,13 +1,15 @@
 # Project Graph
 
-`/project-graph` — `ProjectGraphPage.tsx`, filtering and palette in `consts/projectGraph.ts`. The canvas is docs-explorer's shared `GraphView` (see its [note-graph.md](../../../../libs/@vigilant-broccoli/docs-explorer/docs/features/note-graph.md)).
+`/project-graph` — `ProjectGraphPage.tsx`, filtering and palette in `consts/projectGraph.ts`. The canvas is docs-explorer's shared `GraphView` (see its [note-graph.md](../../../../../libs/@vigilant-broccoli/docs-explorer/docs/features/note-graph.md)).
 
 ## Data
 
 - `public/project-graph.json` is written by the non-cached `generate-project-graph` target (`scripts/generate-project-graph.ts`) through Nx's `createProjectGraphAsync`; `build` and `serve` depend on it and `deploy-github-pages` copies it into `_site`
 - Included: every `visibility:public` project plus the internal projects they depend on transitively, since those already ship in public bundles; npm/external nodes are dropped
 - Any `visibility:private` project and its edges are excluded even if something depends on it; most libs carry no visibility tag, so filtering by the public tag alone would hide shared libs such as `react-lib`
-- Each project has `name`, `type` (`app`/`lib`; Nx `e2e` counts as `app`) and `tags`; edges are `source` depends on `target`
+- Each project has `name`, `type` (`app`/`lib`; Nx `e2e` counts as `app`) and `tags`; edges are `source` depends on `target` with a `kind`
+- `lib` edges come from Nx. `embeds` and `calls` edges come from each app README's `## App Dependencies` bullets ([app-readme-pattern.md](../../../../../../../docs/app-readme-pattern.md#apps-and-publishable-libs)): each link is resolved against Nx project roots, and the generator exits non-zero on a malformed bullet, an unknown kind or a link that resolves to no project
+- Apps reached only through runtime edges (both managers, the API services) join without their own libs, since those libs ship in no public bundle; lib edges are emitted only between projects already in the graph
 
 ## View
 
@@ -15,9 +17,11 @@
 - Apps use `--pages-primary` and libs a violet tuned per `useAppearance`, passed as `groupColors`. The canvas cannot read CSS variables, so the app color is resolved from the document with a concrete fallback: an unresolved `hsl(var(...))` would make the glow gradients throw
 - The gear menu (`GraphSettingsMenu`) holds color scheme, node glow and forces, saved under the `project-graph:` prefix, separate from docs graphs. The default is the hue option (the page's own colors); a Wada scheme gives apps its first color and libs its second by position, since `app` and `lib` hash to the same palette slot. The legend follows the active colors
 - Hover dims all but a node and its neighbors; the selected project is highlighted and opens the detail panel
-- Search keeps matching projects plus their direct neighbors; the Apps/Libs filter applies first
-- The detail panel lists Depends on and Depended on by from the full data; picking a project hidden by the filters clears them so it appears on the canvas
-- `project`, `type` and `q` live in the hash query (`#/project-graph?project=hearth&q=hearth`); defaults are omitted from the URL
+- Lib edges are solid in the default link color; embeds (dashed teal) and calls (dotted orange) pass through `GraphView`'s `linkStyles`, keeping their color while a node is focused. Lib is deliberately left out of `linkStyles` so it keeps the default focus highlight
+- The Lib/Embeds/Calls toggles double as the edge legend and filter the canvas edges and search neighbors; the last enabled kind cannot be turned off
+- Search keeps matching projects plus their direct neighbors over the enabled edge kinds; the Apps/Libs filter applies first
+- The detail panel lists Depends on and Depended on by (lib edges) and, for apps, Runtime dependencies and Runtime dependents with each edge's kind, all from the full data regardless of the toggles; picking a project hidden by the filters clears them so it appears on the canvas
+- `project`, `type`, `q` and `edges` (comma-separated kinds) live in the hash query (`#/project-graph?project=hearth&edges=embeds,calls`); defaults are omitted from the URL
 
 ## Interaction
 

@@ -195,6 +195,8 @@ export interface NoteGraphLink {
   // Optional edge weight (e.g. shared-item count) used to scale line width;
   // omitted links render at the default width, so existing graphs are unaffected.
   value?: number;
+  // Looks up a `GraphView` `linkStyles` entry; unstyled links keep the default look.
+  kind?: string;
 }
 
 export interface NoteGraph {
