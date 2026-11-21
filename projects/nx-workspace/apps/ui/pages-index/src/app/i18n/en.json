@@ -296,6 +296,12 @@
     "CLOSE": "Close details",
     "DEPENDS_ON": "Depends on",
     "DEPENDED_ON_BY": "Depended on by",
+    "RUNTIME_DEPENDS_ON": "Runtime dependencies",
+    "RUNTIME_DEPENDED_ON_BY": "Runtime dependents",
+    "EDGE_FILTER_LABEL": "Dependency kinds",
+    "EDGE_LIB": "Lib",
+    "EDGE_EMBEDS": "Embeds",
+    "EDGE_CALLS": "Calls",
     "NONE": "None"
   },
   "README_PAGE": {
