@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 - [Environment](#environment)
 
 ## Stack
@@ -21,6 +22,10 @@
 - Cloud services
   - Cloudflare R2
   - Supabase
+
+## App Dependencies
+
+- [Email Service](../../api/email-service) - calls
 
 ## Environment
 
