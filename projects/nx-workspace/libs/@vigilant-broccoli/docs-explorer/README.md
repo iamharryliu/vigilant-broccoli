@@ -31,5 +31,6 @@ Markdown docs browser with a file tree, search, Markdown and checklist rendering
   - `lucide-react`
   - `marked`
   - `mermaid`
+  - `qrcode`
 - Internal libs
   - `react-lib`

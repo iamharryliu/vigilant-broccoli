@@ -18,12 +18,23 @@ const STRUCTURE: DocsNode[] = Object.keys(CONTENT).map(path => ({
   type: 'file',
 }));
 
+const NOTE_PARAM = 'note';
+
+const getShareUrl = (path: string) => {
+  const url = new URL(window.location.href);
+  url.search = '';
+  url.hash = '';
+  url.searchParams.set(NOTE_PARAM, path);
+  return url.toString();
+};
+
 export const DocsViewerDemo = () => (
   <div className="h-96">
     <DocsViewer
       siteName="Sample docs"
       getStructure={async () => STRUCTURE}
       getContent={async path => CONTENT[path] ?? ''}
+      getShareUrl={getShareUrl}
     />
   </div>
 );
