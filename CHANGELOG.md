@@ -20,6 +20,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### hearth
 
+- Where Is loads faster: the list signs all photo links in one request, shows one small thumbnail per item instead of a stack of full-size photos, and shows the search box and placeholder rows while it loads; imported photos get thumbnails too ([#1724](https://github.com/iamharryliu/vigilant-broccoli/pull/1724)).
 - On phones the home page is one tabbed view with Tasks first and selected by default, plus Whiteboard and Calendar, replacing the separate Whiteboard, Tasks and Calendar entries under Home in the menu; only the task list scrolls, recurring tasks are highlighted yellow, and the progress bar counts only today's recurring tasks ([#1716](https://github.com/iamharryliu/vigilant-broccoli/pull/1716)).
 - New Whiteboard and Tasks tabs on the home page with recurring and one-off tasks stored per home, assignable to members, with each recurring occurrence its own instance and carried-over ones labeled missed ([#1485](https://github.com/iamharryliu/vigilant-broccoli/pull/1485), [#1493](https://github.com/iamharryliu/vigilant-broccoli/pull/1493), [#1495](https://github.com/iamharryliu/vigilant-broccoli/pull/1495), [#1508](https://github.com/iamharryliu/vigilant-broccoli/pull/1508), [#1561](https://github.com/iamharryliu/vigilant-broccoli/pull/1561)).
 - New checklist, leisure and task items go to the top of their lists and can be dragged to reorder, and lists refresh when the tab regains focus ([#1387](https://github.com/iamharryliu/vigilant-broccoli/pull/1387), [#1486](https://github.com/iamharryliu/vigilant-broccoli/pull/1486), [#1587](https://github.com/iamharryliu/vigilant-broccoli/pull/1587), [#1588](https://github.com/iamharryliu/vigilant-broccoli/pull/1588)).
@@ -188,6 +189,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### media-service
 
+- New `/api/where-is/thumbnail` endpoint makes the 256px list thumbnails for Where Is ([#1724](https://github.com/iamharryliu/vigilant-broccoli/pull/1724)).
 - New Fastify media service handles hearth's image processing ([#1383](https://github.com/iamharryliu/vigilant-broccoli/pull/1383)).
 
 ### socket-server-socketio
@@ -204,6 +206,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### vb-express
 
+- New `POST /api/storage/download-urls` signs many storage download links in one request, backed by a matching bucket-service endpoint ([#1724](https://github.com/iamharryliu/vigilant-broccoli/pull/1724)).
 - Calendar parsing now works out each time's UTC offset from the place where it happens, including daylight saving, so a Copenhagen to Keflavík flight no longer shifts by an hour, from pasted text or a screenshot. Repeated legs and invented whole-trip events are dropped ([#1700](https://github.com/iamharryliu/vigilant-broccoli/pull/1700), [#1701](https://github.com/iamharryliu/vigilant-broccoli/pull/1701)).
 
 </details>

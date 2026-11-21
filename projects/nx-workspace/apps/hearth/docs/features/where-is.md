@@ -11,7 +11,7 @@ Household storage inventory — record storage areas by hand or from photos, AI 
 ## Data Model
 
 - `where_is_items` — `id`, `user_id`, `home_id`, `title`, `description`, `tags[]`
-- `where_is_images` — `id`, `item_id`, `r2_key`, `mime_type`, `sort_order`
+- `where_is_images` — `id`, `item_id`, `r2_key`, `thumbnail_r2_key` (nullable; null for photos saved before thumbnails), `mime_type`, `sort_order`
 
 ## Features
 
@@ -24,10 +24,13 @@ Household storage inventory — record storage areas by hand or from photos, AI 
 - Update photos reorder by drag and drop (mouse, long-press on touch, keyboard); the order persists to `where_is_images.sort_order`
 - Removing a photo asks for confirmation first
 - Image processing — resize to 1920px max, convert to JPEG, strip EXIF
+- Each saved photo also gets a 256px list thumbnail (media-service `/api/where-is/thumbnail`, stored at `<key>.thumb.jpg`), on save and on import; generating it is best effort and never fails the save or import
+- The list shows one photo per item: the first photo's thumbnail, or the full image when it has none. While the list loads, the search box and placeholder rows show
+- Image links are presigned in one batch per request (`POST /api/storage/download-urls` on vb-express, which bucket-service signs locally): the list signs only each item's cover, and `?id=` signs the item's full-size photos too. An edit opened from the list fetches its item once for those full-size links
 - AI suggests tags from images on demand via a Suggest tags badge at the end of the tag list (create analyzes the new photos, update re-analyzes stored plus new ones); suggestions not already on the item appear as a checklist with Select all / Clear all, and only confirmed tags are added; it never touches the user-entered description
 - Fuzzy search across title, description, tags
 - Tags display alphabetically and animate when added or removed in the form
-- Delete removes DB rows + R2 objects
+- Delete removes DB rows + R2 objects, thumbnails included
 - Export all items to JSON (includes base64 images)
 - Import from export JSON into any home
 
@@ -48,15 +51,16 @@ Household storage inventory — record storage areas by hand or from photos, AI 
 
 ## Routes
 
-- `GET /api/where-is?homeId=` — list items for a home
+- `GET /api/where-is?homeId=` — list items for a home, each with `thumbnailUrl` and an empty `imageUrls`
+- `GET /api/where-is?id=` — one item with its full-size `imageUrls` and `thumbnailUrl`
 - `POST /api/where-is/upload-url` — mint presigned staging upload URLs for the browser
-- `POST /api/where-is` — create item + upload images
+- `POST /api/where-is` — create item + upload images; returns the new `id`
 - `PATCH /api/where-is` — update title, description, tags; delete `removedImageKeys`, rewrite photo order from `imageKeyOrder` (scoped to the item), append `newImages`
 - `DELETE /api/where-is` — delete item + R2 images
 - `POST /api/where-is/analyze` — AI tag suggestions from images
 - `POST /api/where-is/reanalyze` — AI tag suggestions from an item's stored images plus any newly added ones
 - `GET /api/where-is/export?homeId=` — export all items + images as JSON (base64-embedded)
-- `POST /api/where-is/import` — import items + images from export JSON
+- `POST /api/where-is/import` — import items + images from export JSON, creating a list thumbnail per image
 
 ## Env Vars
 

@@ -28,6 +28,8 @@ const ERROR_CONTENT_TYPE_REQUIRED = 'contentType query parameter is required';
 const ERROR_EXPIRES_IN_SECONDS_REQUIRED =
   'expiresInSeconds query parameter is required';
 const ERROR_NO_FILES = 'No valid files provided';
+const MAX_BATCH_FILE_NAMES = 500;
+const ERROR_FILE_NAMES = `fileNames must be an array of up to ${MAX_BATCH_FILE_NAMES} non-empty strings`;
 const MESSAGE_FILE_DELETED = 'File deleted successfully';
 const STREAM_UPLOAD_BODY_LIMIT_BYTES = 100 * 1024 * 1024;
 const VALID_PROVIDERS = new Set<string>(Object.values(BucketProvider));
@@ -165,6 +167,38 @@ const bucketRoutes: FastifyPluginAsync = async app => {
       resolveBucketName(req),
     ).getDownloadUrl(fileName, expiresInSeconds);
     return reply.send({ url });
+  });
+
+  // Signing is local once the bucket check is cached, so one request can sign a
+  // whole list page instead of a round trip per file.
+  app.post('/download-urls', async (req, reply) => {
+    const provider = resolveProvider(req, reply);
+    if (!provider) return;
+    const { fileNames, expiresInSeconds } = (req.body ?? {}) as {
+      fileNames?: unknown;
+      expiresInSeconds?: unknown;
+    };
+    if (
+      !Array.isArray(fileNames) ||
+      fileNames.length > MAX_BATCH_FILE_NAMES ||
+      fileNames.some(name => typeof name !== 'string' || !name)
+    ) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_FILE_NAMES });
+    }
+    if (!Number(expiresInSeconds)) {
+      return reply
+        .code(HTTP_STATUS_CODES.BAD_REQUEST)
+        .send({ error: ERROR_EXPIRES_IN_SECONDS_REQUIRED });
+    }
+    const service = getBucketService(provider, resolveBucketName(req));
+    const urls = await Promise.all(
+      (fileNames as string[]).map(name =>
+        service.getDownloadUrl(name, Number(expiresInSeconds)),
+      ),
+    );
+    return reply.send({ urls });
   });
 
   app.get('/:fileName', async (req, reply) => {
