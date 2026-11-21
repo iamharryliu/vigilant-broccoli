@@ -1,36 +1,40 @@
 import { PROJECT_LINK } from '@harry/personal';
 
+// Zone for the public tool sites and Weather; keep in sync with `vigilant_broccoli_domain`
+// in infrastructure/terraform/variables.tf.
+const VB_APP_DOMAIN = 'vigilant-broccoli.app';
+
 export const VB_APP_URL = {
-  GAMES: { NAME: 'Games', URL: 'https://games.harryliu.dev/' },
+  GAMES: { NAME: 'Games', URL: `https://games.${VB_APP_DOMAIN}/` },
   COMPONENT_LIBRARY: {
     NAME: 'Component Library',
-    URL: 'https://components.harryliu.dev/',
-    STAGING_URL: 'https://staging-components.harryliu.dev/',
+    URL: `https://components.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-components.${VB_APP_DOMAIN}/`,
   },
   TEXT_TOOLS: {
     NAME: 'Text Tools',
-    URL: 'https://text-tools.harryliu.dev/',
-    STAGING_URL: 'https://staging-text-tools.harryliu.dev/',
+    URL: `https://text-tools.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-text-tools.${VB_APP_DOMAIN}/`,
   },
   UTILITIES: {
     NAME: 'Utilities',
-    URL: 'https://utilities.harryliu.dev/',
-    STAGING_URL: 'https://staging-utilities.harryliu.dev/',
+    URL: `https://utilities.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-utilities.${VB_APP_DOMAIN}/`,
   },
   WAITING_GAMES: {
     NAME: 'Waiting Games',
-    URL: 'https://waiting.harryliu.dev/',
-    STAGING_URL: 'https://staging-waiting.harryliu.dev/',
+    URL: `https://waiting.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-waiting.${VB_APP_DOMAIN}/`,
   },
   BOOKMARKS: {
     NAME: 'Bookmarks',
-    URL: 'https://bookmarks.harryliu.dev/',
-    STAGING_URL: 'https://staging-bookmarks.harryliu.dev/',
+    URL: `https://bookmarks.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-bookmarks.${VB_APP_DOMAIN}/`,
   },
   POMODORO: {
     NAME: 'Pomodoro',
-    URL: 'https://pomodoro.harryliu.dev/',
-    STAGING_URL: 'https://staging-pomodoro.harryliu.dev/',
+    URL: `https://pomodoro.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-pomodoro.${VB_APP_DOMAIN}/`,
   },
   PHOTOGRAPHY: {
     NAME: 'Photography',
@@ -44,8 +48,8 @@ export const VB_APP_URL = {
   },
   WEATHER: {
     NAME: 'Weather',
-    URL: 'https://weather.harryliu.dev/',
-    STAGING_URL: 'https://staging-weather.harryliu.dev/',
+    URL: `https://weather.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-weather.${VB_APP_DOMAIN}/`,
   },
   TASKS: {
     NAME: 'Tasks',
@@ -54,23 +58,23 @@ export const VB_APP_URL = {
   },
   FIND_ME: {
     NAME: 'Find Me',
-    URL: 'https://findme.harryliu.dev/',
-    STAGING_URL: 'https://staging-findme.harryliu.dev/',
+    URL: `https://findme.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-findme.${VB_APP_DOMAIN}/`,
   },
   WHITEBOARD: {
     NAME: 'Whiteboard',
-    URL: 'https://whiteboard.harryliu.dev/',
-    STAGING_URL: 'https://staging-whiteboard.harryliu.dev/',
+    URL: `https://whiteboard.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-whiteboard.${VB_APP_DOMAIN}/`,
   },
   BALLOONO: {
     NAME: 'Balloono',
-    URL: 'https://balloono.harryliu.dev/',
-    STAGING_URL: 'https://staging-balloono.harryliu.dev/',
+    URL: `https://balloono.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-balloono.${VB_APP_DOMAIN}/`,
   },
   GRAVITY_GUY: {
     NAME: 'Gravity Guy',
-    URL: 'https://gravity-guy.harryliu.dev/',
-    STAGING_URL: 'https://staging-gravity-guy.harryliu.dev/',
+    URL: `https://gravity-guy.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-gravity-guy.${VB_APP_DOMAIN}/`,
   },
   DOCS: {
     NAME: 'Docs',
@@ -79,13 +83,13 @@ export const VB_APP_URL = {
   },
   GRIND_75: {
     NAME: 'Grind 75',
-    URL: 'https://grind-75.harryliu.dev/',
-    STAGING_URL: 'https://staging-grind-75.harryliu.dev/',
+    URL: `https://grind-75.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-grind-75.${VB_APP_DOMAIN}/`,
   },
   CONTEXT: {
     NAME: 'Agent Context',
-    URL: 'https://context.harryliu.dev/',
-    STAGING_URL: 'https://staging-context.harryliu.dev/',
+    URL: `https://context.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-context.${VB_APP_DOMAIN}/`,
   },
   CLOUD_8_SKATE: {
     NAME: 'Cloud 8 Skate',
@@ -132,5 +136,9 @@ export const VB_APP_URL = {
   CAREER: {
     NAME: 'Career',
     URL: 'https://career.harryliu.dev/',
+  },
+  PAGES_INDEX: {
+    NAME: 'Pages Index',
+    URL: `https://projects.${VB_APP_DOMAIN}/`,
   },
 } as const;

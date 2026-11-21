@@ -6,7 +6,7 @@ source "${SCRIPT_DIR}/../../../config.sh"
 source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 RABBITMQ_USER="admin"
-RABBITMQ_HOST="socket.harryliu.dev"
+RABBITMQ_HOST="socket.vigilant-broccoli.app"
 FLY_APPS=("staging-vb-email-service" "staging-email-subscription-service")
 
 # CI mode (VAULT_ADDR set by the rotate-secrets workflow): the VM is reached via

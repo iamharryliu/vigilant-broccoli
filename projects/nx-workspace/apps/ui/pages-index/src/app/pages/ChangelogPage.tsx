@@ -3,6 +3,7 @@ import { PARSE_KIND, ReadmePage } from '../components/ReadmePage';
 import { REPO_URL, toRawGithubUrl, toRepoLinkBase } from '../consts/repo';
 
 const CHANGELOG_PATH = 'CHANGELOG.md';
+const DEFAULT_OPEN_MONTHS = 1;
 
 export function ChangelogPage() {
   const { t } = useTranslation();
@@ -17,6 +18,7 @@ export function ChangelogPage() {
       repoLinkBase={toRepoLinkBase(CHANGELOG_PATH)}
       externalHref={`${REPO_URL}/blob/main/${CHANGELOG_PATH}`}
       externalLabel={t('README_PAGE.VIEW_ON_GITHUB')}
+      defaultOpenSections={DEFAULT_OPEN_MONTHS}
     />
   );
 }

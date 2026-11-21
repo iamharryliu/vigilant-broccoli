@@ -1,0 +1,1 @@
+../../agent-skills/svenska/SKILL.md

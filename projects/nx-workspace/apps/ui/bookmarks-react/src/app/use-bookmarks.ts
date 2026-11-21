@@ -1,17 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
-import { DEFAULT_BOOKMARKS } from './default-bookmarks';
 
 const STORAGE_KEY = 'bookmarks:v1';
-export const TAB = { BOOKMARKS: 'bookmarks', MANAGE: 'manage' } as const;
-type Tab = (typeof TAB)[keyof typeof TAB];
-type StoredState = { bookmarks: QuickLink[]; tab: Tab };
-const EMPTY_STATE: StoredState = { bookmarks: [], tab: TAB.BOOKMARKS };
-const DEFAULT_STATE: StoredState = {
-  bookmarks: DEFAULT_BOOKMARKS,
-  tab: TAB.BOOKMARKS,
-};
+type StoredState = { bookmarks: QuickLink[] };
+const EMPTY_STATE: StoredState = { bookmarks: [] };
 const INVALID_BOOKMARK = 'Invalid bookmark';
+// Emitted at build time by scripts/generate-default-bookmarks.ts. Self-hosters replace the served
+// file (e.g. a Docker volume mount) to ship their own list without rebuilding.
+const DEFAULT_BOOKMARKS_URL = `${import.meta.env.BASE_URL}default-bookmarks.json`;
 
 export function parseBookmarks(value: unknown): QuickLink[] {
   if (!Array.isArray(value)) throw new Error(INVALID_BOOKMARK);
@@ -43,15 +39,20 @@ export function parseBookmarks(value: unknown): QuickLink[] {
   });
 }
 
-function readState(): StoredState {
+export async function fetchDefaultBookmarks(): Promise<QuickLink[]> {
+  const response = await fetch(DEFAULT_BOOKMARKS_URL, { cache: 'no-cache' });
+  if (!response.ok) throw new Error(INVALID_BOOKMARK);
+  return parseBookmarks(await response.json());
+}
+
+function readState(): StoredState | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     // A missing key means first visit; a cleared list is stored as [] and must not be re-seeded.
-    if (!raw) return DEFAULT_STATE;
+    if (!raw) return null;
     const stored = JSON.parse(raw);
     return {
       bookmarks: parseBookmarks(stored.bookmarks),
-      tab: stored.tab === TAB.MANAGE ? TAB.MANAGE : TAB.BOOKMARKS,
     };
   } catch {
     return EMPTY_STATE;
@@ -59,8 +60,25 @@ function readState(): StoredState {
 }
 
 export function useBookmarks() {
-  const [state, setState] = useState(readState);
+  const [stored] = useState(readState);
+  const [state, setState] = useState(stored ?? EMPTY_STATE);
+  const [isLoadingDefaults, setIsLoadingDefaults] = useState(stored === null);
   const [storageError, setStorageError] = useState(false);
+  useEffect(() => {
+    if (stored !== null) return;
+    let isCancelled = false;
+    fetchDefaultBookmarks()
+      .then(bookmarks => {
+        if (!isCancelled) setState({ bookmarks });
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!isCancelled) setIsLoadingDefaults(false);
+      });
+    return () => {
+      isCancelled = true;
+    };
+  }, [stored]);
   const save = (next: StoredState) => {
     setState(next);
     try {
@@ -73,9 +91,7 @@ export function useBookmarks() {
   return {
     ...state,
     storageError,
+    isLoadingDefaults,
     setBookmarks: (bookmarks: QuickLink[]) => save({ ...state, bookmarks }),
-    resetBookmarks: () => save({ ...state, bookmarks: DEFAULT_BOOKMARKS }),
-    setTab: (tab: string) =>
-      save({ ...state, tab: tab === TAB.MANAGE ? TAB.MANAGE : TAB.BOOKMARKS }),
   };
 }

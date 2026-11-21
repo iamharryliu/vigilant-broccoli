@@ -1,6 +1,11 @@
 {
   "images": [
     {
+      "slug": "bookmarks-react",
+      "readmePath": "projects/nx-workspace/apps/ui/bookmarks-react/docs/features/self-hosting.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.BOOKMARKS_REACT.DESCRIPTION"
+    },
+    {
       "slug": "bucket-service",
       "readmePath": "projects/nx-workspace/apps/api/bucket-service/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.BUCKET_SERVICE.DESCRIPTION"

@@ -137,14 +137,14 @@ variable "cloudflare_zone_id" {
 
 variable "code_server_domain" {
   type    = string
-  default = "code.harryliu.dev"
+  default = "code.vigilant-broccoli.app"
 }
 
 # Served by the web-terminal s6 service inside the code-server image, behind the
 # same Caddy and its own Access application.
 variable "web_terminal_domain" {
   type    = string
-  default = "shell.harryliu.dev"
+  default = "shell.vigilant-broccoli.app"
 }
 
 # Cloudflare Zero Trust team domain the web-terminal server validates Access JWT
@@ -204,14 +204,14 @@ variable "immich_allowed_emails" {
 
 variable "grafana_domain" {
   type    = string
-  default = "grafana.harryliu.dev"
+  default = "grafana.vigilant-broccoli.app"
 }
 
 # Loki push endpoint for machine clients (Fly log shipper); same tunnel and VM
 # as Grafana, gated by nginx basic auth instead of Cloudflare Access.
 variable "loki_domain" {
   type    = string
-  default = "loki.harryliu.dev"
+  default = "loki.vigilant-broccoli.app"
 }
 
 variable "loki_push_user" {
@@ -238,12 +238,12 @@ variable "vault_domain" {
 
 variable "socket_server_domain" {
   type    = string
-  default = "socket.harryliu.dev"
+  default = "socket.vigilant-broccoli.app"
 }
 
 variable "nx_cache_domain" {
   type    = string
-  default = "nx-cache.harryliu.dev"
+  default = "nx-cache.vigilant-broccoli.app"
 }
 
 # 7 days: a cache miss just rebuilds, so a short TTL trades a little compute
@@ -270,11 +270,6 @@ variable "docs_pages_subdomain" {
   default = "production-docs-md.pages.dev"
 }
 
-variable "grind_75_domain" {
-  type    = string
-  default = "grind-75.harryliu.dev"
-}
-
 variable "grind_75_pages_project" {
   type    = string
   default = "production-grind-75-react"
@@ -287,11 +282,6 @@ variable "grind_75_pages_subdomain" {
   default = "production-grind-75-react.pages.dev"
 }
 
-variable "context_domain" {
-  type    = string
-  default = "context.harryliu.dev"
-}
-
 variable "context_pages_project" {
   type    = string
   default = "production-context-md"
@@ -300,11 +290,6 @@ variable "context_pages_project" {
 variable "context_pages_subdomain" {
   type    = string
   default = "production-context-md.pages.dev"
-}
-
-variable "text_tools_domain" {
-  type    = string
-  default = "text-tools.harryliu.dev"
 }
 
 variable "text_tools_pages_project" {
@@ -317,11 +302,6 @@ variable "text_tools_pages_subdomain" {
   default = "production-text-tools-ui.pages.dev"
 }
 
-variable "utilities_domain" {
-  type    = string
-  default = "utilities.harryliu.dev"
-}
-
 variable "utilities_pages_project" {
   type    = string
   default = "production-utilities-ui"
@@ -330,11 +310,6 @@ variable "utilities_pages_project" {
 variable "utilities_pages_subdomain" {
   type    = string
   default = "production-utilities-ui.pages.dev"
-}
-
-variable "waiting_domain" {
-  type    = string
-  default = "waiting.harryliu.dev"
 }
 
 variable "waiting_pages_project" {
@@ -377,40 +352,15 @@ variable "photography_pages_subdomain" {
   default = "production-photography-react.pages.dev"
 }
 
-variable "projects_domain" {
-  type    = string
-  default = "projects.harryliu.dev"
-}
-
 variable "career_domain" {
   type    = string
   default = "career.harryliu.dev"
-}
-
-variable "deployments_domain" {
-  type    = string
-  default = "deployments.harryliu.dev"
-}
-
-variable "status_domain" {
-  type    = string
-  default = "status.harryliu.dev"
-}
-
-variable "uptime_domain" {
-  type    = string
-  default = "uptime.harryliu.dev"
 }
 
 variable "upptime_https_enforced" {
   type        = bool
   default     = true
   description = "Enforce HTTPS on the Upptime Pages site. Set true only after GitHub has issued a certificate covering the custom domain; the API rejects it earlier."
-}
-
-variable "component_library_domain" {
-  type    = string
-  default = "components.harryliu.dev"
 }
 
 variable "component_library_pages_project" {
@@ -423,9 +373,10 @@ variable "component_library_pages_subdomain" {
   default = "production-component-library.pages.dev"
 }
 
-variable "bookmarks_domain" {
-  type    = string
-  default = "bookmarks.harryliu.dev"
+variable "vigilant_broccoli_domain" {
+  type        = string
+  default     = "vigilant-broccoli.app"
+  description = "Zone for the public Pages tool sites; their hostnames are derived from it in cloudflare-vigilant-broccoli-app.tf."
 }
 
 variable "bookmarks_pages_project" {
@@ -436,11 +387,6 @@ variable "bookmarks_pages_project" {
 variable "bookmarks_pages_subdomain" {
   type    = string
   default = "production-bookmarks-react.pages.dev"
-}
-
-variable "pomodoro_domain" {
-  type    = string
-  default = "pomodoro.harryliu.dev"
 }
 
 variable "pomodoro_pages_project" {
@@ -500,15 +446,10 @@ variable "harryliu_dev_pages_subdomain" {
 
 variable "rabbitmq_management_domain" {
   type    = string
-  default = "queue.harryliu.dev"
+  default = "queue.vigilant-broccoli.app"
 }
 
 variable "rabbitmq_allowed_emails" {
   type    = list(string)
   default = ["harryliu1995@gmail.com"]
-}
-
-variable "games_domain" {
-  type    = string
-  default = "games.harryliu.dev"
 }

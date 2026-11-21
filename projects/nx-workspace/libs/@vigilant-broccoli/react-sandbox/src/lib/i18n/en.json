@@ -29,8 +29,12 @@
   },
   "FOUNDATIONS": {
     "INPUT": {
-      "NAME": "Input and Textarea",
-      "SUMMARY": "Text fields in default, disabled, invalid and long-content states, with labels and validation messages."
+      "NAME": "Input",
+      "SUMMARY": "Single-line text field in default, disabled, invalid and long-content states, with labels and validation messages."
+    },
+    "TEXTAREA": {
+      "NAME": "Textarea",
+      "SUMMARY": "Multi-line text field in default, disabled, invalid and long-content states, with labels and validation messages."
     },
     "CHECKBOX": {
       "NAME": "Checkbox",
@@ -50,7 +54,7 @@
     },
     "SEGMENTED_CONTROL": {
       "NAME": "Segmented Control",
-      "SUMMARY": "Controlled selection in both sizes, with icons, short labels and a selected-value readout."
+      "SUMMARY": "Picks one value for a setting, like a theme preference, in both sizes, with icons, short labels and a selected-value readout. It does not switch views; use Tabs for that."
     }
   },
   "FOUNDATION_DEMO": {
@@ -116,15 +120,15 @@
     "SEGMENTED_DEFAULT": "Default size",
     "SEGMENTED_RESPONSIVE": "Icons and short labels",
     "SEGMENTED_FULL_WIDTH": "Full width with icons and labels",
-    "VIEW": {
-      "LIST": "List view",
-      "GRID": "Grid view",
-      "TIMELINE": "Timeline view"
+    "THEME": {
+      "LIGHT": "Light theme",
+      "DARK": "Dark theme",
+      "SYSTEM": "System theme"
     },
-    "SHORT_VIEW": {
-      "LIST": "List",
-      "GRID": "Grid",
-      "TIMELINE": "Time"
+    "SHORT_THEME": {
+      "LIGHT": "Light",
+      "DARK": "Dark",
+      "SYSTEM": "Auto"
     }
   },
   "DEMO_SECTION": {
@@ -142,8 +146,11 @@
       "MONOSPACE_TEXT": "Monospace Text",
       "SOCIAL_SIGNIN_BUTTONS": "Social Signin Buttons",
       "CHAT_SEND_BUTTON": "Chat Send Button",
-      "BUTTON_LIST": "Button List",
       "CHAT_PLACEHOLDER": "Type a message…"
+    },
+    "BUTTON_LIST": {
+      "DEFAULT": "Default",
+      "EXTERNAL": "External links"
     },
     "AVATAR": {
       "SIZES": "Sizes",

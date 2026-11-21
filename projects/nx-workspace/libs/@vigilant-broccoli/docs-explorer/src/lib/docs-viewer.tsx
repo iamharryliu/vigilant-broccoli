@@ -1,20 +1,13 @@
+import { FileText, ListChecks } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  IconButton,
-  Popover,
   Select,
   useDocumentTitle,
-  useMediaQuery,
   SegmentedControl,
 } from '@vigilant-broccoli/react-lib';
 import {
-  DESKTOP_MEDIA_QUERY,
   DocsExplorer,
+  MENU_ICON_SIZE,
   type DocsExplorerUrlSync,
   type DocsNode,
   type DocsSearchResult,
@@ -25,10 +18,13 @@ import { ChecklistViewer } from './checklist-viewer';
 import {
   GraphView,
   localSubgraph,
-  DEFAULT_FORCES,
-  FORCE_LIMITS,
-  type GraphForces,
+  type GraphZoomControlLabels,
 } from './graph-view';
+import {
+  GraphSettingsFields,
+  GraphSettingsMenu,
+  useGraphSettings,
+} from './graph-settings';
 
 const FILE_PARAM = 'file';
 
@@ -39,14 +35,12 @@ export const createSearchParamUrlSync = (
   param = FILE_PARAM,
 ): DocsExplorerUrlSync => ({
   get: () => new URLSearchParams(window.location.search).get(param),
-  set: path => {
+  set: (path, { replace = false } = {}) => {
     const params = new URLSearchParams(window.location.search);
     params.set(param, path);
-    window.history.pushState(
-      null,
-      '',
-      `?${params.toString()}${window.location.hash}`,
-    );
+    const url = `?${params.toString()}${window.location.hash}`;
+    if (replace) window.history.replaceState(null, '', url);
+    else window.history.pushState(null, '', url);
   },
   clear: () => {
     const params = new URLSearchParams(window.location.search);
@@ -67,6 +61,13 @@ export const createSearchParamUrlSync = (
 const VIEW_MODE_STORAGE_KEY = 'docs-md:view-mode';
 const GRAPH_SCOPE_STORAGE_KEY = 'docs-md:graph-scope';
 const GRAPH_DEPTH_STORAGE_KEY = 'docs-md:graph-depth';
+// Keeps the keys the notes graph saved under before the settings were shared.
+const GRAPH_SETTINGS_STORAGE_PREFIX = 'docs-md';
+const GRAPH_ZOOM_LABELS: GraphZoomControlLabels = {
+  zoomIn: 'Zoom in',
+  zoomOut: 'Zoom out',
+  reset: 'Reset view',
+};
 
 const VIEW_MODE = {
   MARKDOWN: 'markdown',
@@ -77,6 +78,11 @@ type ViewMode = (typeof VIEW_MODE)[keyof typeof VIEW_MODE];
 const MODE_LABEL: Record<ViewMode, string> = {
   [VIEW_MODE.MARKDOWN]: 'Markdown',
   [VIEW_MODE.CHECKLIST]: 'Checklist',
+};
+
+const MODE_ICON: Record<ViewMode, typeof FileText> = {
+  [VIEW_MODE.MARKDOWN]: FileText,
+  [VIEW_MODE.CHECKLIST]: ListChecks,
 };
 
 const GRAPH_SCOPE = {
@@ -90,28 +96,12 @@ const GRAPH_SCOPE_LABEL: Record<GraphScope, string> = {
   [GRAPH_SCOPE.LOCAL]: 'Local',
 };
 
-const DEFAULT_GRAPH_DEPTH = 1;
+const DEFAULT_GRAPH_DEPTH = 4;
 const MAX_GRAPH_DEPTH = 10;
 const GRAPH_DEPTH_OPTIONS = Array.from(
   { length: MAX_GRAPH_DEPTH },
   (_, index) => index + 1,
 );
-
-const GRAPH_FORCE_STORAGE_PREFIX = 'docs-md:graph-force-';
-const FORCE_ORDER: (keyof GraphForces)[] = [
-  'center',
-  'repel',
-  'link',
-  'linkDistance',
-];
-const FORCE_LABEL: Record<keyof GraphForces, string> = {
-  center: 'Center force',
-  repel: 'Repel force',
-  link: 'Link force',
-  linkDistance: 'Link distance',
-};
-const forceStorageKey = (key: keyof GraphForces) =>
-  `${GRAPH_FORCE_STORAGE_PREFIX}${key}`;
 
 const CLS = {
   CENTERED_MSG: 'flex items-center justify-center h-full text-gray-500',
@@ -122,9 +112,6 @@ const COPY = {
   EMPTY: 'Select a markdown file to view its contents',
   GRAPH_ERROR: 'Failed to load graph',
   ORPHAN_NOTE: 'This note has no links',
-  FORCES: 'Forces',
-  RESET: 'Reset forces',
-  SETTINGS: 'Graph settings',
   SCOPE_LABEL: 'Graph scope',
   DEPTH_LABEL: 'Graph depth',
   DEPTH_PLACEHOLDER: 'Hops',
@@ -182,9 +169,7 @@ function GraphPanel({
   const [graph, setGraph] = useState<NoteGraph | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [depth, setDepth] = useState<number>(DEFAULT_GRAPH_DEPTH);
-  const [forces, setForces] = useState<GraphForces>(DEFAULT_FORCES);
-  const [showSettings, setShowSettings] = useState(false);
-  const isDesktop = useMediaQuery(DESKTOP_MEDIA_QUERY);
+  const settings = useGraphSettings(GRAPH_SETTINGS_STORAGE_PREFIX);
 
   useEffect(() => {
     const storedDepth = Number(
@@ -193,19 +178,6 @@ function GraphPanel({
     if (GRAPH_DEPTH_OPTIONS.includes(storedDepth)) {
       setDepth(storedDepth);
     }
-    setForces(prev => {
-      const next = { ...prev };
-      for (const key of FORCE_ORDER) {
-        const raw = window.localStorage.getItem(forceStorageKey(key));
-        if (raw === null) continue;
-        const value = Number(raw);
-        const lim = FORCE_LIMITS[key];
-        if (Number.isFinite(value) && value >= lim.min && value <= lim.max) {
-          next[key] = value;
-        }
-      }
-      return next;
-    });
   }, []);
 
   useEffect(() => {
@@ -221,17 +193,6 @@ function GraphPanel({
   const updateDepth = (next: number) => {
     setDepth(next);
     window.localStorage.setItem(GRAPH_DEPTH_STORAGE_KEY, String(next));
-  };
-
-  const updateForce = (key: keyof GraphForces, value: number) => {
-    setForces(prev => ({ ...prev, [key]: value }));
-    window.localStorage.setItem(forceStorageKey(key), String(value));
-  };
-
-  const resetForces = () => {
-    setForces(DEFAULT_FORCES);
-    for (const key of FORCE_ORDER)
-      window.localStorage.removeItem(forceStorageKey(key));
   };
 
   const isLocal = scope === GRAPH_SCOPE.LOCAL && Boolean(activePath);
@@ -260,98 +221,39 @@ function GraphPanel({
             label: GRAPH_SCOPE_LABEL[value],
           }))}
         />
-        {/* Always shown; empty in global scope, and picking a depth switches
-            back to local. */}
-        <Select
-          aria-label={COPY.DEPTH_LABEL}
-          placeholder={COPY.DEPTH_PLACEHOLDER}
-          className="h-7 text-xs"
-          value={scope === GRAPH_SCOPE.LOCAL ? depth : undefined}
-          onValueChange={value => {
-            updateDepth(value);
-            updateScope(GRAPH_SCOPE.LOCAL);
-          }}
-          options={GRAPH_DEPTH_OPTIONS}
-          renderItem={depthLabel}
-        />
+        {scope === GRAPH_SCOPE.LOCAL && (
+          <Select
+            aria-label={COPY.DEPTH_LABEL}
+            placeholder={COPY.DEPTH_PLACEHOLDER}
+            className="h-7 text-xs"
+            value={depth}
+            onValueChange={updateDepth}
+            options={GRAPH_DEPTH_OPTIONS}
+            renderItem={depthLabel}
+          />
+        )}
       </div>
-      <div className="flex flex-col gap-3">
-        <span className="text-sm font-medium">{COPY.FORCES}</span>
-        {FORCE_ORDER.map(key => {
-          const lim = FORCE_LIMITS[key];
-          return (
-            <label key={key} className="flex flex-col gap-1">
-              <span className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>{FORCE_LABEL[key]}</span>
-                <span className="tabular-nums">{forces[key]}</span>
-              </span>
-              <input
-                type="range"
-                className="h-1.5 w-full cursor-pointer accent-blue-500"
-                min={lim.min}
-                max={lim.max}
-                step={lim.step}
-                value={forces[key]}
-                onChange={e => updateForce(key, e.target.valueAsNumber)}
-              />
-            </label>
-          );
-        })}
-        <Button
-          size="sm"
-          variant="ghost"
-          className="self-end"
-          onClick={resetForces}
-        >
-          {COPY.RESET}
-        </Button>
-      </div>
+      <GraphSettingsFields settings={settings} />
     </>
   );
 
   return (
     <div className="flex flex-col h-full">
-      {/* Sits left of DocsExplorer's top-right close button. */}
-      <div className="absolute top-2 right-12 z-10">
-        {isDesktop ? (
-          <Popover.Root open={showSettings} onOpenChange={setShowSettings}>
-            <Popover.Trigger>
-              <IconButton
-                variant="ghost"
-                icon="settings"
-                aria-label={COPY.SETTINGS}
-              />
-            </Popover.Trigger>
-            <Popover.Content align="end" className="flex w-72 flex-col gap-4">
-              {settingsBody}
-            </Popover.Content>
-          </Popover.Root>
-        ) : (
-          <IconButton
-            variant="ghost"
-            icon="settings"
-            aria-label={COPY.SETTINGS}
-            onClick={() => setShowSettings(true)}
-          />
-        )}
+      {/* The graph area already sits inside the card padding, so the content
+          bar's py-1 px-2 alone lines this up with its right-hand buttons. */}
+      <div className="absolute top-1 right-2 z-10">
+        <GraphSettingsMenu>{settingsBody}</GraphSettingsMenu>
       </div>
-      {!isDesktop && (
-        <Dialog open={showSettings} onOpenChange={setShowSettings}>
-          <DialogContent className="max-w-sm">
-            <DialogHeader>
-              <DialogTitle>{COPY.SETTINGS}</DialogTitle>
-            </DialogHeader>
-            {settingsBody}
-          </DialogContent>
-        </Dialog>
-      )}
       <div className="relative flex-1 min-h-0">
         {displayGraph && (
           <GraphView
             graph={displayGraph}
             activePath={activePath}
             onSelect={onSelect}
-            forces={forces}
+            forces={settings.appliedForces}
+            palette={settings.colorScheme.colors ?? undefined}
+            showNodeGlow={settings.showNodeGlow}
+            zoomControls={GRAPH_ZOOM_LABELS}
           />
         )}
         {isOrphan && (
@@ -418,8 +320,8 @@ export function DocsViewer({
       urlSync
         ? {
             get: urlSync.get,
-            set: (path: string) => {
-              urlSync.set(path);
+            set: (path, options) => {
+              urlSync.set(path, options);
               setActiveFile(path);
               // Opening a file centres the next graph view on it.
               setGraphScope(GRAPH_SCOPE.LOCAL);
@@ -448,12 +350,14 @@ export function DocsViewer({
 
   const canEdit = Boolean(saveContent && activeFile);
 
-  const viewModeOptions = (Object.values(VIEW_MODE) as ViewMode[]).map(
-    mode => ({
+  const viewModeOptions = (Object.values(VIEW_MODE) as ViewMode[]).map(mode => {
+    const Icon = MODE_ICON[mode];
+    return {
       label: MODE_LABEL[mode],
       value: mode,
-    }),
-  );
+      icon: <Icon size={MENU_ICON_SIZE} />,
+    };
+  });
 
   const renderContent = (
     content: string,

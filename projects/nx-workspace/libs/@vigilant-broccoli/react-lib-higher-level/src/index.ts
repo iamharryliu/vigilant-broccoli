@@ -1,7 +1,5 @@
 export * from './lib/TabbedView';
-export * from './lib/SearchableList';
 export * from './lib/PreviewDeployments';
-export * from './lib/Sidebar';
 export * from './lib/useNotepad';
 export type * from './lib/notepad.types';
 export * from './lib/NotepadLoadError';

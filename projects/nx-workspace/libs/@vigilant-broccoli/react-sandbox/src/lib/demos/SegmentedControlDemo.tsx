@@ -1,13 +1,13 @@
 import { SegmentedControl, Text } from '@vigilant-broccoli/react-lib';
-import { Grid2X2, List, Rows3 } from 'lucide-react';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from '../i18n';
 import { DemoSection } from './DemoSection';
 
-const VIEW = { LIST: 'list', GRID: 'grid', TIMELINE: 'timeline' } as const;
-type View = (typeof VIEW)[keyof typeof VIEW];
-const VIEW_KEYS = { list: 'LIST', grid: 'GRID', timeline: 'TIMELINE' } as const;
-const VIEW_ICONS = { list: List, grid: Grid2X2, timeline: Rows3 } as const;
+const THEME = { LIGHT: 'light', DARK: 'dark', SYSTEM: 'system' } as const;
+type Theme = (typeof THEME)[keyof typeof THEME];
+const THEME_KEYS = { light: 'LIGHT', dark: 'DARK', system: 'SYSTEM' } as const;
+const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor } as const;
 const EXAMPLES = ['small', 'default', 'responsive', 'fullWidth'] as const;
 const EXAMPLE_KEYS = {
   small: 'SEGMENTED_SMALL',
@@ -18,28 +18,28 @@ const EXAMPLE_KEYS = {
 
 export const SegmentedControlDemo = () => {
   const { t } = useTranslation();
-  const [values, setValues] = useState<Record<(typeof EXAMPLES)[number], View>>(
-    {
-      small: VIEW.LIST,
-      default: VIEW.LIST,
-      responsive: VIEW.LIST,
-      fullWidth: VIEW.LIST,
-    },
-  );
+  const [values, setValues] = useState<
+    Record<(typeof EXAMPLES)[number], Theme>
+  >({
+    small: THEME.SYSTEM,
+    default: THEME.SYSTEM,
+    responsive: THEME.SYSTEM,
+    fullWidth: THEME.SYSTEM,
+  });
   return (
     <div className="flex flex-col gap-6">
       {EXAMPLES.map(example => {
         const title = t(`FOUNDATION_DEMO.${EXAMPLE_KEYS[example]}`);
-        const options = Object.values(VIEW).map(value => {
-          const Icon = VIEW_ICONS[value];
+        const options = Object.values(THEME).map(value => {
+          const Icon = THEME_ICONS[value];
           return {
             value,
-            label: t(`FOUNDATION_DEMO.VIEW.${VIEW_KEYS[value]}`),
+            label: t(`FOUNDATION_DEMO.THEME.${THEME_KEYS[value]}`),
             ...(example === 'responsive'
               ? {
                   icon: <Icon size={14} />,
                   shortLabel: t(
-                    `FOUNDATION_DEMO.SHORT_VIEW.${VIEW_KEYS[value]}`,
+                    `FOUNDATION_DEMO.SHORT_THEME.${THEME_KEYS[value]}`,
                   ),
                 }
               : {}),
@@ -62,7 +62,9 @@ export const SegmentedControlDemo = () => {
             </div>
             <Text size="2" color="gray" role="status">
               {t('FOUNDATION_DEMO.SELECTED', {
-                value: t(`FOUNDATION_DEMO.VIEW.${VIEW_KEYS[values[example]]}`),
+                value: t(
+                  `FOUNDATION_DEMO.THEME.${THEME_KEYS[values[example]]}`,
+                ),
               })}
             </Text>
           </DemoSection>

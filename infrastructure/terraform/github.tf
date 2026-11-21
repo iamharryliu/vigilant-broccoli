@@ -1,7 +1,7 @@
 resource "github_repository" "vigilant_broccoli" {
   name         = var.github_repo
   description  = "idek"
-  homepage_url = "https://projects.harryliu.dev/"
+  homepage_url = "https://${local.vb_app_domains.projects}/"
   visibility   = "public"
 
   has_issues      = true
@@ -196,5 +196,5 @@ import {
 resource "github_repository_pages" "vigilant_broccoli" {
   repository = github_repository.vigilant_broccoli.name
   build_type = "workflow"
-  cname      = cloudflare_dns_record.harryliu_dev_projects.name
+  cname      = cloudflare_dns_record.projects.name
 }

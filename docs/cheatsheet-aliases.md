@@ -1,11 +1,11 @@
 # Cheatsheet — Shell Aliases
 
-Shell aliases and functions from `setup/dotfiles/`, available in any shell. Print with `cheatsheet` (or `pnpm cheatsheet:aliases`).
+Shell aliases and functions from `setup/dotfiles/`, available in any shell. Browse and run them with `cheatsheet` (the same picker as `pnpm cheatsheet`; the picked command runs in your current shell, so directory changes stick), or print them with `pnpm cheatsheet:aliases`.
 
 ```
 🐚 SHELL
   initsh                      Reload the shell (source ~/.zshrc or ~/.bashrc)
-  cheatsheet                  Print this cheatsheet
+  cheatsheet                  Browse, filter and run these aliases
   explain_shell '<cmd>'       Open the command on explainshell.com
   spellcheck                  Run codespell
   (on new shell)              Start `pnpm event-calendars:sync` in the background once a day, logging to ~/.vb-manager/event-calendars-sync.log (non-login failures retry hourly)
@@ -98,13 +98,13 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   dockeropen                  Open Docker Desktop
   killdockerdesktop           Quit Docker Desktop and its background processes
   dockercleanup               Run docker_cleanup.sh
-  localcleanup                Remove clean Claude worktrees (`--force` removes dirty ones too), prune Docker images/build cache, clear npm/Yarn/Cypress/pip caches (plus the pnpm store on Linux), then print per-item reclaimed sizes and free disk before/after (confirms)
+  localcleanup                Remove all Claude worktrees instantly by renaming them to hidden `.trash-*` directories that are deleted in the background, uncommitted changes included (`--keep-dirty` skips dirty ones), and delete local branches except main and any still checked out, prune Docker images/build cache, clear npm/Yarn/Cypress/pip caches (plus the pnpm store on Linux), then print per-item reclaimed sizes and free disk before/after (confirms)
 
 ☁️  VB INFRA
   sshocivm [cmd]              SSH into the OCI VM (IP from terraform output)
   vbvault                     Open the Vault UI
   cpvaulttoken                Copy the Vault root token to clipboard
-  vbbackup                    Back up secrets and the repo
+  vbbackup                    Back up secrets, the repo and the Spotify library
   awsprofiles                 Open ~/.aws/credentials
   vbactions / vbnpm           Open the repo's Actions / npm packages
 
@@ -115,6 +115,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
 
 ⬆️  VB PUSH
   pushdocs / pushnotes        Commit and push docs/ / notes/
+  pushsoftwarenotes           Commit and push notes/tech/software/
   pushvbtodo / pushsnippets   Commit and push TODO.md / snippets
   pushactions / pushsetup     Commit and push workflows / setup scripts
   pushdotfiles / pushbruno    Commit and push dotfiles / bruno/

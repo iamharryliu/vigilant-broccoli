@@ -123,7 +123,7 @@ jobs:
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
         env:
-          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.vigilant-broccoli.app
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
         run: pnpm exec nx run-many -t build --projects="${{ steps.check.outputs.projects }}"
 
@@ -285,7 +285,7 @@ jobs:
           VAULT_ADDR: https://vault.harryliu.dev
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
-          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.vigilant-broccoli.app
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
           RENDER_OWNER_ID: ${{ vars.RENDER_OWNER_ID }}
         run: ${{ steps.check.outputs.deploy_cmd }}
@@ -370,7 +370,7 @@ jobs:
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /
-          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.vigilant-broccoli.app
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
         run: pnpm exec nx run pages-index:deploy-github-pages
 

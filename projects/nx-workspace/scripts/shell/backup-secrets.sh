@@ -25,10 +25,18 @@ fi
 TIMESTAMP=$(date -u +%Y-%m-%d)
 VAULT_FOLDER_NAME="vb-vault-secrets"
 
+BW_STATUS=$(bw status | jq -r '.status')
+if [ "$BW_STATUS" = "unauthenticated" ]; then
+  echo "Bitwarden CLI is not logged in. Run: bw login $GCLOUD_ACCOUNT" >&2
+  exit 1
+fi
+
 read -rsp "Bitwarden master password: " BITWARDEN_PASSWORD </dev/tty
 echo >&2
 export BITWARDEN_PASSWORD
-export BW_SESSION=$(bw unlock --passwordenv BITWARDEN_PASSWORD --raw)
+# Assign before exporting: `export VAR=$(...)` masks the failure from `set -e`.
+BW_SESSION=$(bw unlock --passwordenv BITWARDEN_PASSWORD --raw)
+export BW_SESSION
 bw sync > /dev/null
 
 cd "$NX_DIR"

@@ -3,16 +3,19 @@
 ## Table of Contents
 
 - [Programming Concepts](#programming-concepts)
+- [Object-Oriented Programming](#object-oriented-programming)
 - [Architecture](#architecture)
 - [Networking](#networking)
 - [Web Rendering](#web-rendering)
 - [Testing](#testing)
+- [Performance](#performance)
 - [Development Approaches](#development-approaches)
 - [SDLC Models](#sdlc-models)
 - [Software Roles](#software-roles)
 - [Tooling](#tooling)
 - [Platform Engineering](#platform-engineering)
 - [AI and LLMs](#ai-and-llms)
+- [Software Business](#software-business)
 
 ## Programming Concepts
 
@@ -36,7 +39,6 @@
 | Imperative programming | A paradigm where you spell out the steps that change program state; procedural and object-oriented programming are imperative styles. |
 | Intellectual Property | Legal ownership of creations of the mind, such as source code, designs and brands, protected by copyright, patents, trademarks and licenses. |
 | Interpreted | Source code is executed directly at runtime by an interpreter, with no separate build step (e.g. Python, Ruby, Bash). |
-| Lazy loading | Deferring a load until first access, such as an ORM fetching a related entity only when it is read. Can cause N+1 queries. |
 | Logic programming | A declarative paradigm where you state facts and rules and the engine searches for answers that satisfy them (e.g. Prolog). |
 | Low-level language | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C). |
 | Machine code | Binary instructions executed directly by a specific CPU architecture (e.g. x86-64, ARM64); the lowest level of software. |
@@ -49,6 +51,18 @@
 | Transpiled | Source code is translated ahead of time into source code of another language at a similar level of abstraction (e.g. TypeScript to JavaScript). |
 | Transpiler | Transforms code syntax and features so the code runs across different environments. |
 
+## Object-Oriented Programming
+
+| Term | Definition |
+| :-- | :-- |
+| Abstraction | Exposing only what a caller needs and hiding the implementation behind a simpler interface, such as an abstract class or interface. |
+| Composition | Building behaviour by holding other objects as fields and delegating to them ("has-a"), instead of extending a parent class ("is-a"). Usually preferred over inheritance because it avoids tight coupling to a class hierarchy. |
+| Encapsulation | Bundling data with the methods that act on it and restricting direct access to internal state (for example with private fields), so an object controls how its data changes. |
+| Inheritance | A class reusing and extending the fields and methods of a parent class ("is-a"). Powerful but couples the child to the parent's implementation. |
+| Interface | A contract listing the methods a type must provide, with no implementation. Callers depend on the interface, so implementations can be swapped (see Dependency Inversion). |
+| Polymorphism | Treating different types through one shared interface or base type, with each type supplying its own behaviour. |
+| SOLID | Five design principles for maintainable object-oriented code: single responsibility, open/closed, Liskov substitution, interface segregation and dependency inversion. See [SOLID Principles](./general/solid-principles.md). |
+
 ## Architecture
 
 | Term | Definition |
@@ -56,6 +70,7 @@
 | API | Application Programming Interface — a defined set of rules and protocols that lets one piece of software request services or data from another. |
 | Backend | The server-side part of an application responsible for data processing, storage, and business logic. |
 | daemon | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers. |
+| Dependency Injection | Passing a component the dependencies it needs (via constructor, setter or a container) instead of having it create them itself, so implementations can be swapped and mocked in tests. A technique for achieving Inversion of Control. |
 | Dependency Inversion | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres) |
 | Distributed systems | A system whose components run on multiple networked machines and coordinate by passing messages, so it appears to users as a single system. |
 | DTO | Data Transfer Object — a plain object with no behaviour that defines the shape of data passed between layers or over the network (e.g. an API request or response body), decoupling it from internal domain models. |
@@ -65,6 +80,7 @@
 | Event Driven Architecture | A design where components communicate by emitting and reacting to events (e.g. "order placed") through a broker or queue instead of calling each other directly, so producers and consumers stay decoupled and asynchronous. |
 | Firmware | Low-level software written to a device's non-volatile memory that directly controls its hardware, such as the code running on a microcontroller. |
 | Frontend | The client-side part of an application responsible for user interface and interaction. |
+| Inversion of Control | A general principle where a framework or container calls your code and controls flow and object creation, instead of your code driving them ("Hollywood principle": don't call us, we'll call you). Dependency Injection, callbacks and event handlers are ways to achieve it. |
 | LTS | Long term support. |
 | Microcontroller | A small computer on a single chip (CPU, memory, and I/O) built to run one dedicated task, typically the target hardware for embedded software. |
 | microservices | Breaking applications into tiny remote services that run independently of each other. |
@@ -114,11 +130,30 @@
 | System | Tests the fully integrated application as a whole against its overall requirements. | Validating end-to-end functional and non-functional requirements before release. |
 | Unit | Verifies a single function, method, or class in isolation, typically with dependencies mocked/stubbed. | Catching logic bugs early, fast feedback during development. |
 
+## Performance
+
+| Term | Definition |
+| --- | --- |
+| AOT | Ahead-of-time compilation: translating code to machine code at build time, before it runs. Gives fast startup and no runtime compiler cost, but cannot optimize from observed behavior and ties the binary to a platform. |
+| Backpressure | A consumer signaling a faster producer to slow down (or dropping, buffering or rejecting work) when it cannot keep up, so queues and memory stay bounded instead of growing until the system fails. Examples: TCP flow control, bounded queues, HTTP 429 or 503 responses, streaming APIs. |
+| Benchmarking | Running a repeatable workload against a system to measure its performance, so results can be compared before and after a change or against alternatives. |
+| Bottleneck | The slowest stage or most constrained resource in a system, which caps overall throughput or latency; speeding up anything else barely helps. |
+| Eager loading | Fetching or initializing data up front, such as an ORM loading a related entity with the parent query. Pays the cost once and avoids N+1 queries, but wastes work if the data goes unused. |
+| JIT | Just-in-time compilation: compiling code to machine code at runtime, usually for hot paths. Can reach higher peak speed by optimizing from observed behavior, but slows startup and uses extra CPU and memory while warming up. |
+| Latency | The time one operation takes from request to response, usually in milliseconds. Reported as percentiles (p50, p95, p99) because the average hides the slow tail. |
+| Lazy loading | Deferring a load until first access, such as an ORM fetching a related entity only when it is read. Can cause N+1 queries. |
+| Memory leak | Memory that a program no longer needs but never releases, such as unfreed allocations in manual-memory languages or lingering references (listeners, caches, closures) that stop a garbage collector from reclaiming it. Usage grows over time until performance degrades or the process crashes with out-of-memory. Found with heap profiling or heap snapshots. |
+| p50 | 50th percentile (median): half of measurements fall at or below it. Shows typical latency. |
+| p95 | 95th percentile: the value that 95% of measurements fall at or below, so only the slowest 5% exceed it. Used for latency, where it shows the slow tail that the average hides. |
+| p99 | 99th percentile: only the slowest 1% of measurements exceed it. Shows worst-case tail latency, which affects the most heavily loaded users and requests. |
+| Profiling | Measuring where a running program spends its time and resources (CPU, memory, I/O, queries) to find what to optimize instead of guessing. |
+| Throughput | The amount of work completed per unit of time, such as requests per second. Distinct from latency: a system can have high throughput and still be slow for each individual request. |
+
 ## Development Approaches
 
 | Term | Definition |
 | --- | --- |
-| BDD | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/bdd.md). |
+| BDD | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/software-testing.md#behavior-driven-development-bdd). |
 | CI/CD | Continuous Integration/Continuous Deployment (or Delivery). CI automatically builds and tests every merged change; CD automatically ships passing changes to staging or production. |
 | SDLC | Software Development Life Cycle. The end-to-end stages software moves through: planning, requirements, design, implementation, testing, deployment and maintenance. Models like waterfall and agile arrange those stages differently. |
 | TDD | Test-Driven Development. You write the test first and then the code that makes it pass. |
@@ -197,7 +232,6 @@
 | Namespace | A Kubernetes scope that groups and isolates resources within one cluster, commonly per team or environment. |
 | Node | A worker machine (VM or physical) in a Kubernetes cluster. Runs the kubelet, kube-proxy, a container runtime and the pods. |
 | Operator | A Kubernetes controller that encodes operational knowledge for an application, managing it through custom resources (e.g. a database operator handling backups and failover). |
-| p95 | 95th percentile: the value that 95% of measurements fall at or below, so only the slowest 5% exceed it. Used for latency, where it shows the slow tail that the average hides. |
 | Platform engineering | Building an internal developer platform of self-service tooling and paved paths so product teams can ship and run software without managing the underlying infrastructure. |
 | Pod | The smallest deployable Kubernetes unit: one or more containers that share networking and storage and are scheduled together onto one node. |
 | Prometheus | An open-source monitoring system that scrapes numeric metrics from services on an interval, stores them as time series and is queried with PromQL. Commonly feeds Grafana and alerts. |
@@ -235,3 +269,18 @@
 | Tool use | A model requesting that the harness run a function, such as a shell command or file read, and then receiving the result. |
 | User Prompt | The input provided by the user to request information or an action. |
 | Yolo mode | An agentic coding tool mode that disables permission prompts so the agent runs every command and file edit unattended ("you only live once"). Fastest but unsafe; use only in a sandbox or disposable environment. |
+
+## Software Business
+
+| Model | Description | Examples |
+| --- | --- | --- |
+| Ad-Supported | Free to use; revenue comes from ads shown to users instead of a direct charge. | Free mobile games, free tiers of Spotify/YouTube |
+| Donation / Pay-What-You-Want | Software is free; users optionally pay any amount they choose. | Wikipedia, VLC, many open-source CLI tools |
+| Freemium | A free tier with core functionality, plus a paid tier that unlocks advanced features, higher limits, or removes restrictions. | Notion, Dropbox, Slack (free vs. paid workspaces) |
+| Marketplace / Commission-Based | The platform is free to join; revenue comes from a cut of transactions or listings made through it. | Shopify App Store, Apple App Store, Steam |
+| Open-Core | The base product is open-source and free; proprietary add-ons, support, or a hosted version are sold on top. | GitLab, Elastic, HashiCorp (pre-license-change) |
+| Perpetual License | A one-time payment grants indefinite use of a specific version, often with paid upgrades for major new versions. | Older versions of Microsoft Office, JetBrains perpetual fallback license |
+| Subscription (SaaS) | Recurring (monthly/annual) payment for continued access; typically hosted and continuously updated by the vendor. | Salesforce, Microsoft 365, Adobe Creative Cloud |
+| Tiered Licensing | Multiple fixed packages (e.g. Basic/Pro/Enterprise) differentiated by feature set, seats, or support level. | Zoom, Atlassian products, GitHub plans |
+| Usage-Based (Pay-As-You-Go) | Charges scale with actual consumption — API calls, compute time, storage, or seats used. | AWS, Twilio, OpenAI/Anthropic API billing |
+| White-Label / OEM Licensing | The software is licensed to another company to rebrand and resell as part of its own product. | Payment processors embedded in POS systems, chat widgets rebranded by agencies |

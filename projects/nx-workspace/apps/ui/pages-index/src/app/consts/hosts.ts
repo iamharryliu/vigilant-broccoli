@@ -1,8 +1,8 @@
 import { PROJECT_LINK } from '@harry/personal';
 
-export const STATUS_HOST = 'status.harryliu.dev';
+export const STATUS_HOST = 'status.vigilant-broccoli.app';
 
-export const DEPLOYMENTS_HOST = 'deployments.harryliu.dev';
+export const DEPLOYMENTS_HOST = 'deployments.vigilant-broccoli.app';
 
 export const CAREER_HOST = 'career.harryliu.dev';
 
@@ -20,6 +20,6 @@ export const isDeploymentsHost = (
 
 export const toProjectsUrl = (route: string) => `${PROJECTS_URL}#${route}`;
 
-export const GAMES_HOST = 'games.harryliu.dev';
+export const GAMES_HOST = 'games.vigilant-broccoli.app';
 export const isGamesHost = (hostname: string = window.location.hostname) =>
   hostname === GAMES_HOST;

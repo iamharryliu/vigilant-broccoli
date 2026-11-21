@@ -1,6 +1,6 @@
 # Web terminal controls
 
-Human-readable guide to the buttons on `shell.harryliu.dev`. One-page summary: [web-terminal-quick-reference.md](./web-terminal-quick-reference.md). Implementation notes live in [web-terminal-toolbar.md](./web-terminal-toolbar.md).
+Human-readable guide to the buttons on `shell.vigilant-broccoli.app`. One-page summary: [web-terminal-quick-reference.md](./web-terminal-quick-reference.md). Implementation notes live in [web-terminal-toolbar.md](./web-terminal-toolbar.md).
 
 ## Table of Contents
 
@@ -28,9 +28,11 @@ The search field at the top is on every page and searches all pages by name and 
 
 Each control is in the bar or the menu, never both. The menu closes with ✕, `Esc`, or by choosing an item.
 
+The **Text size** row under the search field shrinks (A−) or enlarges (A+) the terminal text by 1px, from 8px to 20px, without closing the menu. Smaller text fits more columns and rows. The size is remembered in this browser; until it is changed, phones start at 11px and wider screens at 14px.
+
 ### Claude page
 
-Built-in commands type the command and press Enter. The `-claude` skills only type it, so arguments can be added first.
+Buttons type the command and press Enter.
 
 | Command | What it does |
 | --- | --- |
@@ -41,15 +43,15 @@ Built-in commands type the command and press Enter. The `-claude` skills only ty
 | `/resume` | Reopens a previous conversation. |
 | `/status` | Shows version, model and account state. |
 | `/usage` | Shows plan usage and limits. |
-| `/local-create-pr-claude` | Researches a request, then runs Claude in a detached tmux session on a fresh worktree to implement it and open a PR. |
-| `/local-update-pr-claude` | Researches a change to an existing PR, then runs Claude in a detached tmux session on a worktree of its branch and pushes to the PR. |
 
 ### Dev page
 
-Buttons type the command without pressing Enter, so arguments can be added first.
+Buttons marked `On tap` type the command and press Enter; those marked `Takes prompt` only type it, so a prompt can be added first.
 
-| Command | What it does |
-| --- | --- |
-| `/local-session-retry-publish` | Tells idle agents to retry an authorized push or PR after credentials were refreshed. |
-| `/local-session-status` | Read-only status of agent sessions and jobs started in this conversation. |
-| `/local-update-pr` | Applies a requested change to an existing PR branch and verifies it. |
+| Command | What it does | Runs |
+| --- | --- | --- |
+| `/local-create-pr-claude` | Researches a request, then runs Claude in a detached tmux session on a fresh worktree to implement it and open a PR. | Takes prompt |
+| `/local-session-retry-publish` | Tells idle agents to retry an authorized push or PR after credentials were refreshed. | On tap |
+| `/local-session-status` | Read-only status of agent sessions and jobs started in this conversation. | On tap |
+| `/local-update-pr-claude` | Researches a change to an existing PR, then runs Claude in a detached tmux session on a worktree of its branch and pushes to the PR. | Takes prompt |
+| `/local-update-pr` | Applies a requested change to an existing PR branch and verifies it. | Takes prompt |

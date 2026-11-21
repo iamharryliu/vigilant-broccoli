@@ -4,7 +4,7 @@ import { Album, PhotographyState } from '../lib/photography.types';
 import { AlbumList } from './components/AlbumList';
 import { AlbumView } from './components/AlbumView';
 import { useAlbums } from './hooks/useAlbums';
-import { useHashSlug } from './hooks/useHashSlug';
+import { usePathSlug } from './hooks/usePathSlug';
 import { usePageTitle } from './hooks/usePageTitle';
 import { I18nProvider, useTranslation } from './i18n';
 
@@ -14,10 +14,12 @@ const AlbumIndex = ({
   state,
   albums,
   missingSlug,
+  onNavigate,
 }: {
   state: PhotographyState;
   albums: Album[];
   missingSlug: boolean;
+  onNavigate: (path: string) => void;
 }) => {
   const { t } = useTranslation();
   usePageTitle(t('ALBUMS.TITLE'));
@@ -28,22 +30,23 @@ const AlbumIndex = ({
       {missingSlug && (
         <p className="text-muted-foreground">{t('ALBUM.NOT_FOUND')}</p>
       )}
-      <AlbumList state={state} albums={albums} />
+      <AlbumList state={state} albums={albums} onNavigate={onNavigate} />
     </section>
   );
 };
 
 const Albums = () => {
   const { state, albums } = useAlbums();
-  const slug = useHashSlug();
+  const { slug, navigate } = usePathSlug();
   const album = albums.find(candidate => candidate.slug === slug);
 
-  if (slug && album) return <AlbumView album={album} />;
+  if (slug && album) return <AlbumView album={album} onNavigate={navigate} />;
   return (
     <AlbumIndex
       state={state}
       albums={albums}
       missingSlug={Boolean(slug) && state === PHOTOGRAPHY_STATE.READY}
+      onNavigate={navigate}
     />
   );
 };

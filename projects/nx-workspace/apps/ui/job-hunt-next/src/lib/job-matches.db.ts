@@ -1,5 +1,6 @@
 import type {
   JobMatchesBookmarkletPosting,
+  JobMatchesBookmarkletSkip,
   StoredJobMatchesPosting,
 } from '@vigilant-broccoli/common-js';
 import { getJobHuntDb } from './job-application-runs.db';
@@ -82,6 +83,62 @@ export const saveMatchPostings = (postings: JobMatchesBookmarkletPosting[]) => {
     db.exec('ROLLBACK');
     throw error;
   }
+};
+
+// Cards a scan opened but could not turn into a posting, newest last; only
+// the latest ones are kept.
+const SKIPS_TABLE = 'job_match_skips';
+const MAX_SKIPS = 500;
+
+export interface MatchSkipRow extends JobMatchesBookmarkletSkip {
+  loggedAt: string;
+}
+
+const ensureSkipsTable = () => {
+  const db = getJobHuntDb();
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS ${SKIPS_TABLE} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      reason TEXT NOT NULL,
+      detail TEXT NOT NULL,
+      logged_at TEXT NOT NULL
+    )
+  `);
+  return db;
+};
+
+export const saveMatchSkips = (skips: JobMatchesBookmarkletSkip[]) => {
+  if (!skips.length) return;
+  const db = ensureSkipsTable();
+  const insert = db.prepare(
+    `INSERT INTO ${SKIPS_TABLE} (title, reason, detail, logged_at) VALUES (?, ?, ?, ?)`,
+  );
+  const loggedAt = new Date().toISOString();
+  skips.forEach(({ title, reason, detail }) =>
+    insert.run(title, reason, detail, loggedAt),
+  );
+  db.prepare(
+    `DELETE FROM ${SKIPS_TABLE} WHERE id <= (SELECT MAX(id) FROM ${SKIPS_TABLE}) - ?`,
+  ).run(MAX_SKIPS);
+};
+
+export const listMatchSkips = (): MatchSkipRow[] =>
+  (
+    ensureSkipsTable()
+      .prepare(
+        `SELECT title, reason, detail, logged_at FROM ${SKIPS_TABLE} ORDER BY id`,
+      )
+      .all() as unknown as {
+      title: string;
+      reason: MatchSkipRow['reason'];
+      detail: string;
+      logged_at: string;
+    }[]
+  ).map(({ logged_at, ...row }) => ({ ...row, loggedAt: logged_at }));
+
+export const clearMatchSkips = () => {
+  ensureSkipsTable().exec(`DELETE FROM ${SKIPS_TABLE}`);
 };
 
 export const deleteMatchPosting = (url: string) => {

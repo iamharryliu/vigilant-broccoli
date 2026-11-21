@@ -1,15 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Check, Copy, Monitor, Moon, Sun } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 
 import {
   Input,
-  SegmentedControl,
-  SegmentedControlOption,
   Text,
-  ThemePreference,
-  useTheme,
+  ThemePreferenceControl,
 } from '@vigilant-broccoli/react-lib';
 import {
   CONTENT_TYPE_HEADER,
@@ -23,18 +20,12 @@ import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 const USER_API = '/api/user';
 const FEEDBACK_RESET_MS = 1500;
 const DISPLAY_NAME_DEBOUNCE_MS = 800;
-const THEME_OPTIONS: SegmentedControlOption<ThemePreference>[] = [
-  { value: 'system', label: 'System', icon: <Monitor size={14} /> },
-  { value: 'light', label: 'Light', icon: <Sun size={14} /> },
-  { value: 'dark', label: 'Dark', icon: <Moon size={14} /> },
-];
 // Fixed height keeps text rows the same as the row holding the taller input.
 const ACCOUNT_ROW_CLASS = 'flex items-center justify-between gap-4 px-4 h-14';
 
 export default function UserPage() {
   usePageTitle(PAGE_TITLES.USER);
   const session = useAuth();
-  const { preference, setPreference } = useTheme();
   const initialDisplayName =
     (session?.user.user_metadata?.display_name as string) ?? '';
   const [displayName, setDisplayName] = useState(initialDisplayName);
@@ -131,13 +122,7 @@ export default function UserPage() {
         <Text size="3" weight="medium">
           Appearance
         </Text>
-        <SegmentedControl
-          label="Theme"
-          value={preference}
-          options={THEME_OPTIONS}
-          onChange={setPreference}
-          fullWidth
-        />
+        <ThemePreferenceControl fullWidth />
       </section>
     </div>
   );

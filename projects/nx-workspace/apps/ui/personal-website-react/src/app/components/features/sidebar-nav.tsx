@@ -1,10 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import type { ComponentProps } from 'react';
 import { Mail, User } from 'lucide-react';
-import {
-  Sidebar,
-  type SidebarCTA,
-} from '@vigilant-broccoli/react-lib-higher-level';
+import { Sidebar, type SidebarCTA } from '@vigilant-broccoli/sidebar';
 import { LINKS } from '../../core/consts/routes.const';
 
 // Mobile-only drawer: at lg+ the horizontal NavbarSection is the nav, so the

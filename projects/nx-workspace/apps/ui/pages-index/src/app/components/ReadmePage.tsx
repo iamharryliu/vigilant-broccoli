@@ -28,6 +28,8 @@ interface ReadmePageProps {
   externalHref?: string;
   externalLabel?: string;
   notFoundMessage?: string;
+  collapsibleHeadingLevel?: number;
+  defaultOpenSections?: number;
 }
 
 const CARD_CLASS =
@@ -55,6 +57,8 @@ export function ReadmePage({
   externalHref,
   externalLabel,
   notFoundMessage,
+  collapsibleHeadingLevel,
+  defaultOpenSections,
 }: ReadmePageProps) {
   const { t } = useTranslation();
   const [content, setContent] = useState<string | null>(null);
@@ -131,7 +135,12 @@ export function ReadmePage({
             </p>
           )}
           {!error && content && (
-            <MarkdownViewer content={content} repoLinkBase={repoLinkBase} />
+            <MarkdownViewer
+              content={content}
+              repoLinkBase={repoLinkBase}
+              collapsibleHeadingLevel={collapsibleHeadingLevel}
+              defaultOpenSections={defaultOpenSections}
+            />
           )}
         </div>
       )}

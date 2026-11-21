@@ -155,7 +155,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "grafana" {
 }
 
 resource "cloudflare_dns_record" "grafana" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.grafana_domain
   content = "${cloudflare_zero_trust_tunnel_cloudflared.grafana.id}.cfargotunnel.com"
   type    = "CNAME"
@@ -164,7 +164,7 @@ resource "cloudflare_dns_record" "grafana" {
 }
 
 resource "cloudflare_dns_record" "loki" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.loki_domain
   content = "${cloudflare_zero_trust_tunnel_cloudflared.grafana.id}.cfargotunnel.com"
   type    = "CNAME"

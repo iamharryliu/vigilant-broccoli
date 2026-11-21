@@ -57,24 +57,27 @@ export const PROJECT_HOSTING = {
   },
 };
 
+// Keep in sync with `vigilant_broccoli_domain` in infrastructure/terraform/variables.tf.
+const VB_APP_DOMAIN = 'vigilant-broccoli.app';
+
 const STAGING_HOSTS = {
   'personal-website-react': 'staging.harryliu.dev',
   'docs-md': 'staging-docs.harryliu.dev',
-  'context-md': 'staging-context.harryliu.dev',
-  'utilities-ui': 'staging-utilities.harryliu.dev',
-  'bookmarks-react': 'staging-bookmarks.harryliu.dev',
+  'context-md': `staging-context.${VB_APP_DOMAIN}`,
+  'utilities-ui': `staging-utilities.${VB_APP_DOMAIN}`,
+  'bookmarks-react': `staging-bookmarks.${VB_APP_DOMAIN}`,
   'photography-react': 'staging-photography.harryliu.dev',
-  'pomodoro-react': 'staging-pomodoro.harryliu.dev',
-  'waiting-games': 'staging-waiting.harryliu.dev',
-  'weather-next': 'staging-weather.harryliu.dev',
-  balloono: 'staging-balloono.harryliu.dev',
+  'pomodoro-react': `staging-pomodoro.${VB_APP_DOMAIN}`,
+  'waiting-games': `staging-waiting.${VB_APP_DOMAIN}`,
+  'weather-next': `staging-weather.${VB_APP_DOMAIN}`,
+  balloono: `staging-balloono.${VB_APP_DOMAIN}`,
   calendars: 'staging-calendar.harryliu.dev',
-  whiteboard: 'staging-whiteboard.harryliu.dev',
+  whiteboard: `staging-whiteboard.${VB_APP_DOMAIN}`,
   'mobile-manager-next': 'staging-manager.harryliu.dev',
-  findme: 'staging-findme.harryliu.dev',
+  findme: `staging-findme.${VB_APP_DOMAIN}`,
   hearth: 'staging-hearth.harryliu.dev',
   chat: 'staging-chat.harryliu.dev',
-  'component-library': 'staging-components.harryliu.dev',
+  'component-library': `staging-components.${VB_APP_DOMAIN}`,
 };
 
 export const NO_URL = '—';

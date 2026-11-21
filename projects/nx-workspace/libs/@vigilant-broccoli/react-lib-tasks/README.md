@@ -11,7 +11,7 @@ Google Tasks list (`GoogleTasksComponent`), task capture and its dialog, task so
 
 | Component | Demo |
 | --- | --- |
-| Tasks | [View](https://components.harryliu.dev/tasks) |
+| Tasks | [View](https://components.vigilant-broccoli.app/tasks) |
 
 ## Stack
 
@@ -24,3 +24,4 @@ Google Tasks list (`GoogleTasksComponent`), task capture and its dialog, task so
   - `common-js`
   - `google-workspace`
   - `react-lib`
+  - `react-lib-checklist`

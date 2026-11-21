@@ -23,7 +23,7 @@ import {
   isJobMatchesBookmarkletMessage,
 } from '@vigilant-broccoli/common-js';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
-import { Sidebar } from '@vigilant-broccoli/react-lib-higher-level';
+import { Sidebar } from '@vigilant-broccoli/sidebar';
 import { APP_TAB, AppTab, toTabFromPath } from '../app.const';
 import { OPEN_HELP_EVENT } from '../constants/career';
 import { useTranslation } from '../i18n';
@@ -105,7 +105,7 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
   useEffect(() => {
     const receive = (event: MessageEvent) => {
       if (!isJobMatchesBookmarkletMessage(event.data)) return;
-      const { postings, progress } = event.data;
+      const { postings, progress, skipped = [] } = event.data;
       (event.source as Window | null)?.postMessage(
         JOB_APPLICATION_BOOKMARKLET.ACK,
         event.origin,
@@ -114,8 +114,8 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
       if (window.location.pathname !== APP_TAB.MATCHES.path) {
         router.push(APP_TAB.MATCHES.path);
       }
-      if (postings.length) {
-        addMatchPostings(postings).catch(() =>
+      if (postings.length || skipped.length) {
+        addMatchPostings(postings, skipped).catch(() =>
           toast.error(t('MATCHES.SAVE_FAILED')),
         );
       }

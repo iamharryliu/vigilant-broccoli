@@ -2,3 +2,4 @@ export * from './lib/AudioButton';
 export * from './lib/GithubActionsBadges';
 export * from './lib/ImageCarouselDialog';
 export * from './lib/ImageFilmstrip';
+export * from './lib/image-gallery';

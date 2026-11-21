@@ -39,6 +39,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { ImagePlus, Sparkles, type LucideIcon } from 'lucide-react';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { useAuth } from '../providers/auth-provider';
+import { WHERE_IS_ENDPOINT } from '../../lib/routes';
+import { WhereIsItem } from '../../lib/types';
 import { sortTags } from './where-is-tags';
 
 const ERROR_SAVE_FALLBACK = 'Saving failed. Please try again.';
@@ -98,6 +100,7 @@ export type WhereIsFormValues = {
   images: PreviewImage[];
   imageUrls?: string[];
   imageKeys?: string[];
+  thumbnailUrl?: string | null;
 };
 
 type ExistingImage = { key: string; url: string };
@@ -447,6 +450,34 @@ export const WhereIsFormComponent = ({
 
   const isUpdate = formType === FORM_TYPE.UPDATE;
   const isSaving = saveStatus === SAVE_STATUS.SAVING;
+
+  // The list response signs only a thumbnail per row, so an edit opened from it
+  // fetches the item once to fill in its full-size photo links.
+  useEffect(() => {
+    const itemId = initialFormValues.id;
+    if (!isUpdate || !itemId || existing.every(img => img.url)) return;
+    let cancelled = false;
+    fetch(`${WHERE_IS_ENDPOINT}?id=${itemId}`, {
+      headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
+    })
+      .then(res => (res.ok ? (res.json() as Promise<WhereIsItem>) : null))
+      .then(item => {
+        if (cancelled || !item) return;
+        const urlByKey = new Map(
+          item.imageKeys.map((key, i) => [key, item.imageUrls[i]]),
+        );
+        setExisting(prev =>
+          prev.map(img =>
+            img.url ? img : { ...img, url: urlByKey.get(img.key) ?? '' },
+          ),
+        );
+      });
+    return () => {
+      cancelled = true;
+    };
+    // Runs once per opened item; later edits keep the urls already loaded.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialFormValues.id]);
 
   const values: WhereIsFormValues = {
     ...initialFormValues,

@@ -2,54 +2,8 @@
 
 ## Table of Contents
 
-- [Ask Yourself](#ask-yourself)
-- [What I Care About](#what-i-care-about)
 - [Tell Me About Yourself](#tell-me-about-yourself)
 - [Questions](#questions)
-  - [Opening Questions](#opening-questions)
-  - [Product Questions](#product-questions)
-  - [Team Questions](#team-questions)
-  - [Performance Questions](#performance-questions)
-  - [Culture Questions](#culture-questions)
-  - [Flexibility Questions](#flexibility-questions)
-  - [Stability Questions](#stability-questions)
-  - [Interview End Questions](#interview-end-questions)
-  - [Negotiation Questions](#negotiation-questions)
-
-## Ask Yourself
-
-| Factor | Category | Ask Yourself |
-| --- | --- | --- |
-| Product quality | Delivery | Is the product reliable, useful, and something you would be proud to work on? |
-| Project opportunity | Delivery | Is the project greenfield or brownfield? Will you have opportunities to make architectural decisions? |
-| Autonomy | Management | Will you be trusted to make decisions and choose how to approach your work without micromanagement? |
-| Management | Management | Does management set clear expectations, provide support, and communicate openly? |
-| Work arrangement | Management | Does the role offer flexible hybrid or remote work? |
-| Work-life balance | Management | Are the working hours, workload, and expectations compatible with the life you want? |
-| Team | People | Is the team collaborative and supportive, with people you can learn from and work well with? |
-| Company security | Stability | Is the company financially stable, growing sustainably, and well positioned for the future? |
-| Role security | Stability | How secure is the role given the company's financial health, priorities, and potential restructuring? |
-
-## What I Care About
-
-- Delivery and feeling my work matters.
-  - Having ownership over my deliverables, from decisions through to shipping and follow-up.
-- Opportunities to develop in my career, and it does not just have to be tech-wise.
-- Autonomy and Ownership or Strong Leadership and being a nail to a hammer
-  - Autonomy and ownership
-    - Having control over how you approach your work.
-    - Being trusted to make decisions without micromanagement.
-    - Feeling a sense of responsibility and accountability for outcomes.
-  - Being a nail to a hammer.
-    - Having what to do outlined and I am able to execute without having to worry about unnecessary details.
-      - Trust and communication.
-- Management
-  - Clear expectations
-  - Reasonable work hours
-- **Stability and Security**
-  - Confidence in the company's future.
-  - Transparent leadership.
-  - Well structured workspace with clear processes
 
 ## Tell Me About Yourself
 
@@ -65,83 +19,17 @@
 
 ## Questions
 
-| Type | Purpose |
-| --- | --- |
-| [Opening](#opening-questions) | Why the role exists, to start the conversation. |
-| [Product](#product-questions) | The product, its tech stack, engineering practices and debt. |
-| [Team](#team-questions) | Who you work with, how they operate and onboarding. |
-| [Performance](#performance-questions) | What success looks like and how it is measured. |
-| [Culture](#culture-questions) | How the company works day to day and how people are supported. |
-| [Flexibility](#flexibility-questions) | Remote, hybrid, office days and schedule flexibility. |
-| [Stability](#stability-questions) | Company risks and long-term outlook. |
-| [Interview End](#interview-end-questions) | Closing the interview and learning what happens next. |
-| [Negotiation](#negotiation-questions) | Pay, perks and tools once an offer is likely. |
-
-### Opening Questions
-
-- Why is role open?
-
-### Product Questions
-
-- Current stack and why it was chosen?
-- How are code quality, testing, deployments and CI/CD handled?
-- Every company is carrying some amount of _technical debt_, what's the tech debt situation here?
-  - How much they think there is?
-  - What they're doing about it?
-- What do they like about it.
-- What do they dislike about it.
-- What's the most interesting thing that they have worked on or learned on the project?
-
-### Team Questions
-
-- What are the teams like?
-- How does the team operate?
-- What challenges are there?
-- How does leadership prioritize long-term technical investments vs. short-term business needs?
-- What's the balance between firefighting and project work in an average week?
-- What does the day to day look like for you
-- Who would be the direct manager?
-- How is the onboarding process for a new hire?
-- How much time do you have available to develop versus being in meetings?
-- Which meetings are mandatory, such as team syncs, one-on-ones with the manager or all-hands, and how often?
-- Where do they see the team in a year?
-
-### Performance Questions
-
-- What does being successful look like in the first 90 days
-- How is performance measured and how often is feedback given?
-
-### Culture Questions
-
-- How would you describe the culture and how is it maintained if there is one?
-- How does the company support professional development?
-- Is there an active mentoring strategy?
-- What do you like most about working here?
-- What do you wish you could improve?
-
-### Flexibility Questions
-
-- Is the role remote, hybrid or in office?
-- How many days a week are expected in office, and which days?
-- Is the in-office policy likely to change, and has it changed recently?
-- Is there flexibility on location, such as working remotely for a stretch of time?
-- Are core hours expected, or can I set my own schedule?
-- How are time off and sick days handled?
-- How do remote and in-office team members collaborate?
-
-### Stability Questions
-
-- What are the biggest risks or unknowns the company is facing in the near future?
-- Where do you see the company in 3-5 years?
-
-### Interview End Questions
-
-- What are the next steps?
-
-### Negotiation Questions
-
-- Salary expectations
-- What amenities are there?
-  - coding assistant provider?
-  - phone provider?
-  - cloud services ie Google Workspace?
+| Topic | Questions | Goal |
+| --- | --- | --- |
+| Hiring Process | • What does the hiring process look like?<br>• What is the expected hiring date?<br>• Why is role open? Are we replacing someone, or is it a new role on the team? | • Learn how the hiring process runs, when it ends and what happens next. |
+| Logistics | • Is the role remote, hybrid or in office?<br>• How many days a week are expected in office, and which days?<br>• Is the in-office policy likely to change, and has it changed recently?<br>• Is there flexibility on location, such as working remotely for a stretch of time?<br>• Are core hours expected, or can I set my own schedule? | • A schedule, working hours, workload and expectations that fit my lifestyle. |
+| Compensation | • What is the salary range?<br>• What benefits are provided? What amenities are there?<br>&emsp;&emsp;◦ provided devices (machine/phone)?<br>&emsp;&emsp;◦ coding assistant provider?<br>&emsp;&emsp;◦ budget for self development? | • Reasonable compensation. |
+| Responsibilities | • What would the day to day look like for my role? What does it look like for you?<br>&emsp;&emsp;◦ How much time do you have available to develop versus being in meetings?<br>&emsp;&emsp;◦ Which meetings are mandatory, such as team syncs, one-on-ones with the manager or all-hands, and how often?<br>• What's the balance between firefighting and project work in an average week?<br>• How much ownership do I have over technical decisions? | • Understand what I am responsible for. |
+| Product | • What do they like and dislike about it?<br>• What's the most interesting thing that they have worked on or learned on the project?<br>• Is the project greenfield or brownfield? | • A reliable, useful product I would be proud to work on. |
+| Environment and Team | • What are the company values?<br>• What is the team I would be joining like, and how do they work together?<br>• What is the team structure?<br>• What are the biggest challenges that the team is facing?<br>• How is the onboarding process for a new hire?<br>• How would you describe the culture and how is it maintained if there is one?<br>• What do you like most about working here?<br>• What do you wish you could improve? | • A collaborative and supportive team, with people I can learn from and work well with. |
+| Management | • Who would be the direct manager?<br>• How would you describe your management style?<br>• How do you give feedback? | • Being able to manage myself or having a good manager:<br>&emsp;&emsp;◦ Trusted to own my work and decisions without micromanagement.<br>&emsp;&emsp;◦ Or a manager who sets clear expectations, provides support and communicates openly, giving clear direction I can execute on. |
+| Performance | • What does being successful look like in the first 90 days<br>• How is performance measured and how often is feedback given?<br>• What distinguishes a senior engineer on this team? | • Learn what success looks like and how it is measured. |
+| Practices | • Current stack and why it was chosen?<br>• What is the CI/CD approach?<br>• What does the code review process look like?<br>• What does the testing process look like?<br>• How are environments and deployments handled?<br>• How are scalability and performance handled?<br>• What are the documentation processes?<br>• Every company is carrying some amount of _technical debt_, what's the tech debt situation here?<br>&emsp;&emsp;◦ How much they think there is?<br>&emsp;&emsp;◦ What they're doing about it? | • Well structured workspace with clear processes. |
+| Company Direction | • How does leadership prioritize long-term technical investments vs. short-term business needs?<br>• Where do they see the team in a year?<br>• What are the biggest risks or unknowns the company is facing in the near future? | • Confidence in the company and leadership. |
+| Opportunities | • How does the company support professional development?<br>• Is there an active mentoring strategy? | • Opportunities to develop in my career and have impact, not just tech-wise. |
+| Reflection | • Is there anything about my background that gives you hesitation or that I can clarify? | • Fill in any gaps the interviewer may have about you. |

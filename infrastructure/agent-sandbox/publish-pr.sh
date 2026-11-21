@@ -105,6 +105,37 @@ pr_fill_qa_placeholder() {
   rm -f "$tmp"
 }
 
+# Same placeholder on the CHANGELOG.md bullets this branch added or changed,
+# replaced with the "[#N](url)" link the entries use. Returns 1 when nothing
+# was replaced.
+#   $1 PR URL  $2 base ref/sha
+pr_fill_changelog_placeholder() {
+  local url=$1 base=$2 base_file tmp
+  [ -f CHANGELOG.md ] && grep -qF "$PR_QA_PLACEHOLDER" CHANGELOG.md || return 1
+  base_file=$(mktemp)
+  tmp=$(mktemp)
+  git show "$base:CHANGELOG.md" >"$base_file" 2>/dev/null || true
+  awk -v link="[#${url##*/}]($url)" -v token="$PR_QA_PLACEHOLDER" '
+    FILENAME == ARGV[1] { base[$0] = 1; next }
+    !($0 in base) && /^- / {
+      out = ""; rest = $0
+      while ((i = index(rest, token)) > 0) {
+        out = out substr(rest, 1, i - 1) link
+        rest = substr(rest, i + length(token))
+      }
+      $0 = out rest
+    }
+    { print }
+  ' "$base_file" CHANGELOG.md >"$tmp"
+  rm -f "$base_file"
+  if cmp -s "$tmp" CHANGELOG.md; then
+    rm -f "$tmp"
+    return 1
+  fi
+  cat "$tmp" >CHANGELOG.md
+  rm -f "$tmp"
+}
+
 # Validates the todo_ids the agent declared before anything is published.
 # Prints every problem to stderr and returns 1 when one is unusable; absent or
 # empty todo_ids are valid.
@@ -211,11 +242,14 @@ pr_publish() {
   url=$(gh pr create --base main --head "$branch" --title "$pr_title" --body "$body") || return 1
   # The PR already exists, so a failed backfill only warns: returning 1 here
   # would salvage the branch into a second, draft PR.
-  if pr_fill_qa_placeholder "$url" "$base_sha"; then
-    { git add TODO.md \
-      && SKIP=$SKIP_COMMIT_HOOKS git commit -m "docs: Link the QA checks in TODO.md to their pull request." -m "$trailer" \
+  local filled=()
+  pr_fill_qa_placeholder "$url" "$base_sha" && filled+=(TODO.md)
+  pr_fill_changelog_placeholder "$url" "$base_sha" && filled+=(CHANGELOG.md)
+  if [ "${#filled[@]}" -gt 0 ]; then
+    { git add "${filled[@]}" \
+      && SKIP=$SKIP_COMMIT_HOOKS git commit -m "docs: Link the QA checks and changelog entry to their pull request." -m "$trailer" \
       && git push origin "$branch"; } >&2 \
-      || echo "WARNING: could not push the QA PR link; replace '$PR_QA_PLACEHOLDER' in TODO.md on $branch with $url." >&2
+      || echo "WARNING: could not push the PR link; replace '$PR_QA_PLACEHOLDER' in ${filled[*]} on $branch with $url." >&2
   fi
   echo "$url"
   pr_emit_record created "$pr_title" "$url" "$pr_summary" "$base_sha"

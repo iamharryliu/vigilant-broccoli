@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-- [Resources](#resources)
+- [Conventions](#conventions)
 - [Personal Habits](#personal-habits)
 - [Working in a Team](#working-in-a-team)
 - [Project Management](#project-management)
@@ -29,7 +29,7 @@
   - [Handover](#handover)
   - [Library/OSS Support](#libraryoss-support)
 
-## Resources
+## Conventions
 
 - [Conventional Commits](../web-dev/devops/git/git.md#conventional-commits)
 - [Software Code Quality](./software-code-quality.md)
@@ -82,7 +82,6 @@
   - Tests on bug fixes to make sure they do not happen again.
   - Take advantage of test code to be able to **confidently write code**.
 - **CICD**
-
   - Using commit hooks to test and deploy code.
 
 - **Documentation**
@@ -156,12 +155,6 @@
 - Review and update dependencies for local code and repositories.
 
 ### Testing
-
-- Unit Testing
-- End to End (E2E)
-- Integration Testing
-- Performance Testing
-- Security Testing
 
 ## Security
 

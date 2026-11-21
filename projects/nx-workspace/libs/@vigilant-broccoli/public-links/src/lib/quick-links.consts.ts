@@ -308,6 +308,7 @@ export const VB_LINKS: QuickLink[] = [
     VB_MONITORING_URL.LOKI,
     VB_MONITORING_URL.SOCKET_SERVER,
     VB_APP_URL.CAREER,
+    VB_APP_URL.PAGES_INDEX,
   ]),
   {
     label: VB_MONITORING_URL.DEPLOYMENTS.NAME,
@@ -331,7 +332,7 @@ export const VB_LINKS: QuickLink[] = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   ...toQuickLinks(LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI, [
-    { NAME: 'Grafana (Cloud)', URL: 'https://grafana.harryliu.dev/' },
+    { NAME: 'Grafana (Cloud)', URL: 'https://grafana.vigilant-broccoli.app/' },
   ]),
 ];
 

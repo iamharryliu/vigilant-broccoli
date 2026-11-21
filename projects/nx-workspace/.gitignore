@@ -75,4 +75,7 @@ package-lock.json
 
 # One-shot LLM migration prompts written by `nx migrate`
 tools/ai-migrations/
+
+# Emitted by bookmarks-react's generate-default-bookmarks target
+apps/ui/bookmarks-react/public/default-bookmarks.json
 .vitest

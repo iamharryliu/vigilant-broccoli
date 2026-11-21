@@ -9,7 +9,7 @@
       "executor": "nx:run-commands",
       "cache": false,
       "options": {
-        "command": "NEXT_PUBLIC_SOCKET_SERVER_URL=https://socket.harryliu.dev nx run local-manager-next:build:next"
+        "command": "NEXT_PUBLIC_SOCKET_SERVER_URL=https://socket.vigilant-broccoli.app nx run local-manager-next:build:next"
       }
     },
     "build:next": {

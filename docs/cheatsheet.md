@@ -1,6 +1,6 @@
 # Cheatsheet
 
-Useful infra-level CLI commands, runnable via `pnpm run <script>`.
+Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsheet` opens them in an interactive picker: ↑/↓ move, typing filters, → and ← enter and leave a header group while the filter is empty, Enter opens a group or runs the command (prompting for arguments first when it takes any), and Esc or Ctrl-C quits. Piped or non-terminal output prints the sheet instead.
 
 ```
 📦 REPOSITORY
@@ -8,7 +8,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   open:repo                   Open GitHub repo
   open:repo:actions           Open GitHub Actions
   npm:packages                Open npm packages page
-  cheatsheet                  Print this cheatsheet
+  cheatsheet                  Browse, filter and run these commands
   cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
   cheatsheet:aliases          Print the shell alias cheatsheet
   dockerhub:descriptions      Push every Docker Hub repo's description and overview from the pages-index image registry (Vault DOCKERHUB_TOKEN)
@@ -55,7 +55,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gitea:restore [zip|gs://]   Restore Gitea from a local dump zip or GCS (default: latest GCS backup)
 
 💻 CODE SERVER
-  code-server:open            Open code.harryliu.dev
+  code-server:open            Open code.vigilant-broccoli.app
   code-server:password        Copy code-server password to clipboard
   code-server:ssh             SSH into code-server VM
   code-server:logs            Follow code-server container logs
@@ -82,7 +82,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   immich:replace              Replace the VM via terraform (fresh host)
 
 📈 GRAFANA (observability VM)
-  grafana:open                Open grafana.harryliu.dev
+  grafana:open                Open grafana.vigilant-broccoli.app
   grafana:password            Copy Grafana admin password to clipboard
   grafana:ssh                 SSH into Grafana/Loki VM
   grafana:dashboards:push     Sync grafana-dashboards/*.json to the VM
@@ -127,7 +127,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   vault:store-promotion-key <pem>  Store the production-promotion GitHub App key in Vault
 
 🔑 SECRETS
-  secret-rotation:all         Run the local rotations, dispatch ci-rotate-secrets, then rotate the OCI key
+  secret-rotation:all         Run the local rotations, dispatch ci-rotate-secrets, rotate the OCI key, then back up Vault to Bitwarden
   secret-rotation:flyio       Rotate Fly.io token
   secret-rotation:gitea       Rotate Gitea CI token (scoped read:repository)
   secret-rotation:profile-deploy-key  Rotate profile repo deploy key, store in Vault

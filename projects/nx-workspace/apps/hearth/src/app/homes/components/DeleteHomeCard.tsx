@@ -1,7 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
-import { Button, Text } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  DeleteItemConfirmationDialog,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../../libs/supabase';
 import { useHome } from '../../providers/home-provider';
 
@@ -15,9 +20,9 @@ const CONFIRM_DELETE_HOME =
 
 export const DeleteHomeCard = ({ homeId, onDeleted }: Props) => {
   const { refreshHomes } = useHome();
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const handleDelete = async () => {
-    if (!window.confirm(CONFIRM_DELETE_HOME)) return;
     await supabase.from('homes').delete().eq('id', homeId);
     await refreshHomes();
     onDeleted?.();
@@ -34,9 +39,20 @@ export const DeleteHomeCard = ({ homeId, onDeleted }: Props) => {
           including its members. This cannot be undone.
         </Text>
       </div>
-      <Button variant="destructive" onClick={handleDelete} className="shrink-0">
+      <Button
+        variant="destructive"
+        onClick={() => setIsConfirming(true)}
+        className="shrink-0"
+      >
         <Trash2 size={14} /> Delete home
       </Button>
+      <DeleteItemConfirmationDialog
+        open={isConfirming}
+        onOpenChange={setIsConfirming}
+        title="Delete home"
+        description={CONFIRM_DELETE_HOME}
+        deleteItem={handleDelete}
+      />
     </div>
   );
 };

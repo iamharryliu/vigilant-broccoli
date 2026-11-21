@@ -23,9 +23,10 @@ Tailors a resume and cover letter to each job posting with Claude Code, from car
 - Internal libs
   - `common-js`
   - `react-lib`
+  - `react-lib-checklist`
   - `react-lib-crud-list`
-  - `react-lib-higher-level`
   - `resume`
+  - `sidebar`
 - Cloud services
   - Anthropic
 

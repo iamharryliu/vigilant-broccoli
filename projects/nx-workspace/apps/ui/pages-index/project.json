@@ -32,6 +32,13 @@
         "command": "tsx scripts/generate-repo-timeline.ts"
       }
     },
+    "generate-project-graph": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "tsx scripts/generate-project-graph.ts"
+      }
+    },
     "check-i18n-keys": {
       "executor": "nx:run-commands",
       "cache": true,
@@ -47,7 +54,8 @@
       "dependsOn": [
         "check-i18n-keys",
         "generate-openapi",
-        "generate-repo-timeline"
+        "generate-repo-timeline",
+        "generate-project-graph"
       ],
       "outputs": [
         "{projectRoot}/{options.outDir}",
@@ -67,7 +75,11 @@
       }
     },
     "serve": {
-      "dependsOn": ["generate-openapi", "generate-repo-timeline"],
+      "dependsOn": [
+        "generate-openapi",
+        "generate-repo-timeline",
+        "generate-project-graph"
+      ],
       "defaultConfiguration": "development",
       "configurations": {
         "development": {},
@@ -82,7 +94,8 @@
           "mkdir -p ../../../_site",
           "cp -R ../../../dist/pages-index/. ../../../_site/",
           "cp public/repo-timeline.json ../../../_site/repo-timeline.json",
-          "echo projects.harryliu.dev > ../../../_site/CNAME"
+          "cp public/project-graph.json ../../../_site/project-graph.json",
+          "echo projects.vigilant-broccoli.app > ../../../_site/CNAME"
         ],
         "parallel": false,
         "cwd": "{projectRoot}"

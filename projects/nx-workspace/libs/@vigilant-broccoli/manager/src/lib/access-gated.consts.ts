@@ -7,7 +7,7 @@ export const ACCESS_GATED_URL = {
   },
   CODE_SERVER: {
     NAME: 'Code Server',
-    URL: 'https://code.harryliu.dev/',
+    URL: 'https://code.vigilant-broccoli.app/',
   },
   DRIVE: {
     NAME: 'Drive',
@@ -28,6 +28,6 @@ export const ACCESS_GATED_URL = {
   },
   WEB_TERMINAL: {
     NAME: 'Web Terminal',
-    URL: 'https://shell.harryliu.dev/',
+    URL: 'https://shell.vigilant-broccoli.app/',
   },
 } as const;

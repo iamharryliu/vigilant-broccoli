@@ -7,6 +7,7 @@ import {
   GitPullRequestArrow,
   Globe,
   LayoutGrid,
+  Network,
   ScrollText,
   Server,
 } from 'lucide-react';
@@ -17,7 +18,11 @@ import { SectionHeading } from '../components/SectionHeading';
 import { DockerIcon, GithubIcon, NpmIcon } from '../components/BrandIcons';
 import { usePageTitle } from '../use-page-title';
 import { PAGE_CLASS } from '../consts/layout';
-import { CHANGELOG_ROUTE, GAMES_ROUTE } from '../consts/routes';
+import {
+  CHANGELOG_ROUTE,
+  GAMES_ROUTE,
+  PROJECT_GRAPH_ROUTE,
+} from '../consts/routes';
 
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
@@ -62,7 +67,16 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
-              href="https://context.harryliu.dev/"
+              route
+              href={PROJECT_GRAPH_ROUTE}
+              title={t('HOME.PROJECT_GRAPH.TITLE')}
+              description={t('HOME.PROJECT_GRAPH.DESCRIPTION')}
+              icon={<Network className={ICON_CLASS} />}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="https://context.vigilant-broccoli.app/"
               title={t('HOME.CLAUDE_CONTEXT.TITLE')}
               description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
               icon={<Bot className={ICON_CLASS} />}
@@ -145,7 +159,7 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
-              href="https://components.harryliu.dev/"
+              href="https://components.vigilant-broccoli.app/"
               title={t('HOME.UI.TITLE')}
               description={t('HOME.UI.DESCRIPTION')}
               icon={<LayoutGrid className={ICON_CLASS} />}

@@ -27,20 +27,26 @@ body {
 }
 
 #toolbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   gap: 6px;
   padding: 6px;
   padding-bottom: max(6px, env(safe-area-inset-bottom));
-  overflow-x: auto;
   background: #1c1c1c;
   border-top: 1px solid #333;
-  -webkit-overflow-scrolling: touch;
+}
+
+/* Two rows of six fit the narrowest phone without scrolling; the 12 bar
+   buttons fill the grid exactly. */
+#toolbar button:not([data-sheet-only]) {
+  padding: 0;
 }
 
 #toolbar button,
 #keys-list button,
 #keys-tabs button,
-#keys-header button {
+#keys-header button,
+#keys-font button {
   flex: 0 0 auto;
   min-width: 44px;
   min-height: 44px;
@@ -89,7 +95,8 @@ body {
 #keys-list button:active,
 #keys-tabs button:active,
 #keys-tabs button[aria-selected='true'],
-#keys-header button:active {
+#keys-header button:active,
+#keys-font button:active {
   background: #3b82f6;
   border-color: #3b82f6;
 }
@@ -144,6 +151,24 @@ body {
   font:
     16px system-ui,
     sans-serif;
+}
+
+#keys-font {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+}
+
+#keys-font span {
+  flex: 1;
+}
+
+#keys-font output {
+  min-width: 4ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 #keys-tabs {

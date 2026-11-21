@@ -51,7 +51,7 @@ Read the relevant document before working on its subject. Before editing a direc
 ### Root Scripts Conventions
 
 - Put useful infrastructure commands in the root `package.json`.
-- Keep [docs/cheatsheet.md](./docs/cheatsheet.md) in sync with root scripts and [docs/cheatsheet-aliases.md](./docs/cheatsheet-aliases.md) with aliases/functions under `setup/dotfiles/`. Edit the Markdown sources; their shell scripts only print them.
+- Keep [docs/cheatsheet.md](./docs/cheatsheet.md) in sync with root scripts and [docs/cheatsheet-aliases.md](./docs/cheatsheet-aliases.md) with aliases/functions under `setup/dotfiles/`. Edit the Markdown sources: `scripts/node/cheatsheet.mjs` parses their fenced block (header lines, then `  command  description` rows) to browse and run them.
 
 ### Toolchain
 
@@ -74,7 +74,11 @@ Never add GitHub Actions repo secrets; remove unused ones. Only `GCP_SERVICE_ACC
 
 Read [ui-app-pattern.md](./docs/app-development/ui/ui-app-pattern.md) before UI app work; it links the deployment and auth patterns.
 
-Build task and checklist UIs on react-lib's `CheckList` and follow its [completion contract](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/checklist-completion.md#consumer-contract): mount after first load, stable ids or `transitionFromId`, optimistic updates with `isRemoving` while pending, rollback on failure, and row deletion through the ellipsis menu (`onDeleteItem`, extra commands in `itemActions`).
+Never use native browser dialogs (`window.confirm`, `alert`, `prompt`) unless explicitly told to; use react-lib's `DeleteItemConfirmationDialog` or another in-app confirmation dialog.
+
+Build task and checklist UIs on react-lib-checklist's `CheckList` and follow its [completion contract](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-checklist/docs/features/checklist-completion.md#consumer-contract): mount after first load, stable ids or `transitionFromId`, optimistic updates with `isRemoving` while pending, rollback on failure, and row deletion through the ellipsis menu (`onDeleteItem`, extra commands in `itemActions`).
+
+Theme control is react-lib's `ThemeProvider` plus `ThemePreferenceControl` (System/Light/Dark) on the app's settings page, as in Hearth, Job Hunt and the component library's `/settings`; never add sidebar/navbar dark-mode toggles, two-state buttons or app-specific theme contexts.
 
 ### API
 

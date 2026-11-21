@@ -4,6 +4,7 @@ import {
   getBearerToken,
 } from '../../../../../libs/supabase-server';
 import { uploadImage } from '../r2';
+import { saveThumbnail } from '../save-steps';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export const runtime = 'nodejs';
@@ -72,10 +73,14 @@ export async function POST(request: NextRequest) {
       const img = item.images[i];
       const buffer = Buffer.from(img.base64, 'base64');
       const r2Key = `where-is/${inserted.id}/${crypto.randomUUID()}.jpg`;
-      await uploadImage(r2Key, buffer, img.mimeType);
+      const [thumbnailKey] = await Promise.all([
+        saveThumbnail(r2Key, { buffer, mimeType: img.mimeType }),
+        uploadImage(r2Key, buffer, img.mimeType),
+      ]);
       await supabase.from('where_is_images').insert({
         item_id: inserted.id,
         r2_key: r2Key,
+        thumbnail_r2_key: thumbnailKey,
         mime_type: img.mimeType,
         sort_order: img.sortOrder ?? i,
       });

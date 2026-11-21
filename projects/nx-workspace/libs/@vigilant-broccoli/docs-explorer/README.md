@@ -12,7 +12,9 @@ Markdown docs browser with a file tree, search, Markdown and checklist rendering
 
 | Component | Demo |
 | --- | --- |
-| Docs Explorer | [View](https://components.harryliu.dev/docs-explorer) |
+| Docs Explorer | [View](https://components.vigilant-broccoli.app/docs-explorer) |
+| Docs Viewer | [View](https://components.vigilant-broccoli.app/docs-viewer) |
+| Graph View | [View](https://components.vigilant-broccoli.app/graph-view) |
 
 ## Features
 

@@ -10,7 +10,15 @@
 - [Password Management](#password-management)
 - [Communication](#communication)
 - [Version Control](#version-control)
+- [Developer Tools](#developer-tools)
+  - [Text Editors](#text-editors)
 - [LLM](#llm)
+- [Infrastructure Software](#infrastructure-software)
+  - [Data Processing](#data-processing)
+  - [Databases](#databases)
+  - [Infrastructure](#infrastructure)
+  - [Messaging](#messaging)
+- [Translation](#translation)
 
 ## Browsing
 
@@ -77,8 +85,64 @@ Sync clients can expose cloud-only placeholders, and uploads may finish after a 
 | GitHub | Hosted Git platform with pull requests, issues, Actions CI/CD, and the largest open-source community. | Open-source hosting, collaboration, and default team workflows. |
 | GitLab | Hosted or self-managed DevOps platform combining Git hosting, merge requests, and built-in CI/CD pipelines. | Teams wanting source control, CI/CD, and security scanning in one self-hostable product. |
 
+## Developer Tools
+
+- [Shell](./os/shell/shell.md)
+
+### Text Editors
+
+| Editor | Description | Pros | Cons | Choose if |
+| --- | --- | --- | --- | --- |
+| [Visual Studio Code](./tools/vscode.md) | Extensible code editor with integrated development tools. | [Extensive extension ecosystem](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace); [remote development over SSH, in containers, and in WSL](https://code.visualstudio.com/docs/remote/remote-overview). | Extensions can introduce [startup delays or high CPU/memory usage](https://github.com/microsoft/vscode/wiki/Performance-Issues); specialized workflows may require several extensions and configuration. | You depend on specific extensions, remote environments, or a shared editor setup across a team. |
+| [Zed](./tools/zed.md) | Code editor written in Rust with GPU rendering, designed for speed and collaboration. | Native rendering architecture; [built-in collaboration and AI assistance](https://zed.dev/docs/); familiar keymaps and language-server support. | [Smaller extension catalog and incomplete equivalents for some VS Code workflows](https://zed.dev/docs/migrate/vs-code#extensions-vs-marketplace); settings import does not import extensions or custom keybindings. | You prioritize responsive editing and built-in collaboration, and your languages and required integrations are supported. |
+
 ## LLM
 
 - [AI Coding Agents](./ai-coding-agents/ai-coding-agents.md)
   - [Codex](./ai-coding-agents/codex.md)
 - [LLM Chat Services](./llm-chat-services.md)
+
+## Infrastructure Software
+
+### Data Processing
+
+| Product | What it is | Status |
+| :-- | :-- | :-- |
+| Hadoop | Open-source framework for distributed storage (HDFS), batch processing (MapReduce) and cluster scheduling (YARN) | Largely legacy for new projects. MapReduce writes to disk between steps, so it is slow, and HDFS ties storage to compute and needs cluster operations that managed cloud services remove. Replaced by Spark for processing, S3 or GCS for storage, and BigQuery, Snowflake or Databricks. |
+
+### Databases
+
+| Product | What it is | Status |
+| :-- | :-- | :-- |
+| ClickHouse | Open-source column-oriented OLAP database for fast analytical queries over large datasets | Active and growing. A common choice for real-time analytics, logs and observability; poor fit for transactional workloads with frequent updates. |
+| Elasticsearch | Distributed search and analytics engine built on Lucene, storing JSON documents with full-text indexes | Active. The standard for full-text search and log analytics (ELK stack). Its 2021 license change led AWS to fork OpenSearch; an AGPL option was added in 2024. |
+| MariaDB | Community fork of MySQL created by its original developers after Oracle acquired MySQL | Active. Largely MySQL-compatible, but the two are diverging, so it is no longer a guaranteed drop-in replacement. |
+| MongoDB | Document database that stores JSON-like (BSON) documents without a fixed schema | Active. The default document store; its SSPL license (since 2018) is not OSI open source. |
+| MySQL | Open-source relational database, long the standard in the LAMP stack and owned by Oracle | Active and widely deployed, but PostgreSQL has become the more common default for new projects. |
+| PostgreSQL | Open-source relational database with strong SQL compliance, JSONB and an extension ecosystem | Active. The usual default for new general-purpose applications. |
+| SQLite | Embedded, serverless relational database that lives in a single file | Active. The default for local and embedded storage (apps, browsers, phones); one writer at a time rules it out for busy multi-user servers. |
+
+### Infrastructure
+
+| Product | What it is | Status |
+| :-- | :-- | :-- |
+| Kubernetes | Open-source container orchestrator that schedules, scales and heals containers across a cluster from declarative config | Active. The industry standard for container orchestration, usually run managed (GKE, EKS, AKS). Often overkill for small teams, where a PaaS or plain containers are simpler. |
+| Terraform | Infrastructure-as-code tool that provisions cloud resources from declarative HCL config and tracks them in a state file | Active and the most widely used IaC tool. HashiCorp moved it to the source-available BSL in 2023, prompting the open-source OpenTofu fork; IBM acquired HashiCorp in 2025. |
+
+### Messaging
+
+| Product | What it is | Status |
+| :-- | :-- | :-- |
+| Kafka | Distributed, append-only event log for publishing, storing and streaming high volumes of events between services | Active. The default for event streaming and data pipelines; KRaft replaced ZooKeeper in 4.0. Heavy to operate for simple job queues, where RabbitMQ or SQS fit better. |
+| RabbitMQ | Open-source message broker implementing AMQP that routes messages from producers to queues through exchanges | Active. A common default for task queues and service-to-service messaging; messages are removed once acknowledged, so it is not built for replay or high-volume event streaming like Kafka. |
+
+## Translation
+
+| Service | Type | Languages | Free Tier | Paid Pricing | Strengths | Weaknesses |
+| --- | --- | --- | --- | --- | --- | --- |
+| **Amazon Translate** | Hosted API | ~75 | 2M characters/month for 12 months | ~$15 per 1M characters | Fits AWS workloads; custom terminology and batch translation | Fewer languages; quality trails DeepL on European languages |
+| **Argos Translate** | Offline open-source library | ~40 | Free, unlimited | None | Runs fully offline; no data leaves the machine | Lower quality than hosted engines; manual model downloads |
+| **DeepL API** | Hosted API | ~30 | API Free: 500K characters/month | API Pro: base fee plus ~$25 per 1M characters | Most natural output for European languages; glossaries and formality control | Fewest languages of the hosted options; weaker on low-resource languages |
+| **Google Cloud Translation** | Hosted API | 130+ | 500K characters/month | ~$20 per 1M characters | Widest language coverage; auto-detect; glossaries and batch jobs | Quality varies for less common languages; Google Cloud account required |
+| **LibreTranslate** | Self-hosted open-source API | ~50 | Free to self-host | Hosted API key plans | Drop-in REST API; full control over data and cost | You run the server; engine quality is below commercial APIs |
+| **Microsoft Translator** | Hosted API (Azure AI Translator) | 100+ | 2M characters/month | ~$10 per 1M characters | Cheapest hosted rate; document translation; custom models | Azure account required; quality varies by language pair |

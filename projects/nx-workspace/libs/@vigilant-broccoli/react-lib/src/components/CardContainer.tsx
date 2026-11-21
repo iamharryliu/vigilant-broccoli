@@ -25,12 +25,15 @@ interface HeaderLink {
 }
 
 interface CardContainerProps {
-  title: string;
+  /** Omit when the surrounding UI already names the card, e.g. a tab. */
+  title?: string;
   children: ReactNode;
   gap?: keyof typeof GAP_CLASS;
   titleAction?: ReactNode;
   headerAction?: ReactNode;
   headerLink?: HeaderLink;
+  /** Fill a height-bound parent so a child can own the scrolling. */
+  fill?: boolean;
 }
 
 const HeaderLinkText = ({ href, label, external = true }: HeaderLink) => (
@@ -52,6 +55,7 @@ export const CardContainer = ({
   titleAction,
   headerAction,
   headerLink,
+  fill = false,
 }: CardContainerProps) => {
   const trailing = headerLink ? (
     <HeaderLinkText {...headerLink} />
@@ -60,22 +64,32 @@ export const CardContainer = ({
   );
 
   return (
-    <Card className="w-full">
-      <div className={cn('flex flex-col p-4', GAP_CLASS[gap])}>
+    <Card className={cn('w-full', fill && 'flex h-full min-h-0 flex-col')}>
+      <div
+        className={cn(
+          'flex flex-col p-4',
+          GAP_CLASS[gap],
+          fill && 'min-h-0 flex-1',
+        )}
+      >
         {trailing || titleAction ? (
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Text size="5" weight="bold">
-                {title}
-              </Text>
+              {title && (
+                <Text size="5" weight="bold">
+                  {title}
+                </Text>
+              )}
               {titleAction}
             </div>
             {trailing}
           </div>
         ) : (
-          <Text size="5" weight="bold">
-            {title}
-          </Text>
+          title && (
+            <Text size="5" weight="bold">
+              {title}
+            </Text>
+          )
         )}
         {children}
       </div>

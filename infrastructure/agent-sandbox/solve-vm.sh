@@ -57,7 +57,7 @@ if [ "$AGENT" = codex ]; then
   fi
   if [ "$SIGNED_IN" = 1 ] && ! "$OCI_SSH" "$VM_IP_OUTPUT" \
     "sudo docker exec -u abc -e HOME=/config code-server test -s /config/.codex/auth.json"; then
-    echo "ERROR: no Codex login on the VM and no AGENT_CODEX_ACCESS_TOKEN in Vault. Open https://shell.harryliu.dev/, run 'codex login --device-auth' (device-code sign-in works headless), then retry." >&2
+    echo "ERROR: no Codex login on the VM and no AGENT_CODEX_ACCESS_TOKEN in Vault. Open https://shell.vigilant-broccoli.app/, run 'codex login --device-auth' (device-code sign-in works headless), then retry." >&2
     exit 1
   fi
 fi

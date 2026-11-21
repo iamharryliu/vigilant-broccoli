@@ -1,7 +1,8 @@
 # harryliu.dev — Cloudflare Pages site (project + deploys owned by the nx
 # `personal-website-react` deploy target via wrangler). Terraform owns the
 # custom domain attachment and its DNS, pointing at the `production-harryliu-dev-react`
-# project.
+# project. The zone's redirect ruleset also sends www to the apex and the legacy
+# projects.harryliu.dev host to projects.vigilant-broccoli.app.
 
 import {
   to = cloudflare_dns_record.harryliu_dev_apex
@@ -57,16 +58,33 @@ resource "cloudflare_ruleset" "harryliu_dev_redirects" {
         preserve_query_string = true
       }
     }
+    }, {
+    ref         = "projects_to_vigilant_broccoli"
+    description = "Redirect projects.harryliu.dev to projects.vigilant-broccoli.app"
+    expression  = "(http.host eq \"projects.harryliu.dev\")"
+    action      = "redirect"
+    action_parameters = {
+      from_value = {
+        status_code = 301
+        target_url = {
+          expression = "concat(\"https://${local.vb_app_domains.projects}\", http.request.uri.path)"
+        }
+        preserve_query_string = true
+      }
+    }
   }]
 }
 
+# Legacy pages-index host, kept only so old links reach the redirect above.
+# Proxied because redirect rules only run on proxied traffic; the GitHub Pages
+# target is never fetched.
 resource "cloudflare_dns_record" "harryliu_dev_projects" {
   zone_id = var.cloudflare_zone_id
-  name    = var.projects_domain
+  name    = "projects.harryliu.dev"
   content = "${var.github_owner}.github.io"
   type    = "CNAME"
   ttl     = 1
-  proxied = false
+  proxied = true
 }
 
 resource "cloudflare_dns_record" "harryliu_dev_api" {
@@ -106,15 +124,6 @@ resource "cloudflare_dns_record" "harryliu_dev_staging_api_fly_ownership" {
   name    = "_fly-ownership.staging-api.harryliu.dev"
   content = "\"app-0pqp2op\""
   type    = "TXT"
-  ttl     = 1
-  proxied = false
-}
-
-resource "cloudflare_dns_record" "harryliu_dev_uptime" {
-  zone_id = var.cloudflare_zone_id
-  name    = var.uptime_domain
-  content = "${var.github_owner}.github.io"
-  type    = "CNAME"
   ttl     = 1
   proxied = false
 }

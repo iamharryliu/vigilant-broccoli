@@ -3,7 +3,7 @@
 - [Swedish](./swedish/swedish.md)
 - [French](./french/french.md)
 - [Spanish](./spanish/spanish.md)
-- [Interesting Words](./interesting-words.md)
+- [Words](./words.md)
 - [Language Lingo](./language-lingo.md)
 
 ## Online Learning Options

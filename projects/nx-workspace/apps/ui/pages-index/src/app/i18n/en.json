@@ -16,6 +16,10 @@
       "TITLE": "Repo Timeline",
       "DESCRIPTION": "Lines of code, commits, and PRs over time."
     },
+    "PROJECT_GRAPH": {
+      "TITLE": "Project Graph",
+      "DESCRIPTION": "Public apps and the libs they depend on."
+    },
     "GITHUB": {
       "TITLE": "GitHub",
       "DESCRIPTION": "iamharryliu GitHub repositories."
@@ -67,7 +71,7 @@
       "DESCRIPTION": "Skills, jobs, and project contributions."
     },
     "PROJECTS": {
-      "TITLE": "projects.harryliu.dev",
+      "TITLE": "projects.vigilant-broccoli.app",
       "DESCRIPTION": "Software projects, open source, and deployed apps."
     },
     "PERSONAL_WEBSITE": {
@@ -271,6 +275,35 @@
     "RANGE_ALL": "ALL",
     "ENTRY_SUMMARY": "{commits} commits · {pullRequests} PRs"
   },
+  "PROJECT_GRAPH_PAGE": {
+    "TITLE": "Project Graph",
+    "LOADING": "Loading project graph…",
+    "ERROR": "Failed to load project graph: {message}",
+    "SEARCH_LABEL": "Search projects",
+    "SEARCH_PLACEHOLDER": "Search projects…",
+    "FILTER_LABEL": "Project type",
+    "FILTER_ALL": "All",
+    "FILTER_APPS": "Apps",
+    "FILTER_LIBS": "Libs",
+    "COUNT": "{visible} of {total} projects",
+    "EMPTY": "No projects match.",
+    "GRAPH_LABEL": "Project dependency graph. Drag or use arrow keys to pan, scroll or use plus and minus to zoom, 0 resets the view. Tab moves between projects and Enter selects one.",
+    "TYPE_APP": "App",
+    "TYPE_LIB": "Library",
+    "ZOOM_IN": "Zoom in",
+    "ZOOM_OUT": "Zoom out",
+    "RESET_VIEW": "Reset view",
+    "CLOSE": "Close details",
+    "DEPENDS_ON": "Depends on",
+    "DEPENDED_ON_BY": "Depended on by",
+    "RUNTIME_DEPENDS_ON": "Runtime dependencies",
+    "RUNTIME_DEPENDED_ON_BY": "Runtime dependents",
+    "EDGE_FILTER_LABEL": "Dependency kinds",
+    "EDGE_LIB": "Lib",
+    "EDGE_EMBEDS": "Embeds",
+    "EDGE_CALLS": "Calls",
+    "NONE": "None"
+  },
   "README_PAGE": {
     "TITLE": "README",
     "README_LABEL": "README",
@@ -291,6 +324,9 @@
   },
   "DOCKER_IMAGES_PAGE": {
     "TITLE": "Docker Hub",
+    "BOOKMARKS_REACT": {
+      "DESCRIPTION": "Browser-local bookmark manager served by nginx, seeded with your team's bookmarks from a mounted JSON file."
+    },
     "BUCKET_SERVICE": {
       "DESCRIPTION": "Object storage proxy across multiple bucket providers."
     },

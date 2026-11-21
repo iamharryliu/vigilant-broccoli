@@ -19,75 +19,99 @@ const SECTION_PREFIX = '## ';
 const TABLE_ROW_PREFIX = '|';
 const TABLE_HEADER_ROWS = 2;
 
-export type SkillTerm = { name: string; aliases?: string[] };
+export type SkillTerm = {
+  name: string;
+  aliases?: string[];
+  // The name or aliases to match case-sensitively, for names that are common
+  // words in lower case ("Go", "C").
+  caseSensitive?: string[];
+};
 
 // Postings name skills in free text, so only terms listed here are detected;
 // a skill missing from the list is never reported as a gap. Names that are
-// common words ("Go", "R") are left out to avoid false hits.
+// common words ("R") are left out to avoid false hits, unless matched
+// case-sensitively ("Go", "C").
 export const SKILL_VOCABULARY: SkillTerm[] = [
   { name: 'TypeScript' },
   { name: 'JavaScript', aliases: ['ECMAScript'] },
-  { name: 'React', aliases: ['React.js', 'ReactJS'] },
+  {
+    name: 'React',
+    aliases: ['React.js', 'ReactJS', 'Next.js', 'NextJS', 'Redux'],
+  },
   { name: 'React Native' },
-  { name: 'Next.js', aliases: ['NextJS'] },
   { name: 'Vue', aliases: ['Vue.js'] },
   { name: 'Angular' },
   { name: 'Svelte' },
-  { name: 'Redux' },
-  { name: 'Node.js', aliases: ['NodeJS'] },
-  { name: 'NestJS', aliases: ['Nest.js'] },
-  { name: 'Express', aliases: ['Express.js'] },
-  { name: 'Fastify' },
+  {
+    name: 'Node.js',
+    aliases: [
+      'NodeJS',
+      'NestJS',
+      'Nest.js',
+      'Express',
+      'Express.js',
+      'Fastify',
+    ],
+  },
   { name: 'GraphQL' },
   { name: 'REST API design', aliases: ['REST', 'RESTful', 'REST APIs'] },
   { name: 'gRPC' },
-  { name: 'HTML and CSS', aliases: ['HTML', 'CSS', 'HTML5', 'CSS3'] },
-  { name: 'Tailwind CSS', aliases: ['Tailwind'] },
-  { name: 'Sass', aliases: ['SCSS'] },
+  {
+    name: 'HTML and CSS',
+    aliases: [
+      'HTML',
+      'CSS',
+      'HTML5',
+      'CSS3',
+      'Tailwind CSS',
+      'Tailwind',
+      'Sass',
+      'SCSS',
+    ],
+  },
   { name: 'Python' },
   { name: 'Django' },
   { name: 'Flask' },
   { name: 'FastAPI' },
   { name: 'Java' },
-  { name: 'Spring Boot' },
+  { name: 'Spring', aliases: ['Spring Boot', 'Spring Framework'] },
   { name: 'Kotlin' },
   { name: 'Swift' },
   { name: 'C#', aliases: ['.NET', 'ASP.NET'] },
+  { name: 'C', caseSensitive: ['C'] },
   { name: 'C++' },
   { name: 'Rust' },
-  { name: 'Golang' },
+  { name: 'Golang', aliases: ['Go'], caseSensitive: ['Go'] },
   { name: 'Ruby', aliases: ['Ruby on Rails', 'Rails'] },
   { name: 'PHP', aliases: ['Laravel'] },
   { name: 'Scala' },
   { name: 'Elixir' },
-  { name: 'PostgreSQL', aliases: ['Postgres'] },
-  { name: 'MySQL' },
   { name: 'MongoDB' },
   { name: 'DynamoDB' },
-  { name: 'SQL', aliases: ['SQL Server'] },
-  { name: 'SQLite' },
+  {
+    name: 'SQL',
+    aliases: ['SQL Server', 'PostgreSQL', 'Postgres', 'MySQL', 'SQLite'],
+  },
   { name: 'Redis' },
   { name: 'Elasticsearch', aliases: ['OpenSearch'] },
-  { name: 'Kafka' },
-  { name: 'RabbitMQ' },
+  { name: 'Message queues', aliases: ['Kafka', 'RabbitMQ'] },
   { name: 'AWS', aliases: ['Amazon Web Services'] },
   { name: 'GCP', aliases: ['Google Cloud', 'Google Cloud Platform'] },
   { name: 'Azure' },
   { name: 'Docker' },
-  { name: 'Kubernetes', aliases: ['K8s'] },
-  { name: 'Terraform' },
-  { name: 'Ansible' },
-  { name: 'Helm' },
-  { name: 'GitOps' },
-  { name: 'Infrastructure as Code', aliases: ['IaC'] },
+  { name: 'Kubernetes', aliases: ['K8s', 'Helm'] },
+  {
+    name: 'Infrastructure as Code',
+    aliases: ['IaC', 'Terraform', 'Ansible', 'GitOps'],
+  },
   { name: 'HashiCorp Vault' },
-  { name: 'CI/CD', aliases: ['CI CD', 'continuous integration'] },
-  { name: 'GitHub Actions' },
-  { name: 'Jenkins' },
+  {
+    name: 'CI/CD',
+    aliases: ['CI CD', 'continuous integration', 'GitHub Actions', 'Jenkins'],
+  },
   { name: 'Linux' },
   { name: 'PowerShell' },
   { name: 'ETL' },
-  { name: 'Claude Code' },
   { name: 'Databricks' },
   { name: 'Power BI' },
   {
@@ -95,23 +119,69 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
     aliases: ['OOP', 'object oriented programming'],
   },
   { name: 'AI Agents', aliases: ['AI agent', 'agentic AI'] },
-  { name: 'Git' },
-  { name: 'Jest' },
-  { name: 'Vitest' },
-  { name: 'Cypress' },
-  { name: 'Playwright' },
-  { name: 'Selenium' },
-  { name: 'Webpack' },
-  { name: 'Vite' },
+  { name: 'Model Context Protocol', aliases: ['MCP', 'MCP servers'] },
+  {
+    name: 'AI-assisted development',
+    aliases: [
+      'AI-assisted',
+      'AI assisted development',
+      'AI coding agents',
+      'AI development tools',
+      'AI-driven development',
+      'Claude Code',
+      'Codex',
+      'GitHub Copilot',
+      'Copilot',
+    ],
+  },
+  { name: 'Git', aliases: ['GitHub'] },
+  { name: 'DevOps' },
+  { name: 'Observability', aliases: ['Prometheus', 'Grafana', 'Datadog'] },
+  { name: 'Distributed systems', aliases: ['distributed system'] },
+  {
+    name: 'Multi-tenancy',
+    aliases: ['multi-tenant', 'multitenant', 'multi tenant', 'multitenancy'],
+  },
+  {
+    name: 'Event-driven architecture',
+    aliases: ['event-driven', 'event driven', 'eventdriven arkitektur'],
+  },
+  {
+    name: 'Unit testing',
+    aliases: [
+      'Jest',
+      'Vitest',
+      'unit tests',
+      'integration testing',
+      'Test-driven development',
+      'TDD',
+    ],
+  },
+  {
+    name: 'End-to-end testing',
+    aliases: [
+      'Cypress',
+      'Playwright',
+      'Selenium',
+      'E2E testing',
+      'E2E tests',
+      'test automation',
+    ],
+  },
+  {
+    name: 'Bundlers',
+    aliases: ['Webpack', 'Vite', 'bundler'],
+  },
   { name: 'Nx' },
   { name: 'Microservices', aliases: ['micro-services', 'microservice'] },
   { name: 'Serverless', aliases: ['Lambda'] },
-  { name: 'Prometheus' },
-  { name: 'Grafana' },
-  { name: 'Datadog' },
   { name: 'OAuth', aliases: ['OIDC', 'OpenID Connect'] },
   { name: 'WebSockets', aliases: ['WebSocket'] },
   { name: 'Machine Learning' },
+  {
+    name: 'Computer vision',
+    aliases: ['3D computer vision', '3D CV', 'OpenCV', 'image recognition'],
+  },
   { name: 'LLM', aliases: ['LLMs', 'generative AI', 'GenAI'] },
   { name: 'Vector databases', aliases: ['vector database', 'vector DB'] },
   {
@@ -121,7 +191,7 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
       'retrieval augmented generation',
     ],
   },
-  { name: 'Agile', aliases: ['Scrum'] },
+  { name: 'Agile', aliases: ['Scrum', 'Kanban'] },
 ];
 
 const REGEX_SPECIALS = /[.*+?^${}()|[\]\\/]/g;
@@ -130,13 +200,47 @@ const REGEX_SPECIALS = /[.*+?^${}()|[\]\\/]/g;
 const TERM_BEFORE = '(?<![A-Za-z0-9+#])';
 const TERM_AFTER = '(?![A-Za-z0-9+#])';
 
-const termPattern = (term: SkillTerm) =>
-  new RegExp(
-    `${TERM_BEFORE}(?:${[term.name, ...(term.aliases ?? [])]
-      .map(label => label.replace(REGEX_SPECIALS, '\\$&'))
-      .join('|')})${TERM_AFTER}`,
-    'i',
+// Capitalised common-word names still collide with ordinary phrases, so these
+// labels also skip the contexts that are not the language.
+const CASE_SENSITIVE_GUARD: Record<
+  string,
+  { before?: string; after?: string }
+> = {
+  Go: { after: '(?![-\\s](?:to|ahead|live|getter|market|beyond)\\b)' },
+  C: {
+    before:
+      '(?<!\\b(?:Vitamin|Plan|Series|Grade|Type|Class|Option|Tier|Phase|Part|Section|Appendix)\\s)',
+    after: '(?![-\\s]?(?:level|suite)\\b)',
+  },
+};
+
+const escapeLabel = (label: string) => label.replace(REGEX_SPECIALS, '\\$&');
+
+const termPattern = (term: SkillTerm) => {
+  const exact = term.caseSensitive ?? [];
+  const loose = [term.name, ...(term.aliases ?? [])].filter(
+    label => !exact.includes(label),
   );
+  const patterns = [
+    ...(loose.length
+      ? [
+          new RegExp(
+            `${TERM_BEFORE}(?:${loose.map(escapeLabel).join('|')})${TERM_AFTER}`,
+            'i',
+          ),
+        ]
+      : []),
+    ...exact.map(label => {
+      const guard = CASE_SENSITIVE_GUARD[label];
+      return new RegExp(
+        `${TERM_BEFORE}${guard?.before ?? ''}${escapeLabel(label)}${TERM_AFTER}${guard?.after ?? ''}`,
+      );
+    }),
+  ];
+  return {
+    test: (text: string) => patterns.some(pattern => pattern.test(text)),
+  };
+};
 
 const VOCABULARY = SKILL_VOCABULARY.map(term => ({
   name: term.name,

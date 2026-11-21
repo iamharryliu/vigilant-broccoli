@@ -9,8 +9,10 @@ import {
   Direction,
 } from '../utils/focus-navigation.utils';
 
+// Focus (also set on hover) shows an inset ring instead of growing the badge: a scaled badge
+// overflows its box and gets clipped at the edge of any overflow-hidden container.
 const BASE_BUTTON_CLASS =
-  'transition-transform duration-150 focus:scale-110 focus:outline-none';
+  'focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ring';
 
 export type ButtonConfig = {
   label: string;

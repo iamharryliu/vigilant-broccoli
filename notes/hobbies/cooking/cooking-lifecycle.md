@@ -11,3 +11,9 @@
   - Dishes
 - Review/reflection
 - Ingredient Experimenting
+- chores
+  - cleanup and declutter
+  - organization
+  - kitchen - food prep, groceries, cooking, cleanup, planning
+  - managerial
+  - planning
