@@ -188,6 +188,7 @@ export interface WhereIsItem {
   tags: string[];
   imageUrls: string[];
   imageKeys: string[];
+  thumbnailUrl: string | null;
   createdAt: string;
 }
 
