@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { cn } from '../utils/cn';
+import { cn } from '@vigilant-broccoli/react-lib';
 
 interface CheckListPanelProps {
   /** Controls kept in view above the list, such as progress or an add row. */

@@ -76,7 +76,7 @@ Read [ui-app-pattern.md](./docs/app-development/ui/ui-app-pattern.md) before UI 
 
 Never use native browser dialogs (`window.confirm`, `alert`, `prompt`) unless explicitly told to; use react-lib's `DeleteItemConfirmationDialog` or another in-app confirmation dialog.
 
-Build task and checklist UIs on react-lib's `CheckList` and follow its [completion contract](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/checklist-completion.md#consumer-contract): mount after first load, stable ids or `transitionFromId`, optimistic updates with `isRemoving` while pending, rollback on failure, and row deletion through the ellipsis menu (`onDeleteItem`, extra commands in `itemActions`).
+Build task and checklist UIs on react-lib-checklist's `CheckList` and follow its [completion contract](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-checklist/docs/features/checklist-completion.md#consumer-contract): mount after first load, stable ids or `transitionFromId`, optimistic updates with `isRemoving` while pending, rollback on failure, and row deletion through the ellipsis menu (`onDeleteItem`, extra commands in `itemActions`).
 
 Theme control is react-lib's `ThemeProvider` plus `ThemePreferenceControl` (System/Light/Dark) on the app's settings page, as in Hearth, Job Hunt and the component library's `/settings`; never add sidebar/navbar dark-mode toggles, two-state buttons or app-specific theme contexts.
 

@@ -1,13 +1,11 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { Button, Input, useRefetchOnFocus } from '@vigilant-broccoli/react-lib';
 import {
-  Button,
   CheckList,
   CheckListItem,
-  Input,
-  useRefetchOnFocus,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-checklist';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import {
   CONTENT_TYPE_HEADER,

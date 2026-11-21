@@ -2,13 +2,17 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Input, Text, Badge, cn } from '@vigilant-broccoli/react-lib';
+import { Input, Text, Badge, Skeleton, cn } from '@vigilant-broccoli/react-lib';
 import { CRUDItemList } from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { WhereIsItem } from '../../lib/types';
-import { ROUTES, WHERE_IS_ITEM_PARAM } from '../../lib/routes';
+import {
+  ROUTES,
+  WHERE_IS_ENDPOINT,
+  WHERE_IS_ITEM_PARAM,
+} from '../../lib/routes';
 import {
   WhereIsFormComponent,
   WhereIsFormValues,
@@ -16,11 +20,7 @@ import {
 } from './where-is-form';
 import { throwIfNotOk, uploadPreviewImages } from './upload-images';
 import { sortTags } from './where-is-tags';
-import {
-  saveWhereIsUpdate,
-  toWhereIsFormValues,
-  WHERE_IS_ENDPOINT,
-} from './save-where-is';
+import { saveWhereIsUpdate, toWhereIsFormValues } from './save-where-is';
 import { WhereIsDetailPanel } from './where-is-detail-panel';
 import { useMobileReady } from '../../lib/use-mobile-view';
 import { WhereIsDetailPageContent } from './WhereIsDetailPageContent';
@@ -74,6 +74,22 @@ const WhereIsListItem = ({ item }: { item: WhereIsFormValues }) => (
   </div>
 );
 
+const SKELETON_ROW_COUNT = 4;
+
+const ListSkeleton = () => (
+  <div className="space-y-2" aria-busy="true">
+    {Array.from({ length: SKELETON_ROW_COUNT }).map((_, i) => (
+      <div key={i} className="flex items-center gap-3 p-2">
+        <Skeleton className="h-16 w-16 shrink-0" />
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-4 w-1/3" />
+          <Skeleton className="h-3 w-2/3" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 function WhereIsPageContent() {
   const router = useRouter();
   const pathname = usePathname();
@@ -122,23 +138,18 @@ function WhereIsPageContent() {
       }),
     });
     await throwIfNotOk(saveRes);
+    const { id } = (await saveRes.json()) as { id: string };
 
-    const res = await fetch(`${WHERE_IS_ENDPOINT}?homeId=${selectedHomeId}`, {
-      headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
+    const res = await fetch(`${WHERE_IS_ENDPOINT}?id=${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
     await throwIfNotOk(res);
-    const updated: WhereIsItem[] = await res.json();
-    const newItem = updated[0];
+    const newItem: WhereIsItem = await res.json();
 
     return {
-      id: newItem?.id ?? '',
-      title: newItem?.title ?? form.title,
-      description: newItem?.description ?? description,
-      tags: newItem?.tags ?? tags,
-      images: [],
-      imageUrls: newItem?.imageUrls ?? [],
-      imageKeys: newItem?.imageKeys ?? [],
-    } as WhereIsFormValues & Pick<WhereIsItem, 'imageUrls' | 'imageKeys'>;
+      ...toWhereIsFormValues(newItem),
+      thumbnailUrl: newItem.thumbnailUrl,
+    };
   };
 
   const updateItem = async (
@@ -149,7 +160,11 @@ function WhereIsPageContent() {
       items.find(i => i.id === form.id)?.imageKeys ?? [],
       session?.access_token ?? '',
     );
-    return { ...form, ...toWhereIsFormValues(updated) };
+    return {
+      ...form,
+      ...toWhereIsFormValues(updated),
+      thumbnailUrl: updated.thumbnailUrl,
+    };
   };
 
   const deleteItem = async (id: string | number) => {
@@ -190,17 +205,20 @@ function WhereIsPageContent() {
     images: [] as PreviewImage[],
     imageUrls: item.imageUrls,
     imageKeys: item.imageKeys,
+    thumbnailUrl: item.thumbnailUrl,
     createdAt: item.createdAt,
   }));
 
-  const renderList = (onItemClick: (item: { id: string }) => void) =>
-    loaded && (
-      <>
-        <Input
-          placeholder="Search items (e.g. scissors, batteries)..."
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-        />
+  const renderList = (onItemClick: (item: { id: string }) => void) => (
+    <>
+      <Input
+        placeholder="Search items (e.g. scissors, batteries)..."
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+      />
+      {!loaded ? (
+        <ListSkeleton />
+      ) : (
         <CRUDItemList
           items={formItems as never}
           setItems={setItems as never}
@@ -211,13 +229,16 @@ function WhereIsPageContent() {
           FormComponent={WhereIsFormComponent as never}
           ListItemComponent={WhereIsListItem as never}
           copy={COPY}
-          getItemImages={(item: { imageUrls?: string[] }) => item.imageUrls}
+          getItemImages={(item: WhereIsFormValues) =>
+            item.thumbnailUrl ? [item.thumbnailUrl] : []
+          }
           getItemTitle={(item: { title: string }) => item.title}
           onItemClick={onItemClick}
           showDialogCloseButton
         />
-      </>
-    );
+      )}
+    </>
+  );
 
   return (
     <>

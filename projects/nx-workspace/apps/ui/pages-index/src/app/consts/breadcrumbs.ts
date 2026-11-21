@@ -5,6 +5,7 @@ import {
   CAREER_EXPERIENCE_ROUTE,
   CHANGELOG_ROUTE,
   DEPLOYMENTS_ROUTE,
+  PROJECT_GRAPH_ROUTE,
   STATUS_ROUTE,
 } from './routes';
 
@@ -31,6 +32,7 @@ const BREADCRUMB_TREE: Record<string, BreadcrumbNode> = {
     parent: '/',
   },
   '/repo-timeline': { labelKey: 'REPO_TIMELINE_PAGE.TITLE', parent: '/' },
+  [PROJECT_GRAPH_ROUTE]: { labelKey: 'PROJECT_GRAPH_PAGE.TITLE', parent: '/' },
   '/github': {
     labelKey: 'GITHUB_REPOS_PAGE.TITLE',
     parent: '/',

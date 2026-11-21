@@ -9,6 +9,7 @@ import {
   Folder,
   Pencil,
   Search as SearchIcon,
+  SquareCheckBig,
 } from 'lucide-react';
 import {
   Fragment,
@@ -20,6 +21,7 @@ import {
   useState,
 } from 'react';
 import {
+  Button,
   Card,
   ClearableInput,
   DeleteItemConfirmationDialog,
@@ -71,6 +73,33 @@ const LEADING_HEADING_RE = /^#\s[^\n]*\n+/;
 const ALL_HEADINGS_RE = /^#{1,6}\s[^\n]*\n+/gm;
 const AGGREGATE_SEPARATOR = '\n\n---\n\n';
 const HASH_SEP = '#';
+// Same `docs-md:` prefix as the viewer's other saved preferences.
+const MULTI_SELECT_STORAGE_KEY = 'docs-md:multi-select';
+const MULTI_SELECT_PATHS_STORAGE_KEY = 'docs-md:multi-select-paths';
+const MULTI_SELECT_ON = 'on';
+// Matches IconButton's default glyph size.
+const MULTI_SELECT_ICON_SIZE = 16;
+// A row shows the selected colour while pressed, since the click that selects
+// it only fires on release.
+const ROW_PRESSED_CLS = 'active:bg-blue-100 dark:active:bg-blue-900';
+// About a second at 60fps for a combined view's section marker to render.
+const SECTION_SCROLL_MAX_FRAMES = 60;
+// Upper bound for a browser smooth scroll; no event marks its end.
+const SMOOTH_SCROLL_MS = 900;
+// A section counts as current once its start is within this of the bar.
+const SECTION_EDGE_PX = 8;
+
+const parseStoredPaths = (raw: string | null): string[] => {
+  if (!raw) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed)
+      ? parsed.filter((path): path is string => typeof path === 'string')
+      : [];
+  } catch {
+    return [];
+  }
+};
 
 const stripLeadingHeading = (content: string) =>
   content.replace(LEADING_HEADING_RE, '');
@@ -84,6 +113,10 @@ const AGGREGATE_MODE = {
   FLAT: 'flat',
 } as const;
 type AggregateMode = (typeof AGGREGATE_MODE)[keyof typeof AGGREGATE_MODE];
+// Same `docs-md:` prefix as the viewer's other saved preferences.
+const AGGREGATE_MODE_STORAGE_KEY = 'docs-md:aggregate-mode';
+const isAggregateMode = (value: string | null): value is AggregateMode =>
+  value !== null && (Object.values(AGGREGATE_MODE) as string[]).includes(value);
 
 const AGGREGATE_TRANSFORM: Record<AggregateMode, (content: string) => string> =
   {
@@ -92,8 +125,35 @@ const AGGREGATE_TRANSFORM: Record<AggregateMode, (content: string) => string> =
     [AGGREGATE_MODE.FLAT]: stripAllHeadings,
   };
 
-const buildAggregateContent = (contents: string[], mode: AggregateMode) =>
-  contents.map(AGGREGATE_TRANSFORM[mode]).join(AGGREGATE_SEPARATOR);
+// An empty element per source note, so clicking a selected file can scroll to
+// its section. Only the displayed content carries them; copied markdown stays
+// clean.
+const AGGREGATE_SECTION_ATTR = 'data-aggregate-section';
+// The collapsed and flat modes strip the headings the bar would show, so the
+// marker carries the note title (from the raw content) for the bar instead.
+const AGGREGATE_TITLE_ATTR = 'data-aggregate-title';
+const TITLE_HEADING_RE = /^#\s+([^\n]*)/m;
+const escapeAttribute = (value: string) =>
+  value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+const aggregateNoteTitle = (path: string, content: string) =>
+  content.match(TITLE_HEADING_RE)?.[1].trim() ||
+  (path.split('/').pop() ?? path).replace(/\.md$/, '');
+const aggregateSectionMarker = (path: string, content: string) =>
+  `<div ${AGGREGATE_SECTION_ATTR}="${escapeAttribute(path)}" ${AGGREGATE_TITLE_ATTR}="${escapeAttribute(aggregateNoteTitle(path, content))}"></div>\n\n`;
+
+const buildAggregateContent = (
+  contents: string[],
+  mode: AggregateMode,
+  markerPaths?: string[],
+) =>
+  contents
+    .map(
+      (content, index) =>
+        (markerPaths?.[index]
+          ? aggregateSectionMarker(markerPaths[index], content)
+          : '') + AGGREGATE_TRANSFORM[mode](content),
+    )
+    .join(AGGREGATE_SEPARATOR);
 
 export interface DocsNode {
   name: string;
@@ -135,6 +195,8 @@ export interface NoteGraphLink {
   // Optional edge weight (e.g. shared-item count) used to scale line width;
   // omitted links render at the default width, so existing graphs are unaffected.
   value?: number;
+  // Looks up a `GraphView` `linkStyles` entry; unstyled links keep the default look.
+  kind?: string;
 }
 
 export interface NoteGraph {
@@ -144,7 +206,9 @@ export interface NoteGraph {
 
 export interface DocsExplorerUrlSync {
   get: () => string | null;
-  set: (path: string) => void;
+  // `replace` rewrites the current history entry instead of adding one;
+  // implementations without it keep pushing.
+  set: (path: string, options?: { replace?: boolean }) => void;
   // Called when navigating back to the root (no file selected).
   clear?: () => void;
   // Notifies when the URL changes outside the explorer (browser back/forward);
@@ -203,7 +267,7 @@ const COPY = {
   BACK_TO_PREVIOUS: 'Back to previous file',
   SELECTED_SUFFIX: 'selected',
   CLEAR_SELECTION: 'Clear',
-  SELECT_ALL: 'Select all',
+  BACK_TO_SELECTION: 'Back to selection',
   DELETE_SELECTED: 'Delete selected',
   DELETE_SELECTED_TITLE: 'Delete selected files',
   DELETE_SELECTED_DESCRIPTION:
@@ -269,27 +333,70 @@ export const DocsExplorer = ({
 
   const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
+  // Whether the content pane shows the combined selection or the opened file.
+  const [viewingSelection, setViewingSelection] = useState(false);
   const [pendingBulkDelete, setPendingBulkDelete] = useState(false);
   const [aggregateSourceContents, setAggregateSourceContents] = useState<
     string[]
   >([]);
+  // The paths the loaded contents came from, in the same order, so section
+  // markers match even while a newer selection is still loading.
+  const [aggregateSourcePaths, setAggregateSourcePaths] = useState<string[]>(
+    [],
+  );
   const [isLoadingAggregate, setIsLoadingAggregate] = useState(false);
+  // A selected file the combined view should scroll to once it has rendered.
+  const [scrollToSection, setScrollToSection] = useState<string | null>(null);
+  // The section last jumped to in the combined view. The sidebar highlights it
+  // there, since a jump does not change selectedPath (and its loaded content).
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  // Mirrors activeSection for the per-frame scroll handler, which updates it
+  // only when the section under the bar changes.
+  const activeSectionRef = useRef(activeSection);
+  activeSectionRef.current = activeSection;
+  // While a jump's smooth scroll runs, the sections it passes must not take
+  // over the highlight.
+  const programmaticScrollUntilRef = useRef(0);
   const [aggregateError, setAggregateError] = useState<string | null>(null);
   const [aggregateMode, setAggregateMode] = useState<AggregateMode>(
     AGGREGATE_MODE.NONE,
   );
+  // Read after mount so server and first client render agree.
+  useEffect(() => {
+    const stored = window.localStorage.getItem(AGGREGATE_MODE_STORAGE_KEY);
+    if (isAggregateMode(stored)) setAggregateMode(stored);
+  }, []);
+  const updateAggregateMode = (mode: AggregateMode) => {
+    setAggregateMode(mode);
+    if (mode === AGGREGATE_MODE.NONE)
+      window.localStorage.removeItem(AGGREGATE_MODE_STORAGE_KEY);
+    else window.localStorage.setItem(AGGREGATE_MODE_STORAGE_KEY, mode);
+  };
   const hasSidebarActions = Boolean(sidebarActions?.length);
   const hasSelection = selectedPaths.length > 0;
-  const hasNote = Boolean(selectedPath) || hasSelection;
+  const showSelection = hasSelection && viewingSelection;
+  const hasNote = Boolean(selectedPath) || showSelection;
   // The root graph view stays open: there is no note to toggle back to.
   const toggleGraph = useCallback(
     () => setShowGraph(prev => !prev || !hasNote),
     [hasNote],
   );
-  const isAggregate = selectedPaths.length > 1;
+  const isAggregate = showSelection && selectedPaths.length > 1;
+  // In the combined view the highlight follows the section jumped to, not the
+  // last note opened on its own.
+  const highlightedPath = showSelection
+    ? activeSection && selectedPaths.includes(activeSection)
+      ? activeSection
+      : null
+    : selectedPath;
   const aggregateContent = buildAggregateContent(
     aggregateSourceContents,
     aggregateMode,
+  );
+  const aggregateDisplayContent = buildAggregateContent(
+    aggregateSourceContents,
+    aggregateMode,
+    aggregateSourcePaths,
   );
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -338,15 +445,55 @@ export const DocsExplorer = ({
     let frame = 0;
     const update = () => {
       frame = 0;
-      const heading = body.querySelector('h1');
-      const text = heading?.textContent ?? '';
+      const barBottom = bar.getBoundingClientRect().bottom;
+      // In the combined view the bar follows the section under it: the last
+      // marker at or above the bar's edge, else the first.
+      const markers = Array.from(
+        body.querySelectorAll<HTMLElement>(`[${AGGREGATE_SECTION_ATTR}]`),
+      );
+      let sectionIndex = -1;
+      markers.forEach((marker, index) => {
+        if (marker.getBoundingClientRect().top <= barBottom + SECTION_EDGE_PX)
+          sectionIndex = index;
+      });
+      if (markers.length > 0 && sectionIndex === -1) sectionIndex = 0;
+      const section = markers[sectionIndex];
+      const nextSection = markers[sectionIndex + 1];
+      const heading = section
+        ? Array.from(body.querySelectorAll('h1')).find(
+            h1 =>
+              section.compareDocumentPosition(h1) &
+                Node.DOCUMENT_POSITION_FOLLOWING &&
+              !(
+                nextSection &&
+                nextSection.compareDocumentPosition(h1) &
+                  Node.DOCUMENT_POSITION_FOLLOWING
+              ),
+          )
+        : body.querySelector('h1');
+      const sectionPath = section?.getAttribute(AGGREGATE_SECTION_ATTR);
+      if (
+        sectionPath &&
+        sectionPath !== activeSectionRef.current &&
+        Date.now() > programmaticScrollUntilRef.current
+      ) {
+        activeSectionRef.current = sectionPath;
+        setActiveSection(sectionPath);
+      }
+      // Collapsed and flat modes leave no h1, so the section's marker title
+      // stands in, fully shown.
+      const fallbackTitle = heading
+        ? null
+        : section?.getAttribute(AGGREGATE_TITLE_ATTR);
+      const text = heading?.textContent ?? fallbackTitle ?? '';
       if (label.textContent !== text) label.textContent = text;
       if (!heading) {
-        label.style.opacity = '0';
+        label.style.opacity = fallbackTitle ? '1' : '0';
+        label.style.transform = 'none';
         return;
       }
       const { top, height } = heading.getBoundingClientRect();
-      const hidden = bar.getBoundingClientRect().bottom - top;
+      const hidden = barBottom - top;
       const progress = Math.min(Math.max(hidden / height, 0), 1);
       label.style.opacity = String(progress);
       label.style.transform = `translateY(${(1 - progress) * 0.5}rem)`;
@@ -376,16 +523,53 @@ export const DocsExplorer = ({
     setSelectedPaths(prev =>
       prev.includes(path) ? prev.filter(p => p !== path) : [...prev, path],
     );
+    setViewingSelection(true);
+    setShowGraph(false);
   }, []);
 
   const clearSelection = () => setSelectedPaths([]);
 
-  const selectAll = () => setSelectedPaths(flattenFilePaths(nodes));
+  // Shown while a single note or the graph covers the combined view; returns
+  // to it at the section the user was last on.
+  const returnToSelection = () => {
+    setViewingSelection(true);
+    setShowGraph(false);
+    setMobilePanel('content');
+    if (activeSection && selectedPaths.includes(activeSection))
+      setScrollToSection(activeSection);
+  };
 
   const toggleMultiSelectMode = () => {
     if (multiSelectMode) clearSelection();
-    setMultiSelectMode(prev => !prev);
+    const next = !multiSelectMode;
+    setMultiSelectMode(next);
+    if (next)
+      window.localStorage.setItem(MULTI_SELECT_STORAGE_KEY, MULTI_SELECT_ON);
+    else window.localStorage.removeItem(MULTI_SELECT_STORAGE_KEY);
   };
+
+  // Restored after mount so server and first client render agree; only apps
+  // that offer multi-select read it.
+  useEffect(() => {
+    if (!enableMultiSelect) return;
+    if (
+      window.localStorage.getItem(MULTI_SELECT_STORAGE_KEY) === MULTI_SELECT_ON
+    )
+      setMultiSelectMode(true);
+  }, [enableMultiSelect]);
+
+  // Saving waits until the restore below has run, so the empty initial
+  // selection cannot overwrite what was stored.
+  const selectionRestoredRef = useRef(false);
+  useEffect(() => {
+    if (!enableMultiSelect || !selectionRestoredRef.current) return;
+    if (multiSelectMode && selectedPaths.length > 0)
+      window.localStorage.setItem(
+        MULTI_SELECT_PATHS_STORAGE_KEY,
+        JSON.stringify(selectedPaths),
+      );
+    else window.localStorage.removeItem(MULTI_SELECT_PATHS_STORAGE_KEY);
+  }, [enableMultiSelect, multiSelectMode, selectedPaths]);
 
   const handleConfirmDeleteSelected = async () => {
     if (!onDeleteSelected) return;
@@ -399,10 +583,12 @@ export const DocsExplorer = ({
     let cancelled = false;
     setIsLoadingAggregate(true);
     setAggregateError(null);
-    Promise.all(selectedPaths.map(getContent))
+    const paths = selectedPaths;
+    Promise.all(paths.map(getContent))
       .then(contents => {
         if (cancelled) return;
         setAggregateSourceContents(contents);
+        setAggregateSourcePaths(paths);
       })
       .catch(err => {
         if (cancelled) return;
@@ -421,9 +607,9 @@ export const DocsExplorer = ({
   const openFile = useCallback(
     async (
       pathWithHash: string,
-      { recordHistory = true, syncUrl = true } = {},
+      { recordHistory = true, syncUrl = true, keepGraph = false } = {},
     ) => {
-      setShowGraph(false);
+      if (!keepGraph) setShowGraph(false);
       const [path, hash] = pathWithHash.split(HASH_SEP);
       const previous = selectedPathRef.current;
       if (recordHistory && previous !== path) {
@@ -435,7 +621,10 @@ export const DocsExplorer = ({
       // whatever's already in the URL alone, so a direct load of `?file=...#foo`
       // isn't clobbered by the initial mount echoing the file back into the URL.
       if (hash !== undefined) window.location.hash = hash;
-      setSelectedPaths([]);
+      // Opening a file keeps any multi-select selection, so the user can read
+      // notes while picking; the pane switches back to the combined view the
+      // next time a checkbox changes.
+      setViewingSelection(false);
       setSelectedPath(path);
       setMobilePanel('content');
       if (syncUrl) urlSync?.set(path);
@@ -467,6 +656,64 @@ export const DocsExplorer = ({
     (pathWithHash: string) => openFile(pathWithHash),
     [openFile],
   );
+
+  // A sidebar click on a file that is part of a multi-file selection jumps to
+  // its section of the combined view instead of opening it alone. With the
+  // graph open, either kind of click keeps the graph and only moves its focus
+  // to the file; clicking a node inside the graph still opens the note.
+  const selectSidebarFile = (path: string) => {
+    if (
+      multiSelectMode &&
+      selectedPaths.length > 1 &&
+      selectedPaths.includes(path)
+    ) {
+      setViewingSelection(true);
+      setMobilePanel('content');
+      if (!showGraph) setScrollToSection(path);
+      setActiveSection(path);
+      // The URL still names the clicked file, so a refresh in multi-select
+      // mode returns to this section of the combined view. Replacing keeps
+      // section jumps out of the back stack.
+      urlSync?.set(path, { replace: true });
+      return;
+    }
+    openFile(path, { keepGraph: showGraph });
+  };
+
+  useEffect(() => {
+    if (!scrollToSection || !showSelection || isLoadingAggregate) return;
+    // The viewer writes its HTML after this render, so on a fresh load the
+    // marker can appear a few frames late; keep looking for a short while.
+    let frame = 0;
+    let attempts = 0;
+    const tryScroll = () => {
+      const scroller = contentScrollRef.current;
+      const marker = contentBodyRef.current?.querySelector(
+        `[${AGGREGATE_SECTION_ATTR}="${CSS.escape(scrollToSection)}"]`,
+      );
+      if (!scroller || !marker) {
+        if (++attempts < SECTION_SCROLL_MAX_FRAMES)
+          frame = requestAnimationFrame(tryScroll);
+        return;
+      }
+      // The content bar stays pinned at the top, so land just below it.
+      const top =
+        marker.getBoundingClientRect().top -
+        scroller.getBoundingClientRect().top +
+        scroller.scrollTop -
+        (contentBarRef.current?.offsetHeight ?? 0);
+      programmaticScrollUntilRef.current = Date.now() + SMOOTH_SCROLL_MS;
+      scroller.scrollTo({ top, behavior: 'smooth' });
+      setScrollToSection(null);
+    };
+    frame = requestAnimationFrame(tryScroll);
+    return () => cancelAnimationFrame(frame);
+  }, [
+    scrollToSection,
+    showSelection,
+    isLoadingAggregate,
+    aggregateDisplayContent,
+  ]);
 
   const showRoot = ({ syncUrl = true } = {}) => {
     contentRequestIdRef.current++;
@@ -526,6 +773,36 @@ export const DocsExplorer = ({
       setMobilePanel('content');
     }
   }, [urlSync, selectFile]);
+
+  // Ticked files are restored once the tree has loaded, keeping only paths
+  // that still exist. Declared after the initial URL open so that, when both
+  // run on mount, a refresh in multi-select mode lands on the combined view
+  // rather than the `?file=` note.
+  useEffect(() => {
+    if (!enableMultiSelect || selectionRestoredRef.current) return;
+    if (nodes.length === 0) return;
+    selectionRestoredRef.current = true;
+    if (
+      window.localStorage.getItem(MULTI_SELECT_STORAGE_KEY) !== MULTI_SELECT_ON
+    )
+      return;
+    const existing = new Set(flattenFilePaths(nodes));
+    const stored = parseStoredPaths(
+      window.localStorage.getItem(MULTI_SELECT_PATHS_STORAGE_KEY),
+    ).filter(path => existing.has(path));
+    if (stored.length === 0) return;
+    setSelectedPaths(stored);
+    setViewingSelection(true);
+    setShowGraph(false);
+    setMobilePanel('content');
+    // `?file=` names the section the user was on when it is one of the ticked
+    // files; scroll back to it once the combined view renders.
+    const initial = urlSync?.get()?.split(HASH_SEP)[0];
+    if (initial && stored.includes(initial)) {
+      setScrollToSection(initial);
+      setActiveSection(initial);
+    }
+  }, [enableMultiSelect, nodes, urlSync]);
 
   const showSidebarOnMobile = () => setMobilePanel('sidebar');
 
@@ -590,7 +867,7 @@ export const DocsExplorer = ({
     if (event.key === KEY_ENTER) {
       if (isSearching || searchResults.length === 0) return;
       event.preventDefault();
-      selectFile(searchResults[0].path);
+      selectSidebarFile(searchResults[0].path);
       return;
     }
     if (event.key === KEY_ESCAPE && searchQuery) {
@@ -737,7 +1014,7 @@ export const DocsExplorer = ({
                     <DropdownMenu.RadioGroup
                       value={aggregateMode}
                       onValueChange={value =>
-                        setAggregateMode(value as AggregateMode)
+                        updateAggregateMode(value as AggregateMode)
                       }
                     >
                       {(Object.values(AGGREGATE_MODE) as AggregateMode[]).map(
@@ -754,7 +1031,7 @@ export const DocsExplorer = ({
                 <DropdownMenu.Item
                   onSelect={() =>
                     navigator.clipboard.writeText(
-                      hasSelection ? aggregateContent : content,
+                      showSelection ? aggregateContent : content,
                     )
                   }
                 >
@@ -831,7 +1108,29 @@ export const DocsExplorer = ({
                       onClick={onCreate}
                     />
                   )}
-                  {(enableMultiSelect || hasSidebarActions) && (
+                  {enableMultiSelect && (
+                    // Styled like IconButton (the graph toggle); react-lib's
+                    // icon set has no checkbox glyph.
+                    <Button
+                      size="icon"
+                      variant={multiSelectMode ? 'default' : 'ghost'}
+                      aria-pressed={multiSelectMode}
+                      aria-label={
+                        multiSelectMode
+                          ? COPY.TURN_OFF_MULTI_SELECT
+                          : COPY.SELECT_MULTIPLE
+                      }
+                      title={
+                        multiSelectMode
+                          ? COPY.TURN_OFF_MULTI_SELECT
+                          : COPY.SELECT_MULTIPLE
+                      }
+                      onClick={toggleMultiSelectMode}
+                    >
+                      <SquareCheckBig size={MULTI_SELECT_ICON_SIZE} />
+                    </Button>
+                  )}
+                  {hasSidebarActions && (
                     <DropdownMenu.Root>
                       <DropdownMenu.Trigger>
                         <IconButton
@@ -841,16 +1140,6 @@ export const DocsExplorer = ({
                         />
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content>
-                        {enableMultiSelect && (
-                          <DropdownMenu.Item onSelect={toggleMultiSelectMode}>
-                            {multiSelectMode
-                              ? COPY.TURN_OFF_MULTI_SELECT
-                              : COPY.SELECT_MULTIPLE}
-                          </DropdownMenu.Item>
-                        )}
-                        {enableMultiSelect && hasSidebarActions && (
-                          <DropdownMenu.Separator />
-                        )}
                         {sidebarActions?.map(action => (
                           <DropdownMenu.Item
                             key={action.label}
@@ -894,13 +1183,15 @@ export const DocsExplorer = ({
                       : ''}
                   </span>
                   <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={selectAll}
-                      className="text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                      {COPY.SELECT_ALL}
-                    </button>
+                    {hasSelection && (!viewingSelection || showGraph) && (
+                      <button
+                        type="button"
+                        onClick={returnToSelection}
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        {COPY.BACK_TO_SELECTION}
+                      </button>
+                    )}
                     {hasSelection && (
                       <button
                         type="button"
@@ -937,9 +1228,12 @@ export const DocsExplorer = ({
                   ) : (
                     <SearchResultList
                       results={searchResults}
-                      onResultClick={selectFile}
-                      selectedPath={selectedPath || undefined}
+                      onResultClick={selectSidebarFile}
+                      selectedPath={highlightedPath || undefined}
                       query={searchQuery}
+                      selectedPaths={selectedPaths}
+                      onToggleSelect={toggleSelectPath}
+                      multiSelectMode={multiSelectMode}
                     />
                   )}
                 </div>
@@ -947,8 +1241,8 @@ export const DocsExplorer = ({
                 <div className="px-2 pb-2">
                   <FileTree
                     nodes={nodes}
-                    onFileSelect={selectFile}
-                    selectedPath={selectedPath || undefined}
+                    onFileSelect={selectSidebarFile}
+                    selectedPath={highlightedPath || undefined}
                     selectedPaths={selectedPaths}
                     onToggleSelect={toggleSelectPath}
                     multiSelectMode={multiSelectMode}
@@ -969,7 +1263,7 @@ export const DocsExplorer = ({
                 {renderGraph(selectFile)}
               </div>
             </div>
-          ) : !selectedPath && !hasSelection ? (
+          ) : !selectedPath && !showSelection ? (
             <>
               {showSidebarButton && (
                 <div className={`absolute ${CONTENT_BAR_INSET_LEFT_CLS} z-10`}>
@@ -983,11 +1277,11 @@ export const DocsExplorer = ({
               )}
               <CenteredMessage>{emptyMessage}</CenteredMessage>
             </>
-          ) : (hasSelection ? isLoadingAggregate : isLoadingContent) ? null : (
-              hasSelection ? aggregateError : contentError
+          ) : (showSelection ? isLoadingAggregate : isLoadingContent) ? null : (
+              showSelection ? aggregateError : contentError
             ) ? (
             <CenteredMessage tone="error">
-              {hasSelection ? aggregateError : contentError}
+              {showSelection ? aggregateError : contentError}
             </CenteredMessage>
           ) : (
             <div
@@ -998,9 +1292,9 @@ export const DocsExplorer = ({
               <div ref={contentBodyRef} className="flex-1 min-h-0">
                 {renderContent ? (
                   renderContent(
-                    hasSelection ? aggregateContent : content,
+                    showSelection ? aggregateDisplayContent : content,
                     selectFile,
-                    hasSelection
+                    showSelection
                       ? selectedPaths
                       : selectedPath
                         ? [selectedPath]
@@ -1008,7 +1302,7 @@ export const DocsExplorer = ({
                   )
                 ) : (
                   <pre className="whitespace-pre-wrap px-4 sm:px-6 py-4 text-sm">
-                    {hasSelection ? aggregateContent : content}
+                    {showSelection ? aggregateContent : content}
                   </pre>
                 )}
               </div>
@@ -1114,9 +1408,9 @@ const FileTreeNode = ({
   const handleClick = () => {
     if (node.type === NODE_TYPE_DIRECTORY) {
       expand(!isExpanded);
-    } else if (multiSelectMode) {
-      onToggleSelect(node.path);
     } else {
+      // In multi-select mode only the checkbox changes the selection, so a
+      // row click still opens the note.
       onFileSelect(node.path);
     }
   };
@@ -1124,7 +1418,7 @@ const FileTreeNode = ({
   return (
     <div>
       <div
-        className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-muted dark:hover:bg-muted rounded ${
+        className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-muted dark:hover:bg-muted ${ROW_PRESSED_CLS} rounded ${
           isSelected ? 'bg-blue-100 dark:bg-blue-900' : ''
         }`}
         style={{ paddingLeft: `${depth * INDENT_PX + INDENT_BASE_PX}px` }}
@@ -1186,11 +1480,17 @@ const SearchResultList = ({
   onResultClick,
   selectedPath,
   query,
+  selectedPaths,
+  onToggleSelect,
+  multiSelectMode,
 }: {
   results: DocsSearchResult[];
   onResultClick: (path: string) => void;
   selectedPath?: string;
   query: string;
+  selectedPaths: string[];
+  onToggleSelect: (path: string) => void;
+  multiSelectMode: boolean;
 }) => {
   if (results.length === 0) return null;
   return (
@@ -1198,12 +1498,11 @@ const SearchResultList = ({
       {results.map((result, index) => {
         const isFilename = result.matchType === MATCH_TYPE_FILENAME;
         const isSelected = selectedPath === result.path;
-        return (
+        const resultButton = (
           <button
-            key={result.path}
             type="button"
             data-search-result-index={index}
-            className={`w-full text-left flex flex-col gap-1 px-3 py-2 cursor-pointer hover:bg-muted dark:hover:bg-muted rounded border-b border-border focus:outline-none focus:bg-muted dark:focus:bg-muted ${
+            className={`w-full min-w-0 text-left flex flex-col gap-1 px-3 py-2 cursor-pointer hover:bg-muted dark:hover:bg-muted ${ROW_PRESSED_CLS} rounded border-b border-border focus:outline-none focus:bg-muted dark:focus:bg-muted ${
               isSelected ? 'bg-blue-100 dark:bg-blue-900' : ''
             }`}
             onClick={() => onResultClick(result.path)}
@@ -1227,6 +1526,22 @@ const SearchResultList = ({
               </div>
             )}
           </button>
+        );
+        // A checkbox cannot sit inside the result button, so in multi-select
+        // mode it goes beside it; the button still opens the note.
+        return multiSelectMode ? (
+          <div key={result.path} className="flex items-start gap-1">
+            <input
+              type="checkbox"
+              aria-label={`Select ${result.name}`}
+              className="mt-3 ml-1 h-3.5 w-3.5 flex-shrink-0"
+              checked={selectedPaths.includes(result.path)}
+              onChange={() => onToggleSelect(result.path)}
+            />
+            {resultButton}
+          </div>
+        ) : (
+          <Fragment key={result.path}>{resultButton}</Fragment>
         );
       })}
     </Fragment>

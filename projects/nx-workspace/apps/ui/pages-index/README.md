@@ -11,6 +11,7 @@
 - Build Tool - Vite
 - External libs
   - `@tailwindcss/typography`
+  - d3-force
   - lucide-react
   - React Router
   - Tailwind CSS

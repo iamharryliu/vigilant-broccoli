@@ -11,6 +11,7 @@ import { GamesPage } from './pages/GamesPage';
 import { HomePage } from './pages/HomePage';
 import { StatusPage } from './pages/StatusPage';
 import { RepoTimelinePage } from './pages/RepoTimelinePage';
+import { ProjectGraphPage } from './pages/ProjectGraphPage';
 import { GithubReposPage } from './pages/GithubReposPage';
 import { GithubReadmePage } from './pages/GithubReadmePage';
 import { DockerImagesPage } from './pages/DockerImagesPage';
@@ -36,6 +37,7 @@ import {
   CAREER_EXPERIENCE_ROUTE,
   CHANGELOG_ROUTE,
   DEPLOYMENTS_ROUTE,
+  PROJECT_GRAPH_ROUTE,
   STATUS_ROUTE,
   WEB_APPLICATIONS_ROUTE,
 } from './consts/routes';
@@ -111,6 +113,7 @@ function ProjectsRoutes() {
       <Route path={DEPLOYMENTS_ROUTE} element={<DeploymentsPage />} />
       <Route path={CHANGELOG_ROUTE} element={<ChangelogPage />} />
       <Route path="/repo-timeline" element={<RepoTimelinePage />} />
+      <Route path={PROJECT_GRAPH_ROUTE} element={<ProjectGraphPage />} />
       <Route
         path={`${LEGACY_OPEN_SOURCE_PREFIX}/*`}
         element={<LegacyOpenSourceRedirect />}

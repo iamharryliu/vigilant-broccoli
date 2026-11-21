@@ -29,7 +29,7 @@ Keep failed loads distinct from confirmed-empty state in `kanban.component.tsx`:
 
 `kanban.component.tsx` owns the `DndContext` around lanes using `GoogleTasksComponent` with `disableInternalDndContext`. Its handlers and `TaskDragOverlay` read CheckList's untyped payload: `type: 'task'`, `task`, `taskListId`, and droppable `type: 'taskList'`.
 
-Despite CheckList's generic typed props, these literals remain task-specific for this consumer. If changing `libs/@vigilant-broccoli/react-lib/src/components/CheckList.tsx`'s payload, update the kanban handlers together; TypeScript does not check this coupling.
+Despite CheckList's generic typed props, these literals remain task-specific for this consumer. If changing `libs/@vigilant-broccoli/react-lib-checklist/src/lib/CheckList.tsx`'s payload, update the kanban handlers together; TypeScript does not check this coupling.
 
 ### Native server dependencies can fail under PM2's Node
 
