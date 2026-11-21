@@ -31,7 +31,8 @@ export const DEPENDENCY_KIND = {
 } as const;
 export type DependencyKind =
   (typeof DEPENDENCY_KIND)[keyof typeof DEPENDENCY_KIND];
-export const DEPENDENCY_KINDS: DependencyKind[] = Object.values(DEPENDENCY_KIND);
+export const DEPENDENCY_KINDS: DependencyKind[] =
+  Object.values(DEPENDENCY_KIND);
 
 export const DEPENDENCY_KIND_LABEL_KEY: Record<DependencyKind, TranslationKey> =
   {
