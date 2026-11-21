@@ -2,8 +2,7 @@ import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { WhereIsItem } from '../../lib/types';
 import { WhereIsFormValues } from './where-is-form';
 import { throwIfNotOk, uploadPreviewImages } from './upload-images';
-
-export const WHERE_IS_ENDPOINT = '/api/where-is';
+import { WHERE_IS_ENDPOINT } from '../../lib/routes';
 
 export const toWhereIsFormValues = (item: WhereIsItem): WhereIsFormValues => ({
   id: item.id,

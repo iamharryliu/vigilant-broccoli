@@ -115,6 +115,15 @@ export const swaggerSpec = createSwaggerSpec({
       MEDIA_SERVICE_ENDPOINT.WHERE_IS_LLM_IMAGE,
       'Auto-oriented, fit inside 1920px, mozjpeg quality 85. The LLM copy fits inside 512px at quality 60 and is not auto-oriented.',
     ),
+    [`/${MEDIA_SERVICE_ENDPOINT.WHERE_IS_THUMBNAIL}`]: {
+      post: {
+        summary: 'Create a where-is list thumbnail',
+        description:
+          'Auto-oriented, fit inside 256px, mozjpeg quality 75. Same type and size limits as the archive image.',
+        requestBody: uploadBody(IMAGE_FILE_DESCRIPTION),
+        responses: jpegResponses('Thumbnail JPEG'),
+      },
+    },
     [`/${MEDIA_SERVICE_ENDPOINT.DOCS_FILE}`]: {
       post: {
         summary: 'Process a document file for storage',

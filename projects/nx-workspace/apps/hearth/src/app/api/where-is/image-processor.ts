@@ -50,6 +50,20 @@ export const compressForLlm = async (
   return res.json();
 };
 
+export const createThumbnail = async (
+  image: ProcessedImage,
+): Promise<ProcessedImage> => {
+  const res = await callMediaService(
+    MEDIA_SERVICE_ENDPOINT.WHERE_IS_THUMBNAIL,
+    image,
+    toValidationError,
+  );
+  return {
+    buffer: Buffer.from(await res.arrayBuffer()),
+    mimeType: 'image/jpeg',
+  };
+};
+
 export const processImage = async (
   image: StagedImage,
 ): Promise<ProcessedImage> => {

@@ -3,10 +3,18 @@ import {
   createServerClient,
   getBearerToken,
 } from '../../../../libs/supabase-server';
-import { uploadImage, deleteImage, readImage, getImageUrl } from './r2';
 import {
+  uploadImage,
+  deleteImage,
+  readImage,
+  getImageUrls,
+  toThumbnailKey,
+} from './r2';
+import {
+  createThumbnail,
   processImage,
   validateImageCount,
+  ProcessedImage,
   ImageValidationError,
 } from './image-processor';
 import { MAX_IMAGE_SIZE_BYTES } from './limits';
@@ -23,6 +31,12 @@ interface StagedImageRef {
   mimeType: string;
 }
 
+interface StoredImage {
+  r2_key: string;
+  thumbnail_r2_key: string | null;
+  sort_order: number;
+}
+
 const makeR2Key = (itemId: string) =>
   `where-is/${itemId}/${crypto.randomUUID()}.jpg`;
 
@@ -37,6 +51,7 @@ const TIMEOUT_ERROR_NAME = 'TimeoutError';
 const SAVE_STEP = {
   READ: 'read',
   PROCESS: 'process',
+  THUMBNAIL: 'thumbnail',
   DELETE_STAGED: 'delete-staged',
   UPLOAD_FINAL: 'upload-final',
 } as const;
@@ -142,6 +157,28 @@ const readAndProcessStagedImages = async (images: StagedImageRef[]) => {
   );
 };
 
+// Best effort: a missing thumbnail only makes the list fall back to the full
+// image, so its failure never fails the save.
+const saveThumbnail = (r2Key: string, image: ProcessedImage) => {
+  const thumbnailKey = toThumbnailKey(r2Key);
+  return runStep(SAVE_STEP.THUMBNAIL, thumbnailKey, async () => {
+    const thumbnail = await withTimeout(
+      createThumbnail(image),
+      PROCESS_TIMEOUT_MS,
+    );
+    await uploadImage(thumbnailKey, thumbnail.buffer, thumbnail.mimeType);
+    return thumbnailKey;
+  }).catch(() => null);
+};
+
+const deleteStoredImages = (images: Omit<StoredImage, 'sort_order'>[]) =>
+  Promise.allSettled(
+    images.flatMap(img => [
+      deleteImage(img.r2_key),
+      ...(img.thumbnail_r2_key ? [deleteImage(img.thumbnail_r2_key)] : []),
+    ]),
+  );
+
 const saveFinalImages = (
   supabase: ReturnType<typeof createServerClient>,
   itemId: string,
@@ -152,10 +189,14 @@ const saveFinalImages = (
     processedImages.map((img, index) => {
       const r2Key = makeR2Key(itemId);
       return runStep(SAVE_STEP.UPLOAD_FINAL, r2Key, async () => {
-        await uploadImage(r2Key, img.buffer, img.mimeType);
+        const [thumbnailKey] = await Promise.all([
+          saveThumbnail(r2Key, img),
+          uploadImage(r2Key, img.buffer, img.mimeType),
+        ]);
         const { error } = await supabase.from('where_is_images').insert({
           item_id: itemId,
           r2_key: r2Key,
+          thumbnail_r2_key: thumbnailKey,
           mime_type: img.mimeType,
           sort_order: firstSortOrder + index,
         });
@@ -180,27 +221,42 @@ export async function GET(request: NextRequest) {
 
   const { data: items } = await query;
 
-  try {
-    const result = await Promise.all(
-      (items ?? []).map(async item => {
-        const sortedImages = (
-          item.where_is_images as { r2_key: string; sort_order: number }[]
-        ).sort((a, b) => a.sort_order - b.sort_order);
+  const rows = (items ?? []).map(item => ({
+    item,
+    images: (item.where_is_images as StoredImage[]).sort(
+      (a, b) => a.sort_order - b.sort_order,
+    ),
+  }));
+  // A list row shows one thumbnail, so only a single item's request signs its
+  // full-size images; rows saved before thumbnails fall back to the full image.
+  const coverKey = (images: StoredImage[]) =>
+    images[0] ? (images[0].thumbnail_r2_key ?? images[0].r2_key) : null;
+  const fullKeys = id
+    ? rows.flatMap(row => row.images.map(img => img.r2_key))
+    : [];
+  const coverKeys = rows
+    .map(row => coverKey(row.images))
+    .filter((key): key is string => key !== null);
 
-        return {
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          tags: item.tags,
-          homeId: item.home_id,
-          imageUrls: await Promise.all(
-            sortedImages.map(img => getImageUrl(img.r2_key)),
-          ),
-          imageKeys: sortedImages.map(img => img.r2_key),
-          createdAt: item.created_at,
-        };
-      }),
-    );
+  try {
+    const keys = [...new Set([...fullKeys, ...coverKeys])];
+    const signed = await getImageUrls(keys);
+    const urlByKey = new Map(keys.map((key, i) => [key, signed[i]]));
+
+    const result = rows.map(({ item, images }) => {
+      const cover = coverKey(images);
+      return {
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        tags: item.tags,
+        homeId: item.home_id,
+        imageUrls: id ? images.map(img => urlByKey.get(img.r2_key) ?? '') : [],
+        imageKeys: images.map(img => img.r2_key),
+        thumbnailUrl: cover ? (urlByKey.get(cover) ?? null) : null,
+        createdAt: item.created_at,
+      };
+    });
 
     return Response.json(id ? (result[0] ?? null) : result);
   } catch (e) {
@@ -272,7 +328,7 @@ export async function POST(request: NextRequest) {
     return saveErrorResponse(e);
   }
 
-  return Response.json({ success: true });
+  return Response.json({ success: true, id: item.id });
 }
 
 export async function PATCH(request: NextRequest) {
@@ -318,7 +374,7 @@ export async function PATCH(request: NextRequest) {
   if (removedImageKeys?.length) {
     const { data: allImages } = await supabase
       .from('where_is_images')
-      .select('id, r2_key')
+      .select('id, r2_key, thumbnail_r2_key')
       .eq('item_id', id);
 
     const removed = new Set(removedImageKeys);
@@ -332,7 +388,7 @@ export async function PATCH(request: NextRequest) {
           'id',
           toRemove.map(img => img.id),
         );
-      await Promise.allSettled(toRemove.map(img => deleteImage(img.r2_key)));
+      await deleteStoredImages(toRemove);
     }
   }
 
@@ -391,7 +447,7 @@ export async function DELETE(request: NextRequest) {
 
   const { data: images } = await supabase
     .from('where_is_images')
-    .select('r2_key')
+    .select('r2_key, thumbnail_r2_key')
     .eq('item_id', id);
 
   const { error: deleteError } = await supabase
@@ -406,7 +462,7 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  await Promise.allSettled((images ?? []).map(img => deleteImage(img.r2_key)));
+  await deleteStoredImages(images ?? []);
 
   return Response.json({ success: true });
 }

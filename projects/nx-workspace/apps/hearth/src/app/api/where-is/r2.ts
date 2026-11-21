@@ -26,7 +26,10 @@ const PRESIGNED_DOWNLOAD_EXPIRY_SECONDS = 3600;
 
 const UPLOAD_URL_PATH = 'upload-url';
 const DOWNLOAD_URL_PATH = 'download-url';
+const DOWNLOAD_URLS_PATH = 'download-urls';
 const DELETE_PATH = 'file';
+const JSON_MIME_TYPE = 'application/json';
+const THUMBNAIL_KEY_SUFFIX = '.thumb.jpg';
 const PROVIDER_PARAM = 'provider';
 const BUCKET_NAME_PARAM = 'bucketName';
 const FILE_NAME_PARAM = 'fileName';
@@ -126,3 +129,35 @@ export const deleteImage = async (key: string) => {
 
 export const getImageUrl = (key: string) =>
   presignedUrl(DOWNLOAD_URL_PATH, key, PRESIGNED_DOWNLOAD_EXPIRY_SECONDS);
+
+// One vb-express round trip for a whole list instead of one per image, which
+// also keeps a suspended Fly machine from waking once per request in flight.
+export const getImageUrls = async (keys: string[]): Promise<string[]> => {
+  if (!keys.length) return [];
+  const params = new URLSearchParams({
+    [PROVIDER_PARAM]: PROVIDER,
+    [BUCKET_NAME_PARAM]: BUCKET_NAME,
+  });
+  const response = await fetch(
+    `${BUCKET_API}/${DOWNLOAD_URLS_PATH}?${params}`,
+    {
+      method: HTTP_METHOD.POST,
+      headers: { ...API_HEADERS, [CONTENT_TYPE_HEADER]: JSON_MIME_TYPE },
+      body: JSON.stringify({
+        fileNames: keys,
+        expiresInSeconds: PRESIGNED_DOWNLOAD_EXPIRY_SECONDS,
+      }),
+      signal: AbortSignal.timeout(BUCKET_API_TIMEOUT_MS),
+    },
+  );
+  if (!response.ok) {
+    throw new Error(
+      `vb-express ${DOWNLOAD_URLS_PATH} failed: ${response.status}`,
+    );
+  }
+  const { urls } = (await response.json()) as { urls: string[] };
+  return urls;
+};
+
+export const toThumbnailKey = (key: string) =>
+  key.replace(/\.jpg$/, THUMBNAIL_KEY_SUFFIX);
