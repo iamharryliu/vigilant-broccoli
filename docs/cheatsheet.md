@@ -127,8 +127,10 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   vault:store-promotion-key <pem>  Store the production-promotion GitHub App key in Vault
 
 🔑 SECRETS
-  secret-rotation:all         Run the local rotations, dispatch ci-rotate-secrets, rotate the OCI key, then back up Vault to Bitwarden
-  secret-rotation:flyio       Rotate Fly.io token
+  secret-rotation:all         Run the local rotations (incl. the log shipper token), dispatch ci-rotate-secrets, rotate the OCI key, verify Loki health, then back up Vault to Bitwarden
+  secret-rotation:flyio       Rotate Fly.io deploy token (revokes only vb-deploy-token)
+  secret-rotation:fly-log-shipper  Rotate the log shipper's read-only Fly token, redeploy vb-log-shipper
+  secret-rotation:verify-observability  Fail unless loki.harryliu.dev/health is 200 (polls up to ~7 min)
   secret-rotation:gitea       Rotate Gitea CI token (scoped read:repository)
   secret-rotation:profile-deploy-key  Rotate profile repo deploy key, store in Vault
   secret-rotation:tf-cloud    Rotate HCP Terraform token (self-succession)
