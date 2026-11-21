@@ -2,40 +2,25 @@ import { betterAuth } from 'better-auth';
 import { apiKey } from '@better-auth/api-key';
 import pg from 'pg';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
-import {
-  SUPABASE_DB_HOST,
-  SUPABASE_DB_NAME,
-  SUPABASE_DB_PORT,
-  SUPABASE_DB_USER,
-} from '@vigilant-broccoli/infrastructure';
 
 const CLIENT_ORIGINS = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
   'https://sandbox.harryliu.dev',
 ];
-// Created by supabase/migrations; must match the schema those tables live in.
+// Created by neon/migrations; must match the schema those tables live in.
 const AUTH_SCHEMA = 'vb_express_auth';
 const MAX_POOL_CONNECTIONS = 3;
 
 const createPool = () => {
-  const connectionString = getEnvironmentVariable('DATABASE_URL');
   const pool = new pg.Pool({
-    ...(connectionString
-      ? { connectionString }
-      : {
-          host: SUPABASE_DB_HOST,
-          port: SUPABASE_DB_PORT,
-          user: SUPABASE_DB_USER,
-          password: getEnvironmentVariable('SUPABASE_DB_PASSWORD'),
-          database: SUPABASE_DB_NAME,
-          ssl: { rejectUnauthorized: false },
-        }),
+    connectionString: getEnvironmentVariable('DATABASE_URL'),
     max: MAX_POOL_CONNECTIONS,
   });
   // A SET per connection rather than the `options` startup parameter, which
-  // connection poolers are not guaranteed to forward. Caught so a failed SET
-  // surfaces as a query error instead of an unhandled rejection crashing boot.
+  // Neon's pooler rejects, so DATABASE_URL must be the direct (non-`-pooler`)
+  // host. Caught so a failed SET surfaces as a query error instead of an
+  // unhandled rejection crashing boot.
   pool.on('connect', client => {
     client
       .query(`SET search_path TO ${AUTH_SCHEMA}`)

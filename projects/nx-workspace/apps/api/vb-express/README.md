@@ -28,6 +28,7 @@
   - Google OAuth
   - Google reCAPTCHA
   - Google Tasks
+  - Neon
   - Supabase
   - Twilio
 

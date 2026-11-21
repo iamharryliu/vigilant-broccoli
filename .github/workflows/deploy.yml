@@ -221,6 +221,7 @@ jobs:
             kv/data/secrets SANITY_AUTH_TOKEN | SANITY_AUTH_TOKEN ;
             kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
             kv/data/secrets SUPABASE_DB_PASSWORD | SUPABASE_DB_PASSWORD ;
+            kv/data/secrets DATABASE_URL | DATABASE_URL ;
 
       - name: Fetch Cloudflare Access service token from Secret Manager
         id: cf-access
@@ -260,6 +261,20 @@ jobs:
           if [ -z "$DIRS" ]; then echo "no migration dirs found"; exit 0; fi
           echo "migrating: $DIRS"
           node --import tsx scripts/migrate.ts $DIRS
+
+      # Separate database from Supabase, so its migrations keep their own
+      # schema_migrations and are not part of the union above.
+      - name: Apply Neon migrations
+        if: steps.check.outputs.has_deployments == 'true'
+        working-directory: ./projects/nx-workspace
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+        run: |
+          DIRS=$(find apps -type d -path '*/neon/migrations' \
+            | sed 's/^/--migrations-dir=/' | tr '\n' ' ')
+          if [ -z "$DIRS" ]; then echo "no migration dirs found"; exit 0; fi
+          echo "migrating: $DIRS"
+          node --import tsx scripts/migrate.ts $DIRS --database-url-env=DATABASE_URL
 
       - name: Deploy affected apps
         if: steps.check.outputs.has_deployments == 'true'
