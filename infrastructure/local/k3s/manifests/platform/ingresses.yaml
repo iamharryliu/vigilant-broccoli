@@ -9,10 +9,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - manager.vigilant-broccoli.app
+        - manager.vigilant-broccoli.internal
       secretName: local-tls
   rules:
-    - host: manager.vigilant-broccoli.app
+    - host: manager.vigilant-broccoli.internal
       http:
         paths:
           - path: /
@@ -33,10 +33,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - grafana.vigilant-broccoli.app
+        - grafana.vigilant-broccoli.internal
       secretName: local-tls
   rules:
-    - host: grafana.vigilant-broccoli.app
+    - host: grafana.vigilant-broccoli.internal
       http:
         paths:
           - path: /
@@ -57,10 +57,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - loki.vigilant-broccoli.app
+        - loki.vigilant-broccoli.internal
       secretName: local-tls
   rules:
-    - host: loki.vigilant-broccoli.app
+    - host: loki.vigilant-broccoli.internal
       http:
         paths:
           - path: /
@@ -81,10 +81,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - images.vigilant-broccoli.app
+        - images.vigilant-broccoli.internal
       secretName: local-tls
   rules:
-    - host: images.vigilant-broccoli.app
+    - host: images.vigilant-broccoli.internal
       http:
         paths:
           - path: /
@@ -105,10 +105,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - headlamp.vigilant-broccoli.app
+        - headlamp.vigilant-broccoli.internal
       secretName: local-tls
   rules:
-    - host: headlamp.vigilant-broccoli.app
+    - host: headlamp.vigilant-broccoli.internal
       http:
         paths:
           - path: /
@@ -129,10 +129,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - job-hunt.vigilant-broccoli.app
+        - job-hunt.vigilant-broccoli.internal
       secretName: local-tls
   rules:
-    - host: job-hunt.vigilant-broccoli.app
+    - host: job-hunt.vigilant-broccoli.internal
       http:
         paths:
           - path: /

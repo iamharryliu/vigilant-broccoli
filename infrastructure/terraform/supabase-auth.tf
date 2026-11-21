@@ -50,7 +50,7 @@ resource "supabase_settings" "vb_auth" {
       "https://demo-employee-handler-ui.vercel.app/*",                      # employee-handler-ui demo (its only deploy)
       "http://localhost:3000/*",                                            # local-manager-next local dev
       "http://127.0.0.1:3000/*",                                            # local-manager-next local dev (127.0.0.1 form)
-      "https://manager.vigilant-broccoli.app/*",                            # local-manager-next prod (PM2)
+      "https://manager.vigilant-broccoli.internal/*",                       # local-manager-next prod (PM2)
       "https://staging-balloono.vigilant-broccoli.app/auth/callback",       # balloono staging (custom domain)
       "https://staging-balloono.vercel.app/*",                              # balloono staging
       "https://production-balloono.vercel.app/*",                           # balloono prod

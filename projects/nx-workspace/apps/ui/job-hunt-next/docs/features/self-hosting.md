@@ -40,7 +40,7 @@ Open `http://localhost:4300` and fill in the resume's name, email and contact de
 ## Run from Source
 
 - `nx run job-hunt-next:docker:up` builds the app and skill workdir, then `docker compose up -d --build` with `docker-compose.yml`. `docker:down` and `docker:logs` wrap compose; in this repo `pnpm job-hunt:docker:up` runs `scripts/shell/job-hunt-docker-up.sh`, which loads `CLAUDE_CODE_OAUTH_TOKEN` from Vault and sets `CAREER_DIR` to `notes/personal/career/` (the owner's `resume.json` and `career-experience.md`), mounted read-write as one directory because git and editors replace files with new inodes, which strands a single-file bind mount on a deleted copy until the container restarts
-- Copy `.env.example` to `.env` next to the compose file to set `JOB_APPLICATIONS_DIR` (host folder for application folders, default `~/Desktop/Job Applications`), `CAREER_DIR` (host folder holding `career-experience.md` and `resume.json`; unset, a `career` volume starts from the sample profile), `JOB_HUNT_PORT` (host port, default 4300), `JOB_HUNT_MODEL`, `JOB_HUNT_MAX_CONCURRENT_RUNS` and `JOB_HUNT_FRAME_ANCESTORS`. In this repo the launcher script sets `CAREER_DIR` and adds `https://manager.vigilant-broccoli.app` to the frame ancestors
+- Copy `.env.example` to `.env` next to the compose file to set `JOB_APPLICATIONS_DIR` (host folder for application folders, default `~/Desktop/Job Applications`), `CAREER_DIR` (host folder holding `career-experience.md` and `resume.json`; unset, a `career` volume starts from the sample profile), `JOB_HUNT_PORT` (host port, default 4300), `JOB_HUNT_MODEL`, `JOB_HUNT_MAX_CONCURRENT_RUNS` and `JOB_HUNT_FRAME_ANCESTORS`. In this repo the launcher script sets `CAREER_DIR` and adds `https://manager.vigilant-broccoli.internal` to the frame ancestors
 - The image (`node:24-bookworm-slim`) adds Claude Code, `@playwright/test` with Chromium and its system libraries, the skill workdir and the standalone Next.js server
 - `deploy` (on every push to `main` that affects the app or its libs) and `deploy:production` push the image to Docker Hub through `deploy-container`, tagged `latest` and the commit SHA. `deploy-container` first runs `check-personal-data`, which fails if the resume lib's owner email or phone appears in the build output the image copies
 
@@ -64,7 +64,7 @@ The run's `--add-dir` covers the directories of both paths.
 ## Embedding and Request Checks
 
 - `src/proxy.ts` sends `Content-Security-Policy: frame-ancestors <JOB_HUNT_FRAME_ANCESTORS>` on every page and refuses `POST`/`PUT`/`PATCH`/`DELETE` under `/api/` with 403 when `Sec-Fetch-Site` is not `same-origin` or `Origin` differs from the host (`X-Forwarded-Host` behind a proxy). The app has no login, so this is what stops another site's page from clearing a career file or starting a run; requests without either header (curl) pass
-- In this repo the container is served at `https://job-hunt.vigilant-broccoli.app` by the local k3s ingress (`infrastructure/local`), which local-manager-next's Job Hunt page embeds. Requests from inside the iframe are same-origin to that host, so they pass
+- In this repo the container is served at `https://job-hunt.vigilant-broccoli.internal` by the local k3s ingress (`infrastructure/local`), which local-manager-next's Job Hunt page embeds. Requests from inside the iframe are same-origin to that host, so they pass
 
 ## Nuances
 

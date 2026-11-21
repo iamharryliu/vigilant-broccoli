@@ -37,5 +37,5 @@
 
 ## Manual setup
 
-- Spotify Developer Dashboard app (same one `dldjmusic`'s Python script uses) needs `https://manager.vigilant-broccoli.app/music/app/api/spotify/auth/callback` added as a Redirect URI
+- Spotify Developer Dashboard app (same one `dldjmusic`'s Python script uses) needs `https://manager.vigilant-broccoli.internal/music/app/api/spotify/auth/callback` added as a Redirect URI
 - `SPOTIFY_REDIRECT_BASE_URL` is a plain non-secret constant in `ecosystem.config.js`, not Vault. Under `serve` it is unset and the `x-forwarded-host` fallback gives the manager's dev origin, which must also be registered as a Redirect URI to test the flow locally
