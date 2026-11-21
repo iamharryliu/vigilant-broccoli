@@ -22,15 +22,11 @@ import { CRUDItemFormDialog } from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { WhereIsItem } from '../../lib/types';
-import { ROUTES } from '../../lib/routes';
+import { ROUTES, WHERE_IS_ENDPOINT } from '../../lib/routes';
 import { WhereIsFormComponent, WhereIsFormValues } from './where-is-form';
 import { WhereIsLabel } from './where-is-label';
 import { sortTags } from './where-is-tags';
-import {
-  saveWhereIsUpdate,
-  toWhereIsFormValues,
-  WHERE_IS_ENDPOINT,
-} from './save-where-is';
+import { saveWhereIsUpdate, toWhereIsFormValues } from './save-where-is';
 
 const WHERE_IS_COPY = {
   LIST: { TITLE: 'Storage Areas', EMPTY_MESSAGE: '' },

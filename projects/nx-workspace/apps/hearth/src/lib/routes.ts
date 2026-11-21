@@ -1,4 +1,5 @@
 export const WHERE_IS_ITEM_PARAM = 'item';
+export const WHERE_IS_ENDPOINT = '/api/where-is';
 
 export const ROUTES = {
   HOME: '/',

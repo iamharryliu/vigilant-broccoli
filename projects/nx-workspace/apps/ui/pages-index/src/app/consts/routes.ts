@@ -1,6 +1,7 @@
 export const STATUS_ROUTE = '/status';
 export const DEPLOYMENTS_ROUTE = '/deployments';
 export const CHANGELOG_ROUTE = '/changelog';
+export const PROJECT_GRAPH_ROUTE = '/project-graph';
 export const CAREER_EXPERIENCE_ROUTE = '/personal-software-career-experience';
 export const WEB_APPLICATIONS_ROUTE = '/web-applications';
 export const toWebApplicationRoute = (id: string) =>
