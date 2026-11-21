@@ -173,6 +173,7 @@ export async function GET(request: NextRequest) {
         description: item.description,
         tags: item.tags,
         homeId: item.home_id,
+        roomId: item.room_id,
         imageUrls: id ? images.map(img => urlByKey.get(img.r2_key) ?? '') : [],
         imageKeys: images.map(img => img.r2_key),
         thumbnailUrl: cover ? (urlByKey.get(cover) ?? null) : null,
@@ -198,11 +199,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { title, description, tags, images, homeId, userId } =
+  const { title, description, tags, roomId, images, homeId, userId } =
     (await request.json()) as {
       title: string;
       description: string;
       tags: string[];
+      roomId?: string | null;
       images: StagedImageRef[];
       homeId: number;
       userId: string;
@@ -227,7 +229,14 @@ export async function POST(request: NextRequest) {
 
   const { data: item, error: insertError } = await supabase
     .from('where_is_items')
-    .insert({ title, description, tags, user_id: userId, home_id: homeId })
+    .insert({
+      title,
+      description,
+      tags,
+      room_id: roomId,
+      user_id: userId,
+      home_id: homeId,
+    })
     .select()
     .single();
 
@@ -267,6 +276,7 @@ export async function PATCH(request: NextRequest) {
     title,
     description,
     tags,
+    roomId,
     removedImageKeys,
     imageKeyOrder,
     newImages,
@@ -275,6 +285,7 @@ export async function PATCH(request: NextRequest) {
     title: string;
     description: string;
     tags: string[];
+    roomId?: string | null;
     removedImageKeys: string[];
     imageKeyOrder?: string[];
     newImages: StagedImageRef[];
@@ -283,7 +294,8 @@ export async function PATCH(request: NextRequest) {
 
   const { error } = await supabase
     .from('where_is_items')
-    .update({ title, description, tags })
+    // An omitted roomId (older clients) leaves the room untouched; null clears it.
+    .update({ title, description, tags, room_id: roomId })
     .eq('id', id);
 
   if (error) {

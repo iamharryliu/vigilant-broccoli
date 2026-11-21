@@ -1,13 +1,29 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import {
+  Suspense,
+  useCallback,
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Input, Text, Badge, Skeleton, cn } from '@vigilant-broccoli/react-lib';
+import { DoorOpen } from 'lucide-react';
+import {
+  Input,
+  Text,
+  Badge,
+  Button,
+  Select,
+  Skeleton,
+  cn,
+} from '@vigilant-broccoli/react-lib';
 import { CRUDItemList } from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
-import { WhereIsItem } from '../../lib/types';
+import { WhereIsItem, WhereIsRoom } from '../../lib/types';
 import {
   ROUTES,
   WHERE_IS_ENDPOINT,
@@ -25,17 +41,37 @@ import { WhereIsDetailPanel } from './where-is-detail-panel';
 import { useMobileReady } from '../../lib/use-mobile-view';
 import { WhereIsDetailPageContent } from './WhereIsDetailPageContent';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import {
+  ManageRoomsDialog,
+  WhereIsRoomsContext,
+  fetchWhereIsRooms,
+  findRoomName,
+  sortRooms,
+} from './where-is-rooms';
 
 const DEFAULT_FORM: WhereIsFormValues = {
   id: '',
   title: '',
   description: '',
   tags: [],
+  roomId: null,
   images: [],
 };
 
-const COPY = {
-  LIST: { TITLE: 'Storage Areas', EMPTY_MESSAGE: 'No storage areas yet.' },
+const LIST_TITLE = 'Storage Areas';
+const EMPTY_LIST_MESSAGE = 'No storage areas yet.';
+const EMPTY_ROOM_MESSAGE = 'No storage areas in this room.';
+const NO_MATCHES_MESSAGE = 'No matching storage areas.';
+const MANAGE_ROOMS = 'Manage rooms';
+const ROOM_FILTER_LABEL = 'Filter by room';
+
+// Sentinel ids for the room filter; real room ids are uuids.
+const ROOM_FILTER = { ALL: 'all', UNASSIGNED: 'unassigned' } as const;
+const ALL_ROOMS_OPTION = { id: ROOM_FILTER.ALL, name: 'All rooms' };
+const UNASSIGNED_OPTION = { id: ROOM_FILTER.UNASSIGNED, name: 'Unassigned' };
+
+const makeCopy = (title: string, emptyMessage: string) => ({
+  LIST: { TITLE: title, EMPTY_MESSAGE: emptyMessage },
   [FORM_TYPE.CREATE]: {
     TITLE: 'Add Storage Area',
     DESCRIPTION:
@@ -45,12 +81,16 @@ const COPY = {
     TITLE: 'Update Storage Area',
     DESCRIPTION: '',
   },
-};
+});
 
-const fuzzyMatch = (query: string, item: WhereIsItem): boolean => {
+const fuzzyMatch = (
+  query: string,
+  item: WhereIsItem,
+  roomName: string | null,
+): boolean => {
   if (!query.trim()) return true;
   const q = query.toLowerCase();
-  const searchText = [item.title, item.description, ...item.tags]
+  const searchText = [item.title, item.description, ...item.tags, roomName]
     .join(' ')
     .toLowerCase();
   return q.split(' ').every(word => searchText.includes(word));
@@ -97,6 +137,13 @@ function WhereIsPageContent() {
   const session = useAuth();
   const { selectedHomeId } = useHome();
   const [items, setItems] = useState<WhereIsItem[]>([]);
+  const [rooms, setRooms] = useState<WhereIsRoom[]>([]);
+  const [roomFilter, setRoomFilter] = useState<string>(ROOM_FILTER.ALL);
+  const [manageRoomsOpen, setManageRoomsOpen] = useState(false);
+  // Room of each item whose form is open, so a room change keeps its row (and dialog) mounted.
+  const [pinnedRoomIds, setPinnedRoomIds] = useState<
+    Map<string, string | null>
+  >(new Map());
   const [query, setQuery] = useState('');
   const [loaded, setLoaded] = useState(false);
 
@@ -104,21 +151,47 @@ function WhereIsPageContent() {
 
   useEffect(() => {
     if (selectedHomeId === null) return;
+    const accessToken = session?.access_token ?? '';
     setLoaded(false);
-    fetch(`${WHERE_IS_ENDPOINT}?homeId=${selectedHomeId}`, {
-      headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
-    })
-      .then(r => r.json())
-      .then(data => {
-        setItems(data);
-        setLoaded(true);
-      });
+    setRoomFilter(ROOM_FILTER.ALL);
+    Promise.all([
+      fetch(`${WHERE_IS_ENDPOINT}?homeId=${selectedHomeId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }).then(r => r.json()),
+      fetchWhereIsRooms(selectedHomeId, accessToken),
+    ]).then(([data, homeRooms]) => {
+      setItems(data);
+      setRooms(sortRooms(homeRooms));
+      setLoaded(true);
+    });
   }, [selectedHomeId, session?.access_token]);
+
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+  const onEditStart = useCallback((itemId: string) => {
+    const roomId = itemsRef.current.find(i => i.id === itemId)?.roomId ?? null;
+    setPinnedRoomIds(prev =>
+      prev.has(itemId) ? prev : new Map(prev).set(itemId, roomId),
+    );
+  }, []);
+  const onEditEnd = useCallback(
+    (itemId: string) =>
+      setPinnedRoomIds(prev => {
+        const next = new Map(prev);
+        next.delete(itemId);
+        return next;
+      }),
+    [],
+  );
+  const roomsContext = useMemo(
+    () => ({ rooms, onEditStart, onEditEnd }),
+    [rooms, onEditStart, onEditEnd],
+  );
 
   const createItem = async (
     form: WhereIsFormValues,
   ): Promise<WhereIsFormValues> => {
-    const { description, tags } = form;
+    const { description, tags, roomId } = form;
     const accessToken = session?.access_token ?? '';
     const images = await uploadPreviewImages(form.images, accessToken);
 
@@ -132,6 +205,7 @@ function WhereIsPageContent() {
         title: form.title,
         description,
         tags,
+        roomId,
         homeId: selectedHomeId,
         userId: session?.user.id,
         images,
@@ -195,53 +269,139 @@ function WhereIsPageContent() {
 
   if (selectedHomeId === null) return null;
 
-  const filtered = items.filter(item => fuzzyMatch(query, item));
+  const roomIds = new Set(rooms.map(room => room.id));
+  // A room id the page no longer knows (e.g. just deleted) counts as Unassigned.
+  const groupIdOf = (item: WhereIsItem) => {
+    const roomId = pinnedRoomIds.has(item.id)
+      ? pinnedRoomIds.get(item.id)
+      : item.roomId;
+    return roomId && roomIds.has(roomId) ? roomId : ROOM_FILTER.UNASSIGNED;
+  };
 
-  const formItems = filtered.map(item => ({
+  const filtered = items.filter(item =>
+    fuzzyMatch(query, item, findRoomName(rooms, item.roomId)),
+  );
+
+  const toFormItem = (item: WhereIsItem) => ({
     id: item.id,
     title: item.title,
     description: item.description,
     tags: item.tags,
+    roomId: item.roomId,
     images: [] as PreviewImage[],
     imageUrls: item.imageUrls,
     imageKeys: item.imageKeys,
     thumbnailUrl: item.thumbnailUrl,
     createdAt: item.createdAt,
-  }));
+  });
+
+  const isSearching = query.trim() !== '';
+  const groups = rooms.length
+    ? [...rooms, UNASSIGNED_OPTION]
+        .filter(
+          group => roomFilter === ROOM_FILTER.ALL || group.id === roomFilter,
+        )
+        .map(group => ({
+          id: group.id,
+          title: group.name,
+          emptyMessage: EMPTY_ROOM_MESSAGE,
+          // A room group's add button starts the new storage area in that room.
+          roomId: group.id === ROOM_FILTER.UNASSIGNED ? null : group.id,
+          items: filtered.filter(item => groupIdOf(item) === group.id),
+        }))
+        .filter(group => !isSearching || group.items.length > 0)
+    : [
+        {
+          id: ROOM_FILTER.ALL,
+          title: LIST_TITLE,
+          emptyMessage: EMPTY_LIST_MESSAGE,
+          roomId: null,
+          items: filtered,
+        },
+      ];
+
+  const filterOptions = [ALL_ROOMS_OPTION, ...rooms, UNASSIGNED_OPTION];
 
   const renderList = (onItemClick: (item: { id: string }) => void) => (
     <>
-      <Input
-        placeholder="Search items (e.g. scissors, batteries)..."
-        value={query}
-        onChange={e => setQuery(e.target.value)}
-      />
+      <div className="flex flex-wrap gap-2">
+        <Input
+          placeholder="Search items (e.g. scissors, batteries)..."
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          className="flex-1 min-w-48"
+        />
+        {rooms.length > 0 && (
+          <Select
+            aria-label={ROOM_FILTER_LABEL}
+            value={
+              filterOptions.find(option => option.id === roomFilter) ??
+              ALL_ROOMS_OPTION
+            }
+            onValueChange={option => setRoomFilter(option.id)}
+            options={filterOptions}
+            optionDisplayKey="name"
+          />
+        )}
+        <Button variant="outline" onClick={() => setManageRoomsOpen(true)}>
+          <DoorOpen size={16} aria-hidden />
+          {MANAGE_ROOMS}
+        </Button>
+      </div>
       {!loaded ? (
         <ListSkeleton />
+      ) : !groups.length ? (
+        <Text size="2" color="gray" as="p">
+          {NO_MATCHES_MESSAGE}
+        </Text>
       ) : (
-        <CRUDItemList
-          items={formItems as never}
-          setItems={setItems as never}
-          createItem={createItem as never}
-          createItemFormDefaultValues={DEFAULT_FORM}
-          updateItem={updateItem as never}
-          deleteItem={deleteItem}
-          FormComponent={WhereIsFormComponent as never}
-          ListItemComponent={WhereIsListItem as never}
-          copy={COPY}
-          getItemImages={(item: WhereIsFormValues) =>
-            item.thumbnailUrl ? [item.thumbnailUrl] : []
-          }
-          getItemTitle={(item: { title: string }) => item.title}
-          onItemClick={onItemClick}
-          showDialogCloseButton
-        />
+        groups.map(group => (
+          <CRUDItemList
+            key={group.id}
+            items={group.items.map(toFormItem) as never}
+            setItems={setItems as never}
+            createItem={createItem as never}
+            createItemFormDefaultValues={{
+              ...DEFAULT_FORM,
+              roomId: group.roomId,
+            }}
+            updateItem={updateItem as never}
+            deleteItem={deleteItem}
+            FormComponent={WhereIsFormComponent as never}
+            ListItemComponent={WhereIsListItem as never}
+            copy={makeCopy(group.title, group.emptyMessage)}
+            getItemImages={(item: WhereIsFormValues) =>
+              item.thumbnailUrl ? [item.thumbnailUrl] : []
+            }
+            getItemTitle={(item: { title: string }) => item.title}
+            onItemClick={onItemClick}
+            showDialogCloseButton
+          />
+        ))
       )}
     </>
   );
 
+  const handleRoomDeleted = (roomId: string) => {
+    setItems(prev =>
+      prev.map(item =>
+        item.roomId === roomId ? { ...item, roomId: null } : item,
+      ),
+    );
+    setRoomFilter(prev => (prev === roomId ? ROOM_FILTER.ALL : prev));
+  };
+
   return (
-    <>
+    <WhereIsRoomsContext.Provider value={roomsContext}>
+      <ManageRoomsDialog
+        open={manageRoomsOpen}
+        onOpenChange={setManageRoomsOpen}
+        homeId={selectedHomeId}
+        rooms={rooms}
+        onRoomsChange={setRooms}
+        onRoomDeleted={handleRoomDeleted}
+      />
+
       {/* Mobile: unchanged page-to-page navigation */}
       <div className="md:hidden max-w-5xl mx-auto p-2 sm:p-6 space-y-6">
         {renderList(item => router.push(ROUTES.WHERE_IS_DETAIL(item.id)))}
@@ -270,7 +430,7 @@ function WhereIsPageContent() {
           }}
         />
       </div>
-    </>
+    </WhereIsRoomsContext.Provider>
   );
 }
 
