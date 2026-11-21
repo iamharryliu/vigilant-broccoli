@@ -12,10 +12,6 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - Group headings in `EntryDirectory` (Bookmarks) now use one medium-weight heading style in every view, including Rows ([#1699](https://github.com/iamharryliu/vigilant-broccoli/pull/1699)).
 
-### local-manager-next
-
-- Selecting a word or sentence in the Language Learning demo now speaks it immediately in the session's language at the chosen speed ([#1719](https://github.com/iamharryliu/vigilant-broccoli/pull/1719)).
-
 ### dotfiles
 
 - `localcleanup` now removes Claude worktrees instantly by renaming each to a hidden `.trash-*` directory and deleting it in the background, measuring their sizes in parallel and sweeping leftovers from an interrupted run; `--keep-dirty` and locked worktrees are still skipped ([#1690](https://github.com/iamharryliu/vigilant-broccoli/pull/1690)).
@@ -179,6 +175,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### mobile-manager-next
 
+- Selecting text in the Language tab now speaks it right away in that row's language at the tab's 0.75× speed ([#1719](https://github.com/iamharryliu/vigilant-broccoli/pull/1719)).
 - New Language tab on the home screen shows a random everyday word in English, Swedish, French, Spanish and Chinese, with speech, synonyms, an opposite word and example sentences ([#1616](https://github.com/iamharryliu/vigilant-broccoli/pull/1616)).
 - Instagram appears in the Leisure apps, and embed-flagged links open in an in-app page ([#1598](https://github.com/iamharryliu/vigilant-broccoli/pull/1598), [#1398](https://github.com/iamharryliu/vigilant-broccoli/pull/1398)).
 - The Tasks tab embeds tasks.harryliu.dev inside a matching border. Voice input, AI task creation and the bottom-sheet create dialog are gone from it ([#1602](https://github.com/iamharryliu/vigilant-broccoli/pull/1602), [#1612](https://github.com/iamharryliu/vigilant-broccoli/pull/1612)).
