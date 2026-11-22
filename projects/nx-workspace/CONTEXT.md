@@ -8,6 +8,7 @@
   - [Nx formatting must not hand the agent symlinks to Prettier](#nx-formatting-must-not-hand-the-agent-symlinks-to-prettier)
   - [Next.js workspace-root inference warnings are accepted](#nextjs-workspace-root-inference-warnings-are-accepted)
   - [`fileReplacements` in a Vite app's `project.json` is ignored](#filereplacements-in-a-vite-apps-projectjson-is-ignored)
+  - [Client fetches in a `basePath` zone app need the basePath prefix](#client-fetches-in-a-basepath-zone-app-need-the-basepath-prefix)
 
 ## Nuances
 
@@ -40,3 +41,7 @@ Revisit only for a reproduced build, file-tracing or deployed-dependency failure
 ### `fileReplacements` in a Vite app's `project.json` is ignored
 
 `@nx/vite/plugin` infers plain `vite build`, which ignores `fileReplacements` and can silently bake staging URLs into production. `calendars`, `cloud-8-skate-react` and `personal-website-react` use `mode: production-env` plus an environment-module alias in `vite.config.mts`. Verify the expected host in built `assets/*.js`, not just `project.json`.
+
+### Client fetches in a `basePath` zone app need the basePath prefix
+
+Next prepends `basePath` to links and assets but not to `fetch('/api/...')`. In the zone apps served under `local-manager-next`'s origin (`cloud-services-next`, `local-services-next`, `music-next`), every endpoint in `src/app/constants/api-endpoints.ts` goes through `withBasePath`; a bare `/api/...` URL would hit `local-manager-next`'s routes and fail with 404 or 401.
