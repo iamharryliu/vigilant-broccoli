@@ -15,7 +15,7 @@ const styles = {
     gap: '8px',
   },
   text: {
-    fontFamily: 'monospace',
+    fontFamily: 'var(--font-mono, monospace)',
     padding: '4px 8px',
     backgroundColor: 'hsl(var(--muted))',
     borderRadius: '4px',

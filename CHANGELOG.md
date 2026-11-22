@@ -136,6 +136,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- Corner radius and fonts are now themeable like colors: setting `--radius`, `--font-sans` or `--font-mono` on a `ThemeScope` or `ThemeProvider` `style` restyles buttons, selects, menus, cards and text across the scope; the defaults look the same as before (PR: pending).
 - `CheckList`, `CheckListBase` and `CheckListPanel` moved out into their own `@vigilant-broccoli/react-lib-checklist` library, so editing the checklist no longer redeploys every UI app; apps import them from there and react-lib's next npm release no longer includes them ([#1717](https://github.com/iamharryliu/vigilant-broccoli/pull/1717)).
 - New `CheckListPanel` pins a task list's controls and scrolls only the list; `CardContainer` gains `fill` to fill a height-bound parent and its `title` is now optional. `GoogleTasks` and Hearth's task list use the panel ([#1716](https://github.com/iamharryliu/vigilant-broccoli/pull/1716)).
 - New `SignOutButton`, the standard sign-out action with a logout icon and a pending state for async handlers, with a demo in the component library ([#1693](https://github.com/iamharryliu/vigilant-broccoli/pull/1693)).

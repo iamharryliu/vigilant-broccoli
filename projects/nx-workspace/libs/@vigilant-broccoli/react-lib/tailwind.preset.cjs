@@ -39,6 +39,14 @@ module.exports = {
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
       },
+      // Offsets reproduce Tailwind's defaults (sm 2px, DEFAULT 4px, md 6px, lg 8px) at the
+      // 0.5rem default; a small --radius clamps the negative results to 0.
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        DEFAULT: 'calc(var(--radius) - 4px)',
+        sm: 'calc(var(--radius) - 6px)',
+      },
     },
   },
   plugins: [
