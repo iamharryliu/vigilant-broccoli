@@ -125,6 +125,7 @@ github.io                                 GitHub Pages (custom domain projects.v
 | manager.harryliu.dev | staging-manager.harryliu.dev | `staging-vb-manager-next-mobile` | Vercel |
 | photography.harryliu.dev | staging-photography.harryliu.dev | `staging-photography-react` | Pages |
 | pomodoro.vigilant-broccoli.app | staging-pomodoro.vigilant-broccoli.app | `staging-pomodoro-react` | Pages |
+| projects.vigilant-broccoli.app | staging-projects.vigilant-broccoli.app | `staging-pages-index` | Pages |
 | tasks.harryliu.dev | staging-tasks.harryliu.dev | `staging-tasks-next` | Vercel |
 | text-tools.vigilant-broccoli.app | staging-text-tools.vigilant-broccoli.app | `staging-text-tools-ui` | Pages |
 | utilities.vigilant-broccoli.app | staging-utilities.vigilant-broccoli.app | `staging-utilities-ui` | Pages |
@@ -132,7 +133,7 @@ github.io                                 GitHub Pages (custom domain projects.v
 | weather.vigilant-broccoli.app | staging-weather.vigilant-broccoli.app | `staging-weather-next` | Vercel |
 | whiteboard.vigilant-broccoli.app | staging-whiteboard.vigilant-broccoli.app | `staging-whiteboard` | Pages |
 
-These are configured destinations, requiring the post-merge activation below; this inventory does not assert live DNS or certificate readiness. Provider aliases remain available and protected. `staging.cloud8skate.com` lives in the separate `cloud8skate.com` zone (`cloudflare-cloud8skate.tf`) and its Sanity CORS origin and reCAPTCHA domain are dashboard settings outside this repo. Infrastructure/API hosts, demos and dedicated previews have no new staging domain. Pages Index has no separate staging deployment.
+These are configured destinations, requiring the post-merge activation below; this inventory does not assert live DNS or certificate readiness. Provider aliases remain available and protected. `staging.cloud8skate.com` lives in the separate `cloud8skate.com` zone (`cloudflare-cloud8skate.tf`) and its Sanity CORS origin and reCAPTCHA domain are dashboard settings outside this repo. Infrastructure/API hosts, demos and dedicated previews have no new staging domain. `staging-projects` serves `staging-pages-index` only; `projects.vigilant-broccoli.app` and the `status-proxy` hosts stay on GitHub Pages until the production hostnames move to `production-pages-index`.
 
 After merging, run from the updated repository:
 
