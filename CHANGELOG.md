@@ -10,6 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### hearth
 
+- Sidebar search opens a dialog from the Search row or the `/` key and fuzzy-matches every page, with nested pages showing their parent group ([#1744](https://github.com/iamharryliu/vigilant-broccoli/pull/1744)).
 - Grocery items show a store-section badge (produce, dairy, meat and so on, matched from the item's name) and a Sort select beside the list title, on the Grocery page and in Kitchen Planner, can order the list by section, which turns drag-reordering off ([#1740](https://github.com/iamharryliu/vigilant-broccoli/pull/1740)).
 - Where Is shows a storage area's photos as a shuffled stack you page through, moves the added date to the bottom of the details, drops the description from list rows and adds View details, with icons, to each row's menu ([#1733](https://github.com/iamharryliu/vigilant-broccoli/pull/1733)).
 - Where Is gains rooms: storage areas can be assigned to a room, each shows its room in a badge and search matches room names, a Rooms tab adds, renames and deletes rooms (deleting leaves areas unassigned) and the form can add a room inline, the detail view shows the room, and export and import carry rooms ([#1727](https://github.com/iamharryliu/vigilant-broccoli/pull/1727)).
