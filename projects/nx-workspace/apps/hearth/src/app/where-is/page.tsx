@@ -9,17 +9,20 @@ import {
   useRef,
 } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { DoorOpen } from 'lucide-react';
 import {
-  Input,
   Text,
   Badge,
-  Button,
-  Select,
   Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   cn,
 } from '@vigilant-broccoli/react-lib';
-import { CRUDItemList } from '@vigilant-broccoli/react-lib-crud-list';
+import {
+  CRUDItemFormDialog,
+  CRUDItemList,
+} from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -42,8 +45,10 @@ import { useMobileReady } from '../../lib/use-mobile-view';
 import { WhereIsDetailPageContent } from './WhereIsDetailPageContent';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 import {
-  ManageRoomsDialog,
+  CreateRoomButton,
+  ManageRooms,
   WhereIsRoomsContext,
+  useWhereIsRooms,
   fetchWhereIsRooms,
   findRoomName,
   sortRooms,
@@ -60,18 +65,13 @@ const DEFAULT_FORM: WhereIsFormValues = {
 
 const LIST_TITLE = 'Storage Areas';
 const EMPTY_LIST_MESSAGE = 'No storage areas yet.';
-const EMPTY_ROOM_MESSAGE = 'No storage areas in this room.';
-const NO_MATCHES_MESSAGE = 'No matching storage areas.';
-const MANAGE_ROOMS = 'Manage rooms';
-const ROOM_FILTER_LABEL = 'Filter by room';
+const CREATE_LABEL = 'Create Storage Area';
+const SEARCH_PLACEHOLDER = 'Search items (e.g. scissors, batteries)...';
+const TAB = { STORAGE_AREAS: 'storage-areas', ROOMS: 'rooms' } as const;
+const TAB_LABEL = { STORAGE_AREAS: 'Storage Areas', ROOMS: 'Rooms' } as const;
 
-// Sentinel ids for the room filter; real room ids are uuids.
-const ROOM_FILTER = { ALL: 'all', UNASSIGNED: 'unassigned' } as const;
-const ALL_ROOMS_OPTION = { id: ROOM_FILTER.ALL, name: 'All rooms' };
-const UNASSIGNED_OPTION = { id: ROOM_FILTER.UNASSIGNED, name: 'Unassigned' };
-
-const makeCopy = (title: string, emptyMessage: string) => ({
-  LIST: { TITLE: title, EMPTY_MESSAGE: emptyMessage },
+const COPY = {
+  LIST: { TITLE: LIST_TITLE, EMPTY_MESSAGE: EMPTY_LIST_MESSAGE },
   [FORM_TYPE.CREATE]: {
     TITLE: 'Add Storage Area',
     DESCRIPTION:
@@ -81,7 +81,7 @@ const makeCopy = (title: string, emptyMessage: string) => ({
     TITLE: 'Update Storage Area',
     DESCRIPTION: '',
   },
-});
+};
 
 const fuzzyMatch = (
   query: string,
@@ -96,23 +96,33 @@ const fuzzyMatch = (
   return q.split(' ').every(word => searchText.includes(word));
 };
 
-const WhereIsListItem = ({ item }: { item: WhereIsFormValues }) => (
-  <div className="min-w-0">
-    <Text weight="bold" size="2" as="p">
-      {item.title}
-    </Text>
-    <Text size="1" color="gray" as="p">
-      {item.description}
-    </Text>
-    <div className="flex flex-wrap gap-1 mt-1">
-      {sortTags(item.tags).map(tag => (
-        <Badge key={tag} variant="soft" size="1">
-          {tag}
-        </Badge>
-      ))}
+const WhereIsListItem = ({ item }: { item: WhereIsFormValues }) => {
+  const roomName = findRoomName(useWhereIsRooms()?.rooms ?? [], item.roomId);
+  return (
+    <div className="min-w-0">
+      <div className="flex flex-wrap items-center gap-2">
+        <Text weight="bold" size="2" as="p">
+          {item.title}
+        </Text>
+        {roomName && (
+          <Badge variant="outline" size="1">
+            {roomName}
+          </Badge>
+        )}
+      </div>
+      <Text size="1" color="gray" as="p">
+        {item.description}
+      </Text>
+      <div className="flex flex-wrap gap-1 mt-1">
+        {sortTags(item.tags).map(tag => (
+          <Badge key={tag} variant="soft" size="1">
+            {tag}
+          </Badge>
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const SKELETON_ROW_COUNT = 4;
 
@@ -138,8 +148,7 @@ function WhereIsPageContent() {
   const { selectedHomeId } = useHome();
   const [items, setItems] = useState<WhereIsItem[]>([]);
   const [rooms, setRooms] = useState<WhereIsRoom[]>([]);
-  const [roomFilter, setRoomFilter] = useState<string>(ROOM_FILTER.ALL);
-  const [manageRoomsOpen, setManageRoomsOpen] = useState(false);
+  const [tab, setTab] = useState<string>(TAB.STORAGE_AREAS);
   // Room of each item whose form is open, so a room change keeps its row (and dialog) mounted.
   const [pinnedRoomIds, setPinnedRoomIds] = useState<
     Map<string, string | null>
@@ -153,7 +162,6 @@ function WhereIsPageContent() {
     if (selectedHomeId === null) return;
     const accessToken = session?.access_token ?? '';
     setLoaded(false);
-    setRoomFilter(ROOM_FILTER.ALL);
     Promise.all([
       fetch(`${WHERE_IS_ENDPOINT}?homeId=${selectedHomeId}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -183,9 +191,19 @@ function WhereIsPageContent() {
       }),
     [],
   );
+  const onRoomCreated = useCallback(
+    (room: WhereIsRoom) => setRooms(prev => sortRooms([...prev, room])),
+    [],
+  );
   const roomsContext = useMemo(
-    () => ({ rooms, onEditStart, onEditEnd }),
-    [rooms, onEditStart, onEditEnd],
+    () => ({
+      rooms,
+      homeId: selectedHomeId ?? undefined,
+      onRoomCreated,
+      onEditStart,
+      onEditEnd,
+    }),
+    [rooms, selectedHomeId, onRoomCreated, onEditStart, onEditEnd],
   );
 
   const createItem = async (
@@ -269,18 +287,13 @@ function WhereIsPageContent() {
 
   if (selectedHomeId === null) return null;
 
-  const roomIds = new Set(rooms.map(room => room.id));
-  // A room id the page no longer knows (e.g. just deleted) counts as Unassigned.
-  const groupIdOf = (item: WhereIsItem) => {
+  const filtered = items.filter(item => {
+    // An open form keeps its row matched by the room it opened with, so a room change does not unmount the dialog.
     const roomId = pinnedRoomIds.has(item.id)
       ? pinnedRoomIds.get(item.id)
       : item.roomId;
-    return roomId && roomIds.has(roomId) ? roomId : ROOM_FILTER.UNASSIGNED;
-  };
-
-  const filtered = items.filter(item =>
-    fuzzyMatch(query, item, findRoomName(rooms, item.roomId)),
-  );
+    return fuzzyMatch(query, item, findRoomName(rooms, roomId ?? null));
+  });
 
   const toFormItem = (item: WhereIsItem) => ({
     id: item.id,
@@ -295,81 +308,59 @@ function WhereIsPageContent() {
     createdAt: item.createdAt,
   });
 
-  const isSearching = query.trim() !== '';
-  const groups = rooms.length
-    ? [...rooms, UNASSIGNED_OPTION]
-        .filter(
-          group => roomFilter === ROOM_FILTER.ALL || group.id === roomFilter,
-        )
-        .map(group => ({
-          id: group.id,
-          title: group.name,
-          emptyMessage: EMPTY_ROOM_MESSAGE,
-          // A room group's add button starts the new storage area in that room.
-          roomId: group.id === ROOM_FILTER.UNASSIGNED ? null : group.id,
-          items: filtered.filter(item => groupIdOf(item) === group.id),
-        }))
-        .filter(group => !isSearching || group.items.length > 0)
-    : [
-        {
-          id: ROOM_FILTER.ALL,
-          title: LIST_TITLE,
-          emptyMessage: EMPTY_LIST_MESSAGE,
-          roomId: null,
-          items: filtered,
-        },
-      ];
-
-  const filterOptions = [ALL_ROOMS_OPTION, ...rooms, UNASSIGNED_OPTION];
+  const handleRoomDeleted = (roomId: string) => {
+    setItems(prev =>
+      prev.map(item =>
+        item.roomId === roomId ? { ...item, roomId: null } : item,
+      ),
+    );
+  };
 
   const renderList = (onItemClick: (item: { id: string }) => void) => (
-    <>
-      <div className="flex flex-wrap gap-2">
-        <Input
-          placeholder="Search items (e.g. scissors, batteries)..."
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          className="flex-1 min-w-48"
-        />
-        {rooms.length > 0 && (
-          <Select
-            aria-label={ROOM_FILTER_LABEL}
-            value={
-              filterOptions.find(option => option.id === roomFilter) ??
-              ALL_ROOMS_OPTION
-            }
-            onValueChange={option => setRoomFilter(option.id)}
-            options={filterOptions}
-            optionDisplayKey="name"
-          />
-        )}
-        <Button variant="outline" onClick={() => setManageRoomsOpen(true)}>
-          <DoorOpen size={16} aria-hidden />
-          {MANAGE_ROOMS}
-        </Button>
-      </div>
-      {!loaded ? (
-        <ListSkeleton />
-      ) : !groups.length ? (
-        <Text size="2" color="gray" as="p">
-          {NO_MATCHES_MESSAGE}
-        </Text>
-      ) : (
-        groups.map(group => (
-          <CRUDItemList
-            key={group.id}
-            items={group.items.map(toFormItem) as never}
-            setItems={setItems as never}
-            createItem={createItem as never}
-            createItemFormDefaultValues={{
-              ...DEFAULT_FORM,
-              roomId: group.roomId,
+    <Tabs value={tab} onValueChange={setTab}>
+      <div className="flex items-center justify-between gap-2">
+        <TabsList>
+          <TabsTrigger value={TAB.STORAGE_AREAS}>
+            {TAB_LABEL.STORAGE_AREAS}
+          </TabsTrigger>
+          <TabsTrigger value={TAB.ROOMS}>{TAB_LABEL.ROOMS}</TabsTrigger>
+        </TabsList>
+        {tab === TAB.STORAGE_AREAS ? (
+          <CRUDItemFormDialog<WhereIsFormValues>
+            formType={FORM_TYPE.CREATE}
+            initialFormValues={DEFAULT_FORM}
+            FormComponent={WhereIsFormComponent as never}
+            submitHandler={async form => {
+              const created = await createItem(form);
+              setItems(prev => [...prev, created as never]);
             }}
+            copy={COPY}
+            createLabel={CREATE_LABEL}
+            showCloseButton
+          />
+        ) : (
+          <CreateRoomButton homeId={selectedHomeId} setRooms={setRooms} />
+        )}
+      </div>
+
+      <TabsContent value={TAB.STORAGE_AREAS} className="space-y-6">
+        {!loaded ? (
+          <ListSkeleton />
+        ) : (
+          <CRUDItemList
+            items={filtered.map(toFormItem) as never}
+            setItems={setItems as never}
             updateItem={updateItem as never}
             deleteItem={deleteItem}
             FormComponent={WhereIsFormComponent as never}
             ListItemComponent={WhereIsListItem as never}
-            copy={makeCopy(group.title, group.emptyMessage)}
+            compact
+            copy={COPY}
+            search={{
+              value: query,
+              onChange: setQuery,
+              placeholder: SEARCH_PLACEHOLDER,
+            }}
             getItemImages={(item: WhereIsFormValues) =>
               item.thumbnailUrl ? [item.thumbnailUrl] : []
             }
@@ -377,31 +368,21 @@ function WhereIsPageContent() {
             onItemClick={onItemClick}
             showDialogCloseButton
           />
-        ))
-      )}
-    </>
-  );
+        )}
+      </TabsContent>
 
-  const handleRoomDeleted = (roomId: string) => {
-    setItems(prev =>
-      prev.map(item =>
-        item.roomId === roomId ? { ...item, roomId: null } : item,
-      ),
-    );
-    setRoomFilter(prev => (prev === roomId ? ROOM_FILTER.ALL : prev));
-  };
+      <TabsContent value={TAB.ROOMS}>
+        <ManageRooms
+          rooms={rooms}
+          setRooms={setRooms}
+          onRoomDeleted={handleRoomDeleted}
+        />
+      </TabsContent>
+    </Tabs>
+  );
 
   return (
     <WhereIsRoomsContext.Provider value={roomsContext}>
-      <ManageRoomsDialog
-        open={manageRoomsOpen}
-        onOpenChange={setManageRoomsOpen}
-        homeId={selectedHomeId}
-        rooms={rooms}
-        onRoomsChange={setRooms}
-        onRoomDeleted={handleRoomDeleted}
-      />
-
       {/* Mobile: unchanged page-to-page navigation */}
       <div className="md:hidden max-w-5xl mx-auto p-2 sm:p-6 space-y-6">
         {renderList(item => router.push(ROUTES.WHERE_IS_DETAIL(item.id)))}

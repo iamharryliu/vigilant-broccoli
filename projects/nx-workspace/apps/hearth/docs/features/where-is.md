@@ -20,17 +20,17 @@ Household storage inventory — record storage areas by hand or from photos, AI 
 - Shared with accepted home members — full CRUD access
 - Only a title is required; photos are optional, up to 10 per item (max 10MB each, max 50MB total)
 - Create: Submit and Suggest tags are separate form actions; the header X closes the dialog without saving
-- Update: the header X, Escape and overlay clicks behave like Done through the dialog's close guard
-- Rooms group storage areas: Manage rooms on the page adds, renames and deletes a home's rooms (delete confirms that its storage areas become unassigned); no nesting, photos or ordering
-- The list groups storage areas by room (alphabetical, Unassigned last; one Storage Areas list while the home has no rooms), empty groups hide while searching, and a room filter (All / each room / Unassigned) sits beside the search box. A group's add button starts the new storage area in that room
-- The form's Room select (shown once the home has rooms) offers No room plus each room; the detail view (mobile page and desktop panel) shows the room
-- While an update form is open its row stays in the group it opened in, so a room change does not unmount the dialog; it moves once the form closes
-- Update autosaves with no Save button: title and description after an 800ms pause, room, tags and photo changes immediately; saves are serialized, photo controls lock while one runs, a pending edit is flushed when the dialog closes, Done waits for the save and stays open if it fails, and leaving the page with unsaved changes prompts the browser's warning
+- Update: the header X, Escape and overlay clicks save pending edits first through the dialog's close guard, with no Done button
+- Rooms group storage areas: the page's Rooms tab (beside Storage Areas) is a `CRUDItemList` with a name search in place of its title: the create button floats right of the tab selection and the row menu renames (dialog) or deletes it (delete confirms that its storage areas become unassigned); no nesting, photos or ordering
+- One Storage Areas list holds every item, each with its room in a badge beside the title; the search box (in place of the list title; the Create Storage Area button floats right of the tab selection) also matches room names, so there is no separate room filter
+- The form's Room select offers No room, each room and "+ Add new room…", which swaps it for an inline name input that creates the room immediately and selects it (a name matching an existing room, case-insensitively, selects that room instead); the detail view (mobile page and desktop panel) shows the room
+- While an update form is open its row stays in the filtered list, so a room change does not unmount the dialog; it drops out once the form closes
+- Update autosaves with no Save button: title and description after an 800ms pause, room, tags and photo changes immediately; saves are serialized, photo controls lock while one runs, a pending edit is flushed when the dialog closes, closing waits for the save and the dialog stays open if it fails, and leaving the page with unsaved changes prompts the browser's warning
 - Update photos reorder by drag and drop (mouse, long-press on touch, keyboard); the order persists to `where_is_images.sort_order`
 - Removing a photo asks for confirmation first
 - Image processing — resize to 1920px max, convert to JPEG, strip EXIF
 - Each saved photo also gets a 256px list thumbnail (media-service `/api/where-is/thumbnail`, stored at `<key>.thumb.jpg`), on save and on import; generating it is best effort and never fails the save or import
-- The list shows one photo per item: the first photo's thumbnail, or the full image when it has none. While the list loads, the search box and placeholder rows show
+- The list shows one photo per item: the first photo's thumbnail, or the full image when it has none. While the list loads, placeholder rows show
 - Image links are presigned in one batch per request (`POST /api/storage/download-urls` on vb-express, which bucket-service signs locally): the list signs only each item's cover, and `?id=` signs the item's full-size photos too. An edit opened from the list fetches its item once for those full-size links
 - AI suggests tags from images on demand via a Suggest tags badge at the end of the tag list (create analyzes the new photos, update re-analyzes stored plus new ones); suggestions not already on the item appear as a checklist with Select all / Clear all, and only confirmed tags are added; it never touches the user-entered description
 - Fuzzy search across title, description, tags and room name

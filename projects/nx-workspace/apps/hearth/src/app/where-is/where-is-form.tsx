@@ -13,6 +13,7 @@ import {
   Checkbox,
   DeleteItemConfirmationDialog,
   Input,
+  Skeleton,
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
@@ -62,7 +63,6 @@ const LABEL = {
   CHOOSE_PHOTOS: 'Choose Photos',
   CLEAR_ALL: 'Clear all',
   DISMISS: 'Dismiss',
-  DONE: 'Done',
   NO_NEW_TAGS: 'No new tags suggested.',
   SELECT_ALL: 'Select all',
   SUGGEST_TAGS: 'Suggest tags',
@@ -228,12 +228,16 @@ const SortableImageTile = ({
       {...(sortable ? { ...attributes, ...listeners } : {})}
       aria-label={sortable ? LABEL.REORDER_PHOTO : undefined}
     >
-      <img
-        src={image.url}
-        alt={`image ${index + 1}`}
-        className={TILE_IMG_CLASS}
-        draggable={false}
-      />
+      {image.url ? (
+        <img
+          src={image.url}
+          alt={`image ${index + 1}`}
+          className={TILE_IMG_CLASS}
+          draggable={false}
+        />
+      ) : (
+        <Skeleton className={TILE_IMG_CLASS} />
+      )}
       <RemoveButton onClick={onRemove} disabled={disabled} />
     </div>
   );
@@ -427,7 +431,6 @@ export const WhereIsFormComponent = ({
   submitHandler,
   saveHandler,
   registerCloseGuard,
-  onCancel,
 }: CRUDFormProps<WhereIsFormValues>) => {
   const session = useAuth();
   const libraryInputRef = useRef<HTMLInputElement>(null);
@@ -449,7 +452,6 @@ export const WhereIsFormComponent = ({
   const [analyzing, setAnalyzing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>(SAVE_STATUS.IDLE);
-  const [closing, setClosing] = useState(false);
   const [error, setError] = useState('');
 
   const isUpdate = formType === FORM_TYPE.UPDATE;
@@ -559,15 +561,6 @@ export const WhereIsFormComponent = ({
     await runSave();
     return !hasUnsavedChanges(latestRef.current);
   }, [runSave]);
-
-  const handleDone = async () => {
-    setClosing(true);
-    try {
-      if (await flushBeforeClose()) onCancel?.();
-    } finally {
-      setClosing(false);
-    }
-  };
 
   useEffect(() => {
     if (!isUpdate || !registerCloseGuard) return;
@@ -845,11 +838,6 @@ export const WhereIsFormComponent = ({
                 ? LABEL.SAVED
                 : ''}
           </Text>
-          {onCancel && (
-            <Button variant="outline" onClick={handleDone} disabled={closing}>
-              {closing ? LABEL.SAVING : LABEL.DONE}
-            </Button>
-          )}
         </div>
       ) : (
         <div className="flex justify-end">
