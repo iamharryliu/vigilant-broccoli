@@ -211,7 +211,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### cron-backup
 
-- Every nightly backup (repo, Gitea, MongoDB, Supabase) is now written to both Google Cloud Storage and a private Cloudflare R2 bucket, each pruned to the last 7, and the weekly restore check verifies freshness and restores from both copies (PR: pending).
+- Every nightly backup (repo, Gitea, MongoDB, Supabase) is now written to both Google Cloud Storage and a private Cloudflare R2 bucket, each pruned to the last 7, and the weekly restore check verifies freshness and restores from both copies ([#1728](https://github.com/iamharryliu/vigilant-broccoli/pull/1728)).
 
 </details>
 

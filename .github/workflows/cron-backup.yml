@@ -103,6 +103,8 @@ jobs:
           chmod 600 ssh_key
           SSH="ssh -i ssh_key -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15 ubuntu@${GITEA_VM_IP}"
           # gitea dump writes the archive inside the container; copy it out to the host, then pull it.
+          # $(id -u) must expand on the VM, so the command stays single-quoted.
+          # shellcheck disable=SC2016
           $SSH 'sudo docker exec -u git -w /tmp gitea gitea dump -t /tmp -c /data/gitea/conf/app.ini --file gitea-dump.zip \
             && sudo docker cp gitea:/tmp/gitea-dump.zip /tmp/gitea-dump.zip \
             && sudo chown "$(id -u):$(id -g)" /tmp/gitea-dump.zip \
