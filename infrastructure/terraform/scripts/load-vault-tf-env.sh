@@ -16,7 +16,9 @@ if [ -z "${TF_TOKEN_app_terraform_io:-}" ] && [ -z "$TF_TOKEN" ]; then
   exit 1
 fi
 
-VAULT_URL="https://vault.harryliu.dev"
+# Overridable so the apply that creates a new Vault hostname can still read
+# secrets through the one that already exists.
+VAULT_URL="${VAULT_URL:-https://vault.vigilant-broccoli.app}"
 VAULT_TIMEOUT_SECONDS=5
 
 gcp_secret() {

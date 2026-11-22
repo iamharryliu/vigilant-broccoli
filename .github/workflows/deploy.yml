@@ -267,7 +267,7 @@ jobs:
         env:
           COMMIT_SHA: ${{ github.sha }}
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
-          VAULT_ADDR: https://vault.harryliu.dev
+          VAULT_ADDR: https://vault.vigilant-broccoli.app
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
           NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.vigilant-broccoli.app
