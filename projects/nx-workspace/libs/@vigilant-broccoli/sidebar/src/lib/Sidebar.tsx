@@ -3,12 +3,20 @@
 import {
   ComponentType,
   ReactNode,
+  useCallback,
   useEffect,
+  useMemo,
   useState,
   MouseEvent,
 } from 'react';
 import { ChevronDown, ChevronRight, Search } from 'lucide-react';
-import { cn, useMediaQuery } from '@vigilant-broccoli/react-lib';
+import {
+  SearchDialog,
+  SearchDialogItem,
+  cn,
+  useFocusSearchShortcut,
+  useMediaQuery,
+} from '@vigilant-broccoli/react-lib';
 
 export type SidebarCTA = {
   id?: string;
@@ -39,6 +47,9 @@ export type SidebarProps = {
   branding?: SidebarBranding;
   expandable?: boolean;
   searchable?: boolean;
+  // Client-side navigation for a picked search result; defaults to a full
+  // page load so apps without a router still work.
+  onNavigate?: (href: string) => void;
   footer?: ReactNode;
   LinkComponent?: LinkComponent;
   className?: string;
@@ -102,6 +113,7 @@ const ROW_INACTIVE = `${TEXT_MUTED} ${TEXT_MUTED_HOVER}`;
 
 const LABEL_BASE =
   'whitespace-nowrap overflow-hidden transition-all duration-150';
+const SEARCH_LABEL_BASE = `${LABEL_BASE} text-left`;
 const LABEL_COLLAPSIBLE =
   'w-0 opacity-0 group-hover/sidebar:w-auto group-hover/sidebar:flex-1 group-hover/sidebar:opacity-100';
 const LABEL_VISIBLE = 'flex-1 opacity-100';
@@ -110,12 +122,36 @@ const LABEL_HIDDEN = 'hidden';
 const labelClassFor = (expandable: boolean) =>
   expandable ? LABEL_COLLAPSIBLE : LABEL_HIDDEN;
 
-const flattenItems = (items: SidebarCTA[]): SidebarCTA[] =>
-  items.flatMap(item =>
-    item.children && item.children.length > 0
-      ? [item, ...flattenItems(item.children)]
-      : [item],
-  );
+type SearchResult = SearchDialogItem & { href: string };
+
+const SEARCH_PATH_SEPARATOR = ' › ';
+
+// Only items with a destination are searchable; a group header without an
+// href has nothing to open. Parent labels become the description so nested
+// items such as "Overall" read as "Calendar".
+const toSearchResults = (
+  items: SidebarCTA[],
+  parents: string[] = [],
+): SearchResult[] =>
+  items.flatMap(item => {
+    const nested = toSearchResults(item.children ?? [], [
+      ...parents,
+      item.label,
+    ]);
+    if (!item.href) return nested;
+    const path = [...parents, item.label];
+    return [
+      {
+        id: item.id ?? path.join(SEARCH_PATH_SEPARATOR),
+        title: item.label,
+        description: parents.length
+          ? parents.join(SEARCH_PATH_SEPARATOR)
+          : undefined,
+        href: item.href,
+      },
+      ...nested,
+    ];
+  });
 
 const hasIcon = (item: SidebarCTA): boolean =>
   Boolean(item.icon) || (item.children?.some(hasIcon) ?? false);
@@ -233,6 +269,7 @@ export const Sidebar = ({
   branding,
   expandable = true,
   searchable = false,
+  onNavigate,
   footer,
   LinkComponent,
   className,
@@ -255,7 +292,7 @@ export const Sidebar = ({
   const [openId, setOpenId] = useState<string | null>(
     forceExpanded ? defaultOpenId : null,
   );
-  const [query, setQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // Re-syncs openId whenever defaultOpenId changes (e.g. a new search
   // selection), but only while the sidebar is already fully expanded -
@@ -270,11 +307,18 @@ export const Sidebar = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultOpenId]);
 
-  const flat = searchable ? flattenItems(items) : [];
-  const results =
-    searchable && query.trim()
-      ? flat.filter(p => p.label.toLowerCase().includes(query.toLowerCase()))
-      : null;
+  const searchResults = useMemo(
+    () => (searchable ? toSearchResults(items) : []),
+    [searchable, items],
+  );
+  const openSearch = useCallback(() => setSearchOpen(true), []);
+  useFocusSearchShortcut(openSearch, { enabled: searchable });
+
+  const selectSearchResult = (result: SearchResult) => {
+    onMobileClose?.();
+    if (onNavigate) onNavigate(result.href);
+    else window.location.assign(result.href);
+  };
 
   const isNarrowViewport = useMediaQuery(breakpoint.narrowViewportQuery);
   const widthClass = isMobileAware
@@ -321,7 +365,6 @@ export const Sidebar = ({
         onMouseLeave={() => {
           if (forceExpanded || (isMobileAware && isNarrowViewport)) return;
           setOpenId(null);
-          setQuery('');
         }}
       >
         {branding && (
@@ -340,93 +383,88 @@ export const Sidebar = ({
           )}
         >
           {searchable && (
-            <div
-              className={cn(
-                'flex items-center gap-3 px-2 py-2 rounded-md',
-                ROW_INACTIVE,
-              )}
+            <button
+              type="button"
+              onClick={openSearch}
+              aria-label="Search"
+              aria-keyshortcuts="/"
+              className={cn(ROW_BASE, ROW_INACTIVE)}
             >
               <span className="shrink-0">
                 <Search size={ICON_SIZE} />
               </span>
-              <input
-                type="text"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                placeholder="Search..."
+              <span className={cn(SEARCH_LABEL_BASE, collapsibleLabelClass)}>
+                Search...
+              </span>
+              <kbd
                 className={cn(
-                  'transition-all duration-150 text-sm bg-transparent outline-none placeholder:text-muted-foreground text-foreground min-w-0',
-                  collapsibleLabelClass,
+                  'rounded border px-1.5 text-xs',
+                  BORDER_COLOR,
+                  forceExpanded ? 'block' : 'hidden group-hover/sidebar:block',
                 )}
-              />
-            </div>
+              >
+                /
+              </kbd>
+            </button>
           )}
 
-          {results ? (
-            results.length > 0 ? (
-              results.map((item, idx) => (
-                <ItemRow
-                  key={`${item.label}-${idx}`}
-                  item={item}
-                  labelClassName={LABEL_VISIBLE}
-                  LinkComponent={LinkComponent}
-                  onClickExtra={() => {
-                    setQuery('');
-                    onMobileClose?.();
-                  }}
-                />
-              ))
-            ) : (
-              <span className="text-xs text-muted-foreground px-3 py-2">
-                No results
-              </span>
-            )
-          ) : (
-            items.map((item, idx) => {
-              const itemKey = item.id ?? item.href ?? `${item.label}-${idx}`;
-              // On a collapsed desktop rail, hovering a group should open
-              // *that* group - not whatever the active selection's group is
-              // - and hovering a plain (non-group) row should close
-              // whichever group was previously open, since attention has
-              // moved elsewhere. With expandOn 'click', groups only open on
-              // click. Mobile drawers and always-expanded
-              // (icon-less) sidebars have no hover-collapse concept, so this
-              // is a no-op there.
-              const canHoverSwitch =
-                expandOn === 'hover' && !forceExpanded && !isNarrowViewport;
-              if (item.children && item.children.length > 0) {
-                const isOpen = openId === itemKey;
-                return (
-                  <NestedItem
-                    key={itemKey}
-                    item={item}
-                    isOpen={isOpen}
-                    expandable={expandable}
-                    LinkComponent={LinkComponent}
-                    onToggle={() => setOpenId(isOpen ? null : itemKey)}
-                    onMouseEnter={
-                      canHoverSwitch ? () => setOpenId(itemKey) : undefined
-                    }
-                    onNavigate={onMobileClose}
-                    forceExpanded={forceExpanded}
-                  />
-                );
-              }
+          {items.map((item, idx) => {
+            const itemKey = item.id ?? item.href ?? `${item.label}-${idx}`;
+            // On a collapsed desktop rail, hovering a group should open
+            // *that* group - not whatever the active selection's group is
+            // - and hovering a plain (non-group) row should close
+            // whichever group was previously open, since attention has
+            // moved elsewhere. With expandOn 'click', groups only open on
+            // click. Mobile drawers and always-expanded
+            // (icon-less) sidebars have no hover-collapse concept, so this
+            // is a no-op there.
+            const canHoverSwitch =
+              expandOn === 'hover' && !forceExpanded && !isNarrowViewport;
+            if (item.children && item.children.length > 0) {
+              const isOpen = openId === itemKey;
               return (
-                <ItemRow
+                <NestedItem
                   key={itemKey}
                   item={item}
-                  labelClassName={itemLabelClass}
+                  isOpen={isOpen}
+                  expandable={expandable}
                   LinkComponent={LinkComponent}
-                  onClickExtra={onMobileClose}
+                  onToggle={() => setOpenId(isOpen ? null : itemKey)}
                   onMouseEnter={
-                    canHoverSwitch ? () => setOpenId(null) : undefined
+                    canHoverSwitch ? () => setOpenId(itemKey) : undefined
                   }
+                  onNavigate={onMobileClose}
+                  forceExpanded={forceExpanded}
                 />
               );
-            })
-          )}
+            }
+            return (
+              <ItemRow
+                key={itemKey}
+                item={item}
+                labelClassName={itemLabelClass}
+                LinkComponent={LinkComponent}
+                onClickExtra={onMobileClose}
+                onMouseEnter={
+                  canHoverSwitch ? () => setOpenId(null) : undefined
+                }
+              />
+            );
+          })}
         </div>
+
+        {searchable && (
+          <SearchDialog
+            open={searchOpen}
+            onOpenChange={setSearchOpen}
+            items={searchResults}
+            onSelect={selectSearchResult}
+            title="Search"
+            description="Type to filter pages, then press Enter to open the selected one."
+            placeholder="Search..."
+            emptyLabel="No results"
+          />
+        )}
 
         {footer && (
           <div className={cn('shrink-0 border-t', BORDER_COLOR)}>{footer}</div>
