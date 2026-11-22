@@ -36,6 +36,7 @@ Shared React component library.
 | Input | [View](https://components.vigilant-broccoli.app/input) |
 | Keyboard Accessory Toolbar | [View](https://components.vigilant-broccoli.app/keyboard-accessory-toolbar) |
 | Link Card | [View](https://components.vigilant-broccoli.app/link-card) |
+| List Header | [View](https://components.vigilant-broccoli.app/list-header) |
 | Multi Select | [View](https://components.vigilant-broccoli.app/multi-select) |
 | Notepad | [View](https://components.vigilant-broccoli.app/notepad) |
 | Popover | [View](https://components.vigilant-broccoli.app/popover) |
