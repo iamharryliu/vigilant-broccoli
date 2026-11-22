@@ -243,5 +243,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
 
 Local agent commands (Codex `$name`, Claude `/name`):
 
+- `serve-local [PR_NUMBER] [--port N]` — Check out the PR (or keep the current branch) in the main checkout, free the port (default 3000) and serve its app.
 - `local-session-status` — One read-only snapshot of known dispatches.
 - `local-session-retry-publish [session]` — After a reported token refresh, notify the single known publishing-blocked idle agent or an explicitly selected session. See [usage and limitations](../setup/dotfiles/agent-skills/local-session-retry-publish/SKILL.md).
