@@ -9,7 +9,7 @@ How media-service runs on Fly.io and why it differs from the other services.
 
 ## Public Access
 
-`hearth` runs on Vercel and posts staged uploads here, and Vercel functions cannot reach Flycast, so the service is public (`<env>-media-service.fly.dev`, `force_https = true`) rather than `privateOnly`. Every `/api/*` route requires `x-api-key: $SHARED_APP_TOKEN` and is rate limited per client IP; `GET /` and `/docs` are open.
+`hearth` runs on Vercel and posts staged uploads here, and Vercel functions cannot reach Flycast, so the service is public (`<env>-media-service.fly.dev`, `force_https = true`) rather than `privateOnly`. Every `/api/*` route requires `x-api-key: $SHARED_APP_TOKEN` and is rate limited per client IP, except the `/api/__ping` health check; `GET /` and `/docs` are open.
 
 ## Free Tier
 
