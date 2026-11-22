@@ -12,6 +12,7 @@ interface ExportItem {
   title: string;
   description: string;
   tags: string[];
+  room: string | null;
   createdAt: string;
   images: { base64: string; mimeType: string; sortOrder: number }[];
 }
@@ -20,6 +21,7 @@ export interface WhereIsExport {
   version: 1;
   exportedAt: string;
   homeId: number;
+  rooms: string[];
   items: ExportItem[];
 }
 
@@ -35,11 +37,21 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const { data: items } = await supabase
-    .from('where_is_items')
-    .select('*, where_is_images(*)')
-    .eq('home_id', homeId)
-    .order('created_at', { ascending: false });
+  const [{ data: items }, { data: rooms }] = await Promise.all([
+    supabase
+      .from('where_is_items')
+      .select('*, where_is_images(*)')
+      .eq('home_id', homeId)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('where_is_rooms')
+      .select('id, name')
+      .eq('home_id', homeId)
+      .order('name'),
+  ]);
+  const roomNameById = new Map(
+    (rooms ?? []).map(room => [room.id as string, room.name as string]),
+  );
 
   const exportItems: ExportItem[] = await Promise.all(
     (items ?? []).map(async item => {
@@ -68,6 +80,7 @@ export async function GET(request: NextRequest) {
         title: item.title,
         description: item.description,
         tags: item.tags,
+        room: roomNameById.get(item.room_id) ?? null,
         createdAt: item.created_at,
         images,
       };
@@ -78,6 +91,7 @@ export async function GET(request: NextRequest) {
     version: 1,
     exportedAt: new Date().toISOString(),
     homeId: Number(homeId),
+    rooms: [...roomNameById.values()],
     items: exportItems,
   };
 

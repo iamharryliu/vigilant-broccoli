@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { DeleteItemConfirmationDialog } from './DeleteItemConfirmationDialog';
 import { DropdownMenu } from './DropdownMenu';
 import { IconButton, type IconButtonIcon } from './IconButton';
 
 const DEFAULT_DELETE_LABEL = 'Delete';
 const DEFAULT_UPDATE_LABEL = 'Update';
+const ACTION_ICON_SIZE = 16;
 
 type EllipsisIcon = Extract<IconButtonIcon, `ellipsis-${string}`>;
 
@@ -14,6 +16,7 @@ type EllipsisActionColor = 'red' | 'green' | 'blue' | 'gray' | 'amber';
 
 export type EllipsisAction = {
   label: string;
+  icon?: ReactNode;
   onSelect: () => void | Promise<void>;
   color?: EllipsisActionColor;
   disabled?: boolean;
@@ -56,10 +59,12 @@ export const EllipsisCTA = ({
     ([
       onUpdate && {
         label: updateLabel,
+        icon: <Pencil size={ACTION_ICON_SIZE} />,
         onSelect: onUpdate,
       },
       onDelete && {
         label: deleteLabel,
+        icon: <Trash2 size={ACTION_ICON_SIZE} />,
         color: 'red' as const,
         disabled: deleteDisabled,
         onSelect: onDelete,
@@ -95,6 +100,7 @@ export const EllipsisCTA = ({
               disabled={action.disabled}
               onSelect={() => handleSelect(action)}
             >
+              {action.icon}
               {action.label}
             </DropdownMenu.Item>
           ))}

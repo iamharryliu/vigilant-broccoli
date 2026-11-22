@@ -148,6 +148,7 @@ export interface DocsViewerProps {
   getGraph?: () => Promise<NoteGraph>;
   urlSync?: DocsExplorerUrlSync;
   enableMultiSelect?: boolean;
+  getShareUrl?: (path: string) => string | null;
 }
 
 const persistGraphScope = (scope: GraphScope) =>
@@ -275,6 +276,7 @@ export function DocsViewer({
   getGraph,
   urlSync,
   enableMultiSelect,
+  getShareUrl,
 }: DocsViewerProps) {
   const [nodes, setNodes] = useState<DocsNode[]>([]);
   const [treeError, setTreeError] = useState<string | null>(null);
@@ -410,6 +412,7 @@ export function DocsViewer({
       search={search}
       urlSync={wrappedUrlSync}
       enableMultiSelect={enableMultiSelect}
+      getShareUrl={getShareUrl}
       emptyMessage={COPY.EMPTY}
       onEdit={canEdit ? () => setEditTrigger(t => t + 1) : undefined}
       viewModes={viewModeOptions}

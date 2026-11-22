@@ -1,6 +1,6 @@
 resource "github_repository" "vigilant_broccoli" {
   name         = var.github_repo
-  description  = "idek"
+  description  = "My software hobby pastime, from apps to infrastructure."
   homepage_url = "https://${local.vb_app_domains.projects}/"
   visibility   = "public"
 

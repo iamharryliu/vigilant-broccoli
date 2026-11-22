@@ -6,4 +6,4 @@ Satisfy the `employee-handler-ui` upstream contract.
 
 - **Auth** — the UI forwards the `x-api-key` header; reject requests whose key does not match yours.
 - **TypeScript** — pass your `EmployeeHandlerConfig` to `createEmployeeHandlerApp` (see [FASTIFY.md](../../FASTIFY.md)); it mounts every route, validates request bodies and serves the spec.
-- **Any other language** — implement the OpenAPI spec directly. Fetch it from `GET /api/openapi.json` on a running wrapper, or from the build-generated `employee-handler.json` in `apps/ui/pages-index/public/openapi/`.
+- **Any other language** — implement the OpenAPI spec directly. Fetch it from `GET /api/openapi.json` on a running wrapper, or from the build-generated `employee-handler.json` in `apps/ui/project-overview/public/openapi/`.
