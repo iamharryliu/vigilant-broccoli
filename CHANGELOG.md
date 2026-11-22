@@ -10,7 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### infrastructure
 
-- Terraform now manages the `iamharryliu/iamharryliu` profile repo's settings and gives it a description, so the pages-index GitHub page no longer shows "No description provided." for it (PR: pending).
+- Terraform now manages the `iamharryliu/iamharryliu` profile repo's settings and gives it a description, so the pages-index GitHub page no longer shows "No description provided." for it ([#1731](https://github.com/iamharryliu/vigilant-broccoli/pull/1731)).
 
 ### docs-explorer
 
