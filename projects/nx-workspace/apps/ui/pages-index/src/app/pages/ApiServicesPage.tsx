@@ -55,5 +55,10 @@ export function ApiServicesPage() {
     },
   ];
 
-  return <CardListPage title={t('API_SERVICES_PAGE.TITLE')} items={items} />;
+  return (
+    <CardListPage
+      title={t('API_SERVICES_PAGE.TITLE')}
+      items={items.map(item => ({ ...item, route: true }))}
+    />
+  );
 }

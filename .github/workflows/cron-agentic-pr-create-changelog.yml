@@ -1,7 +1,7 @@
 name: cron-agentic-pr-create-changelog
 
 # Folds the pull requests merged to main since the last run into the current
-# month's section of CHANGELOG.md (served at projects.vigilant-broccoli.app/#/changelog),
+# month's section of CHANGELOG.md (served at projects.vigilant-broccoli.app/changelog),
 # opening one PR only when there is something user-facing to report. Same
 # container and credentials as `cron-agentic-pr-create-readmes`; the local
 # equivalent is `pnpm agentic-pr-create-changelog`.

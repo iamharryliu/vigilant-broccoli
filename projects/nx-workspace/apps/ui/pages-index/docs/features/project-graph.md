@@ -21,7 +21,7 @@
 - The Lib/Embeds/Calls toggles double as the edge legend and filter the canvas edges and search neighbors; the last enabled kind cannot be turned off
 - Search keeps matching projects plus their direct neighbors over the enabled edge kinds; the Apps/Libs filter applies first
 - The detail panel lists Depends on and Depended on by (lib edges) and, for apps, Runtime dependencies and Runtime dependents with each edge's kind, all from the full data regardless of the toggles; picking a project hidden by the filters clears them so it appears on the canvas
-- `project`, `type`, `q` and `edges` (comma-separated kinds) live in the hash query (`#/project-graph?project=hearth&edges=embeds,calls`); defaults are omitted from the URL
+- `project`, `type`, `q` and `edges` (comma-separated kinds) live in the query string (`/project-graph?project=hearth&edges=embeds,calls`); defaults are omitted from the URL
 
 ## Interaction
 

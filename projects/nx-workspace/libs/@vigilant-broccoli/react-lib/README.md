@@ -43,6 +43,7 @@ Shared React component library.
 | Progress | [View](https://components.vigilant-broccoli.app/progress) |
 | Scroll Area | [View](https://components.vigilant-broccoli.app/scroll-area) |
 | Scroll Timeline | [View](https://components.vigilant-broccoli.app/scroll-timeline) |
+| Search Dialog | [View](https://components.vigilant-broccoli.app/search-dialog) |
 | Search Input | [View](https://components.vigilant-broccoli.app/search-input) |
 | Segmented Control | [View](https://components.vigilant-broccoli.app/segmented-control) |
 | Select | [View](https://components.vigilant-broccoli.app/select) |

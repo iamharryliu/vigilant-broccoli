@@ -80,13 +80,11 @@ export const scrollToUrlHash = () => {
 };
 
 // In-page heading anchors (e.g. a Table of Contents link to "#stack") must not fall through
-// to the browser default: under HashRouter the URL's fragment IS the route, so letting the
-// browser navigate to "#stack" replaces the current route hash instead of scrolling.
+// to the browser default, which scrolls instantly and fights the smooth scroll below.
 const isInPageAnchor = (href: string): boolean => href.startsWith('#');
 
 // history.replaceState (not `location.hash =`) so the fragment lands in the address bar
-// without the browser's native instant scroll-to-fragment fighting the smooth scroll below,
-// and without emitting a hashchange a HashRouter consumer would otherwise react to.
+// without the browser's native instant scroll-to-fragment fighting the smooth scroll below.
 const setWindowHash = (id: string) => {
   const { pathname, search } = window.location;
   window.history.replaceState(
@@ -108,11 +106,7 @@ export const createNoteLinkClickHandler =
       event.preventDefault();
       const id = href.slice(1);
       document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      // Only apps that route via a `?file=` query param (DocsExplorer, signalled by
-      // onNavigate being passed) are safe to mirror the anchor into the URL — a bare
-      // HashRouter consumer (no onNavigate, e.g. pages-index's ReadmePage) uses the
-      // fragment as its route, so touching it there would still be wrong.
-      if (onNavigate) setWindowHash(id);
+      setWindowHash(id);
       return;
     }
 

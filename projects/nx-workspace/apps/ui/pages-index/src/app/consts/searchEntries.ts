@@ -121,7 +121,7 @@ export const buildSearchEntries = (t: Translate): SearchEntry[] => {
         id: `${API_SERVICES_ROUTE}/${slug}`,
         title: translate(`API_SERVICES_PAGE.${segment}.TITLE`),
         description: translate(`API_SERVICES_PAGE.${segment}.DESCRIPTION`),
-        href: toApiServiceDocsHref(slug).replace(/^#/, ''),
+        href: toApiServiceDocsHref(slug),
         route: true,
       };
     }),

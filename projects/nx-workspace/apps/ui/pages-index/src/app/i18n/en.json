@@ -424,6 +424,7 @@
     "DESCRIPTION": "Pick a game and play in your browser."
   },
   "SEARCH": {
+    "OPEN": "Search pages",
     "TITLE": "Search pages",
     "DESCRIPTION": "Type to filter pages, then press Enter to open the selected one.",
     "PLACEHOLDER": "Search pages…",

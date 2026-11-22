@@ -1,3 +1,5 @@
+import { API_SERVICES_ROUTE } from './routes';
+
 export interface ApiServiceInfo {
   slug: string;
   private: boolean;
@@ -12,7 +14,8 @@ export const API_SERVICES: ApiServiceInfo[] = [
   { slug: 'employee-handler', private: true },
 ];
 
-export const toApiServiceDocsHref = (slug: string) => `#/api-services/${slug}`;
+export const toApiServiceDocsHref = (slug: string) =>
+  `${API_SERVICES_ROUTE}/${slug}`;
 
 export const toSpecUrl = (slug: string) =>
   `${import.meta.env.BASE_URL}openapi/${slug}.json`;

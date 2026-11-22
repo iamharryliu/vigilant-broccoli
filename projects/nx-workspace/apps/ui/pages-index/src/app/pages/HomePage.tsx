@@ -15,6 +15,7 @@ import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
 import { SectionHeading } from '../components/SectionHeading';
+import { SearchButton } from '../components/SearchButton';
 import { DockerIcon, GithubIcon, NpmIcon } from '../components/BrandIcons';
 import { usePageTitle } from '../use-page-title';
 import { PAGE_CLASS } from '../consts/layout';
@@ -32,8 +33,9 @@ export function HomePage() {
 
   return (
     <main className={PAGE_CLASS}>
-      <header className="mb-6">
+      <header className="mb-6 flex items-center justify-between gap-2">
         <h1 className="text-3xl font-bold tracking-tight">{t('HOME.TITLE')}</h1>
+        <SearchButton />
       </header>
 
       <section className="mb-8">

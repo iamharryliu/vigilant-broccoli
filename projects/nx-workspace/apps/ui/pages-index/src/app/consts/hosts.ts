@@ -18,7 +18,8 @@ export const isDeploymentsHost = (
   hostname: string = window.location.hostname,
 ) => hostname === DEPLOYMENTS_HOST;
 
-export const toProjectsUrl = (route: string) => `${PROJECTS_URL}#${route}`;
+export const toProjectsUrl = (route: string) =>
+  new URL(route.replace(/^\//, ''), PROJECTS_URL).href;
 
 export const GAMES_HOST = 'games.vigilant-broccoli.app';
 export const isGamesHost = (hostname: string = window.location.hostname) =>
