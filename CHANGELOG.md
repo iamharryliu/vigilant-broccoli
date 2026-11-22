@@ -28,6 +28,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### hearth
 
+- Where Is shows a storage area's photos as a shuffled stack you page through, moves the added date to the bottom of the details, drops the description from list rows and adds View details, with icons, to each row's menu ([#1733](https://github.com/iamharryliu/vigilant-broccoli/pull/1733)).
 - Where Is gains rooms: storage areas can be assigned to a room, each shows its room in a badge and search matches room names, a Rooms tab adds, renames and deletes rooms (deleting leaves areas unassigned) and the form can add a room inline, the detail view shows the room, and export and import carry rooms ([#1727](https://github.com/iamharryliu/vigilant-broccoli/pull/1727)).
 - Where Is loads faster: the list signs all photo links in one request, shows one small thumbnail per item instead of a stack of full-size photos, and shows the search box and placeholder rows while it loads; imported photos get thumbnails too ([#1724](https://github.com/iamharryliu/vigilant-broccoli/pull/1724)).
 - On phones the home page is one tabbed view with Tasks first and selected by default, plus Whiteboard and Calendar, replacing the separate Whiteboard, Tasks and Calendar entries under Home in the menu; only the task list scrolls, recurring tasks are highlighted yellow, and the progress bar counts only today's recurring tasks ([#1716](https://github.com/iamharryliu/vigilant-broccoli/pull/1716)).
@@ -138,6 +139,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- `EllipsisCTA` actions accept an `icon`, and the default Update and Delete entries show a pencil and a trash can ([#1733](https://github.com/iamharryliu/vigilant-broccoli/pull/1733)).
 - `CheckList`, `CheckListBase` and `CheckListPanel` moved out into their own `@vigilant-broccoli/react-lib-checklist` library, so editing the checklist no longer redeploys every UI app; apps import them from there and react-lib's next npm release no longer includes them ([#1717](https://github.com/iamharryliu/vigilant-broccoli/pull/1717)).
 - New `CheckListPanel` pins a task list's controls and scrolls only the list; `CardContainer` gains `fill` to fill a height-bound parent and its `title` is now optional. `GoogleTasks` and Hearth's task list use the panel ([#1716](https://github.com/iamharryliu/vigilant-broccoli/pull/1716)).
 - New `SignOutButton`, the standard sign-out action with a logout icon and a pending state for async handlers, with a demo in the component library ([#1693](https://github.com/iamharryliu/vigilant-broccoli/pull/1693)).
@@ -159,6 +161,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - Every shared component now has a page, including new chatbot and file-explorer groups, and Button List, Icon Button, Input, Textarea and Toggle Group are split into their own pages. Each page has a Demo section and, for composed components, a Built with button list that opens the pages of the components it uses. Typography moved to the top of the sidebar, above Components ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680)). The Theme Preference Control has its own page ([#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
 - The sidebar dark mode toggle is replaced by a Settings page with a System/Light/Dark theme picker ([#1692](https://github.com/iamharryliu/vigilant-broccoli/pull/1692)).
 - The Checklist page moved from the react-lib group to its own react-lib-checklist group ([#1717](https://github.com/iamharryliu/vigilant-broccoli/pull/1717)).
+
+### react-lib-crud-list
+
+- `CRUDItemList` gains `leadingItemActions` for ellipsis entries placed before Update ([#1733](https://github.com/iamharryliu/vigilant-broccoli/pull/1733)).
 
 ### react-lib-media
 

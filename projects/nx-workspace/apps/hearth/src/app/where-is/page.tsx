@@ -9,6 +9,7 @@ import {
   useRef,
 } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { Eye } from 'lucide-react';
 import {
   Text,
   Badge,
@@ -66,6 +67,7 @@ const DEFAULT_FORM: WhereIsFormValues = {
 const LIST_TITLE = 'Storage Areas';
 const EMPTY_LIST_MESSAGE = 'No storage areas yet.';
 const CREATE_LABEL = 'Create Storage Area';
+const VIEW_DETAILS_LABEL = 'View details';
 const SEARCH_PLACEHOLDER = 'Search items (e.g. scissors, batteries)...';
 const TAB = { STORAGE_AREAS: 'storage-areas', ROOMS: 'rooms' } as const;
 const TAB_LABEL = { STORAGE_AREAS: 'Storage Areas', ROOMS: 'Rooms' } as const;
@@ -110,9 +112,6 @@ const WhereIsListItem = ({ item }: { item: WhereIsFormValues }) => {
           </Badge>
         )}
       </div>
-      <Text size="1" color="gray" as="p">
-        {item.description}
-      </Text>
       <div className="flex flex-wrap gap-1 mt-1">
         {sortTags(item.tags).map(tag => (
           <Badge key={tag} variant="soft" size="1">
@@ -366,6 +365,13 @@ function WhereIsPageContent() {
             }
             getItemTitle={(item: { title: string }) => item.title}
             onItemClick={onItemClick}
+            leadingItemActions={item => [
+              {
+                label: VIEW_DETAILS_LABEL,
+                icon: <Eye size={16} />,
+                onSelect: () => onItemClick(item),
+              },
+            ]}
             showDialogCloseButton
           />
         )}

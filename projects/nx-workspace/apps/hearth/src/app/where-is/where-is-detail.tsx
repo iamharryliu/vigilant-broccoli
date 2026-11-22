@@ -15,8 +15,9 @@ import {
   EllipsisCTA,
 } from '@vigilant-broccoli/react-lib';
 import {
+  IMAGE_GALLERY_LAYOUT,
   ImageCarouselDialog,
-  ImageFilmstrip,
+  ImageGallery,
 } from '@vigilant-broccoli/react-lib-media';
 import { CRUDItemFormDialog } from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
@@ -157,19 +158,16 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
           </Text>
         )}
 
-        <Text size="1" color="gray" as="p">
-          Added{' '}
-          {new Date(item.createdAt).toLocaleDateString(undefined, {
-            dateStyle: 'medium',
-          })}
-        </Text>
-
         {item.imageUrls.length > 0 && (
           <>
-            <ImageFilmstrip
-              urls={item.imageUrls}
-              alt={item.title}
-              onSelect={setCarouselIndex}
+            <ImageGallery
+              layout={IMAGE_GALLERY_LAYOUT.STACK}
+              items={item.imageUrls.map((url, i) => ({
+                id: url,
+                imageUrl: url,
+                label: `${item.title} ${i + 1}`,
+                onSelect: () => setCarouselIndex(i),
+              }))}
             />
             <ImageCarouselDialog
               images={item.imageUrls}
@@ -190,6 +188,13 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
             ))}
           </div>
         )}
+
+        <Text size="1" color="gray" as="p">
+          Added{' '}
+          {new Date(item.createdAt).toLocaleDateString(undefined, {
+            dateStyle: 'medium',
+          })}
+        </Text>
       </div>
 
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>

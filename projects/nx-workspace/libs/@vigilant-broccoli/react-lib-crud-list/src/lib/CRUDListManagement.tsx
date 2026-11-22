@@ -1,4 +1,4 @@
-import { ChevronDown, Plus } from 'lucide-react';
+import { ChevronDown, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
   ComponentType,
   Dispatch,
@@ -115,6 +115,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   showEllipsis = true,
   canShowEllipsis,
   itemActions,
+  leadingItemActions,
   updateLabel,
   deleteConfirmation,
   getItemImages,
@@ -143,6 +144,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   showEllipsis?: boolean;
   canShowEllipsis?: (item: T) => boolean;
   itemActions?: (item: T) => EllipsisAction[];
+  leadingItemActions?: (item: T) => EllipsisAction[];
   updateLabel?: string;
   deleteConfirmation?: { title?: string; description?: string };
   getItemImages?: (item: T) => string[] | undefined;
@@ -204,6 +206,7 @@ export const CRUDItemList = <T extends CRUDItem>({
           copy={copy}
           submitHandler={submitHandler}
           extraActions={itemActions?.(item)}
+          leadingActions={leadingItemActions?.(item)}
           updateLabel={updateLabel}
           deleteConfirmation={deleteConfirmation}
           showDialogCloseButton={showDialogCloseButton}
@@ -360,6 +363,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   deleteItem,
   copy,
   extraActions,
+  leadingActions,
   updateLabel = DEFAULT_UPDATE_LABEL,
   deleteConfirmation,
   showDialogCloseButton,
@@ -370,19 +374,28 @@ const EllipsisOptions = <T extends CRUDItem>({
   deleteItem: (id: string | number) => Promise<void>;
   copy: ListManagementCopy;
   extraActions?: EllipsisAction[];
+  leadingActions?: EllipsisAction[];
   updateLabel?: string;
   deleteConfirmation?: { title?: string; description?: string };
   showDialogCloseButton?: boolean;
 }) => {
   const [updateOpen, setUpdateOpen] = useState(false);
-  const hasExtraActions = Boolean(extraActions?.length);
+  const hasExtraActions = Boolean(
+    extraActions?.length || leadingActions?.length,
+  );
   const ctaProps = hasExtraActions
     ? {
         actions: [
-          { label: updateLabel, onSelect: () => setUpdateOpen(true) },
+          ...(leadingActions ?? []),
+          {
+            label: updateLabel,
+            icon: <Pencil size={ACTION_ICON_SIZE} />,
+            onSelect: () => setUpdateOpen(true),
+          },
           ...(extraActions ?? []),
           {
             label: DEFAULT_DELETE_LABEL,
+            icon: <Trash2 size={ACTION_ICON_SIZE} />,
             color: 'red' as const,
             onSelect: () => deleteItem(item.id),
             confirm: {
@@ -415,6 +428,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   );
 };
 
+const ACTION_ICON_SIZE = 16;
 const DEFAULT_DELETE_LABEL = 'Delete';
 const DEFAULT_UPDATE_LABEL = 'Update';
 const CLOSE_LABEL = 'Close';
