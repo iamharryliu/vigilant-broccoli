@@ -140,7 +140,7 @@ Format canonical sources, not adapters ([why](../projects/nx-workspace/CONTEXT.m
 
 Both platform installers use `bash setup/common/agent-skills.sh` from the repo root. An optional destination home supports isolated checks. Setup adds skill links under `.agents/skills` and `.claude/skills`, and command links under `.claude/commands`; it preserves matching links and legacy caches, reports conflicting entries without replacing them, and exits nonzero on conflicts.
 
-`bash setup/common/agent-skills-smoketest.sh` checks fresh/repeated installs, legacy caches, conflicts and command compatibility. Installed commands route through committed adapters. Restart the agent session if newly installed skills are not visible; setup does not manage credentials, plugins or personal settings. `ship-pr` requires explicit invocation and disables Codex implicit invocation in its metadata.
+`bash setup/common/agent-skills-smoketest.sh` checks fresh/repeated installs, legacy caches, conflicts and command compatibility. Installed commands route through committed adapters. Restart the agent session if newly installed skills are not visible; setup does not manage credentials, plugins or personal settings. `ship-pr` and `serve-local` require explicit invocation and disable Codex implicit invocation in their metadata.
 
 ## Context discovery
 
