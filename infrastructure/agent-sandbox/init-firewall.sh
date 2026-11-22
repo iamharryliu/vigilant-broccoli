@@ -58,7 +58,10 @@ if curl -fsS --connect-timeout 5 https://example.com >/dev/null 2>&1; then
   echo "Firewall verification failed: example.com is reachable" >&2
   exit 1
 fi
-if ! curl -fsS --connect-timeout 10 https://api.github.com/zen >/dev/null; then
+# Any HTTP answer proves the route is open. Without -f, a 403 from GitHub's
+# unauthenticated per-IP rate limit (shared hosted-runner IPs exhaust it)
+# no longer reads as the firewall blocking GitHub; only a failed connection does.
+if ! curl -sS -o /dev/null --connect-timeout 10 https://api.github.com/zen; then
   echo "Firewall verification failed: api.github.com is unreachable" >&2
   exit 1
 fi
