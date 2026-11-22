@@ -26,6 +26,7 @@ import { ChangelogPage } from './pages/ChangelogPage';
 import { DeploymentsPage } from './pages/DeploymentsPage';
 import { CareerPage } from './pages/CareerPage';
 import { CareerExperiencePage } from './pages/CareerExperiencePage';
+import { SearchDialog } from './components/SearchDialog';
 import {
   isCareerHost,
   isDeploymentsHost,
@@ -102,36 +103,42 @@ function GamesHostRoutes() {
 
 function ProjectsRoutes() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path={GAMES_ROUTE} element={<GamesPage />} />
-      <Route
-        path={`${GAMES_ROUTE}/:app`}
-        element={<WebApplicationReadmePage />}
-      />
-      <Route path={STATUS_ROUTE} element={<StatusPage />} />
-      <Route path={DEPLOYMENTS_ROUTE} element={<DeploymentsPage />} />
-      <Route path={CHANGELOG_ROUTE} element={<ChangelogPage />} />
-      <Route path="/repo-timeline" element={<RepoTimelinePage />} />
-      <Route path={PROJECT_GRAPH_ROUTE} element={<ProjectGraphPage />} />
-      <Route
-        path={`${LEGACY_OPEN_SOURCE_PREFIX}/*`}
-        element={<LegacyOpenSourceRedirect />}
-      />
-      <Route path="/github" element={<GithubReposPage />} />
-      <Route path="/github/:repo" element={<GithubReadmePage />} />
-      <Route path="/docker" element={<DockerImagesPage />} />
-      <Route path="/docker/:image" element={<DockerImageReadmePage />} />
-      <Route path="/npm" element={<NpmPackagesPage />} />
-      <Route path="/npm/:pkg" element={<NpmPackageReadmePage />} />
-      <Route path={WEB_APPLICATIONS_ROUTE} element={<WebApplicationsPage />} />
-      <Route
-        path={`${WEB_APPLICATIONS_ROUTE}/:app`}
-        element={<WebApplicationReadmePage />}
-      />
-      <Route path="/api-services" element={<ApiServicesPage />} />
-      <Route path="/api-services/:service" element={<ApiServiceDocsPage />} />
-    </Routes>
+    <>
+      <SearchDialog />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path={GAMES_ROUTE} element={<GamesPage />} />
+        <Route
+          path={`${GAMES_ROUTE}/:app`}
+          element={<WebApplicationReadmePage />}
+        />
+        <Route path={STATUS_ROUTE} element={<StatusPage />} />
+        <Route path={DEPLOYMENTS_ROUTE} element={<DeploymentsPage />} />
+        <Route path={CHANGELOG_ROUTE} element={<ChangelogPage />} />
+        <Route path="/repo-timeline" element={<RepoTimelinePage />} />
+        <Route path={PROJECT_GRAPH_ROUTE} element={<ProjectGraphPage />} />
+        <Route
+          path={`${LEGACY_OPEN_SOURCE_PREFIX}/*`}
+          element={<LegacyOpenSourceRedirect />}
+        />
+        <Route path="/github" element={<GithubReposPage />} />
+        <Route path="/github/:repo" element={<GithubReadmePage />} />
+        <Route path="/docker" element={<DockerImagesPage />} />
+        <Route path="/docker/:image" element={<DockerImageReadmePage />} />
+        <Route path="/npm" element={<NpmPackagesPage />} />
+        <Route path="/npm/:pkg" element={<NpmPackageReadmePage />} />
+        <Route
+          path={WEB_APPLICATIONS_ROUTE}
+          element={<WebApplicationsPage />}
+        />
+        <Route
+          path={`${WEB_APPLICATIONS_ROUTE}/:app`}
+          element={<WebApplicationReadmePage />}
+        />
+        <Route path="/api-services" element={<ApiServicesPage />} />
+        <Route path="/api-services/:service" element={<ApiServiceDocsPage />} />
+      </Routes>
+    </>
   );
 }
 

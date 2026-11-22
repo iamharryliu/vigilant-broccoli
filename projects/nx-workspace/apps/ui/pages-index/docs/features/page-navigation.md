@@ -8,6 +8,7 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 - [Deployments, status, repo timeline and project graph](#deployments-status-repo-timeline-and-project-graph)
 - [Open source](#open-source)
 - [Web applications and API services](#web-applications-and-api-services)
+- [Search](#search)
 - [Games](#games)
   - [Activation](#activation)
 
@@ -42,6 +43,12 @@ The home page's Software Projects section links straight to GitHub, Docker Hub a
 - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All five services (llm-service, bucket-service, email-service, email-subscription-service, employee-handler) are private-only (the first four are private Fly apps; employee-handler is a library-hosted contract with no public `/docs`), so this page is the only way to browse them. The employee-handler spec is generated from the zod contract in `libs/@vigilant-broccoli/employee-handler`, whose sources are `generate-openapi` inputs. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
 
 The Job Hunt demo card opens the public, read-only sample deployment at `demo-job-hunt-next.vercel.app`; its detail page uses Job Hunt's README.
+
+## Search
+
+- `/` opens `SearchDialog` (`src/app/components/SearchDialog.tsx`), mounted once in `ProjectsRoutes` only; the status, deployments, career and games host tables render single pages and have no search. `useFocusSearchShortcut` ignores text entry, open dialogs, modifier combos and IME composition.
+- `buildSearchEntries` (`src/app/consts/searchEntries.ts`) derives entries from the route consts, `webApplications.json`, `dockerImages.json`, `npmPackages.ts` and `apiServices.ts`, titled from `en.json`. Games link to their direct hosts (external, via `window.location`); everything else uses `useNavigate`. Game apps are excluded from the web applications entries to avoid duplicates.
+- Matching is `fuzzyMatch` on the title, ranked by score; ArrowUp/ArrowDown move the active result, Enter opens it and Escape closes. The list height is measured with a `ResizeObserver` and transitioned so the dialog expands and contracts as results change; animations are disabled under `prefers-reduced-motion`.
 
 ## Games
 

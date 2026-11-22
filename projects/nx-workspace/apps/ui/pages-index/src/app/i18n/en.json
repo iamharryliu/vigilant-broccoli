@@ -422,5 +422,11 @@
   "GAMES_PAGE": {
     "TITLE": "Games",
     "DESCRIPTION": "Pick a game and play in your browser."
+  },
+  "SEARCH": {
+    "TITLE": "Search pages",
+    "DESCRIPTION": "Type to filter pages, then press Enter to open the selected one.",
+    "PLACEHOLDER": "Search pages…",
+    "EMPTY": "No matching pages."
   }
 }

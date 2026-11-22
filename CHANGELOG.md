@@ -73,6 +73,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### pages-index
 
+- Pressing `/` on the projects site opens a fuzzy-search dialog to jump to any page, app, game, Docker image, npm package or API service (PR: pending).
 - The Project Graph now also shows which apps embed or call other apps, including local-manager and mobile-manager, with a toggle per dependency kind; each app README lists these under App Dependencies ([#1725](https://github.com/iamharryliu/vigilant-broccoli/pull/1725)).
 - The Games page moved to games.vigilant-broccoli.app and the Upptime history site to uptime.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve ([#1694](https://github.com/iamharryliu/vigilant-broccoli/pull/1694)).
 - The projects site moved to projects.vigilant-broccoli.app. Old projects.harryliu.dev links redirect there and keep their page ([#1684](https://github.com/iamharryliu/vigilant-broccoli/pull/1684)).
