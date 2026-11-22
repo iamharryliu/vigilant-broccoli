@@ -6,20 +6,20 @@ import { fileURLToPath } from 'node:url';
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const NX_WORKSPACE = 'projects/nx-workspace';
-const WEB_APPLICATIONS_REGISTRY = `${NX_WORKSPACE}/apps/ui/projects-hub/src/app/consts/webApplications.json`;
-const DOCKER_IMAGES_REGISTRY = `${NX_WORKSPACE}/apps/ui/projects-hub/src/app/consts/dockerImages.json`;
+const WEB_APPLICATIONS_REGISTRY = `${NX_WORKSPACE}/apps/ui/project-overview/src/app/consts/webApplications.json`;
+const DOCKER_IMAGES_REGISTRY = `${NX_WORKSPACE}/apps/ui/project-overview/src/app/consts/dockerImages.json`;
 const API_APPS_DIR = `${NX_WORKSPACE}/apps/api/`;
 const NPM_LIBS_DIR = `${NX_WORKSPACE}/libs/@vigilant-broccoli/`;
 const WORKFLOWS_DIR = '.github/workflows/';
 const PROJECT_JSON = 'project.json';
 const DOCKER_HUB_NAMESPACE = 'iamharryliu';
-const PROJECTS_HUB_URL = 'https://projects.vigilant-broccoli.app/';
+const PROJECT_OVERVIEW_URL = 'https://projects.vigilant-broccoli.app/';
 const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
 const TARGETS = [
   {
     path: 'README.md',
     template: ({ applications, services, images, packages }) =>
-      `Personal monorepo, supporting **${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**. Learn more at [projects.vigilant-broccoli.app](${PROJECTS_HUB_URL}).`,
+      `Personal monorepo, supporting **${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**. Learn more at [projects.vigilant-broccoli.app](${PROJECT_OVERVIEW_URL}).`,
   },
   {
     path: `${NX_WORKSPACE}/apps/ui/personal-website-react/src/app/content/about.md`,
@@ -85,7 +85,7 @@ const pushedDockerImages = () =>
     ),
   ]);
 
-// projects-hub's Docker page renders from its registry, so an image pushed
+// project-overview's Docker page renders from its registry, so an image pushed
 // without a registry entry (or an entry for an image nothing pushes) is a
 // missing or stale card.
 const registryDriftMessages = pushed => {

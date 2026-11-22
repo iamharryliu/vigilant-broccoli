@@ -12,7 +12,7 @@ Provision and deploy llm-service staging on Render alongside Fly using the share
 
 ## Pilot scope
 
-`llm-service` staging has a Render deploy path for comparison and fallback; Fly stays the live deploy. Render reuses the Docker Hub image pushed by `deploy-container`. The pilot's `onrender.com` URL is not registered in Upptime or projects-hub.
+`llm-service` staging has a Render deploy path for comparison and fallback; Fly stays the live deploy. Render reuses the Docker Hub image pushed by `deploy-container`. The pilot's `onrender.com` URL is not registered in Upptime or project-overview.
 
 ## Targets
 

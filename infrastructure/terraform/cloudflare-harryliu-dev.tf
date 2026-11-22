@@ -75,7 +75,7 @@ resource "cloudflare_ruleset" "harryliu_dev_redirects" {
   }]
 }
 
-# Legacy projects-hub host, kept only so old links reach the redirect above.
+# Legacy project-overview host, kept only so old links reach the redirect above.
 # Proxied because redirect rules only run on proxied traffic; the GitHub Pages
 # target is never fetched.
 resource "cloudflare_dns_record" "harryliu_dev_projects" {

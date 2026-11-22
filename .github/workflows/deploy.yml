@@ -276,7 +276,7 @@ jobs:
         run: ${{ steps.check.outputs.deploy_cmd }}
 
       # Every Docker Hub repo's description and overview come from the
-      # projects-hub image registry; syncing all of them is a dozen idempotent
+      # project-overview image registry; syncing all of them is a dozen idempotent
       # API calls, so it does not need to track which images this run pushed.
       # Not load-bearing for the deploy, hence continue-on-error.
       - name: Sync Docker Hub descriptions
@@ -350,14 +350,14 @@ jobs:
           secrets: |
             kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
 
-      - name: Stage projects-hub landing artifact
+      - name: Stage project-overview landing artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /
           NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.vigilant-broccoli.app
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
-        run: pnpm exec nx run projects-hub:deploy-github-pages
+        run: pnpm exec nx run project-overview:deploy-github-pages
 
       - name: Setup Pages
         if: steps.check.outputs.has_deployments == 'true'

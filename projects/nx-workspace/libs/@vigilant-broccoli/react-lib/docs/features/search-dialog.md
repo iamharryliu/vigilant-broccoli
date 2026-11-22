@@ -9,4 +9,4 @@
 - Results are ranked by `fuzzyMatch` on `title` and capped by `maxResults` (default 8); an empty query shows the first `maxResults` items in the given order.
 - Arrow keys move the highlight (wrapping), Enter selects it, hover moves it. Selecting calls `onOpenChange(false)` and then `onSelect`, so navigation is the caller's job.
 - The result list's height is observed through a callback ref and animated; an effect keyed on `open` would run before the portal mounts the list and leave it at zero height.
-- Consumers: `projects-hub`'s `SearchDialog`, which builds items from its routes and cards.
+- Consumers: `project-overview`'s `SearchDialog`, which builds items from its routes and cards.

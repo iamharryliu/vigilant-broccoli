@@ -284,7 +284,7 @@ opens one PR citing where each removed fact is retained. It runs Opus by default
 ## Auditing the public URL registry
 
 `pnpm agentic-pr-create-url-audit` runs `audit-urls.sh`, which checks that every public URL (each environment and demo) has
-an Upptime entry, a projects-hub card and a browser quick link, and every published Docker image a projects-hub registry
+an Upptime entry, a project-overview card and a browser quick link, and every published Docker image a project-overview registry
 entry and a README Containers row, then opens one PR fixing drift.
 `cron-agentic-pr-create-url-audit` runs the same script weekly (`55 6 * * 0`).
 

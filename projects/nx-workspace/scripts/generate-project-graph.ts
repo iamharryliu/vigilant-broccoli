@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join, normalize } from 'path';
 
 const OUTPUT_FILE =
-  process.argv[2] ?? 'apps/ui/projects-hub/public/project-graph.json';
+  process.argv[2] ?? 'apps/ui/project-overview/public/project-graph.json';
 
 // The page is publicly served: emit visibility:public projects plus the libs
 // they depend on (already shipped in public bundles) and the apps linked by

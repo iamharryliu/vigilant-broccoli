@@ -141,8 +141,8 @@ export const VB_APP_URL = {
     NAME: 'Career',
     URL: 'https://career.harryliu.dev/',
   },
-  PROJECTS_HUB: {
-    NAME: 'Projects Hub',
+  PROJECT_OVERVIEW: {
+    NAME: 'Project Overview',
     URL: `https://projects.${VB_APP_DOMAIN}/`,
     STAGING_URL: `https://staging-projects.${VB_APP_DOMAIN}/`,
   },

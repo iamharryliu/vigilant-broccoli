@@ -56,9 +56,9 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - New public photo gallery at photography.harryliu.dev with an album grid, album pages and a lightbox viewer ([#1592](https://github.com/iamharryliu/vigilant-broccoli/pull/1592)).
 - Albums and photos show in uncropped masonry columns with only cover images on the album list, and albums have real URLs like `/summer-trip`; old `#/` links still redirect ([#1658](https://github.com/iamharryliu/vigilant-broccoli/pull/1658)).
 
-### projects-hub
+### project-overview
 
-- The projects site app is now called Projects Hub (`projects-hub`, formerly `pages-index`), and its staging build publishes to a new `staging-projects-hub` Cloudflare Pages project behind the same staging-projects address; the public sites and their pages are unchanged (PR: pending).
+- The projects site app is now called Project Overview (`project-overview`, formerly `pages-index`), and its staging build publishes to a new `staging-project-overview` Cloudflare Pages project behind the same staging-projects address; the public sites and their pages are unchanged ([#1742](https://github.com/iamharryliu/vigilant-broccoli/pull/1742)).
 
 ### pages-index
 
