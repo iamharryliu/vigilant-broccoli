@@ -20,6 +20,7 @@ The `component-library` sandbox has a Utilities > Docs Explorer page that links 
 - `viewModes`, `currentViewMode`, `onViewModeChange` — populate the content-pane dropdown, which sits in a sticky bar so it stays reachable while scrolling; as the content's first `h1` scrolls under the bar, the bar fades and slides in that heading's text in proportion to how much of the heading is hidden
 - `onEdit` — adds an Edit item to the content-pane dropdown
 - `renderGraph(navigate)` — optional; enables the graph toggle (left of the content pane's ellipsis on desktop, the sidebar header on mobile, or `g` outside text fields and dialogs) and renders its result in the content pane (see [note-graph.md](./note-graph.md))
+- `getShareUrl(path)` — optional; adds a Share item (before Copy markdown) to the single-note ellipsis menu, hidden when absent, in aggregate mode or when it returns `null`. The host owns the URL: selection is in-memory, so the explorer cannot build one. Share opens `ShareDialog` (`share-dialog.tsx`) with the note name, a read-only link with a Copy link button and a QR code rendered client-side with `qrcode`
 - `sidebarTitle`, `searchPlaceholder`, `emptyMessage` — copy overrides
 
 ## DocsViewer Props
@@ -27,7 +28,7 @@ The `component-library` sandbox has a Utilities > Docs Explorer page that links 
 - `getStructure`, `getContent`, `search` — same contracts as DocsExplorer
 - `saveContent(path, content)` — optional; its presence alone enables the Edit action
 - `getGraph()` — optional; supplies the note graph and enables the graph toggle (see [note-graph.md](./note-graph.md)). A ghost settings icon holds scope (Global/Local), depth (a 1–10 hops select), a color scheme select, a node glow switch and force sliders (each range symmetric around its default, so they start centered): a popover on desktop (`md:` and up), a dialog on mobile. The hop select only shows in local scope; opening any file switches to local
-- `urlSync`, `enableMultiSelect` — forwarded to DocsExplorer
+- `urlSync`, `enableMultiSelect`, `getShareUrl` — forwarded to DocsExplorer
 
 ## Behaviour
 
