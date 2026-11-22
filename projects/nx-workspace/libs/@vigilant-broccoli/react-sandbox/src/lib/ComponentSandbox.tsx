@@ -132,6 +132,7 @@ import { TabsDemo } from './demos/TabsDemo';
 import { TooltipDemo } from './demos/TooltipDemo';
 import { LinkCardDemo } from './demos/LinkCardDemo';
 import { ListHeaderDemo } from './demos/ListHeaderDemo';
+import { SearchDialogDemo } from './demos/SearchDialogDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
 import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
@@ -780,6 +781,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
     description: 'Compact input with a leading search icon.',
     lib: LIB.REACT_LIB,
     content: <SearchInputDemo />,
+  },
+  {
+    id: 'search-dialog',
+    label: 'Search Dialog',
+    description:
+      'Command-palette style dialog with fuzzy-filtered results, arrow-key navigation and Enter to select; opens with the / shortcut.',
+    lib: LIB.REACT_LIB,
+    content: <SearchDialogDemo />,
   },
   {
     id: 'speech-to-text-toggle-button',

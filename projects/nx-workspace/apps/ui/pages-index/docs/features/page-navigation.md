@@ -4,17 +4,26 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 
 ## Table of Contents
 
+- [Routing](#routing)
 - [Hosts](#hosts)
 - [Deployments, status, repo timeline and project graph](#deployments-status-repo-timeline-and-project-graph)
 - [Open source](#open-source)
 - [Web applications and API services](#web-applications-and-api-services)
+- [Search](#search)
 - [Games](#games)
   - [Activation](#activation)
 
+## Routing
+
+- `app.tsx` uses `BrowserRouter` (`basename` is `import.meta.env.BASE_URL`), so routes are plain paths such as `/status`; there is no `#/` routing.
+- A path that is not a built file must still serve `index.html`. GitHub Pages does that through `404.html`, which `deploy-github-pages` copies from `index.html`; Cloudflare Pages serves `index.html` for unknown paths on its own as long as the staged directory has no `404.html`, so `stage-cloudflare-pages` must never copy one. The `status-proxy` Worker passes paths through, so the status and deployments hosts need no rewrite.
+- `LegacyHashRedirect` rewrites old `/#/route?query` links to `/route?query`, keeping bookmarks and shared links working. Plain in-page heading anchors such as `#stack` are untouched.
+- Fetched data and assets resolve against `import.meta.env.BASE_URL`, never a relative URL, because a deep path would otherwise break them.
+
 ## Hosts
 
-- `status.vigilant-broccoli.app` — the same `StatusPage` at the host root. `app.tsx` picks the status route table when `window.location.hostname` is `STATUS_HOST` (`src/app/consts/hosts.ts`); other hash routes redirect to `/`. The Home breadcrumb and any other pages-index link there are explicit `https://projects.vigilant-broccoli.app/#/…` URLs, built with `toProjectsUrl`.
-- `deployments.vigilant-broccoli.app` — `DeploymentsPage` at the host root. `app.tsx` picks the deployments route table when the hostname is `DEPLOYMENTS_HOST`; other hash routes redirect to `/`, and the Home breadcrumb is a `toProjectsUrl` link. Details: [deployments-page.md](./deployments-page.md).
+- `status.vigilant-broccoli.app` — the same `StatusPage` at the host root. `app.tsx` picks the status route table when `window.location.hostname` is `STATUS_HOST` (`src/app/consts/hosts.ts`); other paths redirect to `/`. The Home breadcrumb and any other pages-index link there are explicit `https://projects.vigilant-broccoli.app/…` URLs, built with `toProjectsUrl`.
+- `deployments.vigilant-broccoli.app` — `DeploymentsPage` at the host root. `app.tsx` picks the deployments route table when the hostname is `DEPLOYMENTS_HOST`; other paths redirect to `/`, and the Home breadcrumb is a `toProjectsUrl` link. Details: [deployments-page.md](./deployments-page.md).
 - `career.harryliu.dev` — `CareerPage` at the host root (cards: Resume → `harryliu.dev/resume`, Personal Software Career Experience, `projects.vigilant-broccoli.app`, `harryliu.dev`, GitHub, LinkedIn). `app.tsx` picks the career route table when the hostname is `CAREER_HOST`; other hash routes redirect to `/`.
   - `/personal-software-career-experience` — renders `notes/personal/career/career-experience.md` from `raw.githubusercontent.com`; its breadcrumb returns to the career root.
 
@@ -43,17 +52,23 @@ The home page's Software Projects section links straight to GitHub, Docker Hub a
 
 The Job Hunt demo card opens the public, read-only sample deployment at `demo-job-hunt-next.vercel.app`; its detail page uses Job Hunt's README.
 
+## Search
+
+- `/` opens `SearchDialog` (`src/app/components/SearchDialog.tsx`, a thin wrapper over react-lib's [`SearchDialog`](../../../../libs/@vigilant-broccoli/react-lib/docs/features/search-dialog.md)), mounted once in `ProjectsRoutes` only (as `SearchProvider`, which also exposes the open callback through `search-context.ts`; `SearchButton`, a search icon at the right end of the Home and `PageHeader` rows, opens it and renders nothing on the other hosts); the status, deployments, career and games host tables render single pages and have no search. `useFocusSearchShortcut` ignores text entry, open dialogs, modifier combos and IME composition.
+- `buildSearchEntries` (`src/app/consts/searchEntries.ts`) derives entries from the route consts, `webApplications.json`, `dockerImages.json`, `npmPackages.ts` and `apiServices.ts`, titled from `en.json`. Games link to their direct hosts (external, via `window.location`); everything else uses `useNavigate`. Game apps are excluded from the web applications entries to avoid duplicates.
+- Matching is `fuzzyMatch` on the title, ranked by score; ArrowUp/ArrowDown move the active result, Enter opens it and Escape closes. The list height is measured with a `ResizeObserver` and transitioned so the dialog expands and contracts as results change; animations are disabled under `prefers-reduced-motion`.
+
 ## Games
 
 - `/games` shows production Balloono, Gravity Guy and Waiting Games, sorted by translated title, with direct play cards. `/games/:app` README pages remain available by route.
 - Membership is the `game: true` flag on entries in the shared applications registry; demos, staging duplicates and the Games portal itself are excluded. The full applications and demo lists retain their existing detail behavior.
 - Home links to Games; the Games breadcrumb returns to Home.
-- `games.vigilant-broccoli.app` serves Games at `/` and `#/games`; `#/games/:app` keeps README navigation on this host, with Games as its local breadcrumb parent and Home linking to the projects host. Unknown hash routes return to root.
+- `games.vigilant-broccoli.app` serves Games at `/` and `/games`; `/games/:app` keeps README navigation on this host, with Games as its local breadcrumb parent and Home linking to the projects host. Unknown paths return to root.
 - The Games portal also appears in the full applications registry and shared browser quick links, with a production Upptime check.
 
 ### Activation
 
-- After merge, wait for the main pages-index GitHub Pages deployment, then verify `https://projects.vigilant-broccoli.app/#/games`.
+- After merge, wait for the main pages-index GitHub Pages deployment, then verify `https://projects.vigilant-broccoli.app/games`.
 - From an authenticated local checkout run `pnpm tf:plan`; review the plan for `cloudflare_workers_custom_domain.games` and exclude unrelated drift before running `pnpm tf:apply`. The custom domain provisions DNS/TLS on the existing Worker; no new app or Worker script is needed.
-- Verify HTTPS at `https://games.vigilant-broccoli.app/`, `#/games`, a game About page and its breadcrumbs; open all three production games. Confirm status, career and deployments roots still render correctly.
+- Verify HTTPS at `https://games.vigilant-broccoli.app/`, `/games`, a game About page and its breadcrumbs; open all three production games. Confirm status, career and deployments roots still render correctly.
 - Confirm the Upptime configuration sync and production-games check after merge; no provider dashboard edits are needed.

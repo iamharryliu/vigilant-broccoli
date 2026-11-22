@@ -1,5 +1,5 @@
 import {
-  HashRouter,
+  BrowserRouter,
   Navigate,
   Route,
   Routes,
@@ -26,6 +26,7 @@ import { ChangelogPage } from './pages/ChangelogPage';
 import { DeploymentsPage } from './pages/DeploymentsPage';
 import { CareerPage } from './pages/CareerPage';
 import { CareerExperiencePage } from './pages/CareerExperiencePage';
+import { SearchProvider } from './components/SearchDialog';
 import {
   isCareerHost,
   isDeploymentsHost,
@@ -53,6 +54,17 @@ function LegacyOpenSourceRedirect() {
       replace
     />
   );
+}
+
+const LEGACY_HASH_ROUTE_PREFIX = '#/';
+
+// Keeps bookmarked and shared `/#/route?query` links from the HashRouter days
+// working by rewriting them to the path form.
+function LegacyHashRedirect() {
+  const { hash } = useLocation();
+  return hash.startsWith(LEGACY_HASH_ROUTE_PREFIX) ? (
+    <Navigate to={hash.slice(1)} replace />
+  ) : null;
 }
 
 function StatusHostRoutes() {
@@ -102,36 +114,41 @@ function GamesHostRoutes() {
 
 function ProjectsRoutes() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path={GAMES_ROUTE} element={<GamesPage />} />
-      <Route
-        path={`${GAMES_ROUTE}/:app`}
-        element={<WebApplicationReadmePage />}
-      />
-      <Route path={STATUS_ROUTE} element={<StatusPage />} />
-      <Route path={DEPLOYMENTS_ROUTE} element={<DeploymentsPage />} />
-      <Route path={CHANGELOG_ROUTE} element={<ChangelogPage />} />
-      <Route path="/repo-timeline" element={<RepoTimelinePage />} />
-      <Route path={PROJECT_GRAPH_ROUTE} element={<ProjectGraphPage />} />
-      <Route
-        path={`${LEGACY_OPEN_SOURCE_PREFIX}/*`}
-        element={<LegacyOpenSourceRedirect />}
-      />
-      <Route path="/github" element={<GithubReposPage />} />
-      <Route path="/github/:repo" element={<GithubReadmePage />} />
-      <Route path="/docker" element={<DockerImagesPage />} />
-      <Route path="/docker/:image" element={<DockerImageReadmePage />} />
-      <Route path="/npm" element={<NpmPackagesPage />} />
-      <Route path="/npm/:pkg" element={<NpmPackageReadmePage />} />
-      <Route path={WEB_APPLICATIONS_ROUTE} element={<WebApplicationsPage />} />
-      <Route
-        path={`${WEB_APPLICATIONS_ROUTE}/:app`}
-        element={<WebApplicationReadmePage />}
-      />
-      <Route path="/api-services" element={<ApiServicesPage />} />
-      <Route path="/api-services/:service" element={<ApiServiceDocsPage />} />
-    </Routes>
+    <SearchProvider>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path={GAMES_ROUTE} element={<GamesPage />} />
+        <Route
+          path={`${GAMES_ROUTE}/:app`}
+          element={<WebApplicationReadmePage />}
+        />
+        <Route path={STATUS_ROUTE} element={<StatusPage />} />
+        <Route path={DEPLOYMENTS_ROUTE} element={<DeploymentsPage />} />
+        <Route path={CHANGELOG_ROUTE} element={<ChangelogPage />} />
+        <Route path="/repo-timeline" element={<RepoTimelinePage />} />
+        <Route path={PROJECT_GRAPH_ROUTE} element={<ProjectGraphPage />} />
+        <Route
+          path={`${LEGACY_OPEN_SOURCE_PREFIX}/*`}
+          element={<LegacyOpenSourceRedirect />}
+        />
+        <Route path="/github" element={<GithubReposPage />} />
+        <Route path="/github/:repo" element={<GithubReadmePage />} />
+        <Route path="/docker" element={<DockerImagesPage />} />
+        <Route path="/docker/:image" element={<DockerImageReadmePage />} />
+        <Route path="/npm" element={<NpmPackagesPage />} />
+        <Route path="/npm/:pkg" element={<NpmPackageReadmePage />} />
+        <Route
+          path={WEB_APPLICATIONS_ROUTE}
+          element={<WebApplicationsPage />}
+        />
+        <Route
+          path={`${WEB_APPLICATIONS_ROUTE}/:app`}
+          element={<WebApplicationReadmePage />}
+        />
+        <Route path="/api-services" element={<ApiServicesPage />} />
+        <Route path="/api-services/:service" element={<ApiServiceDocsPage />} />
+      </Routes>
+    </SearchProvider>
   );
 }
 
@@ -140,7 +157,8 @@ export function App() {
     <I18nProvider>
       <ThemeProvider>
         <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
-          <HashRouter>
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
+            <LegacyHashRedirect />
             {isGamesHost() ? (
               <GamesHostRoutes />
             ) : isStatusHost() ? (
@@ -152,7 +170,7 @@ export function App() {
             ) : (
               <ProjectsRoutes />
             )}
-          </HashRouter>
+          </BrowserRouter>
         </div>
       </ThemeProvider>
     </I18nProvider>

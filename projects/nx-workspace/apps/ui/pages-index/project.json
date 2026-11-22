@@ -95,6 +95,7 @@
           "cp -R ../../../dist/pages-index/. ../../../_site/",
           "cp public/repo-timeline.json ../../../_site/repo-timeline.json",
           "cp public/project-graph.json ../../../_site/project-graph.json",
+          "cp ../../../dist/pages-index/index.html ../../../_site/404.html",
           "echo projects.vigilant-broccoli.app > ../../../_site/CNAME"
         ],
         "parallel": false,

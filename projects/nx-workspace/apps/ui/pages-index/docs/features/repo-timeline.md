@@ -7,7 +7,7 @@
 - Two views: Graph (bar chart) and Timeline (scrollable list), toggled via `TIMELINE_VIEW`
 - Metric selector (Lines/Commits/PRs) shared by both views
 - View and metric selectors sit side by side on the first row; a second fixed-height row holds the range selector (graph) or granularity selector (timeline) so switching views does not shift the content below
-- View, range, granularity, metric, and mode live in the hash query (`#/repo-timeline?view=graph&range=ALL&metric=commits&mode=period`) so views are linkable; `useTimelineParams` resolves URL, then `sessionStorage` (last choice for the tab), then defaults, and mirrors the result into the URL with `replace`
+- View, range, granularity, metric, and mode live in the query string (`/repo-timeline?view=graph&range=ALL&metric=commits&mode=period`) so views are linkable; `useTimelineParams` resolves URL, then `sessionStorage` (last choice for the tab), then defaults, and mirrors the result into the URL with `replace`
 
 ## Graph View
 

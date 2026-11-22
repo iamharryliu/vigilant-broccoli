@@ -58,6 +58,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### pages-index
 
+- Pressing `/` or clicking the search icon at the right of the header on the projects site opens a fuzzy-search dialog to jump to any page, app, game, Docker image, npm package or API service, and the site now uses plain paths such as `/status` instead of `#/status` (old `#/` links redirect) ([#1741](https://github.com/iamharryliu/vigilant-broccoli/pull/1741)).
 - The Project Graph page draws the public apps and the libs they depend on, like nx graph, and also shows which apps embed or call other apps, including local-manager and mobile-manager, with a toggle per dependency kind; each app README lists these under App Dependencies ([#1718](https://github.com/iamharryliu/vigilant-broccoli/pull/1718), [#1725](https://github.com/iamharryliu/vigilant-broccoli/pull/1725)).
 - Pages Index now also deploys to Cloudflare Pages: an Access-gated staging site at staging-projects.vigilant-broccoli.app on every main push, and a production project on promotion. The live hostnames still serve from GitHub Pages until they move over ([#1722](https://github.com/iamharryliu/vigilant-broccoli/pull/1722)).
 - The Games page moved to games.vigilant-broccoli.app and the Upptime history site to uptime.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve ([#1694](https://github.com/iamharryliu/vigilant-broccoli/pull/1694)).

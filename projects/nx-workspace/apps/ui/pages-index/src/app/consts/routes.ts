@@ -8,3 +8,10 @@ export const toWebApplicationRoute = (id: string) =>
   `${WEB_APPLICATIONS_ROUTE}/${id}`;
 
 export const GAMES_ROUTE = '/games';
+
+export const HOME_ROUTE = '/';
+export const REPO_TIMELINE_ROUTE = '/repo-timeline';
+export const GITHUB_ROUTE = '/github';
+export const DOCKER_ROUTE = '/docker';
+export const NPM_ROUTE = '/npm';
+export const API_SERVICES_ROUTE = '/api-services';
