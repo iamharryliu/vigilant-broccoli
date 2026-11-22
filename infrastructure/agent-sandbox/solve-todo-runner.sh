@@ -55,6 +55,7 @@ REPO_DIR=${REPO_DIR:-$HOME/vigilant-broccoli}
 META_FILE=${META_FILE:-/tmp/solve-meta.json}
 PRE_COMMIT_HELPER="$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
 MERGE_BODY_HELPER="$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py"
+TODO_ROWS_HELPER="$REPO_DIR/infrastructure/agent-sandbox/todo-rows.py"
 
 cd "$REPO_DIR"
 SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-create-pr/SKILL.md")
@@ -64,7 +65,8 @@ SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-create-pr/
 . "$(dirname "${BASH_SOURCE[0]}")/no-changes.sh"
 
 QA_RULE="
-- The PR does not exist yet: write the literal \"${PR_QA_PLACEHOLDER}\" wherever a QA row or CHANGELOG.md bullet needs this PR's link; the calling script replaces it with the PR link after opening the PR."
+- The PR does not exist yet: write the literal \"${PR_QA_PLACEHOLDER}\" wherever a QA row or CHANGELOG.md bullet needs this PR's link; the calling script replaces it with the PR link after opening the PR.
+${FOLLOW_UP_TODOS_RULE}"
 
 if [ "$MODE" = id ]; then
   # TODO items live as rows of one markdown table (ID | Type | Priority |
@@ -194,6 +196,7 @@ $PREVIEW_RULE
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
   - todo_ids: array of the TODO.md ids this change fully resolves (omit or [] when none)
+$FOLLOW_UP_TODOS_FIELD
 $NO_CHANGES_FIELD
 EOF
 )
@@ -285,7 +288,7 @@ RESOLVED_IDS=()
 while IFS= read -r resolved_id; do
   [ -z "$resolved_id" ] || RESOLVED_IDS+=("$resolved_id")
 done < <(pr_current_todo_ids "$META_FILE" "${ID:-}")
-pr_validate_todo_edits "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
+pr_restore_todo_edits "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
 pr_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
 if [ -n "$REMOVAL_ID" ]; then
   if [ "${RESOLVED_IDS[*]-}" != "$REMOVAL_ID" ] || [ -n "$(git status --porcelain -- ':(exclude)TODO.md')" ] || [ -z "$(git status --porcelain -- TODO.md)" ]; then
@@ -294,6 +297,9 @@ if [ -n "$REMOVAL_ID" ]; then
 elif [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
   # Also stops a run whose only edit is a QA row: there is nothing to check.
   no_changes_exit "$META_FILE" "no changes besides TODO.md${RESOLVED_IDS[*]:+ — ${RESOLVED_IDS[*]} not resolved}."
+else
+  # After the guard above, so follow-up rows alone never count as work to publish.
+  pr_apply_follow_up_todos "$META_FILE"
 fi
 
 if [ "$PREVIEW" = 1 ]; then

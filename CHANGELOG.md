@@ -231,6 +231,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### agent-sandbox
 
 - Agent runs no longer fail at start-up when GitHub rate-limits the shared runner address: the firewall's GitHub meta fetch is authenticated and fails fast when it errors, and any reply from api.github.com counts as reachable ([#1630](https://github.com/iamharryliu/vigilant-broccoli/pull/1630), [#1720](https://github.com/iamharryliu/vigilant-broccoli/pull/1720)).
+- A finished agent run is no longer failed for touching backlog rows: agents declare follow-up `TODO.md` rows in their metadata and the runner adds them with fresh ids, while any other backlog line the agent changed is put back and flagged in the run summary and the PR's Concerns (PR: pending).
 
 </details>
 
