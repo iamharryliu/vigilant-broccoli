@@ -41,7 +41,7 @@ Where state lives, per app:
 | External drive on the Pi | Jellyfin (homelab Pi) | Media library at `/mnt/media/library` (fstab by UUID), config on internal storage. Exempt from the backup rule below — LAN-only, unreachable from CI, and bulk media is not dump-shaped ([jellyfin-pi.md](./infrastructure/jellyfin-pi.md)) |
 | R2 bucket `nx-cache` | Nx self-hosted remote cache (`nx-cache.vigilant-broccoli.app` Cloudflare Worker) | Not app data — 7-day lifecycle-expired build cache, exempt from the backup rule below |
 
-Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repos, mongodump, pg_dump) into `gs://vigilant-broccoli-backup`, keeping the last 7. **A new persistent store must get a backup job there**, and a matching restore job in `test-smoke-backup-restore.yml`, which weekly restores each dump into a throwaway container and fails on a stale or unrestorable backup.
+Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repos, mongodump, pg_dump), uploading each artifact through `.github/scripts/backup-storage.sh` to both `gs://vigilant-broccoli-backup` and the private Cloudflare R2 bucket `vigilant-broccoli-backup`, keeping the last 7 per prefix in each, so a GCP account or billing problem cannot lose every copy. Both buckets also expire objects after 90 days. R2 access uses a bucket-scoped Terraform-minted token (`BACKUP_R2_*`, [secret inventory](./infrastructure/secret-management.md)). **A new persistent store must get a backup job there that writes both providers**, and a matching restore job in `test-smoke-backup-restore.yml`, which weekly restores each dump from both GCS and R2 into a throwaway container and fails on a stale or unrestorable backup in either.
 
 ## Local Dev Environment
 
