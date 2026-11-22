@@ -9,6 +9,7 @@ locals {
     "staging-findme",
     "staging-grind-75-react",
     "staging-harryliu-dev-react",
+    "staging-pages-index",
     "staging-photography-react",
     "staging-pomodoro-react",
     "staging-text-tools-ui",
@@ -25,6 +26,7 @@ locals {
     staging-findme             = "staging-findme.${var.vigilant_broccoli_domain}"
     staging-grind-75-react     = "staging-grind-75.${var.vigilant_broccoli_domain}"
     staging-harryliu-dev-react = "staging.harryliu.dev"
+    staging-pages-index        = "staging-projects.${var.vigilant_broccoli_domain}"
     staging-photography-react  = "staging-photography.harryliu.dev"
     staging-pomodoro-react     = "staging-pomodoro.${var.vigilant_broccoli_domain}"
     staging-text-tools-ui      = "staging-text-tools.${var.vigilant_broccoli_domain}"

@@ -101,6 +101,57 @@
         "cwd": "{projectRoot}"
       }
     },
+    "stage-cloudflare-pages": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "cache": false,
+      "options": {
+        "commands": [
+          "rm -rf dist/pages-index-cloudflare",
+          "cp -R dist/pages-index dist/pages-index-cloudflare",
+          "cp apps/ui/pages-index/public/repo-timeline.json apps/ui/pages-index/public/project-graph.json dist/pages-index-cloudflare/"
+        ],
+        "parallel": false
+      }
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-pages-index || npx wrangler pages project create staging-pages-index --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-pages-index 10",
+      "dependsOn": ["ensure-cf-project"]
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/pages-index-cloudflare --project-name staging-pages-index --branch main",
+      "dependsOn": [
+        "stage-cloudflare-pages",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/pages-index-cloudflare --project-name staging-pages-index --branch main",
+      "dependsOn": [
+        "stage-cloudflare-pages",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-pages-index || npx wrangler pages project create production-pages-index --production-branch production"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-pages-index 10",
+      "dependsOn": ["ensure-cf-project:production"]
+    },
+    "deploy:production": {
+      "command": "npx wrangler pages deploy dist/pages-index-cloudflare --project-name production-pages-index --branch production",
+      "dependsOn": [
+        "stage-cloudflare-pages",
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
+    },
     "ensure-cf-project:preview": {
       "command": "npx wrangler pages project list 2>&1 | grep -qw preview-pages-index || npx wrangler pages project create preview-pages-index --production-branch main"
     },

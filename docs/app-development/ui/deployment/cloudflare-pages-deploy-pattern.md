@@ -21,6 +21,7 @@ Reference apps:
 - `context-md` — copy of `docs-md` over the agent-context snapshot.
 - `calendars` — staging + production + preview set, with a live API base URL swapped per environment (`mode` alias in `vite.config.mts`).
 - `docs-md` — full staging + production pair, no per-environment build config (`prune-deployments`'s `dependsOn` ordering is the reference for that part).
+- `pages-index` — staging + production + preview set. Its `deploy` targets upload `dist/pages-index-cloudflare`, which `stage-cloudflare-pages` assembles from `dist/pages-index` plus freshly generated `public/repo-timeline.json` and `public/project-graph.json`: those come from non-cached targets and are gitignored, so a cache-hit `build` would otherwise ship stale copies. Its production hostnames still serve from GitHub Pages ([github-pages-deploy-pattern.md](./github-pages-deploy-pattern.md)) until they are attached to `production-pages-index`.
 
 ## The wrangler target trio (per environment)
 
