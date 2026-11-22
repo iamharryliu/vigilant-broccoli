@@ -4,6 +4,7 @@ import {
   type ThemeAppearance,
 } from '@vigilant-broccoli/react-lib';
 
+// Pre-rename key kept so saved preferences survive; index.html reads it too.
 const THEME_STORAGE_KEY = 'pages-index-theme';
 
 const AppearanceContext = createContext<ThemeAppearance>('light');

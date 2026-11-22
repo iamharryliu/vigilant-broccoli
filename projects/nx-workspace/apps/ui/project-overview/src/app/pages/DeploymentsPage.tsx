@@ -5,7 +5,7 @@ import { PageHeader } from '../components/PageHeader';
 import { PAGE_CLASS } from '../consts/layout';
 import { DEPLOYMENTS_ROUTE } from '../consts/routes';
 
-// No token: pages-index is static and public, so GitHub is called straight
+// No token: project-overview is static and public, so GitHub is called straight
 // from the browser within the unauthenticated limit.
 const loadPreviewDeployments = () => getPreviewDeployments();
 

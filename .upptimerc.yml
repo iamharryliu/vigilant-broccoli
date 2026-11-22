@@ -14,6 +14,7 @@ sites:
     url: https://staging-context.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
+  # Pre-rename name kept so its Upptime history slug continues (project-overview).
   - name: staging-pages-index
     url: https://staging-projects.vigilant-broccoli.app/
     maxRedirects: 0
@@ -170,6 +171,7 @@ sites:
     url: https://career.harryliu.dev/
   - name: production-deployments
     url: https://deployments.vigilant-broccoli.app/
+  # Pre-rename name kept so its Upptime history slug continues (project-overview).
   - name: production-pages-index
     url: https://projects.vigilant-broccoli.app/
   - name: production-status

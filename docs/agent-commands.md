@@ -22,7 +22,7 @@ Custom agent commands from `setup/dotfiles/agent-skills/<name>/SKILL.md`, invoke
 | `local-create-pr-prune` | Maintain | Find dead code, unused dependencies and stale or broken documentation, and remove only what has verifiably zero references. |
 | `local-create-pr-todo` | Plan | Refine a request using repo research into an actionable task prompt and add one well-cited row to `TODO.md`. |
 | `local-create-pr-todo-audit` | Maintain | Verify every `TODO.md` row against the tree, remove resolved entries and correct drifted references without adding tasks. |
-| `local-create-pr-url-audit` | Maintain | Verify public URLs have synchronized Upptime entries, pages-index cards and quick links, and published Docker images their card and README row. |
+| `local-create-pr-url-audit` | Maintain | Verify public URLs have synchronized Upptime entries, project-overview cards and quick links, and published Docker images their card and README row. |
 | `local-docker-create-pr-claude` | Develop | Research a request locally, settle blocking questions, then start a background local Docker sandbox solve with Claude. |
 | `local-docker-create-pr-codex` | Develop | Research a request locally, settle blocking questions, then start a background local Docker sandbox solve with Codex. |
 | `local-update-pr` | Develop | Apply a requested change to an existing PR branch and verify its cumulative result. |

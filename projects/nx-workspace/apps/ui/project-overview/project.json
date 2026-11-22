@@ -1,7 +1,7 @@
 {
-  "name": "pages-index",
+  "name": "project-overview",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/ui/pages-index/src",
+  "sourceRoot": "apps/ui/project-overview/src",
   "projectType": "application",
   "tags": ["visibility:public"],
   "targets": {
@@ -59,11 +59,11 @@
       ],
       "outputs": [
         "{projectRoot}/{options.outDir}",
-        "{workspaceRoot}/dist/pages-index"
+        "{workspaceRoot}/dist/project-overview"
       ],
       "defaultConfiguration": "production",
       "options": {
-        "outDir": "../../../dist/pages-index"
+        "outDir": "../../../dist/project-overview"
       },
       "configurations": {
         "development": {
@@ -92,10 +92,10 @@
       "options": {
         "commands": [
           "mkdir -p ../../../_site",
-          "cp -R ../../../dist/pages-index/. ../../../_site/",
+          "cp -R ../../../dist/project-overview/. ../../../_site/",
           "cp public/repo-timeline.json ../../../_site/repo-timeline.json",
           "cp public/project-graph.json ../../../_site/project-graph.json",
-          "cp ../../../dist/pages-index/index.html ../../../_site/404.html",
+          "cp ../../../dist/project-overview/index.html ../../../_site/404.html",
           "echo projects.vigilant-broccoli.app > ../../../_site/CNAME"
         ],
         "parallel": false,
@@ -108,22 +108,22 @@
       "cache": false,
       "options": {
         "commands": [
-          "rm -rf dist/pages-index-cloudflare",
-          "cp -R dist/pages-index dist/pages-index-cloudflare",
-          "cp apps/ui/pages-index/public/repo-timeline.json apps/ui/pages-index/public/project-graph.json dist/pages-index-cloudflare/"
+          "rm -rf dist/project-overview-cloudflare",
+          "cp -R dist/project-overview dist/project-overview-cloudflare",
+          "cp apps/ui/project-overview/public/repo-timeline.json apps/ui/project-overview/public/project-graph.json dist/project-overview-cloudflare/"
         ],
         "parallel": false
       }
     },
     "ensure-cf-project": {
-      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-pages-index || npx wrangler pages project create staging-pages-index --production-branch main"
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-project-overview || npx wrangler pages project create staging-project-overview --production-branch main"
     },
     "prune-deployments": {
-      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-pages-index 10",
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-project-overview 10",
       "dependsOn": ["ensure-cf-project"]
     },
     "deploy": {
-      "command": "npx wrangler pages deploy dist/pages-index-cloudflare --project-name staging-pages-index --branch main",
+      "command": "npx wrangler pages deploy dist/project-overview-cloudflare --project-name staging-project-overview --branch main",
       "dependsOn": [
         "stage-cloudflare-pages",
         "ensure-cf-project",
@@ -131,7 +131,7 @@
       ]
     },
     "manual-deploy": {
-      "command": "npx wrangler pages deploy dist/pages-index-cloudflare --project-name staging-pages-index --branch main",
+      "command": "npx wrangler pages deploy dist/project-overview-cloudflare --project-name staging-project-overview --branch main",
       "dependsOn": [
         "stage-cloudflare-pages",
         "ensure-cf-project",
@@ -139,14 +139,14 @@
       ]
     },
     "ensure-cf-project:production": {
-      "command": "npx wrangler pages project list 2>&1 | grep -qw production-pages-index || npx wrangler pages project create production-pages-index --production-branch production"
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-project-overview || npx wrangler pages project create production-project-overview --production-branch production"
     },
     "prune-deployments:production": {
-      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-pages-index 10",
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-project-overview 10",
       "dependsOn": ["ensure-cf-project:production"]
     },
     "deploy:production": {
-      "command": "npx wrangler pages deploy dist/pages-index-cloudflare --project-name production-pages-index --branch production",
+      "command": "npx wrangler pages deploy dist/project-overview-cloudflare --project-name production-project-overview --branch production",
       "dependsOn": [
         "stage-cloudflare-pages",
         "ensure-cf-project:production",
@@ -154,14 +154,14 @@
       ]
     },
     "ensure-cf-project:preview": {
-      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-pages-index || npx wrangler pages project create preview-pages-index --production-branch main"
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-project-overview || npx wrangler pages project create preview-project-overview --production-branch main"
     },
     "prune-deployments:preview": {
-      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-pages-index",
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-project-overview",
       "dependsOn": ["ensure-cf-project:preview"]
     },
     "deploy:preview": {
-      "command": "npx wrangler pages deploy dist/pages-index --project-name preview-pages-index --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
+      "command": "npx wrangler pages deploy dist/project-overview --project-name preview-project-overview --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
       "dependsOn": ["build", "ensure-cf-project:preview"]
     }
   },

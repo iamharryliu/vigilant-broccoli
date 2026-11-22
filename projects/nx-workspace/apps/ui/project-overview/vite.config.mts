@@ -15,7 +15,7 @@ const readSites = (): { name: string; url: string }[] =>
 export default defineConfig(() => ({
   root: import.meta.dirname,
   base: process.env.VITE_BASE_PATH ?? '/',
-  cacheDir: '../../../node_modules/.vite/pages-index',
+  cacheDir: '../../../node_modules/.vite/project-overview',
   server: {
     port: 3000,
     host: 'localhost',
@@ -38,7 +38,7 @@ export default defineConfig(() => ({
   ],
   resolve: { tsconfigPaths: true },
   build: {
-    outDir: '../../../dist/pages-index',
+    outDir: '../../../dist/project-overview',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {

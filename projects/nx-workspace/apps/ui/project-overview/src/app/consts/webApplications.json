@@ -22,7 +22,7 @@
       "href": "https://career.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CAREER.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.CAREER.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/pages-index/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/project-overview/README.md"
     },
     {
       "id": "cloud-8-skate",
@@ -181,7 +181,7 @@
       "href": "https://games.vigilant-broccoli.app/",
       "titleKey": "GAMES_PAGE.TITLE",
       "descriptionKey": "GAMES_PAGE.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/pages-index/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/project-overview/README.md"
     }
   ],
   "demos": [
