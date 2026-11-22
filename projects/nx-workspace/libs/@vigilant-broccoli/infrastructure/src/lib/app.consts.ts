@@ -133,6 +133,10 @@ export const VB_APP_URL = {
     NAME: 'Office Presence Demo',
     URL: 'https://demo-office-presence-ui.pages.dev/',
   },
+  OFFICE_PRESENCE_SERVICE_DEMO: {
+    NAME: 'Office Presence Service Demo',
+    URL: 'https://demo-office-presence-service.fly.dev/',
+  },
   CAREER: {
     NAME: 'Career',
     URL: 'https://career.harryliu.dev/',

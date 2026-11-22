@@ -190,6 +190,8 @@ sites:
     url: https://demo-job-hunt-next.vercel.app/
   - name: demo-office-presence-ui
     url: https://demo-office-presence-ui.pages.dev/
+  - name: demo-office-presence-service
+    url: https://demo-office-presence-service.fly.dev/
 
 user-agent: upptime-vigilant-broccoli
 status-website:
