@@ -18,7 +18,7 @@ Upptime executes in `iamharryliu/uptime` using that repository's temporary `GITH
 
 ## Production promotion
 
-`production` is only ever moved by `manual-promote-production.yml`, which fast-forwards it to the current `main` commit. Two Terraform-managed rulesets in `github.tf` cover the branch; they are separate because a bypass actor skips every rule in its ruleset.
+`manual-promote-production.yml` no longer moves `production`: it dispatches `deploy`, `deploy-docs-md` and `deploy-context-md` with `environment: production` from `main` using `actions: write`, after checking `main` has not moved since the run started. The branch, its rulesets, the `production-promotion` App and the Vault role below are unused by it and pending removal; the rest of this section describes the previous fast-forward design. Two Terraform-managed rulesets in `github.tf` cover the branch; they are separate because a bypass actor skips every rule in its ruleset.
 
 | Ruleset | Rules | Bypass actors |
 | --- | --- | --- |
