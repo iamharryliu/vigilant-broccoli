@@ -9,6 +9,7 @@ import {
   Folder,
   Pencil,
   Search as SearchIcon,
+  Share2,
   SquareCheckBig,
 } from 'lucide-react';
 import {
@@ -31,6 +32,8 @@ import {
   shouldIgnoreShortcutKeystroke,
   useFocusSearchShortcut,
 } from '@vigilant-broccoli/react-lib';
+
+import { ShareDialog } from './share-dialog';
 
 const MOBILE_NO_CARD_CLS =
   '!p-0 [&::before]:!hidden [&::after]:!hidden md:!p-3 md:[&::before]:![display:revert] md:[&::after]:![display:revert]';
@@ -195,6 +198,8 @@ export interface NoteGraphLink {
   // Optional edge weight (e.g. shared-item count) used to scale line width;
   // omitted links render at the default width, so existing graphs are unaffected.
   value?: number;
+  // Looks up a `GraphView` `linkStyles` entry; unstyled links keep the default look.
+  kind?: string;
 }
 
 export interface NoteGraph {
@@ -249,6 +254,7 @@ interface DocsExplorerProps {
   onViewModeChange?: (mode: string | undefined) => void;
   currentViewMode?: string;
   renderGraph?: (navigate: (path: string) => void) => ReactNode;
+  getShareUrl?: (path: string) => string | null;
 }
 
 const COPY = {
@@ -259,6 +265,7 @@ const COPY = {
   NO_RESULTS: 'No results found',
   LOAD_CONTENT_ERROR: 'Failed to load file content',
   COPY_MARKDOWN: 'Copy markdown',
+  SHARE: 'Share',
   EDIT: 'Edit',
   DOCUMENT_ACTIONS: 'Document actions',
   BACK_TO_FILES: 'Back to files',
@@ -306,7 +313,9 @@ export const DocsExplorer = ({
   onViewModeChange,
   currentViewMode,
   renderGraph,
+  getShareUrl,
 }: DocsExplorerProps) => {
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [showGraph, setShowGraph] = useState(false);
   const hasInitializedGraph = useRef(false);
 
@@ -1026,6 +1035,16 @@ export const DocsExplorer = ({
                     <DropdownMenu.Separator />
                   </>
                 )}
+                {!isAggregate &&
+                  selectedPath &&
+                  getShareUrl?.(selectedPath) && (
+                    <DropdownMenu.Item
+                      onSelect={() => setShareUrl(getShareUrl(selectedPath))}
+                    >
+                      <Share2 size={MENU_ICON_SIZE} />
+                      {COPY.SHARE}
+                    </DropdownMenu.Item>
+                  )}
                 <DropdownMenu.Item
                   onSelect={() =>
                     navigator.clipboard.writeText(
@@ -1316,6 +1335,13 @@ export const DocsExplorer = ({
           description={COPY.DELETE_SELECTED_DESCRIPTION}
           confirmLabel={COPY.DELETE_SELECTED}
           deleteItem={handleConfirmDeleteSelected}
+        />
+      )}
+      {getShareUrl && (
+        <ShareDialog
+          noteTitle={selectedPath?.split('/').pop() ?? ''}
+          url={shareUrl}
+          onOpenChange={open => !open && setShareUrl(null)}
         />
       )}
     </>

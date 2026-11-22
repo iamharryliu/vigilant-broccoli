@@ -181,11 +181,19 @@ export interface KitchenProjectItem {
   updatedAt: string;
 }
 
+export interface WhereIsRoom {
+  id: string;
+  homeId: number;
+  name: string;
+}
+
 export interface WhereIsItem {
   id: string;
   title: string;
   description: string;
   tags: string[];
+  homeId: number;
+  roomId: string | null;
   imageUrls: string[];
   imageKeys: string[];
   thumbnailUrl: string | null;

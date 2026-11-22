@@ -5,6 +5,7 @@ Public, login-free calendar page for personal and public event calendars.
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 
 ## Stack
 
@@ -19,4 +20,7 @@ Public, login-free calendar page for personal and public event calendars.
   - `react-lib`
 - Cloud services
   - Google Calendar
-  - VB Express
+
+## App Dependencies
+
+- [VB Express](../../api/vb-express) - calls

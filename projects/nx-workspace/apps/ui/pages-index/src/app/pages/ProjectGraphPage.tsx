@@ -9,6 +9,7 @@ import {
   GraphView,
   useGraphSettings,
   type GraphColorScheme,
+  type GraphLinkStyle,
   type GraphSettings,
   type NoteGraph,
 } from '@vigilant-broccoli/docs-explorer';
@@ -19,10 +20,19 @@ import { useAppearance } from '../theme';
 import {
   Adjacency,
   buildAdjacency,
+  DEPENDENCY_KIND,
+  DEPENDENCY_KIND_LABEL_KEY,
+  DEPENDENCY_KINDS,
+  DependencyKind,
+  EdgeStyle,
+  filterDependencies,
+  getEdgeStyles,
   getVisibleProjects,
   GRAPH_PALETTE,
   GraphDependency,
   GraphProject,
+  isDependencyKind,
+  Neighbor,
   PROJECT_GRAPH_URL,
   PROJECT_TYPE,
   PROJECT_TYPE_LABEL_KEY,
@@ -38,18 +48,37 @@ const PARAM = {
   PROJECT: 'project',
   TYPE: 'type',
   SEARCH: 'q',
+  EDGES: 'edges',
 } as const;
 type Param = (typeof PARAM)[keyof typeof PARAM];
 
 const TYPE_FILTER_VALUES = Object.values(TYPE_FILTER);
+const EDGES_SEPARATOR = ',';
 
 const isTypeFilter = (value: string | null): value is TypeFilter =>
   value !== null && (TYPE_FILTER_VALUES as string[]).includes(value);
+
+const parseEdgeKinds = (value: string | null): Set<DependencyKind> => {
+  const kinds = (value ?? '').split(EDGES_SEPARATOR).filter(isDependencyKind);
+  return new Set(kinds.length ? kinds : DEPENDENCY_KINDS);
+};
+
+// All kinds is the default, so it serializes to no param.
+const serializeEdgeKinds = (kinds: ReadonlySet<DependencyKind>) =>
+  kinds.size === DEPENDENCY_KINDS.length
+    ? null
+    : DEPENDENCY_KINDS.filter(kind => kinds.has(kind)).join(EDGES_SEPARATOR);
+
+const RUNTIME_KINDS = DEPENDENCY_KINDS.filter(
+  kind => kind !== DEPENDENCY_KIND.LIB,
+);
 
 // Defaults are omitted from the hash query so the plain route stays clean.
 function useGraphParams() {
   const [searchParams, setSearchParams] = useSearchParams();
   const typeParam = searchParams.get(PARAM.TYPE);
+  const edgesParam = searchParams.get(PARAM.EDGES);
+  const edgeKinds = useMemo(() => parseEdgeKinds(edgesParam), [edgesParam]);
 
   const update = (changes: Partial<Record<Param, string | null>>) =>
     setSearchParams(
@@ -67,12 +96,13 @@ function useGraphParams() {
     selected: searchParams.get(PARAM.PROJECT),
     typeFilter: isTypeFilter(typeParam) ? typeParam : TYPE_FILTER.ALL,
     search: searchParams.get(PARAM.SEARCH) ?? '',
+    edgeKinds,
     update,
   };
 }
 
 const ICON_CLASS = 'h-4 w-4 shrink-0';
-const EMPTY_LIST: string[] = [];
+const EMPTY_LIST: Neighbor[] = [];
 const PRIMARY_VAR = '--pages-primary';
 const GRAPH_SETTINGS_STORAGE_PREFIX = 'project-graph';
 // The page's own app/lib colors are the default; docs graphs default to a
@@ -113,12 +143,25 @@ function useGroupColors(colorScheme: GraphColorScheme): GroupColors {
   }, [colorScheme, appColor, palette.lib]);
 }
 
+function useEdgeStyles(): Record<DependencyKind, EdgeStyle> {
+  const appearance = useAppearance();
+  return useMemo(() => getEdgeStyles(GRAPH_PALETTE[appearance]), [appearance]);
+}
+
+// Lib edges stay unstyled so GraphView's default color and focus highlight
+// apply; only runtime kinds get their own color and dash.
+const toLinkStyles = (
+  edgeStyles: Record<DependencyKind, EdgeStyle>,
+): Record<string, GraphLinkStyle> =>
+  Object.fromEntries(RUNTIME_KINDS.map(kind => [kind, edgeStyles[kind]]));
+
 interface GraphCanvasProps {
   projects: GraphProject[];
   dependencies: GraphDependency[];
   selected: string | null;
   onSelect: (name: string | null) => void;
   groupColors: GroupColors;
+  edgeStyles: Record<DependencyKind, EdgeStyle>;
   settings: GraphSettings;
 }
 
@@ -128,8 +171,10 @@ function GraphCanvas({
   selected,
   onSelect,
   groupColors,
+  edgeStyles,
   settings,
 }: GraphCanvasProps) {
+  const linkStyles = useMemo(() => toLinkStyles(edgeStyles), [edgeStyles]);
   const { t } = useTranslation();
 
   const graph = useMemo<NoteGraph>(() => {
@@ -172,6 +217,7 @@ function GraphCanvas({
         showNodeGlow={settings.showNodeGlow}
         onBackgroundClick={clearSelection}
         directed
+        linkStyles={linkStyles}
         keyboardLabel={t('PROJECT_GRAPH_PAGE.GRAPH_LABEL')}
         zoomControls={{
           zoomIn: t('PROJECT_GRAPH_PAGE.ZOOM_IN'),
@@ -190,31 +236,42 @@ function GraphCanvas({
 
 interface ProjectListProps {
   title: string;
-  names: string[];
+  neighbors: Neighbor[];
+  showKind?: boolean;
   onSelect: (name: string) => void;
 }
 
-function ProjectList({ title, names, onSelect }: ProjectListProps) {
+function ProjectList({
+  title,
+  neighbors,
+  showKind = false,
+  onSelect,
+}: ProjectListProps) {
   const { t } = useTranslation();
   return (
     <section className="mt-4">
       <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-        {title} ({names.length})
+        {title} ({neighbors.length})
       </h3>
-      {names.length === 0 ? (
+      {neighbors.length === 0 ? (
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {t('PROJECT_GRAPH_PAGE.NONE')}
         </p>
       ) : (
         <ul className="mt-1 space-y-0.5">
-          {names.map(name => (
-            <li key={name}>
+          {neighbors.map(({ name, kind }) => (
+            <li key={`${name}|${kind}`}>
               <button
                 type="button"
                 onClick={() => onSelect(name)}
-                className="w-full truncate rounded px-1.5 py-1 text-left text-sm text-sky-700 hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-sky-500 dark:text-sky-300 dark:hover:bg-gray-700"
+                className="flex w-full items-center justify-between gap-2 rounded px-1.5 py-1 text-left text-sm text-sky-700 hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-sky-500 dark:text-sky-300 dark:hover:bg-gray-700"
               >
-                {name}
+                <span className="truncate">{name}</span>
+                {showKind && (
+                  <span className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
+                    {t(DEPENDENCY_KIND_LABEL_KEY[kind])}
+                  </span>
+                )}
               </button>
             </li>
           ))}
@@ -238,8 +295,17 @@ function DetailPanel({
   onClose,
 }: DetailPanelProps) {
   const { t } = useTranslation();
-  const sorted = (names: string[] | undefined) =>
-    [...(names ?? EMPTY_LIST)].sort((a, b) => a.localeCompare(b));
+  const split = (neighbors: Neighbor[] | undefined) => {
+    const sorted = [...(neighbors ?? EMPTY_LIST)].sort(
+      (a, b) => a.name.localeCompare(b.name) || a.kind.localeCompare(b.kind),
+    );
+    return {
+      lib: sorted.filter(({ kind }) => kind === DEPENDENCY_KIND.LIB),
+      runtime: sorted.filter(({ kind }) => kind !== DEPENDENCY_KIND.LIB),
+    };
+  };
+  const dependsOn = split(adjacency.dependsOn.get(project.name));
+  const dependedOnBy = split(adjacency.dependedOnBy.get(project.name));
 
   return (
     <aside className="max-h-[40%] shrink-0 overflow-y-auto rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800 md:max-h-none md:w-72">
@@ -270,15 +336,99 @@ function DetailPanel({
       </div>
       <ProjectList
         title={t('PROJECT_GRAPH_PAGE.DEPENDS_ON')}
-        names={sorted(adjacency.dependsOn.get(project.name))}
+        neighbors={dependsOn.lib}
         onSelect={onSelect}
       />
       <ProjectList
         title={t('PROJECT_GRAPH_PAGE.DEPENDED_ON_BY')}
-        names={sorted(adjacency.dependedOnBy.get(project.name))}
+        neighbors={dependedOnBy.lib}
         onSelect={onSelect}
       />
+      {project.type === PROJECT_TYPE.APP && (
+        <>
+          <ProjectList
+            title={t('PROJECT_GRAPH_PAGE.RUNTIME_DEPENDS_ON')}
+            neighbors={dependsOn.runtime}
+            showKind
+            onSelect={onSelect}
+          />
+          <ProjectList
+            title={t('PROJECT_GRAPH_PAGE.RUNTIME_DEPENDED_ON_BY')}
+            neighbors={dependedOnBy.runtime}
+            showKind
+            onSelect={onSelect}
+          />
+        </>
+      )}
     </aside>
+  );
+}
+
+const EDGE_SWATCH_WIDTH = 18;
+
+interface EdgeKindTogglesProps {
+  edgeKinds: ReadonlySet<DependencyKind>;
+  edgeStyles: Record<DependencyKind, EdgeStyle>;
+  onChange: (kinds: Set<DependencyKind>) => void;
+}
+
+// Doubles as the edge legend: each toggle shows its kind's line style. The
+// last enabled kind cannot be turned off, so the graph never loses all edges.
+function EdgeKindToggles({
+  edgeKinds,
+  edgeStyles,
+  onChange,
+}: EdgeKindTogglesProps) {
+  const { t } = useTranslation();
+  const toggle = (kind: DependencyKind) => {
+    const next = new Set(edgeKinds);
+    if (next.has(kind)) next.delete(kind);
+    else next.add(kind);
+    if (next.size) onChange(next);
+  };
+
+  return (
+    <div
+      role="group"
+      aria-label={t('PROJECT_GRAPH_PAGE.EDGE_FILTER_LABEL')}
+      className="flex flex-wrap items-center gap-1"
+    >
+      {DEPENDENCY_KINDS.map(kind => {
+        const { color, dash } = edgeStyles[kind];
+        const pressed = edgeKinds.has(kind);
+        return (
+          <button
+            key={kind}
+            type="button"
+            aria-pressed={pressed}
+            onClick={() => toggle(kind)}
+            className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs focus-visible:outline-2 focus-visible:outline-sky-500 ${
+              pressed
+                ? 'border-gray-300 bg-gray-100 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100'
+                : 'border-gray-200 text-gray-400 line-through dark:border-gray-700 dark:text-gray-500'
+            }`}
+          >
+            <svg
+              aria-hidden
+              width={EDGE_SWATCH_WIDTH}
+              height={6}
+              viewBox={`0 0 ${EDGE_SWATCH_WIDTH} 6`}
+            >
+              <line
+                x1={0}
+                y1={3}
+                x2={EDGE_SWATCH_WIDTH}
+                y2={3}
+                stroke={color}
+                strokeWidth={2}
+                strokeDasharray={dash.join(' ') || undefined}
+              />
+            </svg>
+            {t(DEPENDENCY_KIND_LABEL_KEY[kind])}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -306,12 +456,13 @@ export function ProjectGraphPage() {
   const { t } = useTranslation();
   const [data, setData] = useState<ProjectGraphData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { selected, typeFilter, search, update } = useGraphParams();
+  const { selected, typeFilter, search, edgeKinds, update } = useGraphParams();
   const settings = useGraphSettings(
     GRAPH_SETTINGS_STORAGE_PREFIX,
     HUES_SCHEME_ID,
   );
   const groupColors = useGroupColors(settings.colorScheme);
+  const edgeStyles = useEdgeStyles();
 
   useEffect(() => {
     (async () => {
@@ -332,13 +483,24 @@ export function ProjectGraphPage() {
     })();
   }, []);
 
+  // The detail panel lists every kind; the canvas and search neighbors follow
+  // the edge-kind toggles.
   const adjacency = useMemo(
     () => buildAdjacency(data?.dependencies ?? []),
     [data],
   );
+  const shownDependencies = useMemo(
+    () => filterDependencies(data?.dependencies ?? [], edgeKinds),
+    [data, edgeKinds],
+  );
+  const shownAdjacency = useMemo(
+    () => buildAdjacency(shownDependencies),
+    [shownDependencies],
+  );
   const visibleProjects = useMemo(
-    () => (data ? getVisibleProjects(data, adjacency, typeFilter, search) : []),
-    [data, adjacency, typeFilter, search],
+    () =>
+      data ? getVisibleProjects(data, shownAdjacency, typeFilter, search) : [],
+    [data, shownAdjacency, typeFilter, search],
   );
   const selectedProject = data?.projects.find(
     project => project.name === selected,
@@ -392,7 +554,16 @@ export function ProjectGraphPage() {
             />
           </div>
           <div className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-2">
-            <Legend colors={groupColors} />
+            <div className="flex flex-wrap items-center gap-3">
+              <Legend colors={groupColors} />
+              <EdgeKindToggles
+                edgeKinds={edgeKinds}
+                edgeStyles={edgeStyles}
+                onChange={kinds =>
+                  update({ [PARAM.EDGES]: serializeEdgeKinds(kinds) })
+                }
+              />
+            </div>
             <p
               className="text-xs text-gray-500 dark:text-gray-400"
               aria-live="polite"
@@ -412,10 +583,11 @@ export function ProjectGraphPage() {
             ) : (
               <GraphCanvas
                 projects={visibleProjects}
-                dependencies={data.dependencies}
+                dependencies={shownDependencies}
                 selected={selectedProject ? selectedProject.name : null}
                 onSelect={name => update({ [PARAM.PROJECT]: name })}
                 groupColors={groupColors}
+                edgeStyles={edgeStyles}
                 settings={settings}
               />
             )}

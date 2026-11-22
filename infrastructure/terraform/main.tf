@@ -644,6 +644,82 @@ resource "cloudflare_r2_bucket_lifecycle" "home_docs" {
   ]
 }
 
+# Second, independent copy of everything cron-backup writes to
+# google_storage_bucket.backup, so a GCP account or billing problem cannot lose
+# every backup at once. Private: never give it a public r2.dev hostname.
+resource "cloudflare_r2_bucket" "backup" {
+  account_id = var.cloudflare_account_id
+  name       = "vigilant-broccoli-backup"
+  location   = "ENAM"
+}
+
+resource "cloudflare_r2_bucket_lifecycle" "backup" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = cloudflare_r2_bucket.backup.name
+
+  # Mirrors the GCS backup bucket's age = 90 delete rule; cron-backup itself
+  # prunes each prefix to the last 7.
+  rules = [
+    {
+      id      = "expire-old-backups"
+      enabled = true
+
+      conditions = {
+        prefix = ""
+      }
+
+      delete_objects_transition = {
+        condition = {
+          type    = "Age"
+          max_age = 90 * 86400
+        }
+      }
+
+      abort_multipart_uploads_transition = {
+        condition = {
+          type    = "Age"
+          max_age = 86400
+        }
+      }
+    }
+  ]
+}
+
+data "cloudflare_account_api_token_permission_groups_list" "all" {
+  account_id = var.cloudflare_account_id
+}
+
+locals {
+  backup_r2_permission_group_ids = [
+    for group in data.cloudflare_account_api_token_permission_groups_list.all.result : group.id
+    if contains(["Workers R2 Storage Bucket Item Read", "Workers R2 Storage Bucket Item Write"], group.name)
+  ]
+}
+
+# Scoped to the backup bucket alone rather than reusing bucket-service's
+# account-wide CLOUDFLARE_R2_* keys. Its S3 credentials are derived from it
+# (access key id = token id, secret = SHA-256 of the value) by post-apply.sh,
+# which syncs them to Vault as BACKUP_R2_ACCESS_KEY_ID / BACKUP_R2_SECRET_ACCESS_KEY.
+resource "cloudflare_account_token" "backup_r2" {
+  account_id = var.cloudflare_account_id
+  name       = "vigilant-broccoli-backup R2 object read/write"
+
+  policies = [{
+    effect            = "allow"
+    permission_groups = [for id in sort(local.backup_r2_permission_group_ids) : { id = id }]
+    resources = jsonencode({
+      "com.cloudflare.edge.r2.bucket.${var.cloudflare_account_id}_default_${cloudflare_r2_bucket.backup.name}" = "*"
+    })
+  }]
+
+  lifecycle {
+    precondition {
+      condition     = length(local.backup_r2_permission_group_ids) == 2
+      error_message = "Expected both Workers R2 Storage Bucket Item Read and Write permission groups; Cloudflare may have renamed them."
+    }
+  }
+}
+
 resource "cloudflare_r2_bucket" "where_is" {
   account_id = var.cloudflare_account_id
   name       = "where-is"
