@@ -22,7 +22,7 @@ export const UPTIME_SUMMARY_URL = toUpptimeSummaryUrl(
 export const toRawGithubUrl = (path: string) =>
   `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${path}`;
 
-// Links to a README that pages-index itself serves stay on the site; the absolute URL keeps
+// Links to a README that projects-hub itself serves stay on the site; the absolute URL keeps
 // them valid on the status/career hosts, where a bare hash link would not reach this app.
 const SERVED_README_ROUTES = new Map<string, string>([
   ...DOCKER_IMAGES.map(

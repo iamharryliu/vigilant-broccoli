@@ -74,7 +74,7 @@ Management dashboard with calendar, notepad and quick links home tabs.
 - [Job Hunt](../job-hunt-next) - embeds
 - [Local Services Next](../local-services-next) - embeds
 - [Music Next](../music-next) - embeds
-- [Pages Index](../pages-index) - embeds
+- [Projects Hub](../projects-hub) - embeds
 - [Personal Website (React)](../personal-website-react) - embeds
 - [Socket Server (Socket.IO)](../../socket-server-socketio) - calls
 - [Tasks](../tasks-next) - embeds

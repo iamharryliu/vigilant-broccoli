@@ -1,6 +1,6 @@
 # Page navigation
 
-Non-obvious routing and data-source details for pages-index. Routes live in `src/app/app.tsx`, breadcrumbs in `src/app/consts/breadcrumbs.ts` and the app and demo detail pages in `src/app/consts/webApplications.json`; keep this doc in sync when those change.
+Non-obvious routing and data-source details for projects-hub. Routes live in `src/app/app.tsx`, breadcrumbs in `src/app/consts/breadcrumbs.ts` and the app and demo detail pages in `src/app/consts/webApplications.json`; keep this doc in sync when those change.
 
 ## Table of Contents
 
@@ -22,7 +22,7 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 
 ## Hosts
 
-- `status.vigilant-broccoli.app` — the same `StatusPage` at the host root. `app.tsx` picks the status route table when `window.location.hostname` is `STATUS_HOST` (`src/app/consts/hosts.ts`); other paths redirect to `/`. The Home breadcrumb and any other pages-index link there are explicit `https://projects.vigilant-broccoli.app/…` URLs, built with `toProjectsUrl`.
+- `status.vigilant-broccoli.app` — the same `StatusPage` at the host root. `app.tsx` picks the status route table when `window.location.hostname` is `STATUS_HOST` (`src/app/consts/hosts.ts`); other paths redirect to `/`. The Home breadcrumb and any other projects-hub link there are explicit `https://projects.vigilant-broccoli.app/…` URLs, built with `toProjectsUrl`.
 - `deployments.vigilant-broccoli.app` — `DeploymentsPage` at the host root. `app.tsx` picks the deployments route table when the hostname is `DEPLOYMENTS_HOST`; other paths redirect to `/`, and the Home breadcrumb is a `toProjectsUrl` link. Details: [deployments-page.md](./deployments-page.md).
 - `career.harryliu.dev` — `CareerPage` at the host root (cards: Resume → `harryliu.dev/resume`, Personal Software Career Experience, `projects.vigilant-broccoli.app`, `harryliu.dev`, GitHub, LinkedIn). `app.tsx` picks the career route table when the hostname is `CAREER_HOST`; other hash routes redirect to `/`.
   - `/personal-software-career-experience` — renders `notes/personal/career/career-experience.md` from `raw.githubusercontent.com`; its breadcrumb returns to the career root.
@@ -47,7 +47,7 @@ The home page's Software Projects section links straight to GitHub, Docker Hub a
 
 - `/web-applications/gravity-guy` and `/web-applications/gravity-guy-staging` — production at `gravity-guy.vigilant-broccoli.app` and protected staging Vercel deployments of the browser-local runner; both details use Gravity Guy's README.
 - `/web-applications/bookmarks` — Bookmarks detail links to `bookmarks.vigilant-broccoli.app`, a browser-local bookmark manager.
-- `/web-applications/:app` — app or demo detail with an Open application card above its README, fetched from `raw.githubusercontent.com`; Career uses the pages-index README. Apps with `stagingHref` also show an Open staging application card to the gated custom hostname. Owner-only apps (Chat, Local Manager, Mobile Manager, Web Terminal, Sandbox) are listed in a Private section after Demo; their cards still land on the gated or local-only hosts. Only registered apps have cards and detail pages; removing a registry entry removes both.
+- `/web-applications/:app` — app or demo detail with an Open application card above its README, fetched from `raw.githubusercontent.com`; Career uses the projects-hub README. Apps with `stagingHref` also show an Open staging application card to the gated custom hostname. Owner-only apps (Chat, Local Manager, Mobile Manager, Web Terminal, Sandbox) are listed in a Private section after Demo; their cards still land on the gated or local-only hosts. Only registered apps have cards and detail pages; removing a registry entry removes both.
 - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All five services (llm-service, bucket-service, email-service, email-subscription-service, employee-handler) are private-only (the first four are private Fly apps; employee-handler is a library-hosted contract with no public `/docs`), so this page is the only way to browse them. The employee-handler spec is generated from the zod contract in `libs/@vigilant-broccoli/employee-handler`, whose sources are `generate-openapi` inputs. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
 
 The Job Hunt demo card opens the public, read-only sample deployment at `demo-job-hunt-next.vercel.app`; its detail page uses Job Hunt's README.
@@ -68,7 +68,7 @@ The Job Hunt demo card opens the public, read-only sample deployment at `demo-jo
 
 ### Activation
 
-- After merge, wait for the main pages-index GitHub Pages deployment, then verify `https://projects.vigilant-broccoli.app/games`.
+- After merge, wait for the main projects-hub GitHub Pages deployment, then verify `https://projects.vigilant-broccoli.app/games`.
 - From an authenticated local checkout run `pnpm tf:plan`; review the plan for `cloudflare_workers_custom_domain.games` and exclude unrelated drift before running `pnpm tf:apply`. The custom domain provisions DNS/TLS on the existing Worker; no new app or Worker script is needed.
 - Verify HTTPS at `https://games.vigilant-broccoli.app/`, `/games`, a game About page and its breadcrumbs; open all three production games. Confirm status, career and deployments roots still render correctly.
 - Confirm the Upptime configuration sync and production-games check after merge; no provider dashboard edits are needed.

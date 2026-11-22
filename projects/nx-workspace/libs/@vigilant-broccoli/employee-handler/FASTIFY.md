@@ -39,7 +39,7 @@ await app.listen({ port: 3000, host: '0.0.0.0' });
 Routes are defined once as zod schemas in `src/employee-handler/employee-handler.contract.ts`; the Fastify wrapper mounts and validates request bodies from that contract. The OpenAPI document generated from it is the route reference:
 
 - Live: `GET /api/openapi.json` on any `createEmployeeHandlerApp` instance (behind `apiKey` when set).
-- Build-generated: `employee-handler.json`, published by `scripts/generate-openapi-specs.ts` (`pages-index` `generate-openapi` target) to `apps/ui/pages-index/public/openapi/`.
+- Build-generated: `employee-handler.json`, published by `scripts/generate-openapi-specs.ts` (`projects-hub` `generate-openapi` target) to `apps/ui/projects-hub/public/openapi/`.
 
 ## Migrating from 0.0.x
 

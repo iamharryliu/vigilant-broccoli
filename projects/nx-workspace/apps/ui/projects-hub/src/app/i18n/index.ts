@@ -3,6 +3,7 @@
 import { createI18n } from '@vigilant-broccoli/react-lib';
 import en from './en.json';
 
+// Pre-rename key kept so saved locale choices survive.
 const STORAGE_KEY = 'pages-index.locale';
 
 export const LOCALES = {

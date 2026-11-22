@@ -1,4 +1,4 @@
-# Pages Index
+# Projects Hub
 
 ## Table of Contents
 

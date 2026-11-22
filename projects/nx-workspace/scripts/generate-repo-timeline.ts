@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync } from 'fs';
 import { dirname } from 'path';
 
 const OUTPUT_FILE =
-  process.argv[2] ?? 'apps/ui/pages-index/public/repo-timeline.json';
+  process.argv[2] ?? 'apps/ui/projects-hub/public/repo-timeline.json';
 
 const RECORD_SEPARATOR = '\x00';
 const FIELD_SEPARATOR = '\t';

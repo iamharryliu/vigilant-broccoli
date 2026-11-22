@@ -14,13 +14,13 @@ What every UI app in this workspace must have, and the shared building blocks to
   - [Avoiding a wrong-theme flash](#avoiding-a-wrong-theme-flash)
   - [Manual verification](#manual-verification)
 - [Loading states](#loading-states)
-- [pages-index card (required)](#pages-index-card-required)
+- [projects-hub card (required)](#projects-hub-card-required)
 - [Local dev](#local-dev)
 - [New UI app checklist (app-side)](#new-ui-app-checklist-app-side)
 
 ## Where UI apps live
 
-Per-type locations and deploy destinations, including the `employee-handler-ui`, `job-hunt-next` and `local-manager-next` exceptions, are in [Choosing a home](../app-development.md#choosing-a-home). Next.js apps live under `apps/*` (`hearth`, `findme`, `whiteboard`) or `apps/ui/*` (`employee-handler-ui`, `weather-next`, `balloono`). GitHub Pages hosts only the `pages-index` landing site; `component-library` is a Cloudflare Pages site like the other static UIs.
+Per-type locations and deploy destinations, including the `employee-handler-ui`, `job-hunt-next` and `local-manager-next` exceptions, are in [Choosing a home](../app-development.md#choosing-a-home). Next.js apps live under `apps/*` (`hearth`, `findme`, `whiteboard`) or `apps/ui/*` (`employee-handler-ui`, `weather-next`, `balloono`). GitHub Pages hosts only the `projects-hub` landing site; `component-library` is a Cloudflare Pages site like the other static UIs.
 
 ## Shared components (react-lib)
 
@@ -39,14 +39,14 @@ All user-facing copy goes through the shared `createI18n` from `@vigilant-brocco
 - Copy lives in a per-locale JSON dictionary (e.g. `src/app/i18n/en.json`) keyed with SCREAMING_SNAKE dot-paths (e.g. `SHARING.OPEN_IN_GOOGLE_MAPS`); values are the display strings.
 - Instantiate in an app i18n module marked `'use client'` (it imports the `react-lib` barrel and provides React context/hooks), wrap the app in the returned `I18nProvider`, read copy via `t('...')` from `useTranslation`.
 - Not translatable copy (stays inline): styling strings (Tailwind classes, CSS values), icon glyphs, storage keys, library config (e.g. Leaflet attribution).
-- Reference implementations (`src/app/i18n/index.ts`): `hearth`, `findme`, `whiteboard`, `employee-handler-ui`, `pages-index`.
+- Reference implementations (`src/app/i18n/index.ts`): `hearth`, `findme`, `whiteboard`, `employee-handler-ui`, `projects-hub`.
 
 ## Page titles (required)
 
 Every route-level page sets a document title of `Page Name | Site Name`, so browser tabs, history, and bookmarks identify the page rather than just the app.
 
 - The shared primitive is `useDocumentTitle` from `@vigilant-broccoli/react-lib`; each app wraps it in a local `usePageTitle` that appends the app name (e.g. `apps/hearth/src/lib/page-title.ts`).
-- Titles come from the app's existing page-name source — i18n keys where the app has them (`employee-handler-ui`, `pages-index`), otherwise a `PAGE_TITLE`/`APP_ROUTE` const module.
+- Titles come from the app's existing page-name source — i18n keys where the app has them (`employee-handler-ui`, `projects-hub`), otherwise a `PAGE_TITLE`/`APP_ROUTE` const module.
 - Next.js server-component pages use `export const metadata` instead, with a `title.template` on the root layout (`mobile-manager-next`).
 - Home, login, callback, and error pages follow the same convention; initial HTML/root metadata defaults also include both names. Keep Open Graph and Twitter title tags consistent where present.
 - `DocsViewer` and `ComponentSandbox` accept `siteName` so their selected document/component titles retain the hosting app suffix. Pass it from the app; the viewer must not overwrite a formatted title with a bare document name.
@@ -114,9 +114,9 @@ Behavior (`useThemePreference`, shared by `ThemeProvider` and apps that own thei
 - Build skeletons to look as close as possible to the loaded UI: match the heights, widths, paddings and gaps of rows, and include placeholders matching the size and position of inputs, buttons, checkboxes and icons, so nothing shifts when content arrives.
 - Reuse `Skeleton` from `@vigilant-broccoli/react-lib`.
 
-## pages-index card (required)
+## projects-hub card (required)
 
-Every UI application with a public URL appears as a card in `apps/ui/pages-index/src/app/pages/WebApplicationsPage.tsx` (the GitHub Pages "Web Applications" page; demo-only deploys go in its Demo section). Each public URL also needs an Upptime entry and a quick-links browser entry — see [Public URL registration](../app-development.md#deployment).
+Every UI application with a public URL appears as a card in `apps/ui/projects-hub/src/app/pages/WebApplicationsPage.tsx` (the GitHub Pages "Web Applications" page; demo-only deploys go in its Demo section). Each public URL also needs an Upptime entry and a quick-links browser entry — see [Public URL registration](../app-development.md#deployment).
 
 ## Local dev
 

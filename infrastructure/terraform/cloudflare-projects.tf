@@ -1,4 +1,4 @@
-# projects.vigilant-broccoli.app — the pages-index GitHub Pages site. DNS-only so
+# projects.vigilant-broccoli.app — the projects-hub GitHub Pages site. DNS-only so
 # GitHub Pages can issue its certificate; `github_repository_pages` in github.tf
 # sets the Pages custom domain from this record. Also the upstream of the
 # status-proxy Worker (cloudflare-status.tf). The old projects.harryliu.dev host

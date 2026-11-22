@@ -1,4 +1,4 @@
-// Serves the pages-index build from projects.vigilant-broccoli.app under the status
+// Serves the projects-hub build from projects.vigilant-broccoli.app under the status
 // hostname. GitHub Pages allows one custom domain per site, so a second
 // hostname cannot be attached to it; this Worker is a pass-through instead.
 // The app itself picks StatusPage when it sees the status hostname, so paths

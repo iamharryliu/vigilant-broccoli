@@ -1,6 +1,6 @@
 // Publishes each Docker Hub repository's short description and overview from
-// the pages-index image registry, so Docker Hub shows the same text as the
-// pages-index Docker card and /docker/:image page. Usage:
+// the projects-hub image registry, so Docker Hub shows the same text as the
+// projects-hub Docker card and /docker/:image page. Usage:
 //   tsx scripts/update-dockerhub-descriptions.ts [--dry-run] [image-slug ...]
 // with DOCKERHUB_TOKEN (a personal access token with Read, Write, Delete
 // scope; pushing alone needs less) and optionally DOCKERHUB_USERNAME.
@@ -12,8 +12,8 @@ import {
   HTTP_METHOD,
   JSON_CONTENT_TYPE,
 } from '../libs/@vigilant-broccoli/common-js/src/lib/http/http.consts';
-import DOCKER_IMAGE_REGISTRY from '../apps/ui/pages-index/src/app/consts/dockerImages.json' with { type: 'json' };
-import PAGES_INDEX_STRINGS from '../apps/ui/pages-index/src/app/i18n/en.json' with { type: 'json' };
+import DOCKER_IMAGE_REGISTRY from '../apps/ui/projects-hub/src/app/consts/dockerImages.json' with { type: 'json' };
+import PROJECTS_HUB_STRINGS from '../apps/ui/projects-hub/src/app/i18n/en.json' with { type: 'json' };
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const DOCKER_HUB_API = 'https://hub.docker.com/v2';
@@ -44,7 +44,7 @@ const lookupString = (key: string): string => {
     .split('.')
     .reduce<unknown>(
       (node, part) => (node as Record<string, unknown> | undefined)?.[part],
-      PAGES_INDEX_STRINGS,
+      PROJECTS_HUB_STRINGS,
     );
   if (typeof value !== 'string') throw new Error(`Missing string ${key}`);
   return value;
