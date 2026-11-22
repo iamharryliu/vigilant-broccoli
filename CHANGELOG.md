@@ -175,7 +175,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### mobile-manager-next
 
-- Selecting text in the Language tab now speaks it right away in that row's language at the tab's 0.75× speed ([#1719](https://github.com/iamharryliu/vigilant-broccoli/pull/1719)).
+- Selecting text in the Language tab, or generating an example sentence there, now speaks it right away in that row's language at the tab's 0.75× speed ([#1719](https://github.com/iamharryliu/vigilant-broccoli/pull/1719)).
 - New Language tab on the home screen shows a random everyday word in English, Swedish, French, Spanish and Chinese, with speech, synonyms, an opposite word and example sentences ([#1616](https://github.com/iamharryliu/vigilant-broccoli/pull/1616)).
 - Instagram appears in the Leisure apps, and embed-flagged links open in an in-app page ([#1598](https://github.com/iamharryliu/vigilant-broccoli/pull/1598), [#1398](https://github.com/iamharryliu/vigilant-broccoli/pull/1398)).
 - The Tasks tab embeds tasks.harryliu.dev inside a matching border. Voice input, AI task creation and the bottom-sheet create dialog are gone from it ([#1602](https://github.com/iamharryliu/vigilant-broccoli/pull/1602), [#1612](https://github.com/iamharryliu/vigilant-broccoli/pull/1612)).

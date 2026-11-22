@@ -133,9 +133,21 @@ export const LanguageLearningView = () => {
     );
   };
 
+  // Ids are a language, or `<language>:sentence` / `<language>:selection`.
+  const handleSpeak = async (text: string, id: string) => {
+    setActiveId(id);
+    const [language] = id.split(ID_SEPARATOR);
+    await speak(text, {
+      playbackRate: SPEECH_RATE,
+      languageCode: LANGUAGE_META[language as Language].code,
+    });
+    setActiveId(null);
+  };
+
   const loadSentence = async (language: Language, word: string) => {
     const wordRequestId = requestId.current;
     setSentenceLoading(language);
+    let loaded: SentenceResult | null = null;
     try {
       const res = await authFetch(API_ENDPOINTS.LANGUAGE_LEARNING_SENTENCE, {
         method: HTTP_METHOD.POST,
@@ -146,22 +158,15 @@ export const LanguageLearningView = () => {
       // A new word arrived while this was loading; its sentence no longer fits.
       if (wordRequestId !== requestId.current) return;
       setSentences(current => ({ ...current, [language]: sentence }));
+      loaded = sentence;
     } catch {
       setHasError(true);
     } finally {
       setSentenceLoading(null);
     }
-  };
-
-  // Ids are a language, or `<language>:sentence` / `<language>:selection`.
-  const handleSpeak = async (text: string, id: string) => {
-    setActiveId(id);
-    const [language] = id.split(ID_SEPARATOR);
-    await speak(text, {
-      playbackRate: SPEECH_RATE,
-      languageCode: LANGUAGE_META[language as Language].code,
-    });
-    setActiveId(null);
+    if (loaded) {
+      await handleSpeak(loaded.sentence, `${language}${SENTENCE_ID_SUFFIX}`);
+    }
   };
 
   useSpeakOnSelect(listRef, (text, language) =>
