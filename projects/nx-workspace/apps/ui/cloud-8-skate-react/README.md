@@ -5,6 +5,7 @@ The Cloud8 Toronto skating community site.
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 
 ## Stack
 
@@ -26,3 +27,7 @@ The Cloud8 Toronto skating community site.
   - Google Calendar
   - Google reCAPTCHA
   - Sanity
+
+## App Dependencies
+
+- [VB Express](../../api/vb-express) - calls

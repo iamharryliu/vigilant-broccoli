@@ -5,6 +5,7 @@ Shared life for homes, communes, and communities.
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 - [Environment](#environment)
 
 ## Stack
@@ -38,9 +39,12 @@ Shared life for homes, communes, and communities.
   - `sidebar`
 - Cloud services
   - Cloudflare R2
-  - Media Service
   - Supabase
-  - VB Express
+
+## App Dependencies
+
+- [Media Service](../api/media-service) - calls
+- [VB Express](../api/vb-express) - calls
 
 ## Environment
 

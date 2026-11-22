@@ -5,6 +5,7 @@ Browser demo of the OK-IN office presence Slack app.
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 
 ## Stack
 
@@ -13,5 +14,7 @@ Browser demo of the OK-IN office presence Slack app.
 - Build Tool - Vite
 - Internal libs
   - `react-lib`
-- Cloud services
-  - Office Presence Service
+
+## App Dependencies
+
+- [Office Presence Service](../../api/office-presence-service) - calls

@@ -5,6 +5,7 @@ Public photo albums with a lightbox viewer, served from the CMS `photography/` f
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 
 ## Stack
 
@@ -19,4 +20,7 @@ Public photo albums with a lightbox viewer, served from the CMS `photography/` f
 - Cloud services
   - Cloudflare Pages
   - Cloudflare R2
-  - VB Express
+
+## App Dependencies
+
+- [VB Express](../../api/vb-express) - calls

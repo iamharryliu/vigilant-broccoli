@@ -13,6 +13,7 @@ import {
   Checkbox,
   DeleteItemConfirmationDialog,
   Input,
+  Skeleton,
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
@@ -42,6 +43,7 @@ import { useAuth } from '../providers/auth-provider';
 import { WHERE_IS_ENDPOINT } from '../../lib/routes';
 import { WhereIsItem } from '../../lib/types';
 import { sortTags } from './where-is-tags';
+import { WhereIsRoomField, usePinRoomWhileEditing } from './where-is-rooms';
 
 const ERROR_SAVE_FALLBACK = 'Saving failed. Please try again.';
 const ERROR_ANALYZE = 'Analysis failed. Please try again.';
@@ -61,7 +63,6 @@ const LABEL = {
   CHOOSE_PHOTOS: 'Choose Photos',
   CLEAR_ALL: 'Clear all',
   DISMISS: 'Dismiss',
-  DONE: 'Done',
   NO_NEW_TAGS: 'No new tags suggested.',
   SELECT_ALL: 'Select all',
   SUGGEST_TAGS: 'Suggest tags',
@@ -97,6 +98,7 @@ export type WhereIsFormValues = {
   title: string;
   description: string;
   tags: string[];
+  roomId: string | null;
   images: PreviewImage[];
   imageUrls?: string[];
   imageKeys?: string[];
@@ -161,6 +163,7 @@ const savedSnapshot = (values: WhereIsFormValues) =>
     values.title,
     values.description,
     values.tags,
+    values.roomId,
     values.imageKeys ?? [],
   ]);
 
@@ -225,12 +228,16 @@ const SortableImageTile = ({
       {...(sortable ? { ...attributes, ...listeners } : {})}
       aria-label={sortable ? LABEL.REORDER_PHOTO : undefined}
     >
-      <img
-        src={image.url}
-        alt={`image ${index + 1}`}
-        className={TILE_IMG_CLASS}
-        draggable={false}
-      />
+      {image.url ? (
+        <img
+          src={image.url}
+          alt={`image ${index + 1}`}
+          className={TILE_IMG_CLASS}
+          draggable={false}
+        />
+      ) : (
+        <Skeleton className={TILE_IMG_CLASS} />
+      )}
       <RemoveButton onClick={onRemove} disabled={disabled} />
     </div>
   );
@@ -424,13 +431,13 @@ export const WhereIsFormComponent = ({
   submitHandler,
   saveHandler,
   registerCloseGuard,
-  onCancel,
 }: CRUDFormProps<WhereIsFormValues>) => {
   const session = useAuth();
   const libraryInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(initialFormValues.title);
   const [description, setDescription] = useState(initialFormValues.description);
   const [tags, setTags] = useState<string[]>(initialFormValues.tags);
+  const [roomId, setRoomId] = useState(initialFormValues.roomId);
   const [tagInput, setTagInput] = useState('');
   const [previews, setPreviews] = useState<PreviewImage[]>(
     initialFormValues.images,
@@ -445,7 +452,6 @@ export const WhereIsFormComponent = ({
   const [analyzing, setAnalyzing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>(SAVE_STATUS.IDLE);
-  const [closing, setClosing] = useState(false);
   const [error, setError] = useState('');
 
   const isUpdate = formType === FORM_TYPE.UPDATE;
@@ -484,6 +490,7 @@ export const WhereIsFormComponent = ({
     title,
     description,
     tags,
+    roomId,
     images: previews,
     imageUrls: existing.map(img => img.url),
     imageKeys: existing.map(img => img.key),
@@ -555,15 +562,6 @@ export const WhereIsFormComponent = ({
     return !hasUnsavedChanges(latestRef.current);
   }, [runSave]);
 
-  const handleDone = async () => {
-    setClosing(true);
-    try {
-      if (await flushBeforeClose()) onCancel?.();
-    } finally {
-      setClosing(false);
-    }
-  };
-
   useEffect(() => {
     if (!isUpdate || !registerCloseGuard) return;
     registerCloseGuard(flushBeforeClose);
@@ -581,7 +579,9 @@ export const WhereIsFormComponent = ({
 
   useEffect(() => {
     if (isUpdate) runSave();
-  }, [isUpdate, runSave, tags, previews, existing]);
+  }, [isUpdate, runSave, tags, roomId, previews, existing]);
+
+  usePinRoomWhileEditing(initialFormValues.id, isUpdate);
 
   useEffect(() => {
     if (!isUpdate) return;
@@ -729,6 +729,7 @@ export const WhereIsFormComponent = ({
           rows={3}
         />
       </div>
+      <WhereIsRoomField roomId={roomId} onChange={setRoomId} />
       <div>
         <Text size="1" weight="medium" as="p" mb="1">
           Tags
@@ -837,11 +838,6 @@ export const WhereIsFormComponent = ({
                 ? LABEL.SAVED
                 : ''}
           </Text>
-          {onCancel && (
-            <Button variant="outline" onClick={handleDone} disabled={closing}>
-              {closing ? LABEL.SAVING : LABEL.DONE}
-            </Button>
-          )}
         </div>
       ) : (
         <div className="flex justify-end">

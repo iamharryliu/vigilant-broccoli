@@ -924,6 +924,9 @@ importers:
       mermaid:
         specifier: ^11.4.0
         version: 11.17.2
+      qrcode:
+        specifier: ^1.5.4
+        version: 1.5.4
       react:
         specifier: 19.2.7
         version: 19.2.7

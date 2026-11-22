@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 
 ## Stack
 
@@ -23,3 +24,7 @@
 - Cloud services
   - Google Analytics
   - Google reCAPTCHA
+
+## App Dependencies
+
+- [VB Express](../../api/vb-express) - calls

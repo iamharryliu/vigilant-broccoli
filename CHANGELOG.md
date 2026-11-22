@@ -8,6 +8,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 <details>
 <summary>November 2026</summary>
 
+### docs-explorer
+
+- Notes in the Docs Explorer can be shared: a Share item in the note's ellipsis menu (when the host supplies a link) opens a dialog with a copyable link and a QR code ([#1726](https://github.com/iamharryliu/vigilant-broccoli/pull/1726)).
+
 ### entry-directory
 
 - Group headings in `EntryDirectory` (Bookmarks) now use one medium-weight heading style in every view, including Rows ([#1699](https://github.com/iamharryliu/vigilant-broccoli/pull/1699)).
@@ -20,6 +24,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### hearth
 
+- Where Is gains rooms: storage areas can be assigned to a room, each shows its room in a badge and search matches room names, a Rooms tab adds, renames and deletes rooms (deleting leaves areas unassigned) and the form can add a room inline, the detail view shows the room, and export and import carry rooms ([#1727](https://github.com/iamharryliu/vigilant-broccoli/pull/1727)).
 - Where Is loads faster: the list signs all photo links in one request, shows one small thumbnail per item instead of a stack of full-size photos, and shows the search box and placeholder rows while it loads; imported photos get thumbnails too ([#1724](https://github.com/iamharryliu/vigilant-broccoli/pull/1724)).
 - On phones the home page is one tabbed view with Tasks first and selected by default, plus Whiteboard and Calendar, replacing the separate Whiteboard, Tasks and Calendar entries under Home in the menu; only the task list scrolls, recurring tasks are highlighted yellow, and the progress bar counts only today's recurring tasks ([#1716](https://github.com/iamharryliu/vigilant-broccoli/pull/1716)).
 - New Whiteboard and Tasks tabs on the home page with recurring and one-off tasks stored per home, assignable to members, with each recurring occurrence its own instance and carried-over ones labeled missed ([#1485](https://github.com/iamharryliu/vigilant-broccoli/pull/1485), [#1493](https://github.com/iamharryliu/vigilant-broccoli/pull/1493), [#1495](https://github.com/iamharryliu/vigilant-broccoli/pull/1495), [#1508](https://github.com/iamharryliu/vigilant-broccoli/pull/1508), [#1561](https://github.com/iamharryliu/vigilant-broccoli/pull/1561)).
@@ -62,6 +67,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### pages-index
 
+- The Project Graph now also shows which apps embed or call other apps, including local-manager and mobile-manager, with a toggle per dependency kind; each app README lists these under App Dependencies ([#1725](https://github.com/iamharryliu/vigilant-broccoli/pull/1725)).
 - The Games page moved to games.vigilant-broccoli.app and the Upptime history site to uptime.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve ([#1694](https://github.com/iamharryliu/vigilant-broccoli/pull/1694)).
 - The projects site moved to projects.vigilant-broccoli.app. Old projects.harryliu.dev links redirect there and keep their page ([#1684](https://github.com/iamharryliu/vigilant-broccoli/pull/1684)).
 - New Changelog page lists these entries, linked from the home page ([#1586](https://github.com/iamharryliu/vigilant-broccoli/pull/1586)).

@@ -30,7 +30,16 @@ interface SimNode extends SimulationNodeDatum {
 
 interface SimLink extends SimulationLinkDatum<SimNode> {
   value?: number;
+  kind?: string;
 }
+
+export interface GraphLinkStyle {
+  color: string;
+  // Screen-pixel dash pattern for `setLineDash`; omitted draws a solid line.
+  dash?: readonly number[];
+}
+
+const SOLID_DASH: readonly number[] = [];
 
 const CFG = {
   COLLIDE_PAD: 4,
@@ -283,6 +292,9 @@ export interface GraphViewProps {
   onBackgroundClick?: () => void;
   // Draws an arrowhead at each link's target end (source depends on target).
   directed?: boolean;
+  // Color and dash per link `kind`; a styled link keeps its color when its
+  // node is focused, so the kind stays readable while the rest dims.
+  linkStyles?: Readonly<Record<string, GraphLinkStyle>>;
   // Makes the canvas keyboard-operable under this accessible name: arrows
   // pan, +/-/0 zoom and reset, Tab/Shift+Tab step through nodes by name,
   // Enter/Space select, Escape clears node focus.
@@ -344,10 +356,13 @@ export function GraphView({
   zoomControls,
   onBackgroundClick,
   directed = false,
+  linkStyles,
   keyboardLabel,
 }: GraphViewProps) {
   const directedRef = useRef(directed);
   directedRef.current = directed;
+  const linkStylesRef = useRef(linkStyles);
+  linkStylesRef.current = linkStyles;
   // Spoken name of the keyboard-focused node, for the live region.
   const [announcement, setAnnouncement] = useState('');
   // Read through a ref so a new callback each render does not rebuild the
@@ -390,7 +405,12 @@ export function GraphView({
       const source = nodeById.get(link.source);
       const target = nodeById.get(link.target);
       if (!source || !target) continue;
-      links.push({ source: source.id, target: target.id, value: link.value });
+      links.push({
+        source: source.id,
+        target: target.id,
+        value: link.value,
+        kind: link.kind,
+      });
       source.degree++;
       target.degree++;
     }
@@ -542,11 +562,14 @@ export function GraphView({
           style: string;
           width: number;
           alpha: number;
+          dash: readonly number[];
+          highlighted: boolean;
           path: Path2D;
           arrows: Path2D;
         }
       >();
       const directedLinks = directedRef.current;
+      const styles = linkStylesRef.current;
       for (const link of links) {
         const s = nodeById.get(endpointId(link.source));
         const t = nodeById.get(endpointId(link.target));
@@ -554,16 +577,22 @@ export function GraphView({
         const touchesFocus =
           focusId != null && (s.id === focusId || t.id === focusId);
         const dimmed = dimming && !touchesFocus;
-        const style = !dimmed && touchesFocus ? COLOR.LINK_HL : linkColor;
+        const highlighted = !dimmed && touchesFocus;
+        const kindStyle = link.kind ? styles?.[link.kind] : undefined;
+        const style =
+          kindStyle?.color ?? (highlighted ? COLOR.LINK_HL : linkColor);
+        const dash = kindStyle?.dash ?? SOLID_DASH;
         const alpha = dimmed ? COLOR.DIM_ALPHA : 1;
         const width = linkWidth(link.value);
-        const key = `${style}|${width}|${alpha}`;
+        const key = `${style}|${width}|${alpha}|${dash.join(',')}|${highlighted}`;
         let batch = linkBatches.get(key);
         if (!batch) {
           batch = {
             style,
             width,
             alpha,
+            dash,
+            highlighted,
             path: new Path2D(),
             arrows: new Path2D(),
           };
@@ -577,21 +606,30 @@ export function GraphView({
       }
       // Dimmed links first and highlighted last, matching what drawing in
       // link order produced: the focus edges stay on top.
-      const batchOrder = (batch: { style: string; alpha: number }) =>
-        batch.style === COLOR.LINK_HL ? 2 : batch.alpha < 1 ? 0 : 1;
+      const batchOrder = (batch: { highlighted: boolean; alpha: number }) =>
+        batch.highlighted ? 2 : batch.alpha < 1 ? 0 : 1;
       const orderedBatches = [...linkBatches.values()].sort(
         (a, b) => batchOrder(a) - batchOrder(b),
       );
-      for (const { style, width, alpha, path, arrows } of orderedBatches) {
+      for (const {
+        style,
+        width,
+        alpha,
+        dash,
+        path,
+        arrows,
+      } of orderedBatches) {
         ctx.globalAlpha = alpha;
         ctx.strokeStyle = style;
         ctx.lineWidth = width;
+        ctx.setLineDash([...dash]);
         ctx.stroke(path);
         if (directedLinks) {
           ctx.fillStyle = style;
           ctx.fill(arrows);
         }
       }
+      ctx.setLineDash([]);
 
       ctx.globalAlpha = 1;
       const showAllLabels = transform.k >= CFG.LABEL_ZOOM;
@@ -1039,7 +1077,7 @@ export function GraphView({
 
   useEffect(() => {
     drawRef.current?.();
-  }, [palette, groupColors, showNodeGlow, directed]);
+  }, [palette, groupColors, showNodeGlow, directed, linkStyles]);
 
   useEffect(() => {
     const sim = simRef.current;
