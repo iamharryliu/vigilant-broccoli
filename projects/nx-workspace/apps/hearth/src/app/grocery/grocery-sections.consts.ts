@@ -1,0 +1,202 @@
+export const GROCERY_SECTION = {
+  PRODUCE: 'produce',
+  DAIRY: 'dairy',
+  MEAT_SEAFOOD: 'meat_seafood',
+  BAKERY: 'bakery',
+  FROZEN: 'frozen',
+  PANTRY: 'pantry',
+  BEVERAGES: 'beverages',
+  SNACKS: 'snacks',
+  HOUSEHOLD: 'household',
+  OTHER: 'other',
+} as const;
+
+export type GrocerySection =
+  (typeof GROCERY_SECTION)[keyof typeof GROCERY_SECTION];
+
+// Store-walk order, which is also the order of the grouped view.
+export const GROCERY_SECTIONS: GrocerySection[] = [
+  GROCERY_SECTION.PRODUCE,
+  GROCERY_SECTION.BAKERY,
+  GROCERY_SECTION.MEAT_SEAFOOD,
+  GROCERY_SECTION.DAIRY,
+  GROCERY_SECTION.FROZEN,
+  GROCERY_SECTION.PANTRY,
+  GROCERY_SECTION.SNACKS,
+  GROCERY_SECTION.BEVERAGES,
+  GROCERY_SECTION.HOUSEHOLD,
+  GROCERY_SECTION.OTHER,
+];
+
+export const GROCERY_SECTION_LABEL: Record<GrocerySection, string> = {
+  [GROCERY_SECTION.PRODUCE]: 'Produce',
+  [GROCERY_SECTION.DAIRY]: 'Dairy',
+  [GROCERY_SECTION.MEAT_SEAFOOD]: 'Meat & seafood',
+  [GROCERY_SECTION.BAKERY]: 'Bakery',
+  [GROCERY_SECTION.FROZEN]: 'Frozen',
+  [GROCERY_SECTION.PANTRY]: 'Pantry',
+  [GROCERY_SECTION.BEVERAGES]: 'Beverages',
+  [GROCERY_SECTION.SNACKS]: 'Snacks',
+  [GROCERY_SECTION.HOUSEHOLD]: 'Household',
+  [GROCERY_SECTION.OTHER]: 'Other',
+};
+
+// Multi-word phrases are matched before single words across every section, so
+// "ice cream" lands in frozen and "peanut butter" in pantry, not dairy.
+export const GROCERY_SECTION_KEYWORDS: Record<
+  Exclude<GrocerySection, typeof GROCERY_SECTION.OTHER>,
+  string[]
+> = {
+  [GROCERY_SECTION.PRODUCE]: [
+    'apple',
+    'avocado',
+    'banana',
+    'basil',
+    'berry',
+    'blueberry',
+    'broccoli',
+    'cabbage',
+    'carrot',
+    'cauliflower',
+    'celery',
+    'cilantro',
+    'corn',
+    'cucumber',
+    'garlic',
+    'ginger',
+    'grape',
+    'kale',
+    'lemon',
+    'lettuce',
+    'lime',
+    'mango',
+    'mushroom',
+    'onion',
+    'orange',
+    'parsley',
+    'peach',
+    'pear',
+    'pepper',
+    'potato',
+    'salad',
+    'scallion',
+    'spinach',
+    'strawberry',
+    'tomato',
+    'zucchini',
+  ],
+  [GROCERY_SECTION.DAIRY]: [
+    'butter',
+    'cheese',
+    'cream',
+    'eggs',
+    'egg',
+    'milk',
+    'yogurt',
+    'yoghurt',
+    'sour cream',
+  ],
+  [GROCERY_SECTION.MEAT_SEAFOOD]: [
+    'bacon',
+    'beef',
+    'chicken',
+    'cod',
+    'fish',
+    'ham',
+    'lamb',
+    'pork',
+    'salmon',
+    'sausage',
+    'shrimp',
+    'steak',
+    'tuna',
+    'turkey',
+    'ground beef',
+  ],
+  [GROCERY_SECTION.BAKERY]: [
+    'bagel',
+    'baguette',
+    'bread',
+    'bun',
+    'croissant',
+    'muffin',
+    'roll',
+    'tortilla',
+  ],
+  [GROCERY_SECTION.FROZEN]: [
+    'frozen',
+    'ice cream',
+    'popsicle',
+    'pizza',
+    'frozen vegetables',
+  ],
+  [GROCERY_SECTION.PANTRY]: [
+    'beans',
+    'broth',
+    'cereal',
+    'flour',
+    'honey',
+    'oats',
+    'oil',
+    'pasta',
+    'rice',
+    'salt',
+    'sauce',
+    'spice',
+    'stock',
+    'sugar',
+    'vinegar',
+    'peanut butter',
+    'olive oil',
+    'coconut milk',
+    'almond milk',
+  ],
+  [GROCERY_SECTION.BEVERAGES]: [
+    'beer',
+    'coffee',
+    'juice',
+    'soda',
+    'tea',
+    'water',
+    'wine',
+  ],
+  [GROCERY_SECTION.SNACKS]: [
+    'candy',
+    'chips',
+    'chocolate',
+    'cookie',
+    'cracker',
+    'granola',
+    'nuts',
+    'popcorn',
+    'pretzel',
+  ],
+  [GROCERY_SECTION.HOUSEHOLD]: [
+    'detergent',
+    'dish soap',
+    'foil',
+    'napkin',
+    'paper towel',
+    'shampoo',
+    'soap',
+    'sponge',
+    'toilet paper',
+    'toothpaste',
+    'trash bag',
+  ],
+};
+
+export const GROCERY_SORT_MODE = {
+  DEFAULT: 'default',
+  STORE_SECTION: 'store_section',
+} as const;
+
+export type GrocerySortMode =
+  (typeof GROCERY_SORT_MODE)[keyof typeof GROCERY_SORT_MODE];
+
+export const GROCERY_SORT_MODE_OPTIONS = Object.values(GROCERY_SORT_MODE);
+
+export const GROCERY_SORT_MODE_LABELS: Record<GrocerySortMode, string> = {
+  [GROCERY_SORT_MODE.DEFAULT]: 'Default',
+  [GROCERY_SORT_MODE.STORE_SECTION]: 'Store section',
+};

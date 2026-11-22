@@ -22,7 +22,9 @@ import {
   Card,
   CardSkeleton,
   GoogleSigninButton,
+  ListHeader,
   Select,
+  SortSelect,
   Skeleton,
   SpeechToTextToggleButton,
   Text,
@@ -534,27 +536,24 @@ const TaskHeader = memo(
 
     return (
       <div className="flex flex-col gap-3">
-        <div className="flex justify-between items-center">
-          {taskListsLoading ? (
-            <div className="animate-pulse bg-muted h-8 w-32 rounded" />
-          ) : (
-            <Text size="5" weight="bold">
-              {selectedTaskList?.title ?? TASKS_TITLE}
-            </Text>
-          )}
-          <div className="flex gap-2 items-center">
-            <Text size="2" color="gray">
-              Sort:
-            </Text>
-            <Select
-              value={sortMode}
-              onValueChange={onSortChange}
-              options={SORT_MODE_OPTIONS}
-              displayMapper={SORT_MODE_LABELS}
-              placeholder="Sort by..."
-            />
-          </div>
-        </div>
+        <ListHeader
+          title={
+            taskListsLoading ? (
+              <div className="animate-pulse bg-muted h-8 w-32 rounded" />
+            ) : (
+              <Text size="5" weight="bold">
+                {selectedTaskList?.title ?? TASKS_TITLE}
+              </Text>
+            )
+          }
+        >
+          <SortSelect
+            value={sortMode}
+            onValueChange={onSortChange}
+            options={SORT_MODE_OPTIONS}
+            labels={SORT_MODE_LABELS}
+          />
+        </ListHeader>
         {showSelector && taskLists.length > 0 && (
           <div className="flex gap-2 items-center">
             <Select

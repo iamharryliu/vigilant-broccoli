@@ -196,6 +196,11 @@
     },
     "SWITCH": {
       "LABEL": "Receive updates"
+    },
+    "LIST_HEADER": {
+      "TITLE_ROW": "Title row",
+      "CARD_HEADER_ACTION": "Card header action",
+      "LIST_TITLE": "Groceries"
     }
   }
 }
