@@ -8,6 +8,14 @@ One collapsible section per month, newest first. Agentic pull requests add their
 <details>
 <summary>November 2026</summary>
 
+### infrastructure
+
+- Terraform now manages the `iamharryliu/iamharryliu` profile repo's settings and gives it a description, so the pages-index GitHub page no longer shows "No description provided." for it ([#1731](https://github.com/iamharryliu/vigilant-broccoli/pull/1731)).
+
+### docs-explorer
+
+- Notes in the Docs Explorer can be shared: a Share item in the note's ellipsis menu (when the host supplies a link) opens a dialog with a copyable link and a QR code ([#1726](https://github.com/iamharryliu/vigilant-broccoli/pull/1726)).
+
 ### entry-directory
 
 - Group headings in `EntryDirectory` (Bookmarks) now use one medium-weight heading style in every view, including Rows ([#1699](https://github.com/iamharryliu/vigilant-broccoli/pull/1699)).
@@ -20,6 +28,8 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### hearth
 
+- Where Is gains rooms: storage areas can be assigned to a room, each shows its room in a badge and search matches room names, a Rooms tab adds, renames and deletes rooms (deleting leaves areas unassigned) and the form can add a room inline, the detail view shows the room, and export and import carry rooms ([#1727](https://github.com/iamharryliu/vigilant-broccoli/pull/1727)).
+- Where Is loads faster: the list signs all photo links in one request, shows one small thumbnail per item instead of a stack of full-size photos, and shows the search box and placeholder rows while it loads; imported photos get thumbnails too ([#1724](https://github.com/iamharryliu/vigilant-broccoli/pull/1724)).
 - On phones the home page is one tabbed view with Tasks first and selected by default, plus Whiteboard and Calendar, replacing the separate Whiteboard, Tasks and Calendar entries under Home in the menu; only the task list scrolls, recurring tasks are highlighted yellow, and the progress bar counts only today's recurring tasks ([#1716](https://github.com/iamharryliu/vigilant-broccoli/pull/1716)).
 - New Whiteboard and Tasks tabs on the home page with recurring and one-off tasks stored per home, assignable to members, with each recurring occurrence its own instance and carried-over ones labeled missed ([#1485](https://github.com/iamharryliu/vigilant-broccoli/pull/1485), [#1493](https://github.com/iamharryliu/vigilant-broccoli/pull/1493), [#1495](https://github.com/iamharryliu/vigilant-broccoli/pull/1495), [#1508](https://github.com/iamharryliu/vigilant-broccoli/pull/1508), [#1561](https://github.com/iamharryliu/vigilant-broccoli/pull/1561)).
 - New checklist, leisure and task items go to the top of their lists and can be dragged to reorder, and lists refresh when the tab regains focus ([#1387](https://github.com/iamharryliu/vigilant-broccoli/pull/1387), [#1486](https://github.com/iamharryliu/vigilant-broccoli/pull/1486), [#1587](https://github.com/iamharryliu/vigilant-broccoli/pull/1587), [#1588](https://github.com/iamharryliu/vigilant-broccoli/pull/1588)).
@@ -62,6 +72,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### pages-index
 
 - Pages Index now also deploys to Cloudflare Pages: an Access-gated staging site at staging-projects.vigilant-broccoli.app on every main push, and a production project on promotion. The live hostnames still serve from GitHub Pages until they move over ([#1722](https://github.com/iamharryliu/vigilant-broccoli/pull/1722)).
+- The Project Graph now also shows which apps embed or call other apps, including local-manager and mobile-manager, with a toggle per dependency kind; each app README lists these under App Dependencies ([#1725](https://github.com/iamharryliu/vigilant-broccoli/pull/1725)).
 - The Games page moved to games.vigilant-broccoli.app and the Upptime history site to uptime.vigilant-broccoli.app; the old harryliu.dev hosts no longer resolve ([#1694](https://github.com/iamharryliu/vigilant-broccoli/pull/1694)).
 - The projects site moved to projects.vigilant-broccoli.app. Old projects.harryliu.dev links redirect there and keep their page ([#1684](https://github.com/iamharryliu/vigilant-broccoli/pull/1684)).
 - New Changelog page lists these entries, linked from the home page ([#1586](https://github.com/iamharryliu/vigilant-broccoli/pull/1586)).
@@ -71,11 +82,9 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - The Deployments page refreshes itself every 5 minutes while visible, so the Refresh button is gone. Each app has one Preview link with its commit and deploy age, and an empty list says whether there are no open pull requests or none have a preview yet ([#1663](https://github.com/iamharryliu/vigilant-broccoli/pull/1663)).
 - The Deployments page moved from `harryliu.dev` to `deployments.vigilant-broccoli.app`, with no redirect from the old address ([#1687](https://github.com/iamharryliu/vigilant-broccoli/pull/1687)).
 - The Status page moved from `harryliu.dev` to `status.vigilant-broccoli.app`, with no redirect from the old address ([#1691](https://github.com/iamharryliu/vigilant-broccoli/pull/1691)).
-- New Project Graph page, linked from the home page, draws the public apps and the libs they depend on as an interactive graph you can search, filter, zoom and click through to see each project's dependencies and dependents. It uses the notes graph's look, with zoom buttons, a settings menu for colors and forces, arrows showing each dependency's direction, keyboard navigation between projects, and a click on empty space to clear the selection ([#1718](https://github.com/iamharryliu/vigilant-broccoli/pull/1718)).
 
 ### docs-md
 
-- Multi-select is a toggle in the sidebar header, works in search results, and remembers its mode, checked files and combined-view style across reloads; clicking a checked file jumps to its section, the pinned title and sidebar highlight follow the section you scroll to, and a row click opens a note without losing the selection, with a Back to selection link to return. Checklist view checks nested items with their parent and leaves tables of contents as links. The graph gains zoom buttons, stays open when opening notes from the sidebar, keeps its camera still once settled, and draws faster ([#1718](https://github.com/iamharryliu/vigilant-broccoli/pull/1718)).
 - Long documents keep a sticky action bar with a title that fades in on scroll. The in-app back button retraces file navigation, and browser back and forward work too ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
 - Several files can be selected at once, and the graph has settings for scope, hop count and forces ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
 - On desktop the sidebar slides away for full-width reading, from its panel icon or `f`. The graph opens from the content bar or `g` and shares its top bar and menu, whose items now have icons ([#1650](https://github.com/iamharryliu/vigilant-broccoli/pull/1650)).
@@ -178,6 +187,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### mobile-manager-next
 
+- Selecting text in the Language tab, or generating an example sentence there, now speaks it right away in that row's language at the tab's 0.75× speed ([#1719](https://github.com/iamharryliu/vigilant-broccoli/pull/1719)).
 - New Language tab on the home screen shows a random everyday word in English, Swedish, French, Spanish and Chinese, with speech, synonyms, an opposite word and example sentences ([#1616](https://github.com/iamharryliu/vigilant-broccoli/pull/1616)).
 - Instagram appears in the Leisure apps, and embed-flagged links open in an in-app page ([#1598](https://github.com/iamharryliu/vigilant-broccoli/pull/1598), [#1398](https://github.com/iamharryliu/vigilant-broccoli/pull/1398)).
 - The Tasks tab embeds tasks.harryliu.dev inside a matching border. Voice input, AI task creation and the bottom-sheet create dialog are gone from it ([#1602](https://github.com/iamharryliu/vigilant-broccoli/pull/1602), [#1612](https://github.com/iamharryliu/vigilant-broccoli/pull/1612)).
@@ -204,6 +214,14 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### vb-express
 
 - Calendar parsing now works out each time's UTC offset from the place where it happens, including daylight saving, so a Copenhagen to Keflavík flight no longer shifts by an hour, from pasted text or a screenshot. Repeated legs and invented whole-trip events are dropped ([#1700](https://github.com/iamharryliu/vigilant-broccoli/pull/1700), [#1701](https://github.com/iamharryliu/vigilant-broccoli/pull/1701)).
+
+### cron-backup
+
+- Every nightly backup (repo, Gitea, MongoDB, Supabase) is now written to both Google Cloud Storage and a private Cloudflare R2 bucket, each pruned to the last 7, and the weekly restore check verifies freshness and restores from both copies ([#1728](https://github.com/iamharryliu/vigilant-broccoli/pull/1728)).
+
+### agent-sandbox
+
+- Agent runs no longer fail at start-up when GitHub rate-limits the shared runner address: the firewall check treats any reply from api.github.com as reachable and only fails when it cannot connect ([#1720](https://github.com/iamharryliu/vigilant-broccoli/pull/1720)).
 
 </details>
 

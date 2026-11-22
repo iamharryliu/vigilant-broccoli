@@ -9,6 +9,7 @@ import {
   Folder,
   Pencil,
   Search as SearchIcon,
+  Share2,
   SquareCheckBig,
 } from 'lucide-react';
 import {
@@ -31,6 +32,8 @@ import {
   shouldIgnoreShortcutKeystroke,
   useFocusSearchShortcut,
 } from '@vigilant-broccoli/react-lib';
+
+import { ShareDialog } from './share-dialog';
 
 const MOBILE_NO_CARD_CLS =
   '!p-0 [&::before]:!hidden [&::after]:!hidden md:!p-3 md:[&::before]:![display:revert] md:[&::after]:![display:revert]';
@@ -129,8 +132,17 @@ const AGGREGATE_TRANSFORM: Record<AggregateMode, (content: string) => string> =
 // its section. Only the displayed content carries them; copied markdown stays
 // clean.
 const AGGREGATE_SECTION_ATTR = 'data-aggregate-section';
-const aggregateSectionMarker = (path: string) =>
-  `<div ${AGGREGATE_SECTION_ATTR}="${path.replace(/"/g, '&quot;')}"></div>\n\n`;
+// The collapsed and flat modes strip the headings the bar would show, so the
+// marker carries the note title (from the raw content) for the bar instead.
+const AGGREGATE_TITLE_ATTR = 'data-aggregate-title';
+const TITLE_HEADING_RE = /^#\s+([^\n]*)/m;
+const escapeAttribute = (value: string) =>
+  value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+const aggregateNoteTitle = (path: string, content: string) =>
+  content.match(TITLE_HEADING_RE)?.[1].trim() ||
+  (path.split('/').pop() ?? path).replace(/\.md$/, '');
+const aggregateSectionMarker = (path: string, content: string) =>
+  `<div ${AGGREGATE_SECTION_ATTR}="${escapeAttribute(path)}" ${AGGREGATE_TITLE_ATTR}="${escapeAttribute(aggregateNoteTitle(path, content))}"></div>\n\n`;
 
 const buildAggregateContent = (
   contents: string[],
@@ -141,7 +153,7 @@ const buildAggregateContent = (
     .map(
       (content, index) =>
         (markerPaths?.[index]
-          ? aggregateSectionMarker(markerPaths[index])
+          ? aggregateSectionMarker(markerPaths[index], content)
           : '') + AGGREGATE_TRANSFORM[mode](content),
     )
     .join(AGGREGATE_SEPARATOR);
@@ -186,6 +198,8 @@ export interface NoteGraphLink {
   // Optional edge weight (e.g. shared-item count) used to scale line width;
   // omitted links render at the default width, so existing graphs are unaffected.
   value?: number;
+  // Looks up a `GraphView` `linkStyles` entry; unstyled links keep the default look.
+  kind?: string;
 }
 
 export interface NoteGraph {
@@ -240,6 +254,7 @@ interface DocsExplorerProps {
   onViewModeChange?: (mode: string | undefined) => void;
   currentViewMode?: string;
   renderGraph?: (navigate: (path: string) => void) => ReactNode;
+  getShareUrl?: (path: string) => string | null;
 }
 
 const COPY = {
@@ -250,6 +265,7 @@ const COPY = {
   NO_RESULTS: 'No results found',
   LOAD_CONTENT_ERROR: 'Failed to load file content',
   COPY_MARKDOWN: 'Copy markdown',
+  SHARE: 'Share',
   EDIT: 'Edit',
   DOCUMENT_ACTIONS: 'Document actions',
   BACK_TO_FILES: 'Back to files',
@@ -297,7 +313,9 @@ export const DocsExplorer = ({
   onViewModeChange,
   currentViewMode,
   renderGraph,
+  getShareUrl,
 }: DocsExplorerProps) => {
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [showGraph, setShowGraph] = useState(false);
   const hasInitializedGraph = useRef(false);
 
@@ -469,10 +487,16 @@ export const DocsExplorer = ({
         activeSectionRef.current = sectionPath;
         setActiveSection(sectionPath);
       }
-      const text = heading?.textContent ?? '';
+      // Collapsed and flat modes leave no h1, so the section's marker title
+      // stands in, fully shown.
+      const fallbackTitle = heading
+        ? null
+        : section?.getAttribute(AGGREGATE_TITLE_ATTR);
+      const text = heading?.textContent ?? fallbackTitle ?? '';
       if (label.textContent !== text) label.textContent = text;
       if (!heading) {
-        label.style.opacity = '0';
+        label.style.opacity = fallbackTitle ? '1' : '0';
+        label.style.transform = 'none';
         return;
       }
       const { top, height } = heading.getBoundingClientRect();
@@ -1011,6 +1035,16 @@ export const DocsExplorer = ({
                     <DropdownMenu.Separator />
                   </>
                 )}
+                {!isAggregate &&
+                  selectedPath &&
+                  getShareUrl?.(selectedPath) && (
+                    <DropdownMenu.Item
+                      onSelect={() => setShareUrl(getShareUrl(selectedPath))}
+                    >
+                      <Share2 size={MENU_ICON_SIZE} />
+                      {COPY.SHARE}
+                    </DropdownMenu.Item>
+                  )}
                 <DropdownMenu.Item
                   onSelect={() =>
                     navigator.clipboard.writeText(
@@ -1301,6 +1335,13 @@ export const DocsExplorer = ({
           description={COPY.DELETE_SELECTED_DESCRIPTION}
           confirmLabel={COPY.DELETE_SELECTED}
           deleteItem={handleConfirmDeleteSelected}
+        />
+      )}
+      {getShareUrl && (
+        <ShareDialog
+          noteTitle={selectedPath?.split('/').pop() ?? ''}
+          url={shareUrl}
+          onOpenChange={open => !open && setShareUrl(null)}
         />
       )}
     </>

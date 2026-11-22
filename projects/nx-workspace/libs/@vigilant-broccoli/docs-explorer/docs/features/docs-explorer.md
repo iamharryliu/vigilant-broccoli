@@ -20,6 +20,7 @@ The `component-library` sandbox has a Utilities > Docs Explorer page that links 
 - `viewModes`, `currentViewMode`, `onViewModeChange` — populate the content-pane dropdown, which sits in a sticky bar so it stays reachable while scrolling; as the content's first `h1` scrolls under the bar, the bar fades and slides in that heading's text in proportion to how much of the heading is hidden
 - `onEdit` — adds an Edit item to the content-pane dropdown
 - `renderGraph(navigate)` — optional; enables the graph toggle (left of the content pane's ellipsis on desktop, the sidebar header on mobile, or `g` outside text fields and dialogs) and renders its result in the content pane (see [note-graph.md](./note-graph.md))
+- `getShareUrl(path)` — optional; adds a Share item (before Copy markdown) to the single-note ellipsis menu, hidden when absent, in aggregate mode or when it returns `null`. The host owns the URL: selection is in-memory, so the explorer cannot build one. Share opens `ShareDialog` (`share-dialog.tsx`) with the note name, a read-only link with a Copy link button and a QR code rendered client-side with `qrcode`
 - `sidebarTitle`, `searchPlaceholder`, `emptyMessage` — copy overrides
 
 ## DocsViewer Props
@@ -27,7 +28,7 @@ The `component-library` sandbox has a Utilities > Docs Explorer page that links 
 - `getStructure`, `getContent`, `search` — same contracts as DocsExplorer
 - `saveContent(path, content)` — optional; its presence alone enables the Edit action
 - `getGraph()` — optional; supplies the note graph and enables the graph toggle (see [note-graph.md](./note-graph.md)). A ghost settings icon holds scope (Global/Local), depth (a 1–10 hops select), a color scheme select, a node glow switch and force sliders (each range symmetric around its default, so they start centered): a popover on desktop (`md:` and up), a dialog on mobile. The hop select only shows in local scope; opening any file switches to local
-- `urlSync`, `enableMultiSelect` — forwarded to DocsExplorer
+- `urlSync`, `enableMultiSelect`, `getShareUrl` — forwarded to DocsExplorer
 
 ## Behaviour
 
@@ -51,7 +52,7 @@ The `component-library` sandbox has a Utilities > Docs Explorer page that links 
 - Checking multiple files (checkbox beside each file in the tree and in search results) switches the content pane to an aggregate view: their contents join with `\n\n---\n\n`, with a mode toggle (in the dropdown) for whether to keep every file's headings as-is, drop just each file's leading `#` title, or strip all headings — `saveContent`/edit is disabled in this mode. The mode persists as `docs-md:aggregate-mode` (removed for the default)
 - In multi-select mode only the checkbox changes the selection; a row click opens the note and keeps the selection, and the next checkbox change returns to the aggregate view. With two or more checked, clicking a checked file instead scrolls the aggregate view to that file's section (an empty `data-aggregate-section` marker per file, in the displayed content only; Copy markdown stays clean), highlights it in the sidebar and replaces the URL's `?file=` so the back stack is unchanged
 - The mode (`docs-md:multi-select`) and checked paths (`docs-md:multi-select-paths`) persist; after reload the paths are restored once the tree loads, dropping any that no longer exist, and the aggregate view reopens, scrolled to the `?file=` section when it is one of them. The restore runs after the initial URL open so it wins over `?file=`
-- In the aggregate view the sticky bar's heading and the sidebar highlight follow the section under the bar (the last `data-aggregate-section` marker at or above it) as the user scrolls; scroll-driven highlight updates pause for the length of a jump's smooth scroll so the sections it passes do not flicker through
+- In the aggregate view the sticky bar's heading and the sidebar highlight follow the section under the bar (the last `data-aggregate-section` marker at or above it) as the user scrolls. When the section has no `h1` (collapsed and flat modes strip them), the bar shows the note's title instead, read from the marker's `data-aggregate-title` (the raw content's first `# ` heading, else the file name without `.md`) and fully visible; scroll-driven highlight updates pause for the length of a jump's smooth scroll so the sections it passes do not flicker through
 - While files are checked but a single note or the graph covers the aggregate view, a "Back to selection" link beside Clear returns to it at the section last viewed
 - Sidebar rows show the selected color while pressed (`active:`), since the click that selects them fires on release
 - Note-link resolution in aggregate mode is imprecise: `MarkdownViewer` resolves relative links against only the first selected file's directory (wrong for links belonging to a later file in a different directory), and `ChecklistViewer` gets the composite `aggregate:path1|path2` string as its "path", which isn't a real path at all — relative link clicks there resolve incorrectly

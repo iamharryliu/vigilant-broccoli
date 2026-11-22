@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 - [Environment](#environment)
 
 ## Stack
@@ -24,13 +25,17 @@
   - `messaging`
 - Cloud services
   - ElevenLabs
-  - Email Service
   - Google OAuth
   - Google reCAPTCHA
   - Google Tasks
-  - LLM Service
   - Supabase
   - Twilio
+
+## App Dependencies
+
+- [Bucket Service](../bucket-service) - calls
+- [Email Service](../email-service) - calls
+- [LLM Service](../llm-service) - calls
 
 ## Environment
 

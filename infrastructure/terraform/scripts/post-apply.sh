@@ -61,6 +61,8 @@ sync_secrets_to_vault() {
   nx_cache_write_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_write_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
   nx_cache_read_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_read_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
   loki_push_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "loki_push_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
+  backup_r2_token_id=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_account_token" and .name == "backup_r2") | .instances[0].attributes.id // empty' 2>/dev/null || echo "")
+  backup_r2_token_value=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_account_token" and .name == "backup_r2") | .instances[0].attributes.value // empty' 2>/dev/null || echo "")
 
   if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$google_calendar_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$code_server_ip" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
@@ -144,6 +146,15 @@ sync_secrets_to_vault() {
     loki_push_patch_arg='LOKI_PUSH_PASSWORD="$LOKI_PUSH_PASSWORD"'
   fi
 
+  # R2's S3 API takes the API token id as the access key id and the SHA-256
+  # hex of the token value as the secret. Optional like the nx-cache tokens:
+  # absent until the backup R2 token in main.tf has been applied.
+  local backup_r2_patch_arg="" backup_r2_secret_access_key=""
+  if [ -n "$backup_r2_token_id" ] && [ -n "$backup_r2_token_value" ]; then
+    backup_r2_secret_access_key=$(printf '%s' "$backup_r2_token_value" | sha256sum | cut -d' ' -f1)
+    backup_r2_patch_arg='BACKUP_R2_ACCESS_KEY_ID="$BACKUP_R2_ACCESS_KEY_ID" BACKUP_R2_SECRET_ACCESS_KEY="$BACKUP_R2_SECRET_ACCESS_KEY"'
+  fi
+
   local nx_cache_read_put_cmd=""
   if [ -n "$nx_cache_read_token" ]; then
     nx_cache_read_put_cmd='vault kv put kv/ci-pr-check NX_CACHE_READ_TOKEN="$NX_CACHE_READ_TOKEN"'
@@ -179,7 +190,8 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
     '"${nx_cache_write_patch_arg}"' \
-    '"${loki_push_patch_arg}"'
+    '"${loki_push_patch_arg}"' \
+    '"${backup_r2_patch_arg}"'
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT="$CA_CERT_B64" \
@@ -197,7 +209,8 @@ else
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
     '"${nx_cache_write_patch_arg}"' \
-    '"${loki_push_patch_arg}"'
+    '"${loki_push_patch_arg}"' \
+    '"${backup_r2_patch_arg}"'
 fi
 
 '"${nx_cache_read_put_cmd}"'
@@ -237,6 +250,11 @@ echo "Secrets synced to Vault"
     loki_push_secret_args+=(LOKI_PUSH_PASSWORD "$loki_push_password")
   fi
 
+  local backup_r2_secret_args=()
+  if [ -n "$backup_r2_patch_arg" ]; then
+    backup_r2_secret_args+=(BACKUP_R2_ACCESS_KEY_ID "$backup_r2_token_id" BACKUP_R2_SECRET_ACCESS_KEY "$backup_r2_secret_access_key")
+  fi
+
   gcloud_ssh_secrets "${vm_name}" "${vm_zone}" "$vault_script" \
     VAULT_TOKEN "$vault_token" \
     CA_CERT_B64 "$ca_cert_b64" \
@@ -254,7 +272,8 @@ echo "Secrets synced to Vault"
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET "$code_server_cf_access_client_secret" \
     CODE_SERVER_IP "$code_server_ip" \
     "${nx_cache_secret_args[@]}" \
-    "${loki_push_secret_args[@]}"
+    "${loki_push_secret_args[@]}" \
+    "${backup_r2_secret_args[@]}"
   echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, GOOGLE_CALENDAR_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
   if [ -n "$nx_cache_write_token" ]; then
     echo "✓ Synced NX_CACHE_WRITE_TOKEN to kv/data/secrets"
@@ -265,6 +284,11 @@ echo "Secrets synced to Vault"
     echo "✓ Synced LOKI_PUSH_PASSWORD to kv/data/secrets"
   else
     echo "Warning: LOKI_PUSH_PASSWORD not found in Terraform state — apply aws-grafana.tf, then rerun pnpm tf:post-apply."
+  fi
+  if [ -n "$backup_r2_patch_arg" ]; then
+    echo "✓ Synced BACKUP_R2_ACCESS_KEY_ID, BACKUP_R2_SECRET_ACCESS_KEY to kv/data/secrets"
+  else
+    echo "Warning: cloudflare_account_token.backup_r2 not found in Terraform state — apply main.tf's backup R2 token, then rerun pnpm tf:post-apply. cron-backup's R2 copy fails until then."
   fi
   if [ -n "$nx_cache_read_token" ]; then
     echo "✓ Synced NX_CACHE_READ_TOKEN to kv/data/ci-pr-check (isolated path for github-actions-pr-check-role)"
