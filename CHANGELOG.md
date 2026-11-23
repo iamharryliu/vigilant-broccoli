@@ -105,7 +105,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - The weather card is embedded in the local and mobile managers from one deployed source, and any site may frame it ([#1549](https://github.com/iamharryliu/vigilant-broccoli/pull/1549), [#1552](https://github.com/iamharryliu/vigilant-broccoli/pull/1552)).
 - Weather and its staging site moved to `weather.vigilant-broccoli.app` and `staging-weather.vigilant-broccoli.app` with no redirect from the `harryliu.dev` addresses ([#1685](https://github.com/iamharryliu/vigilant-broccoli/pull/1685)).
-- Wind-resistant clothing now shows only for gusts above 50 km/h instead of for any cold day, rain clothing no longer shows for a trace of drizzle, and snow clothing follows measured snowfall instead of freezing rain (PR: pending).
+- Wind-resistant clothing now shows only for gusts above 50 km/h instead of for any cold day, rain clothing no longer shows for a trace of drizzle, and snow clothing follows measured snowfall instead of freezing rain ([#1752](https://github.com/iamharryliu/vigilant-broccoli/pull/1752)).
 
 ### balloono
 
