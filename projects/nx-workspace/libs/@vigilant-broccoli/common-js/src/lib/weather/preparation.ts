@@ -3,11 +3,11 @@ import { WEATHER_CONDITION, WeatherCondition } from './weather.model';
 
 /** Product heuristics, rather than safety guidance or provider thresholds. */
 export const WEATHER_PREPARATION_THRESHOLDS = {
-  WIND_KPH: 25,
-  COLD_FEELS_LIKE_C: 10,
+  GUST_KPH: 50,
   CURRENT_PRECIPITATION_MM: 0.1,
   DAILY_PRECIPITATION_MM: 1,
-  FREEZING_C: 0,
+  CURRENT_SNOWFALL_CM: 0.1,
+  DAILY_SNOWFALL_CM: 0.5,
 } as const;
 
 const CONDITION_PREPARATION: Record<
@@ -43,23 +43,24 @@ export const calculateWeatherPreparation = (
   const currentWet =
     !current.snow &&
     weather.precipitationMm >= thresholds.CURRENT_PRECIPITATION_MM;
+  // The daily condition is the day's worst code, so a trace of rain must not count without a measurable total.
   const dailyWet =
     !current.snow &&
     !daily?.snow &&
     weather.precipitationSumMm >= thresholds.DAILY_PRECIPITATION_MM;
-  const rain = current.rain || !!daily?.rain || currentWet || dailyWet;
-  const freezingWet =
-    (weather.temperatureC <= thresholds.FREEZING_C &&
-      (current.rain || currentWet)) ||
-    (weather.lowC <= thresholds.FREEZING_C && (!!daily?.rain || dailyWet));
+  const currentRain =
+    current.rain &&
+    (weather.condition !== WEATHER_CONDITION.DRIZZLE || currentWet);
 
   return {
     windResistantClothing:
-      Math.max(weather.windSpeedKph, weather.windMaxKph) >
-        thresholds.WIND_KPH ||
-      weather.feelsLikeC < thresholds.COLD_FEELS_LIKE_C,
-    rainResistantClothing: rain,
-    snowResistantClothing: current.snow || !!daily?.snow || freezingWet,
+      Math.max(weather.windGustKph, weather.windGustMaxKph) >
+      thresholds.GUST_KPH,
+    rainResistantClothing: currentRain || currentWet || dailyWet,
+    snowResistantClothing:
+      current.snow ||
+      weather.snowfallCm >= thresholds.CURRENT_SNOWFALL_CM ||
+      weather.snowfallSumCm >= thresholds.DAILY_SNOWFALL_CM,
     sunglasses: weather.isDay && current.sunglasses,
   };
 };

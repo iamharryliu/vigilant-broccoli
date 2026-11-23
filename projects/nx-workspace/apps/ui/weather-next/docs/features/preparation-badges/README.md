@@ -17,16 +17,16 @@ Deterministic product heuristics for today's what-to-wear-or-bring badges.
 
 ## Thresholds
 
-- Wind-resistant clothing: current or daily-max wind strictly above 25 km/h, or current feels-like strictly below 10°C.
-- Rain-resistant clothing: current or today's forecast condition is drizzle, rain or thunderstorm; otherwise current precipitation at least 0.1 mm or today's total at least 1 mm, subject to the snow exclusions below.
-- Snow-resistant clothing: current or today's forecast condition is snow; also wet current conditions at actual temperature at or below 0°C, or wet daily conditions with today's low at or below 0°C.
+- Wind-resistant clothing: current or today's maximum gust strictly above 50 km/h. Cold is not a trigger; feels-like temperature is display-only.
+- Rain-resistant clothing: current condition is rain or thunderstorm; otherwise current precipitation at least 0.1 mm (this also gates a current drizzle condition) or today's total at least 1 mm. A daily rain condition alone never triggers it, since it is the day's worst code and fires on trace amounts.
+- Snow-resistant clothing: current condition is snow, current snowfall at least 0.1 cm or today's snowfall total at least 0.5 cm. Freezing temperatures with rain do not trigger it.
 - Sunglasses: daytime and current clear or partly cloudy condition; never at night, in cloud, fog, drizzle, rain, snow or thunderstorms.
-- Current snow suppresses precipitation-only rain recommendations; a snow condition for today's forecast also suppresses the daily-total rain fallback. Explicit current or daily rain still recommends rain protection for mixed weather.
-- Freezing wet means a drizzle/rain/thunderstorm condition or measurable precipitation using the same thresholds and snow exclusions. Daily evidence uses the daily low; current evidence uses current actual temperature, never feels-like.
+- Current snow suppresses precipitation-only rain recommendations; a snow condition for today's forecast also suppresses the daily-total rain fallback. Explicit current rain still recommends rain protection for mixed weather.
 
 ## Limitations
 
 - These named thresholds (`WEATHER_PREPARATION_THRESHOLDS`) are product heuristics, not safety advice.
-- Provider-neutral conditions merge freezing drizzle/rain into drizzle/rain and sleet into snow. Actual temperature and the daily low approximate freezing wet weather; the available data cannot establish whether the low coincides with precipitation.
+- Provider-neutral conditions merge freezing drizzle/rain into drizzle/rain and sleet into snow.
 - Precipitation totals include snow water equivalent. Snow exclusions avoid snow-only rain badges where the condition provides that evidence; mixed precipitation cannot be separated precisely.
+- Snowfall comes from Open-Meteo `snowfall`/`snowfall_sum` (cm); OpenWeather's water-equivalent snow millimetres are used as centimetres (about 10:1 ratio). OpenWeather gusts fall back to the sustained wind speed when `wind.gust` is absent.
 - Today's forecast is the first forecast entry, matching `toLocalWeather`. Without it, only current condition and the top-level daily totals/low/max are available.
