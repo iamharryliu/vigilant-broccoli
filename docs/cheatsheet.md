@@ -169,7 +169,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   job-hunt:docker:logs  Tail the job-hunt-next container logs
   local-manager-next:start       Start local-manager-next via PM2 and save the process list
   event-calendars:sync        Sync every event calendar with sources from Facebook to Google Calendar (exits non-zero on failure, 3 when Facebook login is required; logs to ~/.vb-manager/event-calendars-sync.log)
-  deploy:local                Pull latest (ff-only), install nx-workspace deps, then reload cloud-services-next, local-services-next, music-next and local-manager-next via PM2 and save the process list, then rebuild the job-hunt-next container
+  deploy:local                Pull latest (ff-only), install nx-workspace deps, then reload cloud-services-next, local-services-next, music-next and local-manager-next via PM2 and save the process list, then rebuild the job-hunt-next container (starting Docker first if needed)
   deploy:local-manager        Pull latest (ff-only), install nx-workspace deps, then reload local-manager-next via PM2 and save the process list
   cloud-services-next:logs    Tail cloud-services-next PM2 logs
   local-services-next:logs    Tail local-services-next PM2 logs
