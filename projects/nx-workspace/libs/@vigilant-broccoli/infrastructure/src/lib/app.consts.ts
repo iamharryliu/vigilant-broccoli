@@ -113,8 +113,8 @@ export const VB_APP_URL = {
   },
   SERVICE_MANAGER: {
     NAME: 'Service Manager API',
-    URL: 'https://api.harryliu.dev/',
-    STAGING_URL: 'https://staging-api.harryliu.dev/',
+    URL: 'https://api.vigilant-broccoli.app/',
+    STAGING_URL: 'https://staging-api.vigilant-broccoli.app/',
   },
   MEDIA_SERVICE: {
     NAME: 'Media Service API',
@@ -133,12 +133,17 @@ export const VB_APP_URL = {
     NAME: 'Office Presence Demo',
     URL: 'https://demo-office-presence-ui.pages.dev/',
   },
+  OFFICE_PRESENCE_SERVICE_DEMO: {
+    NAME: 'Office Presence Service Demo',
+    URL: 'https://demo-office-presence-service.fly.dev/',
+  },
   CAREER: {
     NAME: 'Career',
     URL: 'https://career.harryliu.dev/',
   },
-  PAGES_INDEX: {
-    NAME: 'Pages Index',
+  PROJECT_OVERVIEW: {
+    NAME: 'Project Overview',
     URL: `https://projects.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-projects.${VB_APP_DOMAIN}/`,
   },
 } as const;

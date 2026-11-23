@@ -11,7 +11,7 @@ primary_region = 'yyz'
   LLM_SERVICE_URL = 'http://production-llm-service.flycast'
   STORAGE_SERVICE_URL = 'http://production-storage-service.flycast'
   SUPABASE_URL = 'https://jrdosjjgmsoodpjmjqxx.supabase.co'
-  BETTER_AUTH_URL = 'https://api.harryliu.dev'
+  BETTER_AUTH_URL = 'https://api.vigilant-broccoli.app'
 
 [http_service]
   internal_port = 3000

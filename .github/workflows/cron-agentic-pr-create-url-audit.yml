@@ -1,8 +1,8 @@
 name: cron-agentic-pr-create-url-audit
 
-# Checks that every public URL has synchronized Upptime entries, pages-index
+# Checks that every public URL has synchronized Upptime entries, project-overview
 # cards and browser quick links for every environment and demo, and every
-# published Docker image its pages-index registry entry and README Containers
+# published Docker image its project-overview registry entry and README Containers
 # row, and opens one conservative PR fixing drift. Same container and credentials as
 # `cron-agentic-pr-create-prune`; the local equivalent is
 # `pnpm agentic-pr-create-url-audit`. Registration is a manual checklist per
@@ -77,7 +77,7 @@ jobs:
           agent: claude
           model: ${{ steps.config.outputs.model }}
           firewall: ${{ steps.config.outputs.firewall }}
-          description: Verify every public URL has synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo, and fix drift. Opens a pull request only when something is fixed.
+          description: Verify every public URL has synchronized Upptime entries, project-overview cards and browser quick links for every environment and demo, and fix drift. Opens a pull request only when something is fixed.
 
   audit:
     needs: overview

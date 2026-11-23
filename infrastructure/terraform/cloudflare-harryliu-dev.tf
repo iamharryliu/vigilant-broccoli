@@ -75,7 +75,7 @@ resource "cloudflare_ruleset" "harryliu_dev_redirects" {
   }]
 }
 
-# Legacy pages-index host, kept only so old links reach the redirect above.
+# Legacy project-overview host, kept only so old links reach the redirect above.
 # Proxied because redirect rules only run on proxied traffic; the GitHub Pages
 # target is never fetched.
 resource "cloudflare_dns_record" "harryliu_dev_projects" {
@@ -85,45 +85,4 @@ resource "cloudflare_dns_record" "harryliu_dev_projects" {
   type    = "CNAME"
   ttl     = 1
   proxied = true
-}
-
-resource "cloudflare_dns_record" "harryliu_dev_api" {
-  zone_id = var.cloudflare_zone_id
-  name    = "api.harryliu.dev"
-  content = "production-vb-express.fly.dev"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = true
-}
-
-# Same-site staging host for Better Auth clients on *.harryliu.dev (sandbox);
-# fly.dev is a public suffix, so its cookies are cross-site to those pages.
-resource "cloudflare_dns_record" "harryliu_dev_staging_api" {
-  zone_id = var.cloudflare_zone_id
-  name    = "staging-api.harryliu.dev"
-  content = "staging-vb-express.fly.dev"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = true
-}
-
-# Cloudflare's proxy hides the CNAME from Fly, so the cert only issues once
-# these DNS-only records prove domain ownership; without them the origin TLS
-# handshake fails with a 525. Values come from `flyctl certs show --json`.
-resource "cloudflare_dns_record" "harryliu_dev_staging_api_acme_challenge" {
-  zone_id = var.cloudflare_zone_id
-  name    = "_acme-challenge.staging-api.harryliu.dev"
-  content = "staging-api.harryliu.dev.0pqp2op.flydns.net"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = false
-}
-
-resource "cloudflare_dns_record" "harryliu_dev_staging_api_fly_ownership" {
-  zone_id = var.cloudflare_zone_id
-  name    = "_fly-ownership.staging-api.harryliu.dev"
-  content = "\"app-0pqp2op\""
-  type    = "TXT"
-  ttl     = 1
-  proxied = false
 }

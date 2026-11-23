@@ -1,6 +1,6 @@
 import { createAuthClient } from 'better-auth/react';
 
-const DEFAULT_VB_EXPRESS_URL = 'https://staging-api.harryliu.dev';
+const DEFAULT_VB_EXPRESS_URL = 'https://staging-api.vigilant-broccoli.app';
 
 export const VB_EXPRESS_URL =
   import.meta.env.VITE_VB_EXPRESS_URL || DEFAULT_VB_EXPRESS_URL;
