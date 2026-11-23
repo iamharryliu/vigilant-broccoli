@@ -109,12 +109,3 @@ resource "cloudflare_workers_custom_domain" "nx_cache_vigilant_broccoli_app" {
   hostname   = var.nx_cache_domain
   service    = cloudflare_workers_script.nx_cache.script_name
 }
-
-# Old host, kept so CI on branches cut before the move keeps its cache until
-# the harryliu.dev cleanup removes it.
-resource "cloudflare_workers_custom_domain" "nx_cache" {
-  account_id = var.cloudflare_account_id
-  zone_id    = var.cloudflare_zone_id
-  hostname   = "nx-cache.harryliu.dev"
-  service    = cloudflare_workers_script.nx_cache.script_name
-}

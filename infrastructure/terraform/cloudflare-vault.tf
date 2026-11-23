@@ -15,12 +15,6 @@ data "cloudflare_zero_trust_tunnel_cloudflared_token" "vault" {
   tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.vault.id
 }
 
-# Old host, kept routed and gated so CI on branches cut before the move can
-# still read Vault until the harryliu.dev cleanup removes it.
-locals {
-  legacy_vault_domain = "vault.harryliu.dev"
-}
-
 # Origin serves the self-signed Vault cert; the hop is localhost-only.
 resource "cloudflare_zero_trust_tunnel_cloudflared_config" "vault" {
   account_id = var.cloudflare_account_id
@@ -36,13 +30,6 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "vault" {
         }
       },
       {
-        hostname = local.legacy_vault_domain
-        service  = "https://localhost:8200"
-        origin_request = {
-          no_tls_verify = true
-        }
-      },
-      {
         service = "http_status:404"
       }
     ]
@@ -52,15 +39,6 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "vault" {
 resource "cloudflare_dns_record" "vault_vigilant_broccoli_app" {
   zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.vault_domain
-  content = "${cloudflare_zero_trust_tunnel_cloudflared.vault.id}.cfargotunnel.com"
-  type    = "CNAME"
-  ttl     = 1
-  proxied = true
-}
-
-resource "cloudflare_dns_record" "vault" {
-  zone_id = var.cloudflare_zone_id
-  name    = local.legacy_vault_domain
   content = "${cloudflare_zero_trust_tunnel_cloudflared.vault.id}.cfargotunnel.com"
   type    = "CNAME"
   ttl     = 1
@@ -89,7 +67,6 @@ resource "cloudflare_zero_trust_access_application" "vault" {
   session_duration = "24h"
   destinations = [
     { type = "public", uri = var.vault_domain },
-    { type = "public", uri = local.legacy_vault_domain },
   ]
 
   policies = [{
