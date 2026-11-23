@@ -124,6 +124,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- Corner radius and fonts are now themeable like colors: setting `--radius`, `--font-sans` or `--font-mono` on a `ThemeScope` or `ThemeProvider` `style` restyles buttons, selects, menus, cards and text across the scope; the defaults look the same as before ([#1730](https://github.com/iamharryliu/vigilant-broccoli/pull/1730)).
 - New `ListHeader` (a title with a trailing control on one row) and `SortSelect` (a "Sort:" label with a select), used by Google Tasks and Hearth's grocery list, with a demo in the component library ([#1740](https://github.com/iamharryliu/vigilant-broccoli/pull/1740)).
 - `EllipsisCTA` actions accept an `icon`, and the default Update and Delete entries show a pencil and a trash can ([#1733](https://github.com/iamharryliu/vigilant-broccoli/pull/1733)).
 - `CheckList`, `CheckListBase` and `CheckListPanel` moved out into their own `@vigilant-broccoli/react-lib-checklist` library, so editing the checklist no longer redeploys every UI app; apps import them from there and react-lib's next npm release no longer includes them ([#1717](https://github.com/iamharryliu/vigilant-broccoli/pull/1717)).

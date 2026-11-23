@@ -27,7 +27,7 @@ const styles = {
     border: '1px solid hsl(var(--border))',
     borderRadius: '0.5rem',
     padding: '0.75rem',
-    fontFamily: 'monospace',
+    fontFamily: 'var(--font-mono, monospace)',
     fontSize: '0.875rem',
     lineHeight: '1.5',
     backgroundColor: 'var(--color-background)',

@@ -71,10 +71,10 @@ const getThemeStyle = (
     '--accent-a4': `color-mix(in srgb, ${accent} 15%, transparent)`,
     '--blue-9': '#3b82f6',
     '--green-9': '#22c55e',
-    '--radius-2': '0.375rem',
+    '--radius-2': 'calc(var(--radius) - 2px)',
     '--shadow-2': '0 2px 8px rgb(0 0 0 / 0.15)',
     colorScheme: appearance,
-    fontFamily: 'system-ui, sans-serif',
+    fontFamily: 'var(--font-sans)',
     color: 'hsl(var(--foreground))',
   };
 };
