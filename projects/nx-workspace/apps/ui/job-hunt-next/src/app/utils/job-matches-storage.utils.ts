@@ -9,11 +9,14 @@ import {
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import {
   JOB_MATCHES_CHANGED_EVENT,
+  type MatchBriefState,
   type MatchSkill,
   type MatchSkillStatus,
 } from '../constants/matches';
 
-type PostingsResponse = { postings: StoredJobMatchesPosting[] };
+export type StoredMatchPosting = StoredJobMatchesPosting & MatchBriefState;
+
+type PostingsResponse = { postings: StoredMatchPosting[] };
 
 const readPostings = async (response: Response) => {
   if (!response.ok) throw new Error(`Job matches request failed`);
@@ -64,6 +67,18 @@ export const startSkillSuggestions = async () => {
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error);
+};
+
+// Starts a run that writes the brief of the posting at `url`; resolves to its
+// run id.
+export const startMatchBrief = async (url: string): Promise<string> => {
+  const response = await fetch(
+    `${API_ENDPOINTS.JOB_MATCHES_BRIEF}?url=${encodeURIComponent(url)}`,
+    { method: HTTP_METHOD.POST },
+  );
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error);
+  return data.id;
 };
 
 export const setMatchSkillStatus = (name: string, status: MatchSkillStatus) =>

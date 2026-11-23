@@ -44,11 +44,23 @@ const TIME_FORMAT: Intl.DateTimeFormatOptions = {
   hour12: false,
 };
 
+const DATE_FORMAT: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  // `YYYY-MM-DD` parses as UTC midnight; formatting in local time would show
+  // the previous day west of UTC.
+  timeZone: 'UTC',
+};
+
+const formatDate = (isoDate: string) =>
+  new Date(isoDate).toLocaleDateString('en-US', DATE_FORMAT);
+
 // `2026-10-22-Capgemini-Senior-Backend-Developer` created at 11:44:03 ->
-// `2026-10-22 11:44:03 Capgemini Senior Backend Developer`. The time is when
-// the folder was created, so same-day applications are told apart in the order
-// they are sorted. A folder without a date prefix keeps its name and uses its
-// modified date.
+// `October 22, 2026 11:44:03 Capgemini Senior Backend Developer`. The time is
+// when the folder was created, so same-day applications are told apart in the
+// order they are sorted. A folder without a date prefix keeps its name and
+// uses its modified date. `date` stays ISO so it sorts.
 export const parseApplicationFolder = (
   name: string,
   modified: string,
@@ -59,12 +71,12 @@ export const parseApplicationFolder = (
   return match
     ? {
         date: match[1],
-        title: `${match[1]} ${time} ${match[2].replace(/-/g, ' ')}`,
+        title: `${formatDate(match[1])} ${time} ${match[2].replace(/-/g, ' ')}`,
         label: match[2].replace(/-/g, ' '),
       }
     : {
         date: modified.slice(0, 10),
-        title: `${modified.slice(0, 10)} ${time} ${name}`,
+        title: `${formatDate(modified.slice(0, 10))} ${time} ${name}`,
         label: name,
       };
 };

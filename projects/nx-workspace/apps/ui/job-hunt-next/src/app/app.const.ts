@@ -20,6 +20,11 @@ export const APP_TAB = {
   NOTES: { value: 'notes', path: '/notes', titleKey: 'NAV.NOTES' },
   TASKS: { value: 'tasks', path: '/tasks', titleKey: 'NAV.TASKS' },
   RUNS: { value: 'runs', path: '/runs', titleKey: 'NAV.RUNS' },
+  WORKFLOW: {
+    value: 'workflow',
+    path: '/workflow',
+    titleKey: 'NAV.WORKFLOW',
+  },
   SETTINGS: { value: 'settings', path: '/settings', titleKey: 'NAV.SETTINGS' },
 } as const;
 

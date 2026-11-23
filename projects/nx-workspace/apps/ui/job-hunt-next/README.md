@@ -22,6 +22,7 @@ Tailors a resume and cover letter to each job posting with Claude Code, from car
   - Tailwind CSS
 - Internal libs
   - `common-js`
+  - `docs-explorer`
   - `react-lib`
   - `react-lib-checklist`
   - `react-lib-crud-list`

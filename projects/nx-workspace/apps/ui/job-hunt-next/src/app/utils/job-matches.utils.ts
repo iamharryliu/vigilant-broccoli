@@ -1,4 +1,5 @@
 import type { JobMatchesBookmarkletPosting } from '@vigilant-broccoli/common-js';
+import type { MatchBrief } from '../constants/matches';
 import { extractJobPosting, parseJobDescription } from './job-posting.utils';
 
 export const MATCH_LEVEL = {
@@ -268,6 +269,7 @@ export type JobMatch = {
   postedAt: number | null;
   // Unset for postings captured before Easy Apply was recorded.
   easyApply?: boolean;
+  brief: MatchBrief | null;
   role: string;
   company: string;
   matched: string[];
@@ -307,7 +309,10 @@ const levelFor = (ratio: number, detected: number): MatchLevel => {
 // covers a vocabulary term when its text contains the term or an alias of it; owned skills outside the vocabulary still count when the
 // posting names them verbatim.
 export const matchPosting = (
-  posting: JobMatchesBookmarkletPosting & { capturedAt?: string },
+  posting: JobMatchesBookmarkletPosting & {
+    capturedAt?: string;
+    brief?: MatchBrief | null;
+  },
   ownedSkills: string[],
   customTerms: SkillTerm[] = [],
 ): JobMatch => {
@@ -344,6 +349,7 @@ export const matchPosting = (
     url: posting.url,
     postedAt: estimatePostedAt(posting.posted, posting.capturedAt),
     easyApply: posting.easyApply,
+    brief: posting.brief ?? null,
     role: role || posting.title,
     company,
     matched: matchedNames,

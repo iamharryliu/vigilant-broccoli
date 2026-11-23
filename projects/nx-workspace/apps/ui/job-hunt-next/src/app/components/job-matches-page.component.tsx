@@ -10,7 +10,6 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import type { StoredJobMatchesPosting } from '@vigilant-broccoli/common-js';
 import {
   Badge,
   Button,
@@ -35,6 +34,8 @@ import {
   MATCH_SKILL_STATUS,
   type MatchSkill,
 } from '../constants/matches';
+import { isActiveRunStatus, RUN_KIND } from '../constants/runs';
+import { useRuns } from '../hooks/use-runs';
 import { useTranslation } from '../i18n';
 import { getMatchesProgress } from '../utils/job-matches-progress.utils';
 import {
@@ -43,7 +44,9 @@ import {
   removeMatchPostings,
   removeMatchSkill,
   setMatchSkillStatus,
+  startMatchBrief,
   startSkillSuggestions,
+  type StoredMatchPosting,
 } from '../utils/job-matches-storage.utils';
 import {
   LEVEL_FILTER_ALL,
@@ -60,6 +63,7 @@ import {
   sortMatches,
 } from '../utils/job-matches.utils';
 import { SECTION_HEADING_CLASS } from './application-brief.component';
+import { MatchBriefSection } from './match-brief.component';
 import { JobMatchSkillsPanel } from './job-match-skills-panel.component';
 
 const TOP_GAP_COUNT = 12;
@@ -74,10 +78,14 @@ const LEVEL_BADGE = {
 
 const MatchCard = ({
   match,
+  generating,
   onRemove,
+  onGenerateBrief,
 }: {
   match: JobMatch;
+  generating: boolean;
   onRemove: () => void;
+  onGenerateBrief?: () => void;
 }) => {
   const { t } = useTranslation();
   const badge = LEVEL_BADGE[match.level];
@@ -131,6 +139,11 @@ const MatchCard = ({
           </button>
         </div>
       </div>
+      <MatchBriefSection
+        brief={match.brief}
+        generating={generating}
+        onGenerate={onGenerateBrief}
+      />
       {match.matched.length > 0 && (
         <div className="flex flex-wrap items-center gap-1">
           <span className={SECTION_HEADING_CLASS}>{t('MATCHES.MATCHED')}</span>
@@ -157,7 +170,7 @@ const MatchCard = ({
 
 export const JobMatchesPage = () => {
   const { t } = useTranslation();
-  const [postings, setPostings] = useState<StoredJobMatchesPosting[]>([]);
+  const [postings, setPostings] = useState<StoredMatchPosting[]>([]);
   const [ownedSkills, setOwnedSkills] = useState<string[] | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [progress, setProgress] = useState(getMatchesProgress);
@@ -166,6 +179,11 @@ export const JobMatchesPage = () => {
   const [skills, setSkills] = useState<MatchSkill[]>([]);
   const [suggesting, setSuggesting] = useState(false);
   const [confirmingClear, setConfirmingClear] = useState(false);
+  const { runs } = useRuns();
+  const activeBriefRuns =
+    runs?.filter(
+      run => run.kind === RUN_KIND.MATCH_BRIEF && isActiveRunStatus(run.status),
+    ).length ?? 0;
   const router = useRouter();
   const [sortOption, setSortOption] = useState<SortOption>(
     SORT_OPTION.BEST_MATCH,
@@ -246,6 +264,23 @@ export const JobMatchesPage = () => {
     }
   };
 
+  const generateBrief = async (url: string) => {
+    try {
+      await startMatchBrief(url);
+      window.dispatchEvent(new Event(JOB_MATCHES_CHANGED_EVENT));
+      toast.success(t('MATCHES.BRIEF_STARTED'), {
+        action: {
+          label: t('DIALOG.VIEW_PROGRESS'),
+          onClick: () => router.push(RUNS_TAB_URL),
+        },
+      });
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : t('MATCHES.BRIEF_FAILED'),
+      );
+    }
+  };
+
   const remove = (url?: string) =>
     removeMatchPostings(url)
       .then(setPostings)
@@ -264,6 +299,17 @@ export const JobMatchesPage = () => {
     () => skills.filter(skill => skill.status === MATCH_SKILL_STATUS.ACCEPTED),
     [skills],
   );
+  const briefRunning = useMemo(
+    () => new Set(postings.filter(p => p.briefRunning).map(p => p.url)),
+    [postings],
+  );
+
+  // Briefs start on their own after a capture, so the page learns of a run
+  // starting or ending from the run list rather than from its own click.
+  useEffect(() => {
+    window.dispatchEvent(new Event(JOB_MATCHES_CHANGED_EVENT));
+  }, [activeBriefRuns]);
+
   const allMatches = useMemo(
     () =>
       ownedSkills
@@ -423,7 +469,9 @@ export const JobMatchesPage = () => {
         <MatchCard
           key={match.url}
           match={match}
+          generating={briefRunning.has(match.url)}
           onRemove={() => remove(match.url)}
+          onGenerateBrief={IS_DEMO ? undefined : () => generateBrief(match.url)}
         />
       ))}
     </div>
