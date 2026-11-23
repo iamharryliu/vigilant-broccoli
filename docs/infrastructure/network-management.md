@@ -13,6 +13,8 @@ Changes to network infrastructure (DNS records, domains/subdomains, proxying, tu
 
 All public URLs for deployed applications, grouped by domain/provider. Staging UI browser access is gated; see [staging monitoring](./upptime.md#staging-ui-access).
 
+The site zones are single values: `VB_APP_DOMAIN`, `HARRYLIU_DOMAIN` and `CLOUD8SKATE_DOMAIN` in `libs/@vigilant-broccoli/infrastructure/src/lib/app.consts.ts`, and `vigilant_broccoli_domain`, `harryliu_dev_domain` and `cloud8skate_domain` in `infrastructure/terraform/variables.tf`. Change each constant together with its variable. To move a host between zones, edit the zone it is built from in both places. Full-hostname variable defaults (`docs_domain`, `career_domain`, …) stay literal.
+
 ```
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
 ├── harryliu.dev                          Personal website — Cloudflare Pages `production-harryliu-dev-react` (domain + CNAME: Terraform, infrastructure/terraform/)

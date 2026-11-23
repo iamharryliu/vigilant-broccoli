@@ -379,6 +379,12 @@ variable "vigilant_broccoli_domain" {
   description = "Zone for the public Pages tool sites; their hostnames are derived from it in cloudflare-vigilant-broccoli-app.tf."
 }
 
+variable "harryliu_dev_domain" {
+  type        = string
+  default     = "harryliu.dev"
+  description = "Zone for the personal site and its app subdomains; hosts in cloudflare-harryliu-dev.tf, cloudflare-vercel-apps.tf, cloudflare-staging-ui.tf, supabase-auth.tf and main.tf are derived from it."
+}
+
 variable "bookmarks_pages_project" {
   type    = string
   default = "production-bookmarks-react"
