@@ -68,7 +68,7 @@ Never add GitHub Actions repo secrets; remove unused ones. Only `GCP_SERVICE_ACC
 - Prefer `getEnvironmentVariable` from `@vigilant-broccoli/common-node` for server environment variables. Client-side Next.js variables require direct `process.env.NEXT_PUBLIC_*` access for build-time inlining.
 - App/lib dependencies already pinned in the workspace root must mirror its caret range; no `"*"` or divergent pins. pnpm re-resolves an importer only when its own specifier changes, so a stray copy drifts after root bumps and surfaces as confusing duplicate-type errors (e.g. incompatible `FastifyInstance` types). Do not force Fly service dependencies through `pnpm-workspace.yaml` overrides: pruned installs fail. Published React libs (`nx-release-publish`) declare `react` only in `peerDependencies` with a major range (`^19`), never in `dependencies`: a root-mirrored exact pin there gives npm consumers a second React copy ("Invalid hook call"). Pin-drift alignment ignores `peerDependencies`, so never move `react` back to satisfy it.
 - An app that reads environment variables commits a `.env*` example file listing them. Adding, renaming or removing an app's committed `.env*` example file updates that app's README `## Environment` section in the same change; see [app-readme-pattern.md](./docs/app-readme-pattern.md#apps-and-publishable-libs).
-- New or changed public URLs require synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo; follow [public URL registration](./docs/app-development/app-development.md#deployment).
+- New or changed public URLs require synchronized Upptime entries, project-overview cards and browser quick links for every environment and demo; follow [public URL registration](./docs/app-development/app-development.md#deployment).
 
 ### UI
 
@@ -76,7 +76,7 @@ Read [ui-app-pattern.md](./docs/app-development/ui/ui-app-pattern.md) before UI 
 
 Never use native browser dialogs (`window.confirm`, `alert`, `prompt`) unless explicitly told to; use react-lib's `DeleteItemConfirmationDialog` or another in-app confirmation dialog.
 
-Build task and checklist UIs on react-lib's `CheckList` and follow its [completion contract](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/checklist-completion.md#consumer-contract): mount after first load, stable ids or `transitionFromId`, optimistic updates with `isRemoving` while pending, rollback on failure, and row deletion through the ellipsis menu (`onDeleteItem`, extra commands in `itemActions`).
+Build task and checklist UIs on react-lib-checklist's `CheckList` and follow its [completion contract](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-checklist/docs/features/checklist-completion.md#consumer-contract): mount after first load, stable ids or `transitionFromId`, optimistic updates with `isRemoving` while pending, rollback on failure, and row deletion through the ellipsis menu (`onDeleteItem`, extra commands in `itemActions`).
 
 Theme control is react-lib's `ThemeProvider` plus `ThemePreferenceControl` (System/Light/Dark) on the app's settings page, as in Hearth, Job Hunt and the component library's `/settings`; never add sidebar/navbar dark-mode toggles, two-state buttons or app-specific theme contexts.
 

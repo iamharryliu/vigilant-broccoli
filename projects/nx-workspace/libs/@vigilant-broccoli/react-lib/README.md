@@ -19,7 +19,6 @@ Shared React component library.
 | Callout | [View](https://components.vigilant-broccoli.app/callout) |
 | Card | [View](https://components.vigilant-broccoli.app/card) |
 | Checkbox | [View](https://components.vigilant-broccoli.app/checkbox) |
-| Checklist | [View](https://components.vigilant-broccoli.app/checklist) |
 | Clearable Input | [View](https://components.vigilant-broccoli.app/clearable-input) |
 | Collapsible List Item | [View](https://components.vigilant-broccoli.app/collapsible-list-item) |
 | Context Menu | [View](https://components.vigilant-broccoli.app/context-menu) |
@@ -37,12 +36,14 @@ Shared React component library.
 | Input | [View](https://components.vigilant-broccoli.app/input) |
 | Keyboard Accessory Toolbar | [View](https://components.vigilant-broccoli.app/keyboard-accessory-toolbar) |
 | Link Card | [View](https://components.vigilant-broccoli.app/link-card) |
+| List Header | [View](https://components.vigilant-broccoli.app/list-header) |
 | Multi Select | [View](https://components.vigilant-broccoli.app/multi-select) |
 | Notepad | [View](https://components.vigilant-broccoli.app/notepad) |
 | Popover | [View](https://components.vigilant-broccoli.app/popover) |
 | Progress | [View](https://components.vigilant-broccoli.app/progress) |
 | Scroll Area | [View](https://components.vigilant-broccoli.app/scroll-area) |
 | Scroll Timeline | [View](https://components.vigilant-broccoli.app/scroll-timeline) |
+| Search Dialog | [View](https://components.vigilant-broccoli.app/search-dialog) |
 | Search Input | [View](https://components.vigilant-broccoli.app/search-input) |
 | Segmented Control | [View](https://components.vigilant-broccoli.app/segmented-control) |
 | Select | [View](https://components.vigilant-broccoli.app/select) |

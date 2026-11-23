@@ -1,4 +1,4 @@
-import { ChevronDown, Plus } from 'lucide-react';
+import { ChevronDown, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
   ComponentType,
   Dispatch,
@@ -12,6 +12,7 @@ import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import {
   Button,
   Card,
+  ClearableInput,
   cn,
   Dialog,
   DialogContent,
@@ -25,6 +26,12 @@ import {
   IconButton,
   StackedImages,
 } from '@vigilant-broccoli/react-lib';
+
+type ListSearch = {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+};
 
 const FULL_WIDTH_IMAGE_CLASS = 'w-full h-48 object-cover rounded';
 
@@ -108,12 +115,16 @@ export const CRUDItemList = <T extends CRUDItem>({
   showEllipsis = true,
   canShowEllipsis,
   itemActions,
+  leadingItemActions,
   updateLabel,
   deleteConfirmation,
   getItemImages,
   getItemTitle,
   fullWidthImage = false,
   showDialogCloseButton,
+  search,
+  createLabel,
+  compact,
 }: {
   items: T[];
   setItems: Dispatch<SetStateAction<T[]>>;
@@ -133,12 +144,16 @@ export const CRUDItemList = <T extends CRUDItem>({
   showEllipsis?: boolean;
   canShowEllipsis?: (item: T) => boolean;
   itemActions?: (item: T) => EllipsisAction[];
+  leadingItemActions?: (item: T) => EllipsisAction[];
   updateLabel?: string;
   deleteConfirmation?: { title?: string; description?: string };
   getItemImages?: (item: T) => string[] | undefined;
   getItemTitle?: (item: T) => string;
   fullWidthImage?: boolean;
   showDialogCloseButton?: boolean;
+  search?: ListSearch;
+  createLabel?: string;
+  compact?: boolean;
 }) => {
   const [expandedIds, setExpandedIds] = useState<Set<T['id']>>(
     () => new Set(defaultExpandedIds),
@@ -191,6 +206,7 @@ export const CRUDItemList = <T extends CRUDItem>({
           copy={copy}
           submitHandler={submitHandler}
           extraActions={itemActions?.(item)}
+          leadingActions={leadingItemActions?.(item)}
           updateLabel={updateLabel}
           deleteConfirmation={deleteConfirmation}
           showDialogCloseButton={showDialogCloseButton}
@@ -278,8 +294,19 @@ export const CRUDItemList = <T extends CRUDItem>({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <Heading>{copy.LIST.TITLE}</Heading>
+      <div className="flex justify-between items-center gap-2">
+        {search ? (
+          <div className="flex-1 min-w-0">
+            <ClearableInput
+              value={search.value}
+              placeholder={search.placeholder}
+              onChange={e => search.onChange(e.target.value)}
+              onClear={() => search.onChange('')}
+            />
+          </div>
+        ) : (
+          <Heading>{copy.LIST.TITLE}</Heading>
+        )}
         {createItem && createItemFormDefaultValues && FormComponent && (
           <CRUDItemFormDialog
             formType={FORM_TYPE.CREATE}
@@ -288,35 +315,38 @@ export const CRUDItemList = <T extends CRUDItem>({
             submitHandler={submitHandler}
             copy={copy}
             showCloseButton={showDialogCloseButton}
+            createLabel={createLabel}
           />
         )}
       </div>
       {items.length ? (
         <>
           {HeaderComponent}
-          {items.map(item =>
-            isCards ? (
-              <Card
-                key={item.id}
-                onClick={() => handleItemClick(item)}
-                className={
-                  onItemClick || ExpandedComponent ? 'cursor-pointer' : ''
-                }
-              >
-                {renderItem(item)}
-              </Card>
-            ) : (
-              <div
-                key={item.id}
-                className={
-                  onItemClick || ExpandedComponent ? 'cursor-pointer' : ''
-                }
-                onClick={() => handleItemClick(item)}
-              >
-                {renderItem(item)}
-              </div>
-            ),
-          )}
+          <div className={compact ? 'space-y-1' : 'space-y-4'}>
+            {items.map(item =>
+              isCards ? (
+                <Card
+                  key={item.id}
+                  onClick={() => handleItemClick(item)}
+                  className={
+                    onItemClick || ExpandedComponent ? 'cursor-pointer' : ''
+                  }
+                >
+                  {renderItem(item)}
+                </Card>
+              ) : (
+                <div
+                  key={item.id}
+                  className={
+                    onItemClick || ExpandedComponent ? 'cursor-pointer' : ''
+                  }
+                  onClick={() => handleItemClick(item)}
+                >
+                  {renderItem(item)}
+                </div>
+              ),
+            )}
+          </div>
           {FooterComponent}
         </>
       ) : (
@@ -333,6 +363,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   deleteItem,
   copy,
   extraActions,
+  leadingActions,
   updateLabel = DEFAULT_UPDATE_LABEL,
   deleteConfirmation,
   showDialogCloseButton,
@@ -343,19 +374,28 @@ const EllipsisOptions = <T extends CRUDItem>({
   deleteItem: (id: string | number) => Promise<void>;
   copy: ListManagementCopy;
   extraActions?: EllipsisAction[];
+  leadingActions?: EllipsisAction[];
   updateLabel?: string;
   deleteConfirmation?: { title?: string; description?: string };
   showDialogCloseButton?: boolean;
 }) => {
   const [updateOpen, setUpdateOpen] = useState(false);
-  const hasExtraActions = Boolean(extraActions?.length);
+  const hasExtraActions = Boolean(
+    extraActions?.length || leadingActions?.length,
+  );
   const ctaProps = hasExtraActions
     ? {
         actions: [
-          { label: updateLabel, onSelect: () => setUpdateOpen(true) },
+          ...(leadingActions ?? []),
+          {
+            label: updateLabel,
+            icon: <Pencil size={ACTION_ICON_SIZE} />,
+            onSelect: () => setUpdateOpen(true),
+          },
           ...(extraActions ?? []),
           {
             label: DEFAULT_DELETE_LABEL,
+            icon: <Trash2 size={ACTION_ICON_SIZE} />,
             color: 'red' as const,
             onSelect: () => deleteItem(item.id),
             confirm: {
@@ -388,6 +428,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   );
 };
 
+const ACTION_ICON_SIZE = 16;
 const DEFAULT_DELETE_LABEL = 'Delete';
 const DEFAULT_UPDATE_LABEL = 'Update';
 const CLOSE_LABEL = 'Close';
@@ -401,6 +442,7 @@ export const CRUDItemFormDialog = <T,>({
   open,
   onOpenChange,
   showCloseButton = false,
+  createLabel,
 }: {
   formType: FormType;
   initialFormValues: T;
@@ -410,6 +452,7 @@ export const CRUDItemFormDialog = <T,>({
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   showCloseButton?: boolean;
+  createLabel?: string;
 }) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -446,7 +489,14 @@ export const CRUDItemFormDialog = <T,>({
       {!isControlled && (
         <DialogTrigger asChild>
           <Button variant="ghost">
-            {formType === FORM_TYPE.CREATE ? <Plus /> : 'Update'}
+            {formType === FORM_TYPE.CREATE ? (
+              <>
+                <Plus />
+                {createLabel}
+              </>
+            ) : (
+              'Update'
+            )}
           </Button>
         </DialogTrigger>
       )}

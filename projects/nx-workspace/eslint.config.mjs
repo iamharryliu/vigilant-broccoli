@@ -58,7 +58,9 @@ export default [
             // media) in type:domain libs, so editing one does not redeploy
             // every app that consumes the atomic type:primitive react-lib.
             // Domain libs may not import each other, or one domain edit would
-            // again fan out to every other domain's consumers.
+            // again fan out to every other domain's consumers. Shared building
+            // blocks that domain libs render (react-lib-checklist) are split
+            // out as type:primitive instead.
             {
               sourceTag: 'type:util',
               onlyDependOnLibsWithTags: ['type:util'],

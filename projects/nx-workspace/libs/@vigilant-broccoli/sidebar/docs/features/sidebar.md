@@ -32,14 +32,15 @@
 - Hovering out of the aside collapses any open nested group (`onMouseLeave` → `setOpenId(null)`) — this is desktop rail behavior only
 - Guarded off when: the drawer is currently open (`forceExpanded`), sidebar has no icons (`forceExpanded` again), **or it's a mobile-aware sidebar on a narrow viewport** (`isMobileAware && isNarrowViewport`, `max-width: 767px` matching Tailwind `md` — or `1023px` when `mobileBreakpoint` is `'lg'`) — note this needs _both_; a non-mobile-aware desktop rail (no `mobileOpen` prop) still collapses on hover-out even if the browser window itself happens to be narrow
 - The narrow-viewport guard exists because closing the drawer (nav click, backdrop tap) can trigger a native `mouseout` on the aside as page content shifts under a stationary pointer — without the guard this silently collapsed the just-opened group before the user reopened the drawer
-- Search input clears and collapses all groups on the same hover-out logic
 - `expandOn` (`'hover'` default, or `'click'`) picks what opens a group on a collapsed desktop rail. `'click'` drops the row hover handlers below, so the rail still widens on hover but groups open only when their row is clicked; hover-out still closes them so a collapsed rail never shows an open group's children. component-library uses `'click'`
 - With `expandOn` `'hover'`, on a collapsed desktop rail, hovering a **group's own row** opens that group (`onMouseEnter` on the `NestedItem` toggle → `setOpenId(itemKey)`) — not necessarily the active selection's group. Moving the pointer to a different group's row switches straight to it; hovering a **plain (non-group) row** closes whichever group was open, since attention has moved elsewhere. No fresh click needed either way. Both are no-ops when already `forceExpanded` or `isNarrowViewport` alone (no `isMobileAware` check here, unlike the `onMouseLeave` guard above — a latent inconsistency between the two guards, harmless for every current consumer since they're all either mobile-aware or never rendered on a narrow viewport, but worth knowing if that ever changes)
 
 ## Search
 
-- `searchable` shows a filter input; results are a flattened list (all nesting removed) of items whose label matches
-- Selecting a result or a normal item calls `onMobileClose` (if provided) — closes the drawer, no-op on desktop
+- `searchable` adds a "Search..." row (with a `/` hint) that opens react-lib's [`SearchDialog`](../../../react-lib/docs/features/search-dialog.md); `/` opens it too, through `useFocusSearchShortcut`
+- Results are every item with an `href`, flattened out of its groups and fuzzy-matched on label; a nested item's description is its parent group label. Items with only an `onClick` are not searchable
+- Picking a result calls `onNavigate(href)` (hearth passes `router.push`; the default is `window.location.assign`) and `onMobileClose`, which closes the drawer and is a no-op on desktop
+- Selecting a normal item also calls `onMobileClose`
 
 ## Testing
 

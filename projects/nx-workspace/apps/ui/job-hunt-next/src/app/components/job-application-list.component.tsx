@@ -10,13 +10,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import {
-  CircleCheck,
-  ExternalLink,
-  Trash2,
-  Undo2,
-  type LucideIcon,
-} from 'lucide-react';
+import { CircleCheck, ExternalLink, Trash2, Undo2 } from 'lucide-react';
 import {
   FILE_ENTRY_KIND,
   FileEntry,
@@ -112,8 +106,6 @@ type ApplicationDetails = {
   // missing too.
   gaps: string[] | null;
 };
-
-type ItemAction = EllipsisAction & { icon: LucideIcon };
 
 type ExpansionContextValue = {
   loadDetails: (item: ApplicationItem) => Promise<ApplicationDetails>;
@@ -481,13 +473,13 @@ export const JobApplicationList = () => {
     [t],
   );
 
-  const itemActions = (item: ApplicationItem): ItemAction[] => [
+  const itemActions = (item: ApplicationItem): EllipsisAction[] => [
     ...APPLICATION_STATUSES.filter(status => status !== item.status).map(
-      (status): ItemAction => ({
+      (status): EllipsisAction => ({
         label: t('APPLICATIONS.MARK_STATUS', {
           status: t(STATUS_LABEL_KEYS[status]).toLowerCase(),
         }),
-        icon: CircleCheck,
+        icon: <CircleCheck size={16} />,
         onSelect: () => setStatus(item, status),
       }),
     ),
@@ -495,14 +487,14 @@ export const JobApplicationList = () => {
       ? [
           {
             label: t('APPLICATIONS.CLEAR_STATUS'),
-            icon: Undo2,
+            icon: <Undo2 size={16} />,
             onSelect: () => setStatus(item, null),
           },
         ]
       : []),
     {
       label: t('APPLICATIONS.DELETE'),
-      icon: Trash2,
+      icon: <Trash2 size={16} />,
       color: 'red',
       onSelect: () => deleteApplication(item),
       confirm: {

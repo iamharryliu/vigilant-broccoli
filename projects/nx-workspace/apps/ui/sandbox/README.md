@@ -5,6 +5,7 @@ Owner-only test page for Google sign-in through VB Express Better Auth.
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 - [Environment](#environment)
 
 ## Stack
@@ -19,7 +20,10 @@ Owner-only test page for Google sign-in through VB Express Better Auth.
   - `react-lib`
 - Cloud services
   - Google OAuth
-  - VB Express
+
+## App Dependencies
+
+- [VB Express](../../api/vb-express) - calls
 
 ## Environment
 

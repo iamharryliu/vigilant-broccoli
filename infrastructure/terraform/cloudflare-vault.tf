@@ -65,6 +65,9 @@ resource "cloudflare_zero_trust_access_application" "vault" {
   domain           = var.vault_domain
   type             = "self_hosted"
   session_duration = "24h"
+  destinations = [
+    { type = "public", uri = var.vault_domain },
+  ]
 
   policies = [{
     id         = cloudflare_zero_trust_access_policy.vault_ci.id
