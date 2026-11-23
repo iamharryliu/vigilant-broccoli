@@ -18,11 +18,11 @@ import {
   type Segment,
 } from './markdown-segments';
 import { observeThemeChange, renderMermaidDiagrams } from './mermaid-diagrams';
+import { COMPACT_PROSE_CLS } from './prose-classes';
 
 const CLS = {
   ROOT: 'w-full',
-  PROSE:
-    'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4 prose-th:align-middle prose-td:align-middle prose-table:block prose-table:overflow-x-auto',
+  PROSE: `${COMPACT_PROSE_CLS} px-3 sm:px-6 py-3 sm:py-4 prose-th:align-middle prose-td:align-middle prose-table:block prose-table:overflow-x-auto`,
   EDITOR_WRAP: 'flex flex-col h-full',
   TOOLBAR:
     'flex items-center justify-end gap-2 px-4 sm:px-6 py-2 border-b border-gray-200 dark:border-gray-700',
@@ -33,9 +33,8 @@ const CLS = {
     'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100',
   TEXTAREA:
     'flex-1 min-h-0 w-full resize-none px-4 sm:px-6 py-4 font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 outline-none',
-  SECTION_PROSE:
-    'prose dark:prose-invert max-w-none px-1 prose-th:align-middle prose-td:align-middle prose-table:block prose-table:overflow-x-auto',
-  SECTIONS: 'px-4 sm:px-6 pb-4',
+  SECTION_PROSE: `${COMPACT_PROSE_CLS} sm:px-1 prose-th:align-middle prose-td:align-middle prose-table:block prose-table:overflow-x-auto`,
+  SECTIONS: 'px-3 sm:px-6 pb-3 sm:pb-4',
   ERROR: 'text-xs text-red-500 mr-auto',
 } as const;
 

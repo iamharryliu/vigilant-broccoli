@@ -223,6 +223,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### docs-explorer
 
+- Markdown and checklists read more compactly on phones: smaller text and headings, tighter spacing and narrower padding, with long links and code wrapping instead of running off the screen; tablets and desktops look the same as before ([#1755](https://github.com/iamharryliu/vigilant-broccoli/pull/1755)).
 - Notes in the Docs Explorer can be shared: a Share item in the note's ellipsis menu (when the host supplies a link) opens a dialog with a copyable link and a QR code ([#1726](https://github.com/iamharryliu/vigilant-broccoli/pull/1726)).
 - The graph camera glides when using the zoom buttons, keys and reset ([#1721](https://github.com/iamharryliu/vigilant-broccoli/pull/1721)).
 - The sticky bar keeps a note's title for collapsed and list aggregate views ([#1723](https://github.com/iamharryliu/vigilant-broccoli/pull/1723)).
