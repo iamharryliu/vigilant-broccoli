@@ -20,7 +20,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 1337,
-        VB_EXPRESS_URL: 'https://api.harryliu.dev',
+        VB_EXPRESS_URL: 'https://api.vigilant-broccoli.app',
         ...scrubbedEnv,
       },
       instances: 1,

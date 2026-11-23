@@ -2,14 +2,14 @@ import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { WhereIsItem } from '../../lib/types';
 import { WhereIsFormValues } from './where-is-form';
 import { throwIfNotOk, uploadPreviewImages } from './upload-images';
-
-export const WHERE_IS_ENDPOINT = '/api/where-is';
+import { WHERE_IS_ENDPOINT } from '../../lib/routes';
 
 export const toWhereIsFormValues = (item: WhereIsItem): WhereIsFormValues => ({
   id: item.id,
   title: item.title,
   description: item.description,
   tags: item.tags,
+  roomId: item.roomId,
   images: [],
   imageUrls: item.imageUrls,
   imageKeys: item.imageKeys,
@@ -37,6 +37,7 @@ export const saveWhereIsUpdate = async (
       title: form.title,
       description: form.description,
       tags: form.tags,
+      roomId: form.roomId,
       removedImageKeys,
       imageKeyOrder: imageKeys,
       newImages,

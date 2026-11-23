@@ -9,7 +9,7 @@ export const VB_MONITORING_URL = {
   },
   SOCKET_SERVER: {
     NAME: 'Socket Server Health',
-    URL: 'https://socket.harryliu.dev/health',
+    URL: 'https://socket.vigilant-broccoli.app/health',
   },
   DEPLOYMENTS: {
     NAME: 'Deployments',

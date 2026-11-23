@@ -1,6 +1,6 @@
 # Cloudflare Workers
 
-Edge Workers that front the pages-index build and the Nx remote cache.
+Edge Workers that front the project-overview build and the Nx remote cache.
 
 ## Table of Contents
 
@@ -13,4 +13,4 @@ Edge Workers that front the pages-index build and the Nx remote cache.
   - Cloudflare
 - Services
   - `nx-cache` - Nx self-hosted remote cache in front of an R2 bucket
-  - `status-proxy` - pass-through serving the pages-index build under the status and career hostnames
+  - `status-proxy` - pass-through serving the project-overview build under the status and career hostnames

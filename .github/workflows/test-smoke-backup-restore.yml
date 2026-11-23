@@ -14,37 +14,66 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  BACKUP_BUCKET: gs://vigilant-broccoli-backup
   MAX_BACKUP_AGE_DAYS: '2'
 
 jobs:
   # cron-backup writing a file every night proves nothing about whether that
   # file still restores — these jobs restore each dump into a throwaway
-  # container and check the data actually arrives.
+  # container and check the data actually arrives. Every job runs once per
+  # provider: cron-backup mirrors each dump to GCS and R2, and either copy has
+  # to be restorable on its own.
   verify-backup-freshness:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [gcs, r2]
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Import R2 backup credentials from Vault
+        if: matrix.provider == 'r2'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets BACKUP_R2_ACCESS_KEY_ID | BACKUP_R2_ACCESS_KEY_ID ;
+            kv/data/secrets BACKUP_R2_SECRET_ACCESS_KEY | BACKUP_R2_SECRET_ACCESS_KEY ;
+
       - name: Authenticate to Google Cloud
+        if: matrix.provider == 'gcs'
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Setup Cloud SDK
+        if: matrix.provider == 'gcs'
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
 
       - name: Check every backup is recent
+        env:
+          PROVIDER: ${{ matrix.provider }}
         run: |
           set -euo pipefail
           FAIL=0
-          for PATTERN in 'repo-backup-*.zip' 'gitea-backup-*.zip' 'mongodb-backup-*.gz' 'supabase-backup-*.sql.gz'; do
-            LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/${PATTERN}" | sort | tail -1)
+          for PATTERN in 'repo-backup- .zip' 'gitea-backup- .zip' 'mongodb-backup- .gz' 'supabase-backup- .sql.gz'; do
+            read -r PREFIX SUFFIX <<< "$PATTERN"
+            if ! LATEST=$(.github/scripts/backup-storage.sh latest "$PROVIDER" "$PREFIX" "$SUFFIX"); then
+              FAIL=1
+              continue
+            fi
             STAMP=$(echo "$LATEST" | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')
             AGE=$(( ( $(date -u +%s) - $(date -u -d "$STAMP" +%s) ) / 86400 ))
-            echo "$PATTERN -> $LATEST (${AGE}d old)"
+            echo "${PROVIDER}: ${PREFIX}*${SUFFIX} -> $LATEST (${AGE}d old)"
             if [ "$AGE" -gt "$MAX_BACKUP_AGE_DAYS" ]; then
-              echo "::error::${PATTERN} is ${AGE} days old (max ${MAX_BACKUP_AGE_DAYS})"
+              echo "::error::${PROVIDER} ${PREFIX}*${SUFFIX} is ${AGE} days old (max ${MAX_BACKUP_AGE_DAYS})"
               FAIL=1
             fi
           done
@@ -53,21 +82,44 @@ jobs:
   verify-repo-backup:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [gcs, r2]
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Import R2 backup credentials from Vault
+        if: matrix.provider == 'r2'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets BACKUP_R2_ACCESS_KEY_ID | BACKUP_R2_ACCESS_KEY_ID ;
+            kv/data/secrets BACKUP_R2_SECRET_ACCESS_KEY | BACKUP_R2_SECRET_ACCESS_KEY ;
+
       - name: Authenticate to Google Cloud
+        if: matrix.provider == 'gcs'
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Setup Cloud SDK
+        if: matrix.provider == 'gcs'
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
 
       - name: Restore the repo archive
+        env:
+          PROVIDER: ${{ matrix.provider }}
         run: |
           set -euo pipefail
-          LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/repo-backup-*.zip" | sort | tail -1)
-          gcloud storage cp "$LATEST" repo-backup.zip
+          .github/scripts/backup-storage.sh download "$PROVIDER" repo-backup- .zip repo-backup.zip
           unzip -tq repo-backup.zip
           unzip -q repo-backup.zip -d restored
           ROOT=$(find restored -maxdepth 1 -mindepth 1 -type d)
@@ -78,14 +130,36 @@ jobs:
   verify-gitea-backup:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [gcs, r2]
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Import R2 backup credentials from Vault
+        if: matrix.provider == 'r2'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets BACKUP_R2_ACCESS_KEY_ID | BACKUP_R2_ACCESS_KEY_ID ;
+            kv/data/secrets BACKUP_R2_SECRET_ACCESS_KEY | BACKUP_R2_SECRET_ACCESS_KEY ;
+
       - name: Authenticate to Google Cloud
+        if: matrix.provider == 'gcs'
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Setup Cloud SDK
+        if: matrix.provider == 'gcs'
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
 
       # Mirrors what restore-gitea.sh copies onto the VM: the SQLite database
@@ -93,10 +167,11 @@ jobs:
       # corrupt or whose repos are unreadable would restore into a broken
       # Gitea, which is exactly what this catches.
       - name: Restore the Gitea dump
+        env:
+          PROVIDER: ${{ matrix.provider }}
         run: |
           set -euo pipefail
-          LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/gitea-backup-*.zip" | sort | tail -1)
-          gcloud storage cp "$LATEST" gitea-dump.zip
+          .github/scripts/backup-storage.sh download "$PROVIDER" gitea-backup- .zip gitea-dump.zip
           unzip -tq gitea-dump.zip
           unzip -q gitea-dump.zip -d dump
           [ -f dump/data/gitea.db ] || { echo "::error::data/gitea.db missing from the dump"; exit 1; }
@@ -124,16 +199,38 @@ jobs:
     # Keep MongoDB pinned to 8.0.34 and this job on ubuntu-22.04: MongoDB 8.x refuses kernels >= 6.19, and its 7.0.14 exemption misreads Ubuntu's uname -r (SERVER-136848). Return to ubuntu-24.04 once fixed.
     runs-on: ubuntu-22.04
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [gcs, r2]
     env:
       MONGO_IMAGE: mongo:8.0.34
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Import R2 backup credentials from Vault
+        if: matrix.provider == 'r2'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets BACKUP_R2_ACCESS_KEY_ID | BACKUP_R2_ACCESS_KEY_ID ;
+            kv/data/secrets BACKUP_R2_SECRET_ACCESS_KEY | BACKUP_R2_SECRET_ACCESS_KEY ;
+
       - name: Authenticate to Google Cloud
+        if: matrix.provider == 'gcs'
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Setup Cloud SDK
+        if: matrix.provider == 'gcs'
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
 
       - name: Cache mongodb-database-tools
@@ -151,6 +248,7 @@ jobs:
       - name: Restore into a throwaway MongoDB
         env:
           MONGODB_DB: vb-manager
+          PROVIDER: ${{ matrix.provider }}
         run: |
           set -euo pipefail
           grep -m1 -o avx /proc/cpuinfo || echo "avx not present"
@@ -173,8 +271,7 @@ jobs:
             exit 1
           fi
 
-          LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/mongodb-backup-*.gz" | sort | tail -1)
-          gcloud storage cp "$LATEST" mongodb-backup.gz
+          .github/scripts/backup-storage.sh download "$PROVIDER" mongodb-backup- .gz mongodb-backup.gz
           mongorestore --uri=mongodb://localhost:27017 --archive=mongodb-backup.gz --gzip --drop 2>&1 | tee restore.log
 
           FAILED=$(grep -oE '[0-9]+ document\(s\) failed to restore' restore.log | tail -1 | grep -oE '^[0-9]+' || echo 0)
@@ -193,14 +290,36 @@ jobs:
   verify-supabase-backup:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [gcs, r2]
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Import R2 backup credentials from Vault
+        if: matrix.provider == 'r2'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets BACKUP_R2_ACCESS_KEY_ID | BACKUP_R2_ACCESS_KEY_ID ;
+            kv/data/secrets BACKUP_R2_SECRET_ACCESS_KEY | BACKUP_R2_SECRET_ACCESS_KEY ;
+
       - name: Authenticate to Google Cloud
+        if: matrix.provider == 'gcs'
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Setup Cloud SDK
+        if: matrix.provider == 'gcs'
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
 
       # The dump goes into postgres with pgvector, not a Supabase image: public
@@ -216,6 +335,7 @@ jobs:
           PGHOST: localhost
           PGUSER: postgres
           PGDATABASE: postgres
+          PROVIDER: ${{ matrix.provider }}
         run: |
           set -euo pipefail
           sudo apt-get update -qq
@@ -230,8 +350,7 @@ jobs:
             psql -qtAc "DO \$\$ BEGIN CREATE ROLE ${ROLE} NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END \$\$;"
           done
 
-          LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/supabase-backup-*.sql.gz" | sort | tail -1)
-          gcloud storage cp "$LATEST" supabase-backup.sql.gz
+          .github/scripts/backup-storage.sh download "$PROVIDER" supabase-backup- .sql.gz supabase-backup.sql.gz
           gunzip -c supabase-backup.sql.gz > dump.sql
           psql -q -v ON_ERROR_STOP=0 -f dump.sql > /dev/null 2> restore.log || true
           echo "psql reported $(grep -c 'ERROR:' restore.log || true) errors (Supabase-specific objects are expected to fail here)"

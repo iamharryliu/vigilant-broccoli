@@ -6,10 +6,10 @@
 
 locals {
   vercel_app_subdomains = {
-    vb-manager-next-mobile = "manager.harryliu.dev"
-    hearth                 = "hearth.harryliu.dev"
-    chat                   = "chat.harryliu.dev"
-    tasks-next             = "tasks.harryliu.dev"
+    vb-manager-next-mobile = "manager.${var.harryliu_dev_domain}"
+    hearth                 = "hearth.${var.harryliu_dev_domain}"
+    chat                   = "chat.${var.harryliu_dev_domain}"
+    tasks-next             = "tasks.${var.harryliu_dev_domain}"
   }
   vb_app_vercel_subdomains = {
     balloono     = "balloono.${var.vigilant_broccoli_domain}"

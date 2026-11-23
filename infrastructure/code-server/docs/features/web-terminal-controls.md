@@ -1,6 +1,6 @@
 # Web terminal controls
 
-Human-readable guide to the buttons on `shell.harryliu.dev`. One-page summary: [web-terminal-quick-reference.md](./web-terminal-quick-reference.md). Implementation notes live in [web-terminal-toolbar.md](./web-terminal-toolbar.md).
+Human-readable guide to the buttons on `shell.vigilant-broccoli.app`. One-page summary: [web-terminal-quick-reference.md](./web-terminal-quick-reference.md). Implementation notes live in [web-terminal-toolbar.md](./web-terminal-toolbar.md).
 
 ## Table of Contents
 

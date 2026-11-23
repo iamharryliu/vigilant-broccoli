@@ -20,6 +20,7 @@ export const MEDIA_SERVICE_ENDPOINT = {
   RECEIPTS_LLM_IMAGE: 'api/receipts/llm-image',
   WHERE_IS_IMAGE: 'api/where-is/image',
   WHERE_IS_LLM_IMAGE: 'api/where-is/llm-image',
+  WHERE_IS_THUMBNAIL: 'api/where-is/thumbnail',
   DOCS_FILE: 'api/docs/file',
 };
 

@@ -19,9 +19,8 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import {
+  Badge,
   Button,
-  CheckList,
-  CheckListItem as BaseChecklistItem,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
   Text,
@@ -31,6 +30,10 @@ import {
   cn,
   useRefetchOnFocus,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CheckList,
+  CheckListItem as BaseChecklistItem,
+} from '@vigilant-broccoli/react-lib-checklist';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -42,6 +45,15 @@ import {
 import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 import { assertOk, usePendingWrites } from '../hooks/use-pending-writes';
 import { ChecklistSkeleton } from './ChecklistSkeleton';
+import {
+  GROCERY_SECTION_LABEL,
+  GROCERY_SORT_MODE,
+  type GrocerySortMode,
+} from '../grocery/grocery-sections.consts';
+import {
+  compareGrocerySections,
+  getGrocerySection,
+} from '../grocery/grocery-sections';
 
 const LOADING_LABEL = 'Loading items';
 const ADD_TO_CALENDAR_LABEL = 'Add to calendar';
@@ -60,6 +72,13 @@ const toBaseItem = (
   isRemoving: pendingIds.has(item.id),
 });
 
+const renderSectionBadge = (item: BaseChecklistItem) =>
+  item.checked ? null : (
+    <Badge variant="soft" size="1">
+      {GROCERY_SECTION_LABEL[getGrocerySection(item.title)]}
+    </Badge>
+  );
+
 type ChecklistProps = {
   endpoint: string;
   storageKeyPrefix: string;
@@ -67,6 +86,9 @@ type ChecklistProps = {
   emptyText: string;
   refreshSignal?: number;
   onCalendarEventAdded?: () => void;
+  // Set on the grocery list: shows store-section badges and, in store-section
+  // mode, orders rows by section and turns drag-reorder off.
+  sectionSortMode?: GrocerySortMode;
 };
 
 export function Checklist({
@@ -76,6 +98,7 @@ export function Checklist({
   emptyText,
   refreshSignal,
   onCalendarEventAdded,
+  sectionSortMode,
 }: ChecklistProps) {
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
@@ -243,10 +266,21 @@ export function Checklist({
     if (e.key === 'Enter') handleAdd();
   };
 
-  const baseItems = useMemo(
-    () => items.map(item => toBaseItem(item, pendingIds)),
-    [items, pendingIds],
-  );
+  const isGrouped = sectionSortMode === GROCERY_SORT_MODE.STORE_SECTION;
+
+  // Array.sort is stable, so items keep their saved order inside a section;
+  // completed rows are sorted by the list itself.
+  const baseItems = useMemo(() => {
+    const ordered = isGrouped
+      ? [...items].sort((a, b) =>
+          compareGrocerySections(
+            getGrocerySection(a.name),
+            getGrocerySection(b.name),
+          ),
+        )
+      : items;
+    return ordered.map(item => toBaseItem(item, pendingIds));
+  }, [items, pendingIds, isGrouped]);
 
   if (!homeId) return null;
 
@@ -304,7 +338,10 @@ export function Checklist({
             rowVariant="dense"
             size="3"
             editCompleted={false}
-            enableDragDrop
+            enableDragDrop={!isGrouped}
+            renderItemAccessory={
+              sectionSortMode ? renderSectionBadge : undefined
+            }
             listId={storageKeyPrefix}
             storageKeyPrefix={storageKeyPrefix}
             completedSectionId={`${storageKeyPrefix}-completed`}

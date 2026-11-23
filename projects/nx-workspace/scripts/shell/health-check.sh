@@ -77,7 +77,7 @@ queue_http_check "staging-calendars" "https://staging-calendar.harryliu.dev/" 30
 queue_http_check "staging-photography" "https://staging-photography.harryliu.dev/" 302
 queue_http_check "staging-gravity-guy" "https://staging-gravity-guy.vigilant-broccoli.app/" 302
 queue_http_check "production-gravity-guy" "https://gravity-guy.vigilant-broccoli.app/"
-queue_http_check "git.harryliu.dev" "https://git.harryliu.dev"
+queue_http_check "git.vigilant-broccoli.app" "https://git.vigilant-broccoli.app"
 
 wait
 

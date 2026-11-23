@@ -51,7 +51,7 @@ jobs:
           chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
 
       - name: Setup Terraform
-        uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+        uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # v5.2.9
         with:
           version: 2026.9.10
           install_args: terraform
@@ -89,7 +89,7 @@ jobs:
 
       - name: Sync CODE_SERVER_VM_IP to Vault
         env:
-          VAULT_ADDR: https://vault.harryliu.dev
+          VAULT_ADDR: https://vault.vigilant-broccoli.app
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
         run: |

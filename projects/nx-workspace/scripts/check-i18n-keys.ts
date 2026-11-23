@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-const SRC_DIR = 'apps/ui/pages-index/src';
+const SRC_DIR = 'apps/ui/project-overview/src';
 const DICTIONARY_FILE = join(SRC_DIR, 'app/i18n/en.json');
 const SOURCE_FILE_PATTERN = /\.tsx?$/;
 const TRANSLATION_KEY_PATTERN =

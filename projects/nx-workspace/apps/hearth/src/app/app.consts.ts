@@ -4,8 +4,6 @@ import {
   Wrench,
   Settings,
   LayoutList,
-  ListChecks,
-  PenLine,
   MapPin,
   UtensilsCrossed,
   PackageSearch,
@@ -67,17 +65,7 @@ const DEV_FEATURES_LINK: NavLink = {
 };
 
 export const NAV_LINKS: NavLink[] = [
-  {
-    label: 'Home',
-    href: ROUTES.HOME,
-    icon: Home,
-    mobileOnlyChildren: true,
-    children: [
-      { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
-      { label: 'Tasks', href: ROUTES.TASKS, icon: ListChecks },
-      { label: 'Calendar', href: ROUTES.OVERALL_CALENDAR, icon: Calendar },
-    ],
-  },
+  { label: 'Home', href: ROUTES.HOME, icon: Home },
   { label: 'Where Is', href: ROUTES.WHERE_IS, icon: PackageSearch },
   { label: 'Receipt Tracker', href: ROUTES.RECEIPTS, icon: Receipt },
   {

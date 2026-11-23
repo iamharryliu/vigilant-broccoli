@@ -14,6 +14,11 @@ sites:
     url: https://staging-context.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
+  # Pre-rename name kept so its Upptime history slug continues (project-overview).
+  - name: staging-pages-index
+    url: https://staging-projects.vigilant-broccoli.app/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: staging-bookmarks
     url: https://staging-bookmarks.vigilant-broccoli.app/
     maxRedirects: 0
@@ -47,7 +52,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-service-manager
-    url: https://staging-api.harryliu.dev/
+    url: https://staging-api.vigilant-broccoli.app/
   - name: staging-media-service
     url: https://staging-media-service.fly.dev/
   - name: staging-component-library
@@ -105,15 +110,15 @@ sites:
   - name: production-harryliu-dev-resume
     url: https://harryliu.dev/resume
   - name: production-git
-    url: https://git.harryliu.dev/
+    url: https://git.vigilant-broccoli.app/
   - name: production-code-server
-    url: https://code.harryliu.dev/login
+    url: https://code.vigilant-broccoli.app/login
   - name: production-web-terminal
-    url: https://shell.harryliu.dev/
+    url: https://shell.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-sandbox
-    url: https://sandbox.harryliu.dev/
+    url: https://sandbox.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-drive
@@ -123,13 +128,13 @@ sites:
   - name: production-observability-vm
     url: https://loki.vigilant-broccoli.app/health
   - name: production-socket-server
-    url: https://socket.harryliu.dev/health
+    url: https://socket.vigilant-broccoli.app/health
   - name: production-findme
     url: https://findme.vigilant-broccoli.app/
   - name: production-hearth
     url: https://hearth.harryliu.dev/login
   - name: production-service-manager
-    url: https://api.harryliu.dev/
+    url: https://api.vigilant-broccoli.app/
   - name: production-media-service
     url: https://production-media-service.fly.dev/
   - name: production-component-library
@@ -166,6 +171,7 @@ sites:
     url: https://career.harryliu.dev/
   - name: production-deployments
     url: https://deployments.vigilant-broccoli.app/
+  # Pre-rename name kept so its Upptime history slug continues (project-overview).
   - name: production-pages-index
     url: https://projects.vigilant-broccoli.app/
   - name: production-status
@@ -190,6 +196,8 @@ sites:
     url: https://demo-job-hunt-next.vercel.app/
   - name: demo-office-presence-ui
     url: https://demo-office-presence-ui.pages.dev/
+  - name: demo-office-presence-service
+    url: https://demo-office-presence-service.fly.dev/
 
 user-agent: upptime-vigilant-broccoli
 status-website:

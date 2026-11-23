@@ -7,6 +7,7 @@ import {
   Button,
   CardContainer,
   cn,
+  SortSelect,
   Tabs,
   TabsContent,
   TabsList,
@@ -15,7 +16,15 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
 import { InSeasonCard } from '../components/InSeasonCard';
-import { GroceryList } from '../grocery/GroceryList';
+import {
+  GROCERY_STORAGE_KEY_PREFIX,
+  GroceryList,
+} from '../grocery/GroceryList';
+import {
+  GROCERY_SORT_MODE_LABELS,
+  GROCERY_SORT_MODE_OPTIONS,
+} from '../grocery/grocery-sections.consts';
+import { useGrocerySortMode } from '../grocery/use-grocery-sort-mode';
 import { KitchenChoresList } from '../kitchen-chores/KitchenChoresList';
 import { KitchenNotes } from '../kitchen-notes/KitchenNotes';
 import { KitchenProjectsList } from '../kitchen-projects/KitchenProjectsList';
@@ -53,6 +62,9 @@ function KitchenPlannerContent() {
   const tabParam = searchParams.get(TAB_PARAM);
   const [activeTab, setActiveTab] = useState(() =>
     tabParam && TABS.includes(tabParam) ? tabParam : PLANNER_TAB,
+  );
+  const [grocerySortMode, setGrocerySortMode] = useGrocerySortMode(
+    GROCERY_STORAGE_KEY_PREFIX,
   );
   const [groceryRefresh, setGroceryRefresh] = useState(0);
   const [calendarRefresh, setCalendarRefresh] = useState(0);
@@ -153,8 +165,19 @@ function KitchenPlannerContent() {
                 </TabsList>
 
                 <TabsContent value={GROCERY_LIST_TAB}>
-                  <CardContainer title={t('KITCHEN_PLANNER.COLUMNS.GROCERY')}>
+                  <CardContainer
+                    title={t('KITCHEN_PLANNER.COLUMNS.GROCERY')}
+                    headerAction={
+                      <SortSelect
+                        value={grocerySortMode}
+                        onValueChange={setGrocerySortMode}
+                        options={GROCERY_SORT_MODE_OPTIONS}
+                        labels={GROCERY_SORT_MODE_LABELS}
+                      />
+                    }
+                  >
                     <GroceryList
+                      sortMode={grocerySortMode}
                       refreshSignal={groceryRefresh}
                       onCalendarEventAdded={bumpCalendar}
                     />
