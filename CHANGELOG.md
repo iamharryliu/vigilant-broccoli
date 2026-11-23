@@ -229,6 +229,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - `localcleanup` also deletes local branches except main and any still checked out in a worktree, and its summary lists how many were deleted and kept. It now removes worktrees with uncommitted changes by default; `--keep-dirty` skips them ([#1656](https://github.com/iamharryliu/vigilant-broccoli/pull/1656)).
 - `cheatsheet` and `pnpm cheatsheet` open an interactive picker: arrow keys browse header groups, typing filters every command, Enter runs the pick (asking for arguments first when it takes any), and Esc or Ctrl-C quits ([#1659](https://github.com/iamharryliu/vigilant-broccoli/pull/1659)).
 - New `/svenska` skill turns Swedish practice replies on and off per conversation, and `/serve-local` checks out a PR and serves its app after freeing the port ([#1703](https://github.com/iamharryliu/vigilant-broccoli/pull/1703), [#1732](https://github.com/iamharryliu/vigilant-broccoli/pull/1732)).
+- `pnpm deploy:local` starts Docker Desktop and waits up to 2 minutes when Docker is not running, so the job-hunt-next rebuild no longer fails after the PM2 reloads (PR: pending).
 
 ### infrastructure
 
