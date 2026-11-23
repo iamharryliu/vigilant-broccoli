@@ -10,6 +10,7 @@ import {
   FileUser,
   LayoutGrid,
   ListChecks,
+  Network,
   Target,
   NotebookPen,
   ScrollText,
@@ -39,6 +40,7 @@ const TAB_ICON: Record<AppTab, LucideIcon> = {
   [APP_TAB.CAREER_EXPERIENCE.value]: ScrollText,
   [APP_TAB.RESUME.value]: FileUser,
   [APP_TAB.MATCHES.value]: Target,
+  [APP_TAB.SKILLS.value]: Network,
   [APP_TAB.NOTES.value]: NotebookPen,
   [APP_TAB.TASKS.value]: ListChecks,
   [APP_TAB.RUNS.value]: Activity,
@@ -57,13 +59,13 @@ const NAV_GROUPS = [
     id: 'career-profile',
     titleKey: 'NAV.GROUP_CAREER_PROFILE',
     icon: UserRound,
-    tabs: [APP_TAB.CAREER_EXPERIENCE, APP_TAB.RESUME],
+    tabs: [APP_TAB.CAREER_EXPERIENCE, APP_TAB.SKILLS, APP_TAB.RESUME],
   },
   {
     id: 'workspace',
     titleKey: 'NAV.GROUP_WORKSPACE',
     icon: LayoutGrid,
-    tabs: [APP_TAB.TASKS, APP_TAB.NOTES],
+    tabs: [APP_TAB.TASKS, APP_TAB.NOTES, APP_TAB.WORKFLOW],
   },
 ] as const;
 
@@ -154,7 +156,6 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
             isActive: group === activeGroup,
             children: group.tabs.map(toItem),
           })),
-          toItem(APP_TAB.WORKFLOW),
           toItem(APP_TAB.SETTINGS),
         ]}
       />

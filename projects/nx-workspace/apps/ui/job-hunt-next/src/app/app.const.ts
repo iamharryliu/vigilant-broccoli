@@ -17,6 +17,7 @@ export const APP_TAB = {
     titleKey: 'NAV.RESUME',
   },
   MATCHES: { value: 'matches', path: '/matches', titleKey: 'NAV.MATCHES' },
+  SKILLS: { value: 'skills', path: '/skills', titleKey: 'NAV.SKILLS' },
   NOTES: { value: 'notes', path: '/notes', titleKey: 'NAV.NOTES' },
   TASKS: { value: 'tasks', path: '/tasks', titleKey: 'NAV.TASKS' },
   RUNS: { value: 'runs', path: '/runs', titleKey: 'NAV.RUNS' },

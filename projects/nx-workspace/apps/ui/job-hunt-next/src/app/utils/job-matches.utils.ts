@@ -1,5 +1,5 @@
 import type { JobMatchesBookmarkletPosting } from '@vigilant-broccoli/common-js';
-import type { MatchBrief } from '../constants/matches';
+import { SWEDISH_REQUIREMENT, type MatchBrief } from '../constants/matches';
 import { extractJobPosting, parseJobDescription } from './job-posting.utils';
 
 export const MATCH_LEVEL = {
@@ -40,6 +40,19 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
     aliases: ['React.js', 'ReactJS', 'Next.js', 'NextJS', 'Redux'],
   },
   { name: 'React Native' },
+  {
+    name: 'Mobile development',
+    aliases: [
+      'Android',
+      'AOSP',
+      'iOS',
+      'Flutter',
+      'Jetpack Compose',
+      'SwiftUI',
+      'mobile development',
+      'mobile apps',
+    ],
+  },
   { name: 'Vue', aliases: ['Vue.js'] },
   { name: 'Angular' },
   { name: 'Svelte' },
@@ -95,26 +108,127 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
   },
   { name: 'Redis' },
   { name: 'Elasticsearch', aliases: ['OpenSearch'] },
-  { name: 'Message queues', aliases: ['Kafka', 'RabbitMQ'] },
+  {
+    name: 'Message queues',
+    aliases: [
+      'Kafka',
+      'RabbitMQ',
+      'Azure Service Bus',
+      'Service Bus',
+      'MQTT',
+      'Mosquitto',
+      'EMQX',
+    ],
+  },
+  {
+    name: 'Integration platforms',
+    aliases: [
+      'iPaaS',
+      'Azure Integration Services',
+      'Boomi',
+      'Workato',
+      'integration platform',
+    ],
+  },
+  {
+    name: 'Microsoft 365',
+    aliases: ['SharePoint', 'Office 365', 'M365'],
+  },
   { name: 'AWS', aliases: ['Amazon Web Services'] },
   { name: 'GCP', aliases: ['Google Cloud', 'Google Cloud Platform'] },
   { name: 'Azure' },
+  {
+    name: 'Dynamics 365 & Power Platform',
+    aliases: [
+      'Dynamics 365',
+      'D365',
+      'Dynamics 365 Finance & Operations',
+      'Dynamics 365 Business Central',
+      'Business Central',
+      'Power Platform',
+      'Power Apps',
+      'Power Automate',
+      'Dataverse',
+    ],
+  },
   { name: 'Docker' },
   { name: 'Kubernetes', aliases: ['K8s', 'Helm'] },
   {
     name: 'Infrastructure as Code',
-    aliases: ['IaC', 'Terraform', 'Ansible', 'GitOps'],
+    aliases: ['IaC', 'Terraform', 'Pulumi', 'Ansible', 'GitOps'],
+  },
+  {
+    name: 'Site Reliability Engineering',
+    aliases: [
+      'Site Reliability',
+      'SRE',
+      'SLIs/SLOs',
+      'SLI',
+      'SLIs',
+      'SLO',
+      'SLOs',
+      'service level objectives',
+      'error budget',
+    ],
   },
   { name: 'HashiCorp Vault' },
   {
     name: 'CI/CD',
-    aliases: ['CI CD', 'continuous integration', 'GitHub Actions', 'Jenkins'],
+    aliases: [
+      'Azure DevOps',
+      'CI CD',
+      'continuous integration',
+      'GitHub Actions',
+      'GitLab CI',
+      'Jenkins',
+    ],
   },
   { name: 'Linux' },
+  {
+    name: 'Networking',
+    aliases: ['TCP/IP', 'Wi-Fi', 'WiFi', 'Bluetooth', 'BLE', 'Ethernet'],
+  },
+  {
+    name: 'Industrial automation',
+    aliases: [
+      'PLC',
+      'PLCs',
+      'PLC programming',
+      'Structured Text',
+      'ladder logic',
+      'IEC 61131-3',
+      'SCADA',
+      'OPC UA',
+      'TwinCAT',
+      'CODESYS',
+      'TIA Portal',
+    ],
+    // "HMI" also names a car's infotainment interface, so only the written
+    // acronym counts.
+    caseSensitive: ['HMI'],
+  },
+  { name: 'Bash', aliases: ['shell scripting'] },
   { name: 'PowerShell' },
   { name: 'ETL' },
+  {
+    name: 'Data pipelines',
+    aliases: [
+      'Apache Airflow',
+      'Airflow',
+      'dbt',
+      'Dagster',
+      'Prefect',
+      'data pipeline',
+    ],
+  },
+  { name: 'Data formats', aliases: ['JSON', 'XML'] },
+  {
+    name: 'Graph databases',
+    aliases: ['graph database', 'Neo4j', 'Cypher', 'Gremlin', 'Amazon Neptune'],
+  },
   { name: 'Databricks' },
   { name: 'Power BI' },
+  { name: 'Figma' },
   {
     name: 'Object-Oriented Programming',
     aliases: ['OOP', 'object oriented programming'],
@@ -135,7 +249,18 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
       'Copilot',
     ],
   },
-  { name: 'Git', aliases: ['GitHub'] },
+  {
+    name: 'Version control',
+    aliases: [
+      'Git',
+      'GitHub',
+      'GitLab',
+      'Gerrit',
+      'Bitbucket',
+      'source control',
+      'version control',
+    ],
+  },
   { name: 'DevOps' },
   { name: 'Observability', aliases: ['Prometheus', 'Grafana', 'Datadog'] },
   { name: 'Distributed systems', aliases: ['distributed system'] },
@@ -176,7 +301,26 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
   { name: 'Nx' },
   { name: 'Microservices', aliases: ['micro-services', 'microservice'] },
   { name: 'Serverless', aliases: ['Lambda'] },
-  { name: 'OAuth', aliases: ['OIDC', 'OpenID Connect'] },
+  {
+    name: 'Authentication',
+    aliases: [
+      'OAuth',
+      'OIDC',
+      'OpenID Connect',
+      'SAML',
+      'SSO',
+      'single sign-on',
+      'JWT',
+      'Microsoft Entra ID',
+      'Entra ID',
+      'Azure AD',
+      'Azure Active Directory',
+      'Active Directory',
+      'Okta',
+      'Keycloak',
+      'Auth0',
+    ],
+  },
   { name: 'WebSockets', aliases: ['WebSocket'] },
   { name: 'Machine Learning' },
   {
@@ -202,11 +346,14 @@ const TERM_BEFORE = '(?<![A-Za-z0-9+#])';
 const TERM_AFTER = '(?![A-Za-z0-9+#])';
 
 // Capitalised common-word names still collide with ordinary phrases, so these
-// labels also skip the contexts that are not the language.
+// labels also skip the contexts that are not the language. A guard applies to
+// a label whether it is matched case-sensitively or not: "GitLab" skips
+// "GitLab CI", which is CI/CD.
 const CASE_SENSITIVE_GUARD: Record<
   string,
   { before?: string; after?: string }
 > = {
+  GitLab: { after: '(?![-\\s]?CI\\b)' },
   Go: { after: '(?![-\\s](?:to|ahead|live|getter|market|beyond)\\b)' },
   C: {
     before:
@@ -226,7 +373,12 @@ const termPattern = (term: SkillTerm) => {
     ...(loose.length
       ? [
           new RegExp(
-            `${TERM_BEFORE}(?:${loose.map(escapeLabel).join('|')})${TERM_AFTER}`,
+            `${TERM_BEFORE}(?:${loose
+              .map(label => {
+                const guard = CASE_SENSITIVE_GUARD[label];
+                return `${guard?.before ?? ''}${escapeLabel(label)}${guard?.after ?? ''}`;
+              })
+              .join('|')})${TERM_AFTER}`,
             'i',
           ),
         ]
@@ -247,6 +399,19 @@ const VOCABULARY = SKILL_VOCABULARY.map(term => ({
   name: term.name,
   pattern: termPattern(term),
 }));
+
+const VOCABULARY_LABELS = new Set(
+  SKILL_VOCABULARY.flatMap(term =>
+    [term.name, ...(term.aliases ?? [])].map(label => label.toLowerCase()),
+  ),
+);
+
+// Suggestions are stored, so one made before the vocabulary gained the term
+// would otherwise stay in the panel.
+export const isInVocabulary = (skill: { name: string; aliases: string[] }) =>
+  [skill.name, ...skill.aliases].some(label =>
+    VOCABULARY_LABELS.has(label.trim().toLowerCase()),
+  );
 
 // The first table column of the career file's Skills section.
 export const parseOwnedSkills = (careerMarkdown: string): string[] => {
@@ -274,6 +439,12 @@ export type JobMatch = {
   company: string;
   matched: string[];
   gaps: string[];
+  // Spoken languages the description names.
+  languages: string[];
+  archived: boolean;
+  applied: boolean;
+  internship: boolean;
+  graduate: boolean;
   ratio: number;
   level: MatchLevel;
 };
@@ -312,6 +483,8 @@ export const matchPosting = (
   posting: JobMatchesBookmarkletPosting & {
     capturedAt?: string;
     brief?: MatchBrief | null;
+    archived?: boolean;
+    applied?: boolean;
   },
   ownedSkills: string[],
   customTerms: SkillTerm[] = [],
@@ -354,6 +527,11 @@ export const matchPosting = (
     company,
     matched: matchedNames,
     gaps,
+    archived: posting.archived ?? false,
+    applied: posting.applied ?? false,
+    internship: isInternship(posting.title),
+    graduate: isGraduateRole(posting.title),
+    languages: withBriefLanguages(detectLanguages(description), posting.brief),
     ratio,
     level: levelFor(ratio, total),
   };
@@ -387,16 +565,44 @@ export const LEVEL_FILTER_ALL = 'all';
 
 export type LevelFilter = typeof LEVEL_FILTER_ALL | MatchLevel;
 
-export type MatchFilters = { level: LevelFilter; easyApplyOnly: boolean };
+export type MatchFilters = {
+  level: LevelFilter;
+  easyApplyOnly: boolean;
+  // Empty means no language filtering.
+  languages: string[];
+  hideInternships: boolean;
+  hideGraduate: boolean;
+  // Archived postings are hidden unless this swaps the list to only them.
+  archivedOnly: boolean;
+  // Within the archived list, keep only postings the user applied for.
+  appliedOnly: boolean;
+};
 
+// A posting passes when every spoken language it names is one of the user's,
+// so "Swedish and English" is hidden for an English-only user; one naming none
+// passes.
 export const filterMatches = (
   matches: JobMatch[],
-  { level, easyApplyOnly }: MatchFilters,
+  {
+    level,
+    easyApplyOnly,
+    languages,
+    hideInternships,
+    hideGraduate,
+    archivedOnly,
+    appliedOnly,
+  }: MatchFilters,
 ) =>
   matches.filter(
     match =>
+      match.archived === archivedOnly &&
+      (!archivedOnly || !appliedOnly || match.applied) &&
+      !(hideInternships && match.internship) &&
+      !(hideGraduate && match.graduate) &&
       (level === LEVEL_FILTER_ALL || match.level === level) &&
-      (!easyApplyOnly || match.easyApply === true),
+      (!easyApplyOnly || match.easyApply === true) &&
+      (!languages.length ||
+        match.languages.every(language => languages.includes(language))),
   );
 
 export const sortMatches = (matches: JobMatch[], option: SortOption) => {
@@ -432,4 +638,76 @@ export const countGaps = (matches: JobMatch[]) => {
     .flatMap(match => match.gaps)
     .forEach(gap => counts.set(gap, (counts.get(gap) ?? 0) + 1));
   return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+};
+
+// Suggested skills are not in the vocabulary until accepted, so their postings
+// come from testing the description rather than from a match's gaps.
+export const postingMentionsSkill = (
+  posting: { title: string; text: string },
+  term: SkillTerm,
+) =>
+  termPattern(term).test(
+    parseJobDescription(extractJobPosting(posting.title, posting.text))
+      .description,
+  );
+
+// Spoken languages a posting can name; matched case-sensitively so a lower-case
+// "french" or "polish" in running text is not read as a requirement.
+export const SPOKEN_LANGUAGES = [
+  'Arabic',
+  'Chinese',
+  'Danish',
+  'Dutch',
+  'English',
+  'Finnish',
+  'French',
+  'German',
+  'Hindi',
+  'Italian',
+  'Japanese',
+  'Korean',
+  'Mandarin',
+  'Norwegian',
+  'Polish',
+  'Portuguese',
+  'Russian',
+  'Spanish',
+  'Swedish',
+];
+
+const detectLanguages = (description: string) =>
+  SPOKEN_LANGUAGES.filter(language =>
+    new RegExp(`\\b${language}\\b`).test(description),
+  );
+
+// A posting written in Swedish ("svenska") never contains the English word, so
+// the brief's verdict also counts.
+const withBriefLanguages = (languages: string[], brief?: MatchBrief | null) =>
+  brief?.swedish === SWEDISH_REQUIREMENT.REQUIRED &&
+  !languages.includes('Swedish')
+    ? [...languages, 'Swedish']
+    : languages;
+
+// Read from the title only: descriptions of ordinary roles mention "interns" or
+// "graduates" in passing ("mentor our interns").
+const INTERNSHIP_TITLE =
+  /\b(interns?|internship|praktik\w*|thesis|examensarbete|working student)\b/i;
+const GRADUATE_TITLE =
+  /\b(graduates?|new grad|trainee|early careers?|entry[- ]level)\b/i;
+
+export const isInternship = (title: string) => INTERNSHIP_TITLE.test(title);
+export const isGraduateRole = (title: string) => GRADUATE_TITLE.test(title);
+
+// Whether a career-file skill row covers the term, by the same rule matches use.
+export const ownsSkill = (term: SkillTerm, ownedSkills: string[]) => {
+  const pattern = termPattern(term);
+  return ownedSkills.some(skill => pattern.test(skill));
+};
+
+// Career-file skills no predefined term covers.
+export const ownedSkillsOutsideVocabulary = (ownedSkills: string[]) => {
+  const patterns = SKILL_VOCABULARY.map(termPattern);
+  return ownedSkills.filter(
+    skill => !patterns.some(pattern => pattern.test(skill)),
+  );
 };
