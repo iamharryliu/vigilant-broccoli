@@ -163,7 +163,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### local-manager-next
 
-- The embedded calendar now shows event times in your current timezone instead of always Copenhagen time (PR: pending).
+- The embedded calendar now shows event times in your current timezone instead of always Copenhagen time ([#1751](https://github.com/iamharryliu/vigilant-broccoli/pull/1751)).
 - Local services now live under vigilant-broccoli.internal (manager, grafana, loki, images, headlamp, argocd and job-hunt), so they no longer share names with the public vigilant-broccoli.app hosts; update `/etc/hosts` from `infrastructure/local/hosts` and rerun the k3s apply ([#1715](https://github.com/iamharryliu/vigilant-broccoli/pull/1715)).
 - Settings is now split into Appearance, Keyboard Shortcuts and Account sections. The keyboard shortcuts cheatsheet is a table, and Sign Out moved from the sidebar to the Account section ([#1693](https://github.com/iamharryliu/vigilant-broccoli/pull/1693)).
 - New CMS page browses, previews, uploads to and deletes from Cloudflare R2, including whole folders ([#1512](https://github.com/iamharryliu/vigilant-broccoli/pull/1512), [#1593](https://github.com/iamharryliu/vigilant-broccoli/pull/1593)).
@@ -182,7 +182,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### mobile-manager-next
 
-- The embedded calendar now shows event times in your current timezone instead of always Copenhagen time (PR: pending).
+- The embedded calendar now shows event times in your current timezone instead of always Copenhagen time ([#1751](https://github.com/iamharryliu/vigilant-broccoli/pull/1751)).
 - A Settings page in the sidebar lets you choose the System, Light or Dark theme ([#1748](https://github.com/iamharryliu/vigilant-broccoli/pull/1748)).
 - Selecting text in the Language tab, or generating an example sentence there, now speaks it right away in that row's language at the tab's 0.75× speed ([#1719](https://github.com/iamharryliu/vigilant-broccoli/pull/1719)).
 - New Language tab on the home screen shows a random everyday word in English, Swedish, French, Spanish and Chinese, with speech, synonyms, an opposite word and example sentences ([#1616](https://github.com/iamharryliu/vigilant-broccoli/pull/1616)).
@@ -251,7 +251,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### calendars
 
-- The embedded calendar now shows event times in the viewer's timezone instead of always Copenhagen time (PR: pending).
+- The embedded calendar now shows event times in the viewer's timezone instead of always Copenhagen time ([#1751](https://github.com/iamharryliu/vigilant-broccoli/pull/1751)).
 
 </details>
 
