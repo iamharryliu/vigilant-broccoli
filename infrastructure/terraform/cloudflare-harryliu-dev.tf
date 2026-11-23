@@ -12,12 +12,12 @@ import {
 resource "cloudflare_pages_domain" "harryliu_dev" {
   account_id   = var.cloudflare_account_id
   project_name = var.harryliu_dev_pages_project
-  name         = "harryliu.dev"
+  name         = var.harryliu_dev_domain
 }
 
 resource "cloudflare_dns_record" "harryliu_dev_apex" {
   zone_id = var.cloudflare_zone_id
-  name    = "harryliu.dev"
+  name    = var.harryliu_dev_domain
   content = var.harryliu_dev_pages_subdomain
   type    = "CNAME"
   ttl     = 1
@@ -31,8 +31,8 @@ import {
 
 resource "cloudflare_dns_record" "harryliu_dev_www" {
   zone_id = var.cloudflare_zone_id
-  name    = "www.harryliu.dev"
-  content = "harryliu.dev"
+  name    = "www.${var.harryliu_dev_domain}"
+  content = var.harryliu_dev_domain
   type    = "CNAME"
   ttl     = 1
   proxied = true
@@ -40,28 +40,28 @@ resource "cloudflare_dns_record" "harryliu_dev_www" {
 
 resource "cloudflare_ruleset" "harryliu_dev_redirects" {
   zone_id = var.cloudflare_zone_id
-  name    = "harryliu.dev redirects"
+  name    = "${var.harryliu_dev_domain} redirects"
   kind    = "zone"
   phase   = "http_request_dynamic_redirect"
 
   rules = [{
     ref         = "www_to_apex"
     description = "Redirect www to apex"
-    expression  = "(http.host eq \"www.harryliu.dev\")"
+    expression  = "(http.host eq \"www.${var.harryliu_dev_domain}\")"
     action      = "redirect"
     action_parameters = {
       from_value = {
         status_code = 301
         target_url = {
-          expression = "concat(\"https://harryliu.dev\", http.request.uri.path)"
+          expression = "concat(\"https://${var.harryliu_dev_domain}\", http.request.uri.path)"
         }
         preserve_query_string = true
       }
     }
     }, {
     ref         = "projects_to_vigilant_broccoli"
-    description = "Redirect projects.harryliu.dev to projects.vigilant-broccoli.app"
-    expression  = "(http.host eq \"projects.harryliu.dev\")"
+    description = "Redirect projects.${var.harryliu_dev_domain} to projects.${var.vigilant_broccoli_domain}"
+    expression  = "(http.host eq \"projects.${var.harryliu_dev_domain}\")"
     action      = "redirect"
     action_parameters = {
       from_value = {
@@ -80,7 +80,7 @@ resource "cloudflare_ruleset" "harryliu_dev_redirects" {
 # target is never fetched.
 resource "cloudflare_dns_record" "harryliu_dev_projects" {
   zone_id = var.cloudflare_zone_id
-  name    = "projects.harryliu.dev"
+  name    = "projects.${var.harryliu_dev_domain}"
   content = "${var.github_owner}.github.io"
   type    = "CNAME"
   ttl     = 1

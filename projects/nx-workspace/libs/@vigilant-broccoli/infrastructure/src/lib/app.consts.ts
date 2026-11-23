@@ -1,8 +1,10 @@
 import { PROJECT_LINK } from '@harry/personal';
 
-// Zone for the public tool sites and Weather; keep in sync with `vigilant_broccoli_domain`
-// in infrastructure/terraform/variables.tf.
+// Site zones; keep in sync with `vigilant_broccoli_domain`, `harryliu_dev_domain` and
+// `cloud8skate_domain` in infrastructure/terraform/variables.tf.
 const VB_APP_DOMAIN = 'vigilant-broccoli.app';
+const HARRYLIU_DOMAIN = 'harryliu.dev';
+const CLOUD8SKATE_DOMAIN = 'cloud8skate.com';
 
 export const VB_APP_URL = {
   GAMES: { NAME: 'Games', URL: `https://games.${VB_APP_DOMAIN}/` },
@@ -38,13 +40,13 @@ export const VB_APP_URL = {
   },
   PHOTOGRAPHY: {
     NAME: 'Photography',
-    URL: 'https://photography.harryliu.dev/',
-    STAGING_URL: 'https://staging-photography.harryliu.dev/',
+    URL: `https://photography.${HARRYLIU_DOMAIN}/`,
+    STAGING_URL: `https://staging-photography.${HARRYLIU_DOMAIN}/`,
   },
   CALENDARS: {
     NAME: 'Calendars',
     URL: PROJECT_LINK.CALENDAR.URL,
-    STAGING_URL: 'https://staging-calendar.harryliu.dev/',
+    STAGING_URL: `https://staging-calendar.${HARRYLIU_DOMAIN}/`,
   },
   WEATHER: {
     NAME: 'Weather',
@@ -53,8 +55,8 @@ export const VB_APP_URL = {
   },
   TASKS: {
     NAME: 'Tasks',
-    URL: 'https://tasks.harryliu.dev/',
-    STAGING_URL: 'https://staging-tasks.harryliu.dev/',
+    URL: `https://tasks.${HARRYLIU_DOMAIN}/`,
+    STAGING_URL: `https://staging-tasks.${HARRYLIU_DOMAIN}/`,
   },
   FIND_ME: {
     NAME: 'Find Me',
@@ -78,8 +80,8 @@ export const VB_APP_URL = {
   },
   DOCS: {
     NAME: 'Docs',
-    URL: 'https://docs.harryliu.dev/',
-    STAGING_URL: 'https://staging-docs.harryliu.dev/',
+    URL: `https://docs.${HARRYLIU_DOMAIN}/`,
+    STAGING_URL: `https://staging-docs.${HARRYLIU_DOMAIN}/`,
   },
   GRIND_75: {
     NAME: 'Grind 75',
@@ -93,28 +95,28 @@ export const VB_APP_URL = {
   },
   CLOUD_8_SKATE: {
     NAME: 'Cloud 8 Skate',
-    URL: 'https://cloud8skate.com/',
-    STAGING_URL: 'https://staging.cloud8skate.com/',
+    URL: `https://${CLOUD8SKATE_DOMAIN}/`,
+    STAGING_URL: `https://staging.${CLOUD8SKATE_DOMAIN}/`,
   },
   PERSONAL_WEBSITE: {
     NAME: 'harryliu.dev',
-    URL: 'https://harryliu.dev/',
-    STAGING_URL: 'https://staging.harryliu.dev/',
+    URL: `https://${HARRYLIU_DOMAIN}/`,
+    STAGING_URL: `https://staging.${HARRYLIU_DOMAIN}/`,
   },
   RESUME: {
     NAME: 'Resume',
-    URL: 'https://harryliu.dev/resume',
-    STAGING_URL: 'https://staging.harryliu.dev/resume',
+    URL: `https://${HARRYLIU_DOMAIN}/resume`,
+    STAGING_URL: `https://staging.${HARRYLIU_DOMAIN}/resume`,
   },
   HEARTH: {
     NAME: 'Hearth',
-    URL: 'https://hearth.harryliu.dev/login',
-    STAGING_URL: 'https://staging-hearth.harryliu.dev/login',
+    URL: `https://hearth.${HARRYLIU_DOMAIN}/login`,
+    STAGING_URL: `https://staging-hearth.${HARRYLIU_DOMAIN}/login`,
   },
   SERVICE_MANAGER: {
     NAME: 'Service Manager API',
-    URL: 'https://api.vigilant-broccoli.app/',
-    STAGING_URL: 'https://staging-api.vigilant-broccoli.app/',
+    URL: `https://api.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-api.${VB_APP_DOMAIN}/`,
   },
   MEDIA_SERVICE: {
     NAME: 'Media Service API',
@@ -139,7 +141,7 @@ export const VB_APP_URL = {
   },
   CAREER: {
     NAME: 'Career',
-    URL: 'https://career.harryliu.dev/',
+    URL: `https://career.${HARRYLIU_DOMAIN}/`,
   },
   PROJECT_OVERVIEW: {
     NAME: 'Project Overview',
