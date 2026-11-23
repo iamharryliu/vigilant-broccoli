@@ -23,9 +23,13 @@ Row menus use react-lib's `EllipsisCTA` (see [ellipsis-cta.md](../../../react-li
 - `isCards` — wraps rows in Radix `Card`
 - `showEllipsis` — defaults `true`; hides ellipsis when `false`
 - `itemActions` — extra ellipsis entries; without `FormComponent` the menu holds only these (read-only list)
+- `leadingItemActions` — extra ellipsis entries placed before Update (needs `FormComponent`)
 - `copy` — override titles/labels
 - `showDialogCloseButton` — passes `showCloseButton` to the create and update dialogs
 - `deleteConfirmation` — `{ title, description }` override for the delete confirmation dialog
+- `search` — `{ value, onChange, placeholder }` replaces the title with a clearable search input inline with the create button; the list stays controlled, so the consumer filters `items` itself
+- `createLabel` — text beside the create button's `+` icon (icon only by default)
+- `compact` — tightens the gap between rows (`space-y-1` instead of `space-y-4`)
 - `HeaderComponent`, `FooterComponent` — optional slots
 
 ## Behaviour

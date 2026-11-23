@@ -5,6 +5,7 @@ Email subscription management and broadcast.
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 - [Environment](#environment)
 
 ## Stack
@@ -20,9 +21,12 @@ Email subscription management and broadcast.
   - `fastify`
   - `messaging`
 - Cloud services
-  - Email Service
   - RabbitMQ
   - Supabase
+
+## App Dependencies
+
+- [Email Service](../email-service) - calls
 
 ## Environment
 

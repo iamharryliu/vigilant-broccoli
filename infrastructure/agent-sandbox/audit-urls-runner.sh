@@ -24,7 +24,7 @@ BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
 
 PROMPT=$(cat <<EOF
-You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. Audit public URL registry consistency: every public URL needs synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo, and every published Docker image its pages-index registry entry and README Containers row; fix drift.
+You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. Audit public URL registry consistency: every public URL needs synchronized Upptime entries, project-overview cards and browser quick links for every environment and demo, and every published Docker image its project-overview registry entry and README Containers row; fix drift.
 
 Follow these shared task instructions:
 
@@ -43,7 +43,7 @@ When finished, write $META_FILE containing only a JSON object with these fields:
   - commit_message: capitalized, concise, focused on why the drift mattered, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
-  - pr_summary: brief markdown (about 80 words in total) for the PR "## Summary" section, in two subsections: "### Why" (one or two bullets on what the audit found) and "### Changes" (at most four bullets on the fixes grouped by registry: Upptime, pages-index, quick links, Docker images, no per-item inventory), plus a one-line count of skipped candidates
+  - pr_summary: brief markdown (about 80 words in total) for the PR "## Summary" section, in two subsections: "### Why" (one or two bullets on what the audit found) and "### Changes" (at most four bullets on the fixes grouped by registry: Upptime, project-overview, quick links, Docker images, no per-item inventory), plus a one-line count of skipped candidates
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (spot-check the evidence, watch CI to green, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — only optional follow-up for the reviewer (related cleanups worth a separate PR), or "" when there are none. Never suggest work this scheduled job covers, such as candidates over the cap or areas you did not check: list those as skipped candidates, since the next scheduled run picks them up.
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work

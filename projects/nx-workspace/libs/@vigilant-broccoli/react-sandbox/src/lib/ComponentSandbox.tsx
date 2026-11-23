@@ -11,6 +11,7 @@ import {
   Link2,
   List,
   ListChecks,
+  ListTodo,
   Menu,
   MessageSquare,
   Music,
@@ -130,6 +131,8 @@ import { StatusCardListDemo } from './demos/StatusCardListDemo';
 import { TabsDemo } from './demos/TabsDemo';
 import { TooltipDemo } from './demos/TooltipDemo';
 import { LinkCardDemo } from './demos/LinkCardDemo';
+import { ListHeaderDemo } from './demos/ListHeaderDemo';
+import { SearchDialogDemo } from './demos/SearchDialogDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
 import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
@@ -171,6 +174,7 @@ const PACKAGE_SCOPE = `${PACKAGE_SCOPE_GROUP_ID}/`;
 // Declaration order is sidebar order: low-level libs first.
 const LIB = {
   REACT_LIB: 'react-lib',
+  CHECKLIST: 'react-lib-checklist',
   HIGHER_LEVEL: 'react-lib-higher-level',
   ENTRY_DIRECTORY: 'entry-directory',
   SIDEBAR: 'sidebar',
@@ -190,6 +194,7 @@ const LIB = {
 type Lib = (typeof LIB)[keyof typeof LIB];
 const LIB_ICON = {
   [LIB.REACT_LIB]: Blocks,
+  [LIB.CHECKLIST]: ListTodo,
   [LIB.HIGHER_LEVEL]: Layers,
   [LIB.ENTRY_DIRECTORY]: Search,
   [LIB.SIDEBAR]: PanelLeft,
@@ -347,7 +352,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'Checklist',
     description:
       'Checkable rows with inline editing, drag reorder and a collapsible completed section, driven entirely by caller-supplied render props.',
-    lib: LIB.REACT_LIB,
+    lib: LIB.CHECKLIST,
     content: <CheckListDemo />,
   },
   {
@@ -429,6 +434,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Clickable card with title, description and icon, with a subtle lift on hover; renders an anchor or a router link.',
     lib: LIB.REACT_LIB,
     content: <LinkCardDemo />,
+  },
+  {
+    id: 'list-header',
+    label: 'List Header',
+    description:
+      'Title row with a trailing control, and a Sort select that fits it or a card header action.',
+    lib: LIB.REACT_LIB,
+    content: <ListHeaderDemo />,
   },
   {
     id: 'segmented-control',
@@ -768,6 +781,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
     description: 'Compact input with a leading search icon.',
     lib: LIB.REACT_LIB,
     content: <SearchInputDemo />,
+  },
+  {
+    id: 'search-dialog',
+    label: 'Search Dialog',
+    description:
+      'Command-palette style dialog with fuzzy-filtered results, arrow-key navigation and Enter to select; opens with the / shortcut.',
+    lib: LIB.REACT_LIB,
+    content: <SearchDialogDemo />,
   },
   {
     id: 'speech-to-text-toggle-button',

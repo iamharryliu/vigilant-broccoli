@@ -2,6 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSeenWords } from '../hooks/use-seen-words';
+import {
+  SPEECH_LANGUAGE_ATTRIBUTE,
+  useSpeakOnSelect,
+} from '../hooks/use-speak-on-select';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { AudioButton } from '@vigilant-broccoli/react-lib-media';
 import {
@@ -39,7 +43,10 @@ const COPY_LABEL = 'Copy';
 const COPIED_LABEL = 'Copied';
 const COPIED_DURATION_MS = 1500;
 const SENTENCE_LABEL = 'Example sentence';
-const SENTENCE_ID_SUFFIX = ':sentence';
+const ID_SEPARATOR = ':';
+const SENTENCE_ID_SUFFIX = `${ID_SEPARATOR}sentence`;
+// Matches no speaker button, so speaking a selection lights none of them up.
+const SELECTION_ID_SUFFIX = `${ID_SEPARATOR}selection`;
 const ERROR_MESSAGE = 'Could not load a word. Tap refresh to try again.';
 
 const TAB_ALL = 'All';
@@ -69,6 +76,7 @@ export const LanguageLearningView = () => {
   const copiedTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
   const { seen, seenRef, hydrate, add, remove, clear } = useSeenWords();
   const requestId = useRef(0);
+  const listRef = useRef<HTMLUListElement>(null);
   const { speak } = useTextToSpeech({
     authFetch,
     endpoint: API_ENDPOINTS.TEXT_TO_SPEECH,
@@ -125,9 +133,21 @@ export const LanguageLearningView = () => {
     );
   };
 
+  // Ids are a language, or `<language>:sentence` / `<language>:selection`.
+  const handleSpeak = async (text: string, id: string) => {
+    setActiveId(id);
+    const [language] = id.split(ID_SEPARATOR);
+    await speak(text, {
+      playbackRate: SPEECH_RATE,
+      languageCode: LANGUAGE_META[language as Language].code,
+    });
+    setActiveId(null);
+  };
+
   const loadSentence = async (language: Language, word: string) => {
     const wordRequestId = requestId.current;
     setSentenceLoading(language);
+    let loaded: SentenceResult | null = null;
     try {
       const res = await authFetch(API_ENDPOINTS.LANGUAGE_LEARNING_SENTENCE, {
         method: HTTP_METHOD.POST,
@@ -138,23 +158,20 @@ export const LanguageLearningView = () => {
       // A new word arrived while this was loading; its sentence no longer fits.
       if (wordRequestId !== requestId.current) return;
       setSentences(current => ({ ...current, [language]: sentence }));
+      loaded = sentence;
     } catch {
       setHasError(true);
     } finally {
       setSentenceLoading(null);
     }
+    if (loaded) {
+      await handleSpeak(loaded.sentence, `${language}${SENTENCE_ID_SUFFIX}`);
+    }
   };
 
-  // Ids are a language, or `<language>:sentence` for its example sentence.
-  const handleSpeak = async (text: string, id: string) => {
-    setActiveId(id);
-    const [language] = id.split(SENTENCE_ID_SUFFIX);
-    await speak(text, {
-      playbackRate: SPEECH_RATE,
-      languageCode: LANGUAGE_META[language as Language].code,
-    });
-    setActiveId(null);
-  };
+  useSpeakOnSelect(listRef, (text, language) =>
+    handleSpeak(text, `${language}${SELECTION_ID_SUFFIX}`),
+  );
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
@@ -201,13 +218,18 @@ export const LanguageLearningView = () => {
       )}
       {result && (
         <ul
+          ref={listRef}
           className={`flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto pb-[env(safe-area-inset-bottom)] transition-opacity ${isLoading ? 'opacity-40' : ''}`}
         >
           {LANGUAGE_ORDER.map(language => {
             const { word, pinyin, synonyms } = result.entry[language];
             const sentence = sentences[language];
             return (
-              <li key={language} className="flex flex-col gap-1">
+              <li
+                key={language}
+                className="flex flex-col gap-1"
+                {...{ [SPEECH_LANGUAGE_ATTRIBUTE]: language }}
+              >
                 <div className="flex items-baseline gap-2">
                   <span
                     role="img"

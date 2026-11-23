@@ -8,6 +8,7 @@ module.exports = {
     './{src,pages,components,app}/**/*.{ts,tsx,js,jsx,html}',
     '!./{src,pages,components,app}/**/*.{stories,spec}.{ts,tsx,js,jsx,html}',
     '../../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/react-lib-checklist/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/sidebar/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-lib-crud-list/src/**/*.{tsx,ts,jsx,js,html}',

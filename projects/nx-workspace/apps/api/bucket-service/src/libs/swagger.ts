@@ -146,6 +146,40 @@ export const swaggerSpec = createSwaggerSpec({
         },
       },
     },
+    '/api/bucket/download-urls': {
+      post: {
+        summary:
+          'Get presigned download URLs for several files in one request, in fileNames order',
+        parameters: [PROVIDER_QUERY_PARAM, BUCKET_NAME_QUERY_PARAM],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['fileNames', 'expiresInSeconds'],
+                properties: {
+                  fileNames: {
+                    type: 'array',
+                    maxItems: 500,
+                    items: { type: 'string' },
+                  },
+                  expiresInSeconds: { type: 'number' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: '{ urls: string[] } in fileNames order' },
+          '400': {
+            description:
+              'Missing provider or expiresInSeconds, or invalid fileNames',
+          },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
     '/api/bucket/file': {
       delete: {
         summary:

@@ -7,7 +7,7 @@ import { swaggerSpec as emailSubscriptionServiceSpec } from '../apps/api/email-s
 import { swaggerSpec as llmServiceSpec } from '../apps/api/llm-service/src/libs/swagger';
 import { swaggerSpec as mediaServiceSpec } from '../apps/api/media-service/src/libs/swagger';
 
-const OUTPUT_DIR = 'apps/ui/pages-index/public/openapi';
+const OUTPUT_DIR = 'apps/ui/project-overview/public/openapi';
 
 const PRIVATE_SERVER_DESCRIPTION =
   'Private-only (Fly 6PN). Not reachable from a browser — tunnel with `flyctl proxy 3000:80 <app>.flycast -a <app>`.';

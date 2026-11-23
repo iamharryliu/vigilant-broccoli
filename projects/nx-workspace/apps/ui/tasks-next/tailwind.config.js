@@ -12,6 +12,7 @@ module.exports = {
     '../../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-lib-auth/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-lib-tasks/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/react-lib-checklist/src/**/*.{tsx,ts,jsx,js,html}',
   ],
   theme: { extend: {} },
   plugins: [],

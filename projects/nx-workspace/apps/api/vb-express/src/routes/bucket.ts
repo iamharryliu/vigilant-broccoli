@@ -6,6 +6,7 @@ import {
 import {
   getUploadUrl,
   getDownloadUrl,
+  getDownloadUrls,
   deleteFile,
   listFiles,
   readFile,
@@ -39,6 +40,14 @@ const bucketRoutes: FastifyPluginAsync = async app => {
   app.get('/download-url', async (req, reply) => {
     try {
       return reply.send({ url: await getDownloadUrl(toParams(req)) });
+    } catch (e) {
+      return sendError(reply, e);
+    }
+  });
+
+  app.post('/download-urls', async (req, reply) => {
+    try {
+      return reply.send(await getDownloadUrls(toParams(req), req.body));
     } catch (e) {
       return sendError(reply, e);
     }

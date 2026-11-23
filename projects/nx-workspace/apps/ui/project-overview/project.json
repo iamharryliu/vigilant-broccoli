@@ -1,0 +1,177 @@
+{
+  "name": "project-overview",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/project-overview/src",
+  "projectType": "application",
+  "tags": ["visibility:public"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "generate-openapi": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{workspaceRoot}/scripts/generate-openapi-specs.ts",
+        "{workspaceRoot}/apps/api/bucket-service/src/libs/swagger.ts",
+        "{workspaceRoot}/apps/api/email-service/src/swagger.ts",
+        "{workspaceRoot}/apps/api/email-subscription-service/src/swagger.ts",
+        "{workspaceRoot}/apps/api/llm-service/src/libs/swagger.ts",
+        "{workspaceRoot}/apps/api/media-service/src/libs/swagger.ts",
+        "{workspaceRoot}/libs/@vigilant-broccoli/employee-handler/src/**/*.ts"
+      ],
+      "outputs": ["{projectRoot}/public/openapi"],
+      "options": {
+        "command": "tsx scripts/generate-openapi-specs.ts"
+      }
+    },
+    "generate-repo-timeline": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "tsx scripts/generate-repo-timeline.ts"
+      }
+    },
+    "generate-project-graph": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "tsx scripts/generate-project-graph.ts"
+      }
+    },
+    "check-i18n-keys": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{workspaceRoot}/scripts/check-i18n-keys.ts",
+        "{projectRoot}/src/**/*.{ts,tsx,json}"
+      ],
+      "options": {
+        "command": "tsx scripts/check-i18n-keys.ts"
+      }
+    },
+    "build": {
+      "dependsOn": [
+        "check-i18n-keys",
+        "generate-openapi",
+        "generate-repo-timeline",
+        "generate-project-graph"
+      ],
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/project-overview"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outDir": "../../../dist/project-overview"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "dependsOn": [
+        "generate-openapi",
+        "generate-repo-timeline",
+        "generate-project-graph"
+      ],
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "deploy-github-pages": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "commands": [
+          "mkdir -p ../../../_site",
+          "cp -R ../../../dist/project-overview/. ../../../_site/",
+          "cp public/repo-timeline.json ../../../_site/repo-timeline.json",
+          "cp public/project-graph.json ../../../_site/project-graph.json",
+          "cp ../../../dist/project-overview/index.html ../../../_site/404.html",
+          "echo projects.vigilant-broccoli.app > ../../../_site/CNAME"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      }
+    },
+    "stage-cloudflare-pages": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "cache": false,
+      "options": {
+        "commands": [
+          "rm -rf dist/project-overview-cloudflare",
+          "cp -R dist/project-overview dist/project-overview-cloudflare",
+          "cp apps/ui/project-overview/public/repo-timeline.json apps/ui/project-overview/public/project-graph.json dist/project-overview-cloudflare/"
+        ],
+        "parallel": false
+      }
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-project-overview || npx wrangler pages project create staging-project-overview --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-project-overview 10",
+      "dependsOn": ["ensure-cf-project"]
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/project-overview-cloudflare --project-name staging-project-overview --branch main",
+      "dependsOn": [
+        "stage-cloudflare-pages",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/project-overview-cloudflare --project-name staging-project-overview --branch main",
+      "dependsOn": [
+        "stage-cloudflare-pages",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-project-overview || npx wrangler pages project create production-project-overview --production-branch production"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-project-overview 10",
+      "dependsOn": ["ensure-cf-project:production"]
+    },
+    "deploy:production": {
+      "command": "npx wrangler pages deploy dist/project-overview-cloudflare --project-name production-project-overview --branch production",
+      "dependsOn": [
+        "stage-cloudflare-pages",
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-project-overview || npx wrangler pages project create preview-project-overview --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-project-overview",
+      "dependsOn": ["ensure-cf-project:preview"]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/project-overview --project-name preview-project-overview --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
+      "dependsOn": ["build", "ensure-cf-project:preview"]
+    }
+  },
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals",
+      {
+        "runtime": "node -e \"console.log(require('node:crypto').createHash('sha256').update(require('node:fs').readFileSync('../../.upptimerc.yml')).digest('hex'))\""
+      }
+    ]
+  }
+}
