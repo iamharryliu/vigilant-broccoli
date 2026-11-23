@@ -109,15 +109,15 @@ variable "rabbitmq_user" {
 
 variable "gitea_domain" {
   type    = string
-  default = "git.harryliu.dev"
+  default = "git.vigilant-broccoli.app"
 }
 
-# DNS-only (grey-cloud) hostname for git-over-SSH on :2222. The apex git.harryliu.dev
+# DNS-only (grey-cloud) hostname for git-over-SSH on :2222. The apex git.vigilant-broccoli.app
 # is Cloudflare-proxied for the Access-gated web UI, and the proxy doesn't forward
 # :2222 — so SSH needs a direct-to-VM hostname.
 variable "gitea_ssh_domain" {
   type    = string
-  default = "ssh.git.harryliu.dev"
+  default = "ssh.git.vigilant-broccoli.app"
 }
 
 variable "gitea_allowed_emails" {
@@ -401,7 +401,7 @@ variable "pomodoro_pages_subdomain" {
 
 variable "sandbox_domain" {
   type    = string
-  default = "sandbox.harryliu.dev"
+  default = "sandbox.vigilant-broccoli.app"
 }
 
 variable "sandbox_pages_project" {

@@ -159,7 +159,7 @@ jobs:
           GITEA_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
             -H "CF-Access-Client-Id: ${GITEA_CF_ACCESS_CLIENT_ID}" \
             -H "CF-Access-Client-Secret: ${GITEA_CF_ACCESS_CLIENT_SECRET}" \
-            "https://git.harryliu.dev/api/healthz" 2>/dev/null) || GITEA_CODE="timeout"
+            "https://git.vigilant-broccoli.app/api/healthz" 2>/dev/null) || GITEA_CODE="timeout"
           if [ "$GITEA_CODE" = "200" ]; then
             check "gitea" "ok"
           elif [ "$GITEA_CODE" = "302" ]; then

@@ -240,7 +240,7 @@
     },
     {
       "id": "sandbox",
-      "href": "https://sandbox.harryliu.dev/",
+      "href": "https://sandbox.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.SANDBOX.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.SANDBOX.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/sandbox/README.md"

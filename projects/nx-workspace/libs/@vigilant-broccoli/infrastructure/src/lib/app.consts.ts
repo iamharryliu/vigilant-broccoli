@@ -113,8 +113,8 @@ export const VB_APP_URL = {
   },
   SERVICE_MANAGER: {
     NAME: 'Service Manager API',
-    URL: 'https://api.harryliu.dev/',
-    STAGING_URL: 'https://staging-api.harryliu.dev/',
+    URL: 'https://api.vigilant-broccoli.app/',
+    STAGING_URL: 'https://staging-api.vigilant-broccoli.app/',
   },
   MEDIA_SERVICE: {
     NAME: 'Media Service API',

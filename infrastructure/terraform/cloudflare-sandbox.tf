@@ -1,4 +1,4 @@
-# sandbox.harryliu.dev — Cloudflare Pages test harness for Google sign-in through
+# sandbox.vigilant-broccoli.app — Cloudflare Pages test harness for Google sign-in through
 # VB Express Better Auth (project + deploys owned by the sandbox app's
 # deploy:production target via wrangler). Production only. Owner-only Access
 # covers the custom host and the project's pages.dev root, branch and
@@ -36,7 +36,7 @@ resource "cloudflare_pages_domain" "sandbox" {
 }
 
 resource "cloudflare_dns_record" "sandbox" {
-  zone_id    = var.cloudflare_zone_id
+  zone_id    = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name       = var.sandbox_domain
   content    = var.sandbox_pages_subdomain
   type       = "CNAME"
