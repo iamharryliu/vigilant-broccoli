@@ -4,6 +4,7 @@ export const API_ENDPOINTS = {
   CAREER_PREVIEW: '/api/career/preview',
   CAREER_RESET: '/api/career/reset',
   JOB_MATCHES: '/api/job-matches',
+  JOB_MATCHES_BRIEF: '/api/job-matches/brief',
   JOB_MATCHES_SKILLS: '/api/job-matches/skills',
   NOTES: '/api/notes',
   TASKS: '/api/tasks',

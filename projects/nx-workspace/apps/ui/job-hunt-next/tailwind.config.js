@@ -12,6 +12,7 @@ module.exports = {
     '../../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/sidebar/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-lib-crud-list/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/docs-explorer/src/**/*.{tsx,ts,jsx,js,html}',
   ],
   plugins: [require('@tailwindcss/typography')],
 };

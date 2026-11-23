@@ -10,6 +10,7 @@
 - [Culture Building](./culture-building.md)
 - [Interview Prep](./interview-prep.md)
 - [Job Hunt](./job-hunt.md)
+- [Job Hunt Workflow](./job-hunt-workflow.md)
 - [Interviewer Prep](./interviewer-prep.md)
 
 ## Job Boards

@@ -18,6 +18,12 @@ import {
 } from '@vigilant-broccoli/common-js';
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Input,
   Tabs,
   TabsContent,
@@ -384,6 +390,7 @@ export const JobApplicationList = () => {
   const [loaded, setLoaded] = useState(false);
   const [defaultExpandedIds, setDefaultExpandedIds] = useState<string[]>([]);
   const [search, setSearch] = useState('');
+  const [confirmingClear, setConfirmingClear] = useState(false);
 
   const load = useCallback(
     async (expandLatest: boolean) => {
@@ -551,6 +558,21 @@ export const JobApplicationList = () => {
     }
   };
 
+  const clearApplications = async () => {
+    setConfirmingClear(false);
+    try {
+      const response = await fetch(
+        `${API_ENDPOINTS.JOB_APPLICATIONS}?all=true`,
+        { method: HTTP_METHOD.DELETE },
+      );
+      if (!response.ok) throw new Error((await response.json()).error);
+      setItems([]);
+      toast.success(t('APPLICATIONS.CLEARED'));
+    } catch (error) {
+      toast.error(errorMessage(error, t('APPLICATIONS.CLEAR_FAILED')));
+    }
+  };
+
   const query = search.trim().toLowerCase();
   const visibleItems = useMemo(
     () =>
@@ -583,14 +605,49 @@ export const JobApplicationList = () => {
     <>
       <ExpansionContext.Provider value={{ loadDetails }}>
         {loaded && items.length > 0 && (
-          <Input
-            type="search"
-            value={search}
-            onChange={event => setSearch(event.target.value)}
-            placeholder={t('APPLICATIONS.SEARCH_PLACEHOLDER')}
-            className="mb-2"
-          />
+          <div className="mb-2 flex gap-2">
+            <Input
+              type="search"
+              value={search}
+              onChange={event => setSearch(event.target.value)}
+              placeholder={t('APPLICATIONS.SEARCH_PLACEHOLDER')}
+            />
+            {!IS_DEMO && (
+              <Button
+                variant="outline"
+                className="shrink-0"
+                onClick={() => setConfirmingClear(true)}
+              >
+                <Trash2 />
+                {t('APPLICATIONS.CLEAR')}
+              </Button>
+            )}
+          </div>
         )}
+        <Dialog open={confirmingClear} onOpenChange={setConfirmingClear}>
+          <DialogContent className="max-w-[480px]">
+            <DialogHeader>
+              <DialogTitle>{t('APPLICATIONS.CLEAR_TITLE')}</DialogTitle>
+              <DialogDescription>
+                {t('APPLICATIONS.CLEAR_DESCRIPTION', {
+                  count: String(items.length),
+                })}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setConfirmingClear(false)}
+              >
+                {t('APPLICATIONS.CANCEL')}
+              </Button>
+              <Button variant="destructive" onClick={clearApplications}>
+                <Trash2 />
+                {t('APPLICATIONS.CLEAR')}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         {loaded && (
           <CRUDItemList
             items={visibleItems}

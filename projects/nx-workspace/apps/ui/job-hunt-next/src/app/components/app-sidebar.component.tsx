@@ -15,6 +15,7 @@ import {
   ScrollText,
   Settings,
   UserRound,
+  Workflow,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -41,6 +42,7 @@ const TAB_ICON: Record<AppTab, LucideIcon> = {
   [APP_TAB.NOTES.value]: NotebookPen,
   [APP_TAB.TASKS.value]: ListChecks,
   [APP_TAB.RUNS.value]: Activity,
+  [APP_TAB.WORKFLOW.value]: Workflow,
   [APP_TAB.SETTINGS.value]: Settings,
 };
 
@@ -138,6 +140,8 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
     <>
       <Sidebar
         LinkComponent={Link}
+        searchable
+        onNavigate={router.push}
         className="max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-30"
         mobileOpen={mobileOpen}
         onMobileClose={onMobileClose}
@@ -150,6 +154,7 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
             isActive: group === activeGroup,
             children: group.tabs.map(toItem),
           })),
+          toItem(APP_TAB.WORKFLOW),
           toItem(APP_TAB.SETTINGS),
         ]}
       />

@@ -6,7 +6,10 @@ import {
   FileEntry,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
-import { clearApplicationStatus } from '../../../lib/job-application-state.db';
+import {
+  clearAllApplicationStatuses,
+  clearApplicationStatus,
+} from '../../../lib/job-application-state.db';
 import {
   PATH_PARAM,
   resolveJobApplicationsPath,
@@ -15,6 +18,8 @@ import {
 const HIDDEN_FILE_PREFIX = '.';
 const NOT_FOUND = 'ENOENT';
 const CURRENT_DIR = '.';
+const ALL_PARAM = 'all';
+const ALL_VALUE = 'true';
 
 export async function GET(req: NextRequest) {
   const relativePath = req.nextUrl.searchParams.get(PATH_PARAM) ?? '';
@@ -73,10 +78,41 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// Removes every application folder and status; loose files in the Job
+// Applications folder stay.
+const clearApplications = async () => {
+  const root = resolveJobApplicationsPath('');
+  if (!root) {
+    return NextResponse.json(
+      { error: 'Invalid path' },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+  const dirents = await readdir(root, { withFileTypes: true }).catch(
+    (error: NodeJS.ErrnoException) => {
+      if (error.code === NOT_FOUND) return [];
+      throw error;
+    },
+  );
+  await Promise.all(
+    dirents
+      .filter(
+        dirent =>
+          dirent.isDirectory() && !dirent.name.startsWith(HIDDEN_FILE_PREFIX),
+      )
+      .map(dirent => rm(join(root, dirent.name), { recursive: true })),
+  );
+  clearAllApplicationStatuses();
+  return NextResponse.json({ ok: true });
+};
+
 // Deletes one application folder with everything in it. Only a direct child
 // of the Job Applications folder qualifies, never the root itself or a file or
 // folder inside an application.
 export async function DELETE(req: NextRequest) {
+  if (req.nextUrl.searchParams.get(ALL_PARAM) === ALL_VALUE) {
+    return clearApplications();
+  }
   const relativePath = req.nextUrl.searchParams.get(PATH_PARAM) ?? '';
   const folder = resolveJobApplicationsPath(relativePath);
   if (
