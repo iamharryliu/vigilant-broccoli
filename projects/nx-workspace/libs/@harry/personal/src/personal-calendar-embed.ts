@@ -1,6 +1,7 @@
 import {
   buildCalendarUrl,
   CalendarConfig,
+  getLocalTimeZone,
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
 import {
@@ -82,6 +83,9 @@ export const buildEventCalendarEmbedUrl = ({
   const hidden = new Set(hiddenKeys);
   return buildCalendarUrl({
     ...baseConfig,
+    // The base config's Copenhagen zone is only the SSR/public default; the
+    // embed shows the viewer's own zone so travel doesn't skew event times.
+    ctz: getLocalTimeZone(),
     mode,
     sharedCalendars: [
       ...baseConfig.sharedCalendars,
