@@ -3,6 +3,7 @@ export const APP_NAME = 'Mobile Manager Next';
 export const PAGE_TITLE = {
   HOME: 'Home',
   APPS: 'Apps',
+  SETTINGS: 'Settings',
   LOGIN: 'Login',
   AUTH_CALLBACK: 'Signing In',
 } as const;
@@ -10,6 +11,7 @@ export const PAGE_TITLE = {
 export const APP_ROUTE = {
   HOME: '/',
   APPS: '/apps',
+  SETTINGS: '/settings',
 } as const;
 
 export const CALENDAR_TAB = {
