@@ -49,6 +49,17 @@ export const removeMatchPostings = (url?: string) =>
     { method: HTTP_METHOD.DELETE },
   ).then(readPostings);
 
+export const setMatchPostingArchived = (
+  url: string,
+  archived: boolean,
+  applied = false,
+) =>
+  fetch(API_ENDPOINTS.JOB_MATCHES, {
+    method: HTTP_METHOD.PATCH,
+    headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
+    body: JSON.stringify({ url, archived, applied }),
+  }).then(readPostings);
+
 type SkillsResponse = { skills: MatchSkill[] };
 
 const readSkills = async (response: Response) => {

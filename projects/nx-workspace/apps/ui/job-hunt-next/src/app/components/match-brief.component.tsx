@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FileText, RefreshCw } from 'lucide-react';
-import { Badge, Button } from '@vigilant-broccoli/react-lib';
+import { Badge, Button, CollapsibleList } from '@vigilant-broccoli/react-lib';
 import {
   SWEDISH_REQUIREMENT,
   type MatchBrief,
@@ -47,14 +47,14 @@ type MatchBriefProps = {
   onGenerate?: () => void;
 };
 
-// The one-line summary and chips stay on the card; the rest opens on demand.
-export const MatchBriefSection = ({
+// The one-line summary and chips stay on the card; the rest opens on demand in
+// `MatchBriefDetails`.
+export const MatchBriefSummary = ({
   brief,
   generating,
   onGenerate,
 }: MatchBriefProps) => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
 
   if (!brief) {
     return (
@@ -75,14 +75,6 @@ export const MatchBriefSection = ({
   }
 
   const swedish = SWEDISH_BADGE[brief.swedish];
-  const notStated = t('MATCHES.BRIEF_NOT_STATED');
-  const details = [
-    ['MATCHES.BRIEF_LEVEL', brief.level],
-    ['MATCHES.BRIEF_LOCATION', brief.location],
-    ['MATCHES.BRIEF_WORK_MODE', brief.workMode],
-    ['MATCHES.BRIEF_PAY', brief.compensation],
-    ['MATCHES.BRIEF_WORK_PERMIT', brief.workAuthorization],
-  ] as const;
 
   return (
     <div className="flex flex-col gap-2">
@@ -99,92 +91,126 @@ export const MatchBriefSection = ({
           {t(swedish.key)}
         </Badge>
       </div>
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => setOpen(!open)}
-        className="cursor-pointer self-start text-sm text-primary hover:underline"
-      >
-        {t(open ? 'MATCHES.BRIEF_HIDE' : 'MATCHES.BRIEF_SHOW')}
-      </button>
-      {open && (
-        <div className="grid gap-4 border-t border-border pt-3 sm:grid-cols-2">
-          <div className="flex flex-col gap-1">
-            <span className={SECTION_HEADING_CLASS}>
-              {t('MATCHES.BRIEF_ROLE')}
-            </span>
-            <dl className="m-0 grid grid-cols-[max-content_1fr] gap-x-3 gap-y-0.5 text-sm">
-              {details.map(([key, value]) => (
-                <div key={key} className="contents">
-                  <dt className="text-muted-foreground">{t(key)}</dt>
-                  <dd className="m-0">
-                    {value || (
-                      <span className="text-muted-foreground">{notStated}</span>
-                    )}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-          <BriefList
-            title={t('MATCHES.BRIEF_RESPONSIBILITIES')}
-            items={brief.responsibilities}
-          />
-          <BriefList
-            title={t('MATCHES.BRIEF_MUST_HAVE')}
-            items={brief.mustHave}
-          />
-          <BriefList
-            title={t('MATCHES.BRIEF_NICE_TO_HAVE')}
-            items={brief.niceToHave}
-          />
-          <BriefList
-            title={t('MATCHES.BRIEF_RED_FLAGS')}
-            items={brief.redFlags}
-          />
-          {brief.abbreviations.length > 0 && (
-            <div className="flex flex-col gap-1 sm:col-span-2">
-              <span className={SECTION_HEADING_CLASS}>
-                {t('MATCHES.BRIEF_ABBREVIATIONS')}
+    </div>
+  );
+};
+
+// Rendered at the bottom of the card, below the matched and gap skills.
+export const MatchBriefDetails = ({
+  brief,
+  generating,
+  onGenerate,
+}: MatchBriefProps) => {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  if (!brief) return null;
+
+  const notStated = t('MATCHES.BRIEF_NOT_STATED');
+  const details = [
+    ['MATCHES.BRIEF_LEVEL', brief.level],
+    ['MATCHES.BRIEF_LOCATION', brief.location],
+    ['MATCHES.BRIEF_WORK_MODE', brief.workMode],
+    ['MATCHES.BRIEF_PAY', brief.compensation],
+    ['MATCHES.BRIEF_WORK_PERMIT', brief.workAuthorization],
+  ] as const;
+
+  return (
+    <div className="flex flex-col">
+      <CollapsibleList
+        triggerClassName="py-1"
+        onOpenChange={(_, next) => setOpen(next)}
+        items={[
+          {
+            id: 'brief',
+            className: 'border-0',
+            titleContent: (
+              <span className="text-sm text-primary">
+                {t(open ? 'MATCHES.BRIEF_HIDE' : 'MATCHES.BRIEF_SHOW')}
               </span>
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-border text-left text-muted-foreground">
-                    <th className="py-1 pr-4 font-medium">
-                      {t('MATCHES.BRIEF_TERM')}
-                    </th>
-                    <th className="py-1 font-medium">
-                      {t('MATCHES.BRIEF_MEANING')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {brief.abbreviations.map(({ term, meaning }) => (
-                    <tr
-                      key={term}
-                      className="border-b border-border last:border-0"
-                    >
-                      <td className="py-1 pr-4 font-medium">{term}</td>
-                      <td className="py-1">{meaning}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {onGenerate && (
-            <Button
-              variant="outline"
-              className="self-start sm:col-span-2"
-              loading={generating}
-              onClick={onGenerate}
-            >
-              <RefreshCw size={ICON_SIZE} />
-              {t('MATCHES.BRIEF_REGENERATE')}
-            </Button>
-          )}
-        </div>
-      )}
+            ),
+            content: (
+              <div className="grid gap-4 border-t border-border pt-3 sm:grid-cols-2">
+                <div className="flex flex-col gap-1">
+                  <span className={SECTION_HEADING_CLASS}>
+                    {t('MATCHES.BRIEF_ROLE')}
+                  </span>
+                  <dl className="m-0 grid grid-cols-[max-content_1fr] gap-x-3 gap-y-0.5 text-sm">
+                    {details.map(([key, value]) => (
+                      <div key={key} className="contents">
+                        <dt className="text-muted-foreground">{t(key)}</dt>
+                        <dd className="m-0">
+                          {value || (
+                            <span className="text-muted-foreground">
+                              {notStated}
+                            </span>
+                          )}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+                <BriefList
+                  title={t('MATCHES.BRIEF_RESPONSIBILITIES')}
+                  items={brief.responsibilities}
+                />
+                <BriefList
+                  title={t('MATCHES.BRIEF_MUST_HAVE')}
+                  items={brief.mustHave}
+                />
+                <BriefList
+                  title={t('MATCHES.BRIEF_NICE_TO_HAVE')}
+                  items={brief.niceToHave}
+                />
+                <BriefList
+                  title={t('MATCHES.BRIEF_RED_FLAGS')}
+                  items={brief.redFlags}
+                />
+                {brief.abbreviations.length > 0 && (
+                  <div className="flex flex-col gap-1 sm:col-span-2">
+                    <span className={SECTION_HEADING_CLASS}>
+                      {t('MATCHES.BRIEF_ABBREVIATIONS')}
+                    </span>
+                    <table className="w-full border-collapse text-sm">
+                      <thead>
+                        <tr className="border-b border-border text-left text-muted-foreground">
+                          <th className="py-1 pr-4 font-medium">
+                            {t('MATCHES.BRIEF_TERM')}
+                          </th>
+                          <th className="py-1 font-medium">
+                            {t('MATCHES.BRIEF_MEANING')}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {brief.abbreviations.map(({ term, meaning }) => (
+                          <tr
+                            key={term}
+                            className="border-b border-border last:border-0"
+                          >
+                            <td className="py-1 pr-4 font-medium">{term}</td>
+                            <td className="py-1">{meaning}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                {onGenerate && (
+                  <Button
+                    variant="outline"
+                    className="self-start sm:col-span-2"
+                    loading={generating}
+                    onClick={onGenerate}
+                  >
+                    <RefreshCw size={ICON_SIZE} />
+                    {t('MATCHES.BRIEF_REGENERATE')}
+                  </Button>
+                )}
+              </div>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 };

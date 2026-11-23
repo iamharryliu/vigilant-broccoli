@@ -13,6 +13,8 @@ interface MatchRow {
   text: string;
   posted: string;
   easy_apply: number | null;
+  archived: number;
+  applied: number;
   captured_at: string;
 }
 
@@ -41,6 +43,16 @@ const ensureTable = () => {
   if (!columns.includes('easy_apply')) {
     db.exec(`ALTER TABLE ${MATCHES_TABLE} ADD COLUMN easy_apply INTEGER`);
   }
+  if (!columns.includes('applied')) {
+    db.exec(
+      `ALTER TABLE ${MATCHES_TABLE} ADD COLUMN applied INTEGER NOT NULL DEFAULT 0`,
+    );
+  }
+  if (!columns.includes('archived')) {
+    db.exec(
+      `ALTER TABLE ${MATCHES_TABLE} ADD COLUMN archived INTEGER NOT NULL DEFAULT 0`,
+    );
+  }
   return db;
 };
 
@@ -48,14 +60,29 @@ export const listMatchPostings = (): StoredJobMatchesPosting[] =>
   (
     ensureTable()
       .prepare(
-        `SELECT url, title, text, posted, easy_apply, captured_at FROM ${MATCHES_TABLE} ORDER BY rowid`,
+        `SELECT url, title, text, posted, easy_apply, archived, applied, captured_at FROM ${MATCHES_TABLE} ORDER BY rowid`,
       )
       .all() as unknown as MatchRow[]
-  ).map(({ captured_at, easy_apply, ...row }) => ({
+  ).map(({ captured_at, easy_apply, archived, applied, ...row }) => ({
     ...row,
     easyApply: easy_apply === null ? undefined : easy_apply === 1,
     capturedAt: captured_at,
+    archived: archived === 1,
+    applied: applied === 1,
   }));
+
+// A recapture leaves both flags alone: the upsert below does not update them.
+// Applied is only meaningful while archived, so restoring clears it.
+export const setMatchPostingArchived = (
+  url: string,
+  archived: boolean,
+  applied: boolean,
+) =>
+  ensureTable()
+    .prepare(
+      `UPDATE ${MATCHES_TABLE} SET archived = ?, applied = ? WHERE url = ?`,
+    )
+    .run(Number(archived), Number(archived && applied), url).changes > 0;
 
 // A posting captured again replaces its earlier copy, so a later search that
 // overlaps an earlier one refreshes it instead of duplicating it.
