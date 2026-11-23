@@ -3,17 +3,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
+  Archive,
+  ArchiveRestore,
   ArrowUpDown,
+  CheckCheck,
   Filter,
   Loader2,
   Sparkles,
   Trash2,
-  X,
 } from 'lucide-react';
 import {
   Badge,
   Button,
   Card,
+  EllipsisCTA,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -43,6 +46,7 @@ import {
   fetchMatchSkills,
   removeMatchPostings,
   removeMatchSkill,
+  setMatchPostingArchived,
   setMatchSkillStatus,
   startMatchBrief,
   startSkillSuggestions,
@@ -58,16 +62,25 @@ import {
   type SortOption,
   countGaps,
   filterMatches,
+  isInVocabulary,
   matchPosting,
   parseOwnedSkills,
+  postingMentionsSkill,
   sortMatches,
 } from '../utils/job-matches.utils';
 import { SECTION_HEADING_CLASS } from './application-brief.component';
-import { MatchBriefSection } from './match-brief.component';
+import { MatchFiltersDialog } from './match-filters-dialog.component';
+import {
+  SKILL_BADGE_BUTTON_CLASS,
+  SkillPostingsDialog,
+  type SkillPostings,
+} from './skill-postings-dialog.component';
+import { MatchBriefDetails, MatchBriefSummary } from './match-brief.component';
 import { JobMatchSkillsPanel } from './job-match-skills-panel.component';
 
 const TOP_GAP_COUNT = 12;
 const SORT_STORAGE_KEY = 'job-hunt-matches-sort';
+const LANGUAGES_STORAGE_KEY = 'job-hunt-matches-languages';
 
 const LEVEL_BADGE = {
   [MATCH_LEVEL.STRONG]: { color: 'green', key: 'MATCHES.STRONG' },
@@ -80,11 +93,13 @@ const MatchCard = ({
   match,
   generating,
   onRemove,
+  onArchive,
   onGenerateBrief,
 }: {
   match: JobMatch;
   generating: boolean;
   onRemove: () => void;
+  onArchive: (archived: boolean, applied: boolean) => void;
   onGenerateBrief?: () => void;
 }) => {
   const { t } = useTranslation();
@@ -129,17 +144,51 @@ const MatchCard = ({
             {match.level !== MATCH_LEVEL.UNKNOWN &&
               ` · ${Math.round(match.ratio * 100)}%`}
           </Badge>
-          <button
-            type="button"
-            aria-label={t('MATCHES.REMOVE')}
-            onClick={onRemove}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <X className="size-4" />
-          </button>
+          {match.applied && (
+            <Badge color="green" variant="solid" size="1">
+              {t('MATCHES.APPLIED')}
+            </Badge>
+          )}
+          <EllipsisCTA
+            actions={[
+              ...(match.applied
+                ? []
+                : [
+                    {
+                      label: t('MATCHES.MARK_APPLIED'),
+                      icon: <CheckCheck size={16} />,
+                      onSelect: () => onArchive(true, true),
+                    },
+                  ]),
+              {
+                label: match.archived
+                  ? t('MATCHES.UNARCHIVE')
+                  : t('MATCHES.ARCHIVE'),
+                icon: match.archived ? (
+                  <ArchiveRestore size={16} />
+                ) : (
+                  <Archive size={16} />
+                ),
+                onSelect: () => onArchive(!match.archived, false),
+              },
+              {
+                label: t('MATCHES.REMOVE'),
+                icon: <Trash2 size={16} />,
+                color: 'red',
+                onSelect: onRemove,
+                confirm: {
+                  title: t('MATCHES.REMOVE_TITLE'),
+                  description: t('MATCHES.REMOVE_DESCRIPTION', {
+                    role: match.role,
+                  }),
+                  confirmLabel: t('MATCHES.REMOVE'),
+                },
+              },
+            ]}
+          />
         </div>
       </div>
-      <MatchBriefSection
+      <MatchBriefSummary
         brief={match.brief}
         generating={generating}
         onGenerate={onGenerateBrief}
@@ -164,6 +213,11 @@ const MatchCard = ({
           ))}
         </div>
       )}
+      <MatchBriefDetails
+        brief={match.brief}
+        generating={generating}
+        onGenerate={onGenerateBrief}
+      />
     </Card>
   );
 };
@@ -176,9 +230,18 @@ export const JobMatchesPage = () => {
   const [progress, setProgress] = useState(getMatchesProgress);
   const [levelFilter, setLevelFilter] = useState<LevelFilter>(LEVEL_FILTER_ALL);
   const [easyApplyOnly, setEasyApplyOnly] = useState(false);
+  const [languages, setLanguages] = useState<string[]>([]);
+  const [hideInternships, setHideInternships] = useState(false);
+  const [hideGraduate, setHideGraduate] = useState(false);
+  const [archivedOnly, setArchivedOnly] = useState(false);
+  const [appliedOnly, setAppliedOnly] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [skills, setSkills] = useState<MatchSkill[]>([]);
   const [suggesting, setSuggesting] = useState(false);
   const [confirmingClear, setConfirmingClear] = useState(false);
+  const [skillPostings, setSkillPostings] = useState<SkillPostings | null>(
+    null,
+  );
   const { runs } = useRuns();
   const activeBriefRuns =
     runs?.filter(
@@ -200,6 +263,28 @@ export const JobMatchesPage = () => {
       // Blocked storage: the default order applies.
     }
   }, []);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(
+        localStorage.getItem(LANGUAGES_STORAGE_KEY) ?? '[]',
+      );
+      if (Array.isArray(stored)) {
+        setLanguages(stored.filter(language => typeof language === 'string'));
+      }
+    } catch {
+      // Blocked or corrupt storage: no language filtering applies.
+    }
+  }, []);
+
+  const changeLanguages = (next: string[]) => {
+    setLanguages(next);
+    try {
+      localStorage.setItem(LANGUAGES_STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // Blocked storage: the choice lasts until reload.
+    }
+  };
 
   const changeSort = (option: SortOption) => {
     setSortOption(option);
@@ -286,6 +371,11 @@ export const JobMatchesPage = () => {
       .then(setPostings)
       .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
 
+  const archive = (url: string, archived: boolean, applied: boolean) =>
+    setMatchPostingArchived(url, archived, applied)
+      .then(setPostings)
+      .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
+
   // Clearing also drops the suggested skills, which the postings produced.
   const clearAll = () => {
     setConfirmingClear(false);
@@ -297,6 +387,15 @@ export const JobMatchesPage = () => {
 
   const customTerms = useMemo(
     () => skills.filter(skill => skill.status === MATCH_SKILL_STATUS.ACCEPTED),
+    [skills],
+  );
+  const panelSkills = useMemo(
+    () =>
+      skills.filter(
+        skill =>
+          skill.status !== MATCH_SKILL_STATUS.SUGGESTED ||
+          !isInVocabulary(skill),
+      ),
     [skills],
   );
   const briefRunning = useMemo(
@@ -323,13 +422,53 @@ export const JobMatchesPage = () => {
     [postings, ownedSkills, customTerms, sortOption],
   );
   const matches = useMemo(
-    () => filterMatches(allMatches, { level: levelFilter, easyApplyOnly }),
-    [allMatches, levelFilter, easyApplyOnly],
+    () =>
+      filterMatches(allMatches, {
+        level: levelFilter,
+        easyApplyOnly,
+        languages,
+        hideInternships,
+        hideGraduate,
+        archivedOnly,
+        appliedOnly,
+      }),
+    [
+      archivedOnly,
+      appliedOnly,
+      allMatches,
+      levelFilter,
+      easyApplyOnly,
+      languages,
+      hideInternships,
+      hideGraduate,
+    ],
   );
+  const activeFilterCount = [
+    levelFilter !== LEVEL_FILTER_ALL,
+    languages.length > 0,
+    hideInternships,
+    hideGraduate,
+  ].filter(Boolean).length;
+  const archivedCount = allMatches.filter(match => match.archived).length;
+  const viewCount = archivedOnly
+    ? archivedCount
+    : allMatches.length - archivedCount;
   const topGaps = useMemo(
     () => countGaps(matches).slice(0, TOP_GAP_COUNT),
     [matches],
   );
+
+  const showSuggestedPostings = (skill: MatchSkill) => {
+    const mentioning = new Set(
+      postings
+        .filter(posting => postingMentionsSkill(posting, skill))
+        .map(posting => posting.url),
+    );
+    setSkillPostings({
+      skill: skill.name,
+      matches: allMatches.filter(match => mentioning.has(match.url)),
+    });
+  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -344,15 +483,45 @@ export const JobMatchesPage = () => {
       )}
       {allMatches.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-sm">
-            {matches.length === allMatches.length
-              ? t('MATCHES.COUNT', { count: String(allMatches.length) })
-              : t('MATCHES.COUNT_FILTERED', {
-                  shown: String(matches.length),
-                  count: String(allMatches.length),
-                })}
-          </span>
           <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant={archivedOnly ? 'outline' : 'default'}
+              aria-pressed={!archivedOnly}
+              onClick={() => setArchivedOnly(false)}
+            >
+              {t('MATCHES.SECTION_MATCHES', {
+                count: String(allMatches.length - archivedCount),
+              })}
+            </Button>
+            <Button
+              variant={archivedOnly ? 'default' : 'outline'}
+              aria-pressed={archivedOnly}
+              onClick={() => setArchivedOnly(true)}
+            >
+              <Archive />
+              {t('MATCHES.SECTION_ARCHIVED', {
+                count: String(archivedCount),
+              })}
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              {matches.length !== viewCount &&
+                t('MATCHES.COUNT_FILTERED', {
+                  shown: String(matches.length),
+                  count: String(viewCount),
+                })}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {archivedOnly && (
+              <Button
+                variant={appliedOnly ? 'default' : 'outline'}
+                aria-pressed={appliedOnly}
+                onClick={() => setAppliedOnly(!appliedOnly)}
+              >
+                <CheckCheck />
+                {t('MATCHES.APPLIED_ONLY')}
+              </Button>
+            )}
             <ArrowUpDown aria-hidden className="size-4 text-muted-foreground" />
             <Select
               aria-label={t('MATCHES.SORT')}
@@ -367,22 +536,14 @@ export const JobMatchesPage = () => {
                 [SORT_OPTION.NEWEST]: t('MATCHES.SORT_NEWEST'),
               }}
             />
-            <Filter aria-hidden className="size-4 text-muted-foreground" />
-            <Select
-              aria-label={t('MATCHES.FILTER_LEVEL')}
-              options={[LEVEL_FILTER_ALL, ...Object.values(MATCH_LEVEL)]}
-              value={levelFilter}
-              onValueChange={setLevelFilter}
-              displayMapper={{
-                [LEVEL_FILTER_ALL]: t('MATCHES.FILTER_ALL_LEVELS'),
-                ...Object.fromEntries(
-                  Object.entries(LEVEL_BADGE).map(([level, { key }]) => [
-                    level,
-                    t(key),
-                  ]),
-                ),
-              }}
-            />
+            <Button
+              variant={activeFilterCount ? 'default' : 'outline'}
+              onClick={() => setFiltersOpen(true)}
+            >
+              <Filter />
+              {t('MATCHES.FILTERS')}
+              {activeFilterCount > 0 && ` · ${activeFilterCount}`}
+            </Button>
             <Button
               variant={easyApplyOnly ? 'default' : 'outline'}
               aria-pressed={easyApplyOnly}
@@ -418,7 +579,7 @@ export const JobMatchesPage = () => {
         <p className="text-sm text-muted-foreground">{t('MATCHES.EMPTY')}</p>
       )}
       <JobMatchSkillsPanel
-        skills={skills}
+        skills={panelSkills}
         onAccept={name =>
           updateSkills(setMatchSkillStatus(name, MATCH_SKILL_STATUS.ACCEPTED))
         }
@@ -426,6 +587,23 @@ export const JobMatchesPage = () => {
           updateSkills(setMatchSkillStatus(name, MATCH_SKILL_STATUS.DISMISSED))
         }
         onRemove={name => updateSkills(removeMatchSkill(name))}
+        onSelect={showSuggestedPostings}
+      />
+      <MatchFiltersDialog
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+        level={levelFilter}
+        onLevelChange={setLevelFilter}
+        languages={languages}
+        onLanguagesChange={changeLanguages}
+        hideInternships={hideInternships}
+        onHideInternshipsChange={setHideInternships}
+        hideGraduate={hideGraduate}
+        onHideGraduateChange={setHideGraduate}
+      />
+      <SkillPostingsDialog
+        selection={skillPostings}
+        onClose={() => setSkillPostings(null)}
       />
       {topGaps.length > 0 && (
         <section className="flex shrink-0 flex-col gap-1">
@@ -433,7 +611,20 @@ export const JobMatchesPage = () => {
           <div className="flex flex-wrap gap-1">
             {topGaps.map(([skill, count]) => (
               <Badge key={skill} color="orange" variant="outline" size="1">
-                {skill} × {count}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSkillPostings({
+                      skill,
+                      matches: matches.filter(match =>
+                        match.gaps.includes(skill),
+                      ),
+                    })
+                  }
+                  className={SKILL_BADGE_BUTTON_CLASS}
+                >
+                  {skill} × {count}
+                </button>
               </Badge>
             ))}
           </div>
@@ -471,6 +662,9 @@ export const JobMatchesPage = () => {
           match={match}
           generating={briefRunning.has(match.url)}
           onRemove={() => remove(match.url)}
+          onArchive={(archived, applied) =>
+            archive(match.url, archived, applied)
+          }
           onGenerateBrief={IS_DEMO ? undefined : () => generateBrief(match.url)}
         />
       ))}

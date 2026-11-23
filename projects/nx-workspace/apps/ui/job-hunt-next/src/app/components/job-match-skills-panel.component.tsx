@@ -5,6 +5,7 @@ import { Badge } from '@vigilant-broccoli/react-lib';
 import { MATCH_SKILL_STATUS, type MatchSkill } from '../constants/matches';
 import { useTranslation } from '../i18n';
 import { SECTION_HEADING_CLASS } from './application-brief.component';
+import { SKILL_BADGE_BUTTON_CLASS } from './skill-postings-dialog.component';
 
 const ICON_BUTTON_CLASS = 'text-muted-foreground hover:text-foreground';
 
@@ -13,6 +14,7 @@ type JobMatchSkillsPanelProps = {
   onAccept: (name: string) => void;
   onDismiss: (name: string) => void;
   onRemove: (name: string) => void;
+  onSelect: (skill: MatchSkill) => void;
 };
 
 // Skills Claude found in the postings that the built-in vocabulary lacks:
@@ -22,6 +24,7 @@ export const JobMatchSkillsPanel = ({
   onAccept,
   onDismiss,
   onRemove,
+  onSelect,
 }: JobMatchSkillsPanelProps) => {
   const { t } = useTranslation();
   const suggested = skills.filter(
@@ -40,8 +43,14 @@ export const JobMatchSkillsPanel = ({
           <div className="flex flex-wrap gap-1">
             {suggested.map(skill => (
               <Badge key={skill.name} color="purple" variant="soft" size="1">
-                {skill.name}
-                {skill.postings > 0 && ` × ${skill.postings}`}
+                <button
+                  type="button"
+                  onClick={() => onSelect(skill)}
+                  className={SKILL_BADGE_BUTTON_CLASS}
+                >
+                  {skill.name}
+                  {skill.postings > 0 && ` × ${skill.postings}`}
+                </button>
                 <button
                   type="button"
                   aria-label={t('MATCHES.ADD_SKILL', { name: skill.name })}

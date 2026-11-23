@@ -19,6 +19,7 @@ import {
   listMatchSkips,
   saveMatchPostings,
   saveMatchSkips,
+  setMatchPostingArchived,
 } from '../../../lib/job-matches.db';
 
 export const runtime = 'nodejs';
@@ -126,6 +127,27 @@ export async function POST(req: NextRequest) {
   if (!IS_DEMO) {
     startMissingMatchBriefRuns().catch(error =>
       console.error(`${LOG_PREFIX} failed to start briefs`, error),
+    );
+  }
+  return NextResponse.json({ postings: listPostingsWithBriefs() });
+}
+
+// Archives or restores the posting named by `url`; `applied` records that it
+// was archived after applying.
+export async function PATCH(req: NextRequest) {
+  const body = await req.json().catch(() => null);
+  if (!isText(body?.url) || typeof body?.archived !== 'boolean') {
+    return NextResponse.json(
+      { error: 'Invalid posting' },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+  if (
+    !setMatchPostingArchived(body.url, body.archived, body.applied === true)
+  ) {
+    return NextResponse.json(
+      { error: 'Posting not found' },
+      { status: HTTP_STATUS_CODES.INVALID_PATH },
     );
   }
   return NextResponse.json({ postings: listPostingsWithBriefs() });
