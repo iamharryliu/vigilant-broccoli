@@ -41,28 +41,28 @@ resource "supabase_settings" "vb_auth" {
     # One allow-listed entry per app per environment. Comma-separated per the
     # Management API's wire format (not a JSON array).
     uri_allow_list = join(",", [
-      "http://localhost:4200/*",                                            # hearth local dev
-      "https://staging-hearth.${var.harryliu_dev_domain}/auth/callback",    # hearth staging (custom domain)
-      "https://staging-hearth.vercel.app/*",                                # hearth staging
-      "https://production-hearth.vercel.app/*",                             # hearth prod
-      "https://hearth.${var.harryliu_dev_domain}/*",                        # hearth prod (custom domain)
-      "http://localhost:4000/auth/callback",                                # employee-handler-ui local dev
-      "https://demo-employee-handler-ui.vercel.app/*",                      # employee-handler-ui demo (its only deploy)
-      "http://localhost:3000/*",                                            # local-manager-next local dev
-      "http://127.0.0.1:3000/*",                                            # local-manager-next local dev (127.0.0.1 form)
-      "https://manager.vigilant-broccoli.app/*",                            # local-manager-next prod (PM2)
-      "https://staging-balloono.vigilant-broccoli.app/auth/callback",       # balloono staging (custom domain)
-      "https://staging-balloono.vercel.app/*",                              # balloono staging
-      "https://production-balloono.vercel.app/*",                           # balloono prod
-      "https://balloono.vigilant-broccoli.app/*",                           # balloono prod (custom domain)
-      "https://staging-manager.${var.harryliu_dev_domain}/auth/callback",   # mobile manager staging (custom domain)
-      "https://staging-vb-manager-next-mobile.vercel.app/auth/callback",    # vb-manager-next mobile staging
-      "https://production-vb-manager-next-mobile.vercel.app/auth/callback", # vb-manager-next mobile prod
-      "https://manager.${var.harryliu_dev_domain}/auth/callback",           # vb-manager-next mobile prod (custom domain)
-      "https://staging-tasks.${var.harryliu_dev_domain}/auth/callback",     # tasks-next staging (custom domain)
-      "https://staging-tasks-next.vercel.app/auth/callback",                # tasks-next staging
-      "https://production-tasks-next.vercel.app/auth/callback",             # tasks-next prod
-      "https://tasks.${var.harryliu_dev_domain}/auth/callback",             # tasks-next prod (custom domain); exact, since `/*` does not match the two-segment path and the popup's handoff only runs there
+      "http://localhost:4200/*",                                                # hearth local dev
+      "https://staging-hearth.${var.harryliu_dev_domain}/auth/callback",        # hearth staging (custom domain)
+      "https://staging-hearth.vercel.app/*",                                    # hearth staging
+      "https://production-hearth.vercel.app/*",                                 # hearth prod
+      "https://hearth.${var.harryliu_dev_domain}/*",                            # hearth prod (custom domain)
+      "http://localhost:4000/auth/callback",                                    # employee-handler-ui local dev
+      "https://demo-employee-handler-ui.vercel.app/*",                          # employee-handler-ui demo (its only deploy)
+      "http://localhost:3000/*",                                                # local-manager-next local dev
+      "http://127.0.0.1:3000/*",                                                # local-manager-next local dev (127.0.0.1 form)
+      "https://manager.${var.vigilant_broccoli_domain}/*",                      # local-manager-next prod (PM2)
+      "https://staging-balloono.${var.vigilant_broccoli_domain}/auth/callback", # balloono staging (custom domain)
+      "https://staging-balloono.vercel.app/*",                                  # balloono staging
+      "https://production-balloono.vercel.app/*",                               # balloono prod
+      "https://balloono.${var.vigilant_broccoli_domain}/*",                     # balloono prod (custom domain)
+      "https://staging-manager.${var.harryliu_dev_domain}/auth/callback",       # mobile manager staging (custom domain)
+      "https://staging-vb-manager-next-mobile.vercel.app/auth/callback",        # vb-manager-next mobile staging
+      "https://production-vb-manager-next-mobile.vercel.app/auth/callback",     # vb-manager-next mobile prod
+      "https://manager.${var.harryliu_dev_domain}/auth/callback",               # vb-manager-next mobile prod (custom domain)
+      "https://staging-tasks.${var.harryliu_dev_domain}/auth/callback",         # tasks-next staging (custom domain)
+      "https://staging-tasks-next.vercel.app/auth/callback",                    # tasks-next staging
+      "https://production-tasks-next.vercel.app/auth/callback",                 # tasks-next prod
+      "https://tasks.${var.harryliu_dev_domain}/auth/callback",                 # tasks-next prod (custom domain); exact, since `/*` does not match the two-segment path and the popup's handoff only runs there
     ])
 
     external_google_enabled          = true
