@@ -27,13 +27,13 @@ const LOCAL_CREDENTIALS: LocalCredential[] = [
   {
     service: LOCAL_CREDENTIAL_SERVICE.GRAFANA,
     label: 'Grafana',
-    url: 'https://grafana.vigilant-broccoli.app',
+    url: 'https://grafana.vigilant-broccoli.internal',
     detail: 'Admin password (user: admin)',
   },
   {
     service: LOCAL_CREDENTIAL_SERVICE.HEADLAMP,
     label: 'Headlamp',
-    url: 'https://headlamp.vigilant-broccoli.app',
+    url: 'https://headlamp.vigilant-broccoli.internal',
     detail: 'Login token, valid 24h',
   },
 ];

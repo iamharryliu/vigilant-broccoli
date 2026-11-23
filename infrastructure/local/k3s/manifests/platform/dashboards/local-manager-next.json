@@ -32,7 +32,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "sum(count_over_time({namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.app\" [$__range]))",
+          "expr": "sum(count_over_time({namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.internal\" [$__range]))",
           "queryType": "instant"
         }
       ],
@@ -80,7 +80,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "sum(count_over_time({namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.app\" | DownstreamStatus >= 500 [$__range]))",
+          "expr": "sum(count_over_time({namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.internal\" | DownstreamStatus >= 500 [$__range]))",
           "queryType": "instant"
         }
       ],
@@ -132,7 +132,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "quantile_over_time(0.95, {namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.app\" | unwrap Duration | __error__=\"\" [$__range]) by () / 1e6",
+          "expr": "quantile_over_time(0.95, {namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.internal\" | unwrap Duration | __error__=\"\" [$__range]) by () / 1e6",
           "queryType": "instant"
         }
       ],
@@ -232,7 +232,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "sum by (DownstreamStatus) (count_over_time({namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.app\" [$__auto]))",
+          "expr": "sum by (DownstreamStatus) (count_over_time({namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.internal\" [$__auto]))",
           "legendFormat": "{{DownstreamStatus}}"
         }
       ],
@@ -271,7 +271,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "quantile_over_time(0.5, {namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.app\" | unwrap Duration | __error__=\"\" [$__auto]) by () / 1e6",
+          "expr": "quantile_over_time(0.5, {namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.internal\" | unwrap Duration | __error__=\"\" [$__auto]) by () / 1e6",
           "legendFormat": "p50"
         },
         {
@@ -280,7 +280,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "quantile_over_time(0.95, {namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.app\" | unwrap Duration | __error__=\"\" [$__auto]) by () / 1e6",
+          "expr": "quantile_over_time(0.95, {namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.internal\" | unwrap Duration | __error__=\"\" [$__auto]) by () / 1e6",
           "legendFormat": "p95"
         }
       ],
@@ -312,7 +312,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "topk(10, sum by (RequestMethod, RequestPath) (count_over_time({namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.app\" [$__range])))",
+          "expr": "topk(10, sum by (RequestMethod, RequestPath) (count_over_time({namespace=\"kube-system\", container=\"traefik\"} | json | RequestHost=\"manager.vigilant-broccoli.internal\" [$__range])))",
           "queryType": "instant",
           "format": "table"
         }

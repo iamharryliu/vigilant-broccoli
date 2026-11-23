@@ -218,7 +218,7 @@
     },
     {
       "id": "local-manager",
-      "href": "https://manager.vigilant-broccoli.app/",
+      "href": "https://manager.vigilant-broccoli.internal/",
       "titleKey": "WEB_APPLICATIONS_PAGE.LOCAL_MANAGER.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.LOCAL_MANAGER.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/local-manager-next/README.md"
