@@ -8,6 +8,14 @@
       "TITLE": "Status",
       "DESCRIPTION": "Live health of deployed services and applications."
     },
+    "PULL_REQUESTS": {
+      "TITLE": "Pull requests",
+      "DESCRIPTION": "Open pull requests on GitHub."
+    },
+    "ACTIONS": {
+      "TITLE": "Actions",
+      "DESCRIPTION": "Recent GitHub Actions workflow runs."
+    },
     "DEPLOYMENTS": {
       "TITLE": "Deployments",
       "DESCRIPTION": "Preview deployments for open pull requests."

@@ -4,10 +4,12 @@ import {
   Bot,
   ChartColumn,
   FileText,
+  GitPullRequest,
   GitPullRequestArrow,
   Globe,
   LayoutGrid,
   Network,
+  Play,
   ScrollText,
   Server,
 } from 'lucide-react';
@@ -19,6 +21,7 @@ import { SearchButton } from '../components/SearchButton';
 import { DockerIcon, GithubIcon, NpmIcon } from '../components/BrandIcons';
 import { usePageTitle } from '../use-page-title';
 import { PAGE_CLASS } from '../consts/layout';
+import { REPO_URL } from '../consts/repo';
 import {
   CHANGELOG_ROUTE,
   GAMES_ROUTE,
@@ -26,6 +29,8 @@ import {
 } from '../consts/routes';
 
 const ICON_CLASS = 'h-5 w-5 shrink-0';
+const PULL_REQUESTS_URL = `${REPO_URL}/pulls`;
+const ACTIONS_URL = `${REPO_URL}/actions`;
 
 export function HomePage() {
   const { t } = useTranslation();
@@ -97,6 +102,22 @@ export function HomePage() {
               title={t('HOME.STATUS.TITLE')}
               description={t('HOME.STATUS.DESCRIPTION')}
               icon={<Activity className={ICON_CLASS} />}
+            />
+          </li>
+          <li>
+            <CardLink
+              href={PULL_REQUESTS_URL}
+              title={t('HOME.PULL_REQUESTS.TITLE')}
+              description={t('HOME.PULL_REQUESTS.DESCRIPTION')}
+              icon={<GitPullRequest className={ICON_CLASS} />}
+            />
+          </li>
+          <li>
+            <CardLink
+              href={ACTIONS_URL}
+              title={t('HOME.ACTIONS.TITLE')}
+              description={t('HOME.ACTIONS.DESCRIPTION')}
+              icon={<Play className={ICON_CLASS} />}
             />
           </li>
           <li>
