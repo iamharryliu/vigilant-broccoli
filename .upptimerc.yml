@@ -105,7 +105,7 @@ sites:
   - name: production-harryliu-dev-resume
     url: https://harryliu.dev/resume
   - name: production-git
-    url: https://git.harryliu.dev/
+    url: https://git.vigilant-broccoli.app/
   - name: production-code-server
     url: https://code.vigilant-broccoli.app/login
   - name: production-web-terminal
