@@ -60,7 +60,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### project-overview
 
-- The home page's Monitoring section now links to the repository's open pull requests and GitHub Actions runs on GitHub, between Status and Deployments (PR: pending).
+- The home page's Monitoring section now links to the repository's open pull requests and GitHub Actions runs on GitHub, between Status and Deployments ([#1753](https://github.com/iamharryliu/vigilant-broccoli/pull/1753)).
 - The projects site app is now called Project Overview (`project-overview`, formerly `pages-index`), and its staging build publishes to a new `staging-project-overview` Cloudflare Pages project behind the same staging-projects address; the public sites and their pages are unchanged ([#1742](https://github.com/iamharryliu/vigilant-broccoli/pull/1742)).
 
 ### pages-index
