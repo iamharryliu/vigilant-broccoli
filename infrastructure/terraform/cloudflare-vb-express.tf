@@ -23,7 +23,26 @@ resource "cloudflare_dns_record" "vb_express_staging_api" {
 # Cloudflare's proxy hides the CNAME from Fly, so the cert only issues once
 # these DNS-only records prove domain ownership; without them the origin TLS
 # handshake fails with a 525. Values come from `flyctl certs show --json`
-# (`0pqp2op` is the staging-vb-express app's validation id).
+# (`0pqp2op` is the staging-vb-express app's validation id, `56n86en` the
+# production-vb-express one).
+resource "cloudflare_dns_record" "vb_express_api_acme_challenge" {
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
+  name    = "_acme-challenge.api.${var.vigilant_broccoli_domain}"
+  content = "api.${var.vigilant_broccoli_domain}.56n86en.flydns.net"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "vb_express_api_fly_ownership" {
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
+  name    = "_fly-ownership.api.${var.vigilant_broccoli_domain}"
+  content = "\"app-56n86en\""
+  type    = "TXT"
+  ttl     = 1
+  proxied = false
+}
+
 resource "cloudflare_dns_record" "vb_express_staging_api_acme_challenge" {
   zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = "_acme-challenge.staging-api.${var.vigilant_broccoli_domain}"
