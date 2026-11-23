@@ -4,6 +4,7 @@ import DOMPurify from 'dompurify';
 import { createHeadingRenderer, marked } from './markdown-config';
 import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
 import { observeThemeChange, renderMermaidDiagrams } from './mermaid-diagrams';
+import { COMPACT_PROSE_CLS } from './prose-classes';
 
 const STORAGE_PREFIX = 'docs-checklist:';
 const LIST_ID_PREFIX = 'list';
@@ -19,7 +20,7 @@ const COPY = {
 
 const CLS = {
   ROOT: 'w-full',
-  PROSE: 'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4',
+  PROSE: `${COMPACT_PROSE_CLS} px-3 sm:px-6 py-3 sm:py-4`,
   HEADER:
     'flex items-center gap-1 not-prose mb-4 pb-2 border-b border-gray-200 dark:border-gray-700',
   HEADER_TEXT: 'text-sm text-gray-600 dark:text-gray-400',
@@ -27,7 +28,8 @@ const CLS = {
     'text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300',
   BLOCK: 'contents',
   LIST: 'not-prose pl-0',
-  NESTED_LIST: 'ml-6 border-l border-gray-200 dark:border-gray-700 pl-3',
+  NESTED_LIST:
+    'ml-4 sm:ml-6 border-l border-gray-200 dark:border-gray-700 pl-3',
   ROW_LABEL: 'flex items-start gap-2 py-1 cursor-pointer group',
   CHECKBOX: 'mt-1.5 h-4 w-4 shrink-0 cursor-pointer',
   ROW_TEXT: 'flex-1 leading-6',
