@@ -9,12 +9,16 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Running on the code-server VM](#running-on-the-code-server-vm)
 - [Running in CI](#running-in-ci)
 - [Publishing a pull request](#publishing-a-pull-request)
+- [Metadata file](#metadata-file)
 - [PR screenshots](#pr-screenshots)
 - [Ending without changes](#ending-without-changes)
 - [Auditing the backlog](#auditing-the-backlog)
+- [Auditing code comments](#auditing-code-comments)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
+- [Refreshing READMEs](#refreshing-readmes)
 - [Auditing the inventories](#auditing-the-inventories)
 - [Auditing documentation accuracy](#auditing-documentation-accuracy)
+- [Auditing free-tier documentation](#auditing-free-tier-documentation)
 - [Auditing agent context](#auditing-agent-context)
 - [Auditing the public URL registry](#auditing-the-public-url-registry)
 - [Stack](#stack)
@@ -132,8 +136,9 @@ and a human or a `TODO.md` row re-scopes it.
 `publish-pr.sh`, sourced by `solve-todo-runner.sh` (and by `update-pr-runner.sh` for its TODO helpers), holds the shared steps:
 
 - validates the agent's `todo_ids` (6-hex ids that have a row and are named in the request) before publishing, and removes
-  from `TODO.md` only those rows, failing a run that deleted any other row or edited anything but
-  [QA rows](../../docs/todo-pattern.md#qa-rows);
+  from `TODO.md` only those rows; restores any other line the agent changed outside
+  [QA rows](../../docs/todo-pattern.md#qa-rows) and adds its `follow_up_todos` rows through `todo-rows.py`, warning
+  instead of failing ([follow-up rows](../../docs/todo-pattern.md#follow-up-rows));
 - commits, pushes and opens the PR with its title, summary, next steps, concerns, suggestions, screenshots and history row,
   then replaces the `PR: pending` placeholder on this PR's QA rows with the PR URL, and on its `CHANGELOG.md` bullets
   with the `[#N](url)` link, in a follow-up commit;
@@ -280,7 +285,7 @@ opens one PR citing where each removed fact is retained. It runs Opus by default
 ## Auditing the public URL registry
 
 `pnpm agentic-pr-create-url-audit` runs `audit-urls.sh`, which checks that every public URL (each environment and demo) has
-an Upptime entry, a pages-index card and a browser quick link, and every published Docker image a pages-index registry
+an Upptime entry, a project-overview card and a browser quick link, and every published Docker image a project-overview registry
 entry and a README Containers row, then opens one PR fixing drift.
 `cron-agentic-pr-create-url-audit` runs the same script weekly (`55 6 * * 0`).
 

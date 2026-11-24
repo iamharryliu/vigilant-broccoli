@@ -11,10 +11,12 @@ section, wrapped in <details><summary>Screenshots</summary> with blank lines
 around images, after the history table and before the attribution footer.
 Legacy screenshot sections are moved and wrapped even when PR_SCREENSHOTS is
 unset (preserve); nonempty replaces and explicitly empty removes the section.
+PR_RUNNER_CONCERNS bullets are appended to Concerns after that merge.
 Reads everything from the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below) and prints
 the merged body to stdout; the caller passes it to `gh pr create --body` or
 `gh pr edit --body`.
 """
+
 import os
 import re
 
@@ -109,6 +111,20 @@ for name, env_name, value, anchors in (
         sections[:] = [(h, c) for h, c in sections if h != name]
     elif value and not replace_section(name, value):
         sections.insert(insert_after(*anchors), (name, value))
+
+# Problems the runner worked around itself; appended so the agent's own
+# concerns, or the ones it left untouched, stay.
+pr_runner_concerns = os.environ.get("PR_RUNNER_CONCERNS", "").strip()
+if pr_runner_concerns:
+    existing = next((c for h, c in sections if h == "Concerns"), None)
+    if existing is None:
+        sections.insert(
+            insert_after("Next steps", "Summary"), ("Concerns", pr_runner_concerns)
+        )
+    else:
+        replace_section(
+            "Concerns", "\n".join(filter(None, [existing.strip(), pr_runner_concerns]))
+        )
 
 history_source = os.environ.get("HISTORY_SOURCE", "").strip()
 history_command = os.environ.get("HISTORY_COMMAND", "").strip()

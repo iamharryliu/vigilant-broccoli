@@ -47,8 +47,8 @@ Mobile dashboard with calendar, tasks, notepad, weather, language learning and q
 
 - [Context MD](../ui/context-md) - embeds
 - [Docs MD](../ui/docs-md) - embeds
-- [Pages Index](../ui/pages-index) - embeds
 - [Personal Website (React)](../ui/personal-website-react) - embeds
+- [Project Overview](../ui/project-overview) - embeds
 - [Tasks](../ui/tasks-next) - embeds
 - [Utilities UI](../ui/utilities-ui) - embeds
 - [VB Express](../api/vb-express) - calls

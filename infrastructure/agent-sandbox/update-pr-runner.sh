@@ -12,6 +12,7 @@ PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
 export FORMAT_CHANGED_HELPER=/tmp/format-changed.sh
 MERGE_BODY_HELPER=/tmp/merge-pr-body.py
 SCREENSHOTS_HELPER=/tmp/pr-screenshots.py
+TODO_ROWS_HELPER=/tmp/todo-rows.py
 CI_LOG=/tmp/pr-ci-failures.log
 RUN_LOG=/tmp/pr-ci-run.log
 CI_LOG_BUDGET=20000
@@ -56,6 +57,7 @@ cp "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh" "$PRE_COMMIT_HELPE
 cp "$REPO_DIR/scripts/shell/format-changed.sh" "$FORMAT_CHANGED_HELPER"
 cp "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py" "$MERGE_BODY_HELPER"
 cp "$REPO_DIR/infrastructure/agent-sandbox/pr-screenshots.py" "$SCREENSHOTS_HELPER"
+cp "$REPO_DIR/infrastructure/agent-sandbox/todo-rows.py" "$TODO_ROWS_HELPER"
 
 git fetch origin --quiet
 # Checked here rather than at dispatch because a PR can merge while the image
@@ -166,9 +168,11 @@ TODO_RULES="- Update only this pull request. If the change is too large or bundl
 TODO_FIELDS=""
 if [ "$TODO_ENABLED" = 1 ]; then
   TODO_RULES="$TODO_RULES
-- Do not edit TODO.md beyond the QA row the skill asks for: the runner removes exactly the rows you declare in todo_ids. This PR already exists, so link a QA row to it as \"PR: ${PR_URL}\" and a CHANGELOG.md bullet as \"[#${PR}](${PR_URL})\"."
+- Do not edit TODO.md beyond the QA row the skill asks for: the runner removes exactly the rows you declare in todo_ids. This PR already exists, so link a QA row to it as \"PR: ${PR_URL}\" and a CHANGELOG.md bullet as \"[#${PR}](${PR_URL})\".
+${FOLLOW_UP_TODOS_RULE}"
   TODO_FIELDS="
-  - todo_ids: array of the TODO.md ids named in the instruction that this update fully resolves (omit or [] when none)"
+  - todo_ids: array of the TODO.md ids named in the instruction that this update fully resolves (omit or [] when none)
+${FOLLOW_UP_TODOS_FIELD}"
 fi
 
 PROMPT=$(cat <<EOF
@@ -292,10 +296,11 @@ fi
 if [ "$TODO_ENABLED" = 1 ] && { [ -n "$(git status --porcelain)" ] || [ "${#RESOLVED_IDS[@]}" -gt 0 ]; }; then
   # Checked before anything is pushed.
   pr_validate_todo_ids "$META_FILE" "$BASE_SHA" "$INSTRUCTION"
-  pr_validate_todo_edits "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
+  pr_restore_todo_edits "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
   pr_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
   pr_fill_qa_placeholder "$PR_URL" "$BASE_SHA" || true
 fi
+[ "$TODO_ENABLED" != 1 ] || pr_apply_follow_up_todos "$META_FILE"
 pr_fill_changelog_placeholder "$PR_URL" "$BASE_SHA" || true
 
 python3 "$SCREENSHOTS_HELPER" --metadata "$META_FILE" --prepare
@@ -356,7 +361,7 @@ PR_SCREENSHOTS=$(python3 "$SCREENSHOTS_HELPER" --metadata "$META_FILE")
 
 NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="$SKILL_NAME" HISTORY_PROMPT="$INSTRUCTION" \
-  HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
+  HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" PR_RUNNER_CONCERNS="$PR_RUNNER_CONCERNS" \
   python3 "$MERGE_BODY_HELPER")
 gh pr edit "$PR" --body "$NEW_BODY"
 [ -z "$NEW_PR_TITLE" ] || gh pr edit "$PR" --title "$NEW_PR_TITLE"

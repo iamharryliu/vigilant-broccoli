@@ -1,6 +1,6 @@
 resource "github_repository" "vigilant_broccoli" {
   name         = var.github_repo
-  description  = "idek"
+  description  = "My software hobby pastime, from apps to infrastructure."
   homepage_url = "https://${local.vb_app_domains.projects}/"
   visibility   = "public"
 
@@ -35,9 +35,11 @@ resource "github_branch_default" "default" {
   branch     = github_branch.main.branch
 }
 
-resource "github_branch" "production" {
-  repository = github_repository.vigilant_broccoli.name
-  branch     = "production"
+resource "github_issue_label" "release_hold" {
+  repository  = github_repository.vigilant_broccoli.name
+  name        = "release-hold"
+  color       = "B60205"
+  description = "deploy-release verifies staging, then holds production until a manual dispatch"
 }
 
 resource "github_actions_secret" "gcp_service_account" {
@@ -111,81 +113,6 @@ resource "github_repository_ruleset" "main" {
       }
     }
   }
-}
-
-locals {
-  production_promotion_variables = {
-    PRODUCTION_PROMOTION_APP_ID          = tostring(var.production_promotion_gh_app_id)
-    PRODUCTION_PROMOTION_ENABLED         = tostring(var.production_promotion_gh_app_id > 0)
-    PRODUCTION_PROMOTION_WIF_PROVIDER    = google_iam_workload_identity_pool_provider.github_production_promotion.name
-    PRODUCTION_PROMOTION_SERVICE_ACCOUNT = google_service_account.github_actions_production_promotion.email
-  }
-}
-
-resource "github_actions_variable" "production_promotion" {
-  for_each      = local.production_promotion_variables
-  repository    = github_repository.vigilant_broccoli.name
-  variable_name = each.key
-  value         = each.value
-}
-
-# Deletion and force-pushes are blocked for everyone, the promotion App
-# included: no bypass actors, so neither an admin nor the App can rewrite or
-# remove production. Kept apart from the update ruleset below because a bypass
-# actor on a ruleset skips every rule in it.
-resource "github_repository_ruleset" "production_protection" {
-  name        = "production-protection"
-  repository  = github_repository.vigilant_broccoli.name
-  target      = "branch"
-  enforcement = "active"
-
-  conditions {
-    ref_name {
-      include = ["refs/heads/production"]
-      exclude = []
-    }
-  }
-
-  rules {
-    deletion         = true
-    non_fast_forward = true
-  }
-}
-
-# `update` restricts every push to production to the dedicated promotion App.
-# Rulesets cannot restrict which branch a push comes from, so the fast-forward
-# from main is enforced by manual-promote-production.yml, whose App key only
-# that workflow on main can read. Disabled until the App ID is configured.
-resource "github_repository_ruleset" "production_update" {
-  name        = "production-update"
-  repository  = github_repository.vigilant_broccoli.name
-  target      = "branch"
-  enforcement = var.production_promotion_gh_app_id > 0 ? "active" : "disabled"
-
-  conditions {
-    ref_name {
-      include = ["refs/heads/production"]
-      exclude = []
-    }
-  }
-
-  dynamic "bypass_actors" {
-    for_each = var.production_promotion_gh_app_id > 0 ? [var.production_promotion_gh_app_id] : []
-    content {
-      actor_id    = bypass_actors.value
-      actor_type  = "Integration"
-      bypass_mode = "always"
-    }
-  }
-
-  rules {
-    update = true
-  }
-}
-
-moved {
-  from = github_repository_ruleset.production
-  to   = github_repository_ruleset.production_protection
 }
 
 import {

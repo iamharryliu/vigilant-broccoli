@@ -1,5 +1,5 @@
 # context.vigilant-broccoli.app — Cloudflare Pages site (project + deploys owned by the
-# `deploy-context-md` workflow via wrangler). Points at the
+# `deploy` workflow's context-md target via wrangler). Points at the
 # production-context-md project. Terraform owns the custom domain and its DNS.
 # Public agent context — no Access gating.
 # The vigilant-broccoli.app zone is a separate Cloudflare zone, looked up by name

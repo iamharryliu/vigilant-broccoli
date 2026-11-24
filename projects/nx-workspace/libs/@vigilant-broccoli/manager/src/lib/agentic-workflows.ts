@@ -11,15 +11,16 @@ export type AgenticPhase = {
   workflows: AgenticWorkflow[];
 };
 
-// Not agentic, so it is absent from the README's Agentic table, but it is the
-// usual next step after merging an agentic PR.
+// Not agentic, so it is absent from the README's Agentic table, but it is what
+// ships a merged agentic PR to production.
 const DEPLOY_PHASE: AgenticPhase = {
   name: 'Deploy',
   workflows: [
     {
-      name: 'manual-promote-production',
-      summary: 'Fast-forward production to the current main commit.',
-      url: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-promote-production.yml',
+      name: 'deploy-release',
+      summary:
+        'Verify staging, then deploy the current main commit to production.',
+      url: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-release.yml',
     },
   ],
 };

@@ -41,6 +41,9 @@ export type JobMatchesBookmarkletPosting = {
 // A posting as the app stores it: the capture time is added on save.
 export type StoredJobMatchesPosting = JobMatchesBookmarkletPosting & {
   capturedAt: string;
+  archived: boolean;
+  // Set when the user archived the posting after applying to it.
+  applied: boolean;
 };
 
 export const JOB_MATCHES_PROGRESS_STATE = {

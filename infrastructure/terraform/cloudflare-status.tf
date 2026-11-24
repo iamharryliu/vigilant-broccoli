@@ -1,5 +1,5 @@
 # status, career, deployments and games hostnames share a
-# Cloudflare Worker that reverse-proxies the pages-index GitHub Pages
+# Cloudflare Worker that reverse-proxies the project-overview GitHub Pages
 # deployment at projects.vigilant-broccoli.app. The app renders StatusPage (status
 # host), CareerPage (career host) or DeploymentsPage (deployments host) at the
 # root (GamesPage on the games host); the Worker only

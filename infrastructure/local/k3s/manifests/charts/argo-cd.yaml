@@ -15,7 +15,7 @@ spec:
   valuesContent: |-
     fullnameOverride: argocd
     global:
-      domain: argocd.vigilant-broccoli.app
+      domain: argocd.vigilant-broccoli.internal
     configs:
       params:
         server.insecure: true

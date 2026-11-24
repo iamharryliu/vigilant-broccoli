@@ -13,6 +13,11 @@ on:
           - all
           - staging
           - production
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
   repository_dispatch:
     types: [deploy-fanout]
 
@@ -22,7 +27,8 @@ permissions:
 
 jobs:
   test-llm-service:
-    if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
+    # Staging fan-outs run this through deploy-release's gate (workflow_call) instead.
+    if: ${{ inputs.environment || github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true' && github.event.client_payload.environment == 'production') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
@@ -55,9 +61,10 @@ jobs:
           LLM_SERVICE_URL: ${{ env.LLM_SERVICE_URL }}
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
           MODEL: ${{ env.MODEL }}
+        # One retry so a transient LLM provider error does not block deploy-release.
         run: |
           chmod +x scripts/shell/test-llm-e2e.sh
-          scripts/shell/test-llm-e2e.sh
+          scripts/shell/test-llm-e2e.sh || { sleep 30; scripts/shell/test-llm-e2e.sh; }
 
       - name: Tunnel to email service
         if: failure() && steps.llm-e2e.outputs.out_of_credits == 'true'

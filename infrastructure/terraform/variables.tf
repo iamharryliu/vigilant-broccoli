@@ -72,12 +72,6 @@ variable "upptime_sync_gh_app_id" {
   default     = 5202397
 }
 
-variable "production_promotion_gh_app_id" {
-  description = "Public ID of the dedicated production-promotion App installed only on this repository (Contents write). Set after registering the App and storing its key in kv/production-promotion. Zero leaves the production update ruleset disabled and the promotion workflow gated off."
-  type        = number
-  default     = 5249426
-}
-
 variable "upptime_migration_complete" {
   description = "Enables scheduled checks in the initialized monitoring repository. Set true only after importing history and verifying manual checks."
   type        = bool
@@ -109,15 +103,15 @@ variable "rabbitmq_user" {
 
 variable "gitea_domain" {
   type    = string
-  default = "git.harryliu.dev"
+  default = "git.vigilant-broccoli.app"
 }
 
-# DNS-only (grey-cloud) hostname for git-over-SSH on :2222. The apex git.harryliu.dev
+# DNS-only (grey-cloud) hostname for git-over-SSH on :2222. The apex git.vigilant-broccoli.app
 # is Cloudflare-proxied for the Access-gated web UI, and the proxy doesn't forward
 # :2222 — so SSH needs a direct-to-VM hostname.
 variable "gitea_ssh_domain" {
   type    = string
-  default = "ssh.git.harryliu.dev"
+  default = "ssh.git.vigilant-broccoli.app"
 }
 
 variable "gitea_allowed_emails" {
@@ -233,7 +227,7 @@ variable "grafana_instance_type" {
 
 variable "vault_domain" {
   type    = string
-  default = "vault.harryliu.dev"
+  default = "vault.vigilant-broccoli.app"
 }
 
 variable "socket_server_domain" {
@@ -376,7 +370,13 @@ variable "component_library_pages_subdomain" {
 variable "vigilant_broccoli_domain" {
   type        = string
   default     = "vigilant-broccoli.app"
-  description = "Zone for the public Pages tool sites; their hostnames are derived from it in cloudflare-vigilant-broccoli-app.tf."
+  description = "Zone for the public tool sites, app subdomains and API hosts; hosts in cloudflare-vigilant-broccoli-app.tf, cloudflare-bookmarks.tf, cloudflare-harryliu-dev.tf, cloudflare-staging-ui.tf, cloudflare-vb-express.tf, cloudflare-vercel-apps.tf and supabase-auth.tf are derived from it."
+}
+
+variable "harryliu_dev_domain" {
+  type        = string
+  default     = "harryliu.dev"
+  description = "Zone for the personal site and its app subdomains; hosts in cloudflare-harryliu-dev.tf, cloudflare-vercel-apps.tf, cloudflare-staging-ui.tf, supabase-auth.tf and main.tf are derived from it."
 }
 
 variable "bookmarks_pages_project" {
@@ -401,7 +401,7 @@ variable "pomodoro_pages_subdomain" {
 
 variable "sandbox_domain" {
   type    = string
-  default = "sandbox.harryliu.dev"
+  default = "sandbox.vigilant-broccoli.app"
 }
 
 variable "sandbox_pages_project" {

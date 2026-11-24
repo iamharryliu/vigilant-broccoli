@@ -131,6 +131,8 @@ import { StatusCardListDemo } from './demos/StatusCardListDemo';
 import { TabsDemo } from './demos/TabsDemo';
 import { TooltipDemo } from './demos/TooltipDemo';
 import { LinkCardDemo } from './demos/LinkCardDemo';
+import { ListHeaderDemo } from './demos/ListHeaderDemo';
+import { SearchDialogDemo } from './demos/SearchDialogDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
 import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
@@ -432,6 +434,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Clickable card with title, description and icon, with a subtle lift on hover; renders an anchor or a router link.',
     lib: LIB.REACT_LIB,
     content: <LinkCardDemo />,
+  },
+  {
+    id: 'list-header',
+    label: 'List Header',
+    description:
+      'Title row with a trailing control, and a Sort select that fits it or a card header action.',
+    lib: LIB.REACT_LIB,
+    content: <ListHeaderDemo />,
   },
   {
     id: 'segmented-control',
@@ -771,6 +781,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
     description: 'Compact input with a leading search icon.',
     lib: LIB.REACT_LIB,
     content: <SearchInputDemo />,
+  },
+  {
+    id: 'search-dialog',
+    label: 'Search Dialog',
+    description:
+      'Command-palette style dialog with fuzzy-filtered results, arrow-key navigation and Enter to select; opens with the / shortcut.',
+    lib: LIB.REACT_LIB,
+    content: <SearchDialogDemo />,
   },
   {
     id: 'speech-to-text-toggle-button',

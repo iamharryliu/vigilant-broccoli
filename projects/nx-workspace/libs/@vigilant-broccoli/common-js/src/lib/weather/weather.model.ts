@@ -107,7 +107,9 @@ export interface CurrentWeather {
   feelsLikeC: number;
   humidityPercent: number;
   windSpeedKph: number;
+  windGustKph: number;
   precipitationMm: number;
+  snowfallCm: number;
   condition: WeatherCondition;
   isDay: boolean;
 }
@@ -124,7 +126,9 @@ export interface DailyWeather {
   tempMinC: number;
   tempMaxC: number;
   windMaxKph: number;
+  windGustMaxKph: number;
   precipitationSumMm: number;
+  snowfallSumCm: number;
   condition: WeatherCondition;
 }
 

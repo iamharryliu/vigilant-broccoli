@@ -4,15 +4,22 @@ import {
   JOB_MATCHES_SKIP_REASON,
   type JobMatchesBookmarkletSkip,
 } from '@vigilant-broccoli/common-js';
+import {
+  clearMatchBriefs,
+  deleteMatchBrief,
+  listPostingsWithBriefs,
+} from '../../../lib/job-match-briefs.db';
+import { startMissingMatchBriefRuns } from '../../../lib/match-brief-runner';
+import { IS_DEMO } from '../../constants/demo';
 import { deleteSuggestedMatchSkills } from '../../../lib/job-match-skills.db';
 import {
   clearMatchPostings,
   clearMatchSkips,
   deleteMatchPosting,
-  listMatchPostings,
   listMatchSkips,
   saveMatchPostings,
   saveMatchSkips,
+  setMatchPostingArchived,
 } from '../../../lib/job-matches.db';
 
 export const runtime = 'nodejs';
@@ -50,7 +57,7 @@ const parseSkips = (value: unknown): JobMatchesBookmarkletSkip[] =>
 // the page showed can be explained without the LinkedIn tab's console.
 export async function GET() {
   return NextResponse.json({
-    postings: listMatchPostings(),
+    postings: listPostingsWithBriefs(),
     skips: listMatchSkips(),
   });
 }
@@ -115,18 +122,49 @@ export async function POST(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
-  return NextResponse.json({ postings: listMatchPostings() });
+  // Each batch the bookmarklet streams in gets briefs for its new postings;
+  // a run's failure must not fail the save.
+  if (!IS_DEMO) {
+    startMissingMatchBriefRuns().catch(error =>
+      console.error(`${LOG_PREFIX} failed to start briefs`, error),
+    );
+  }
+  return NextResponse.json({ postings: listPostingsWithBriefs() });
+}
+
+// Archives or restores the posting named by `url`; `applied` records that it
+// was archived after applying.
+export async function PATCH(req: NextRequest) {
+  const body = await req.json().catch(() => null);
+  if (!isText(body?.url) || typeof body?.archived !== 'boolean') {
+    return NextResponse.json(
+      { error: 'Invalid posting' },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+  if (
+    !setMatchPostingArchived(body.url, body.archived, body.applied === true)
+  ) {
+    return NextResponse.json(
+      { error: 'Posting not found' },
+      { status: HTTP_STATUS_CODES.INVALID_PATH },
+    );
+  }
+  return NextResponse.json({ postings: listPostingsWithBriefs() });
 }
 
 // Removes the posting named by `url`, or every stored posting and suggested
 // skill without it.
 export async function DELETE(req: NextRequest) {
   const url = req.nextUrl.searchParams.get(URL_PARAM);
-  if (url) deleteMatchPosting(url);
-  else {
+  if (url) {
+    deleteMatchPosting(url);
+    deleteMatchBrief(url);
+  } else {
     clearMatchPostings();
+    clearMatchBriefs();
     clearMatchSkips();
     deleteSuggestedMatchSkills();
   }
-  return NextResponse.json({ postings: listMatchPostings() });
+  return NextResponse.json({ postings: listPostingsWithBriefs() });
 }

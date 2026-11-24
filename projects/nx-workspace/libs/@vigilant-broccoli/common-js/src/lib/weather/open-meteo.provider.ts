@@ -19,7 +19,9 @@ interface OpenMeteoResponse {
     apparent_temperature: number;
     relative_humidity_2m: number;
     wind_speed_10m: number;
+    wind_gusts_10m: number;
     precipitation: number;
+    snowfall: number;
     weather_code: number;
     is_day: number;
   };
@@ -34,16 +36,18 @@ interface OpenMeteoResponse {
     temperature_2m_min: number[];
     temperature_2m_max: number[];
     wind_speed_10m_max: number[];
+    wind_gusts_10m_max: number[];
     precipitation_sum: number[];
+    snowfall_sum: number[];
     weather_code: number[];
   };
 }
 
 const CURRENT_FIELDS =
-  'temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,precipitation,weather_code,is_day';
+  'temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,precipitation,snowfall,weather_code,is_day';
 const HOURLY_FIELDS = 'temperature_2m,weather_code,is_day';
 const DAILY_FIELDS =
-  'temperature_2m_min,temperature_2m_max,wind_speed_10m_max,precipitation_sum,weather_code';
+  'temperature_2m_min,temperature_2m_max,wind_speed_10m_max,wind_gusts_10m_max,precipitation_sum,snowfall_sum,weather_code';
 const TIMEZONE_PARAM = 'auto';
 const MS_PER_SECOND = 1000;
 const ISO_DATE_LENGTH = 10;
@@ -112,7 +116,9 @@ const toCurrent = (data: OpenMeteoResponse): CurrentWeather => ({
   feelsLikeC: data.current.apparent_temperature,
   humidityPercent: data.current.relative_humidity_2m,
   windSpeedKph: data.current.wind_speed_10m,
+  windGustKph: data.current.wind_gusts_10m,
   precipitationMm: data.current.precipitation,
+  snowfallCm: data.current.snowfall,
   condition: toConditionFromWmoCode(data.current.weather_code),
   isDay: Boolean(data.current.is_day),
 });
@@ -139,7 +145,9 @@ const toDaily = (data: OpenMeteoResponse, dailyCount: number): DailyWeather[] =>
     tempMinC: data.daily.temperature_2m_min[index],
     tempMaxC: data.daily.temperature_2m_max[index],
     windMaxKph: data.daily.wind_speed_10m_max[index],
+    windGustMaxKph: data.daily.wind_gusts_10m_max[index],
     precipitationSumMm: data.daily.precipitation_sum[index],
+    snowfallSumCm: data.daily.snowfall_sum[index],
     condition: toConditionFromWmoCode(data.daily.weather_code[index]),
   }));
 

@@ -17,7 +17,10 @@ import {
   CareerFileKind,
   JOB_APPLICATIONS_CHANGED_EVENT,
 } from '../constants/career';
-import { JOB_MATCH_SKILLS_CHANGED_EVENT } from '../constants/matches';
+import {
+  JOB_MATCH_SKILLS_CHANGED_EVENT,
+  JOB_MATCHES_CHANGED_EVENT,
+} from '../constants/matches';
 import {
   isActiveRunStatus,
   JobApplicationRun,
@@ -79,6 +82,19 @@ export const RunNotifications = () => {
       const importedFile = IMPORTED_FILE[run.kind];
       if (importedFile) {
         notifyImport(run, importedFile);
+        return;
+      }
+      if (run.kind === RUN_KIND.MATCH_BRIEF) {
+        window.dispatchEvent(new Event(JOB_MATCHES_CHANGED_EVENT));
+        if (run.status === RUN_STATUS.FAILED) {
+          toast.error(t('MATCHES.BRIEF_RUN_FAILED'), {
+            description: run.title,
+            action: {
+              label: t('DIALOG.VIEW_PROGRESS'),
+              onClick: () => router.push(RUNS_TAB_URL),
+            },
+          });
+        }
         return;
       }
       if (run.kind === RUN_KIND.SKILL_SUGGESTIONS) {

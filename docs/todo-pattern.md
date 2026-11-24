@@ -1,12 +1,13 @@
 # TODO.md Pattern
 
-Source of truth for the shape of the repo root `TODO.md`. `/local-create-pr-todo`, `infrastructure/agent-sandbox/create-todo-runner.sh`, `audit-todo-runner.sh`, and the `solve-todo*.sh` parsers all follow this file — change the format here first, then the consumers.
+Source of truth for the shape of the repo root `TODO.md`. `/local-create-pr-todo`, `infrastructure/agent-sandbox/create-todo-runner.sh`, `audit-todo-runner.sh`, `todo-rows.py`, and the `solve-todo*.sh` parsers all follow this file — change the format here first, then the consumers.
 
 ## Table of Contents
 
 - [Structure](#structure)
 - [Row Rules](#row-rules)
 - [QA Rows](#qa-rows)
+- [Follow-up Rows](#follow-up-rows)
 - [Machine-Read Contract](#machine-read-contract)
 - [Staleness](#staleness)
 
@@ -44,11 +45,20 @@ Source of truth for the shape of the repo root `TODO.md`. `/local-create-pr-todo
 - **Removal**: only a person removes checks or rows. Agents never drop a QA check while folding, and the TODO audit leaves QA rows byte-identical; a QA row is not "resolved" because the code it checks exists.
 - **Parallel PRs** folding into the same row conflict on that one line. Conflict resolution keeps both sides' checks and links; open PRs are handled by the scheduled `resolve-conflicts` maintenance ([agentic-pr-maintenance.md](./ci/agentic-pr-maintenance.md)).
 
+## Follow-up Rows
+
+In `agentic-pr-create` and `agentic-pr-update` (`change`) runs the agent writes only `QA` rows; the runner owns every other row. Work a PR deliberately leaves out becomes a row through the `follow_up_todos` metadata array instead, which the runner writes (`pr_apply_follow_up_todos` in `infrastructure/agent-sandbox/publish-pr.sh`, via `todo-rows.py`).
+
+- **Entry**: an object with `type`, `priority`, `agent`, `effort`, `model` (optional: `sonnet`, or `NA` for `human`), `brief`, `description` and `recommended_fix`, valued per [Row Rules](#row-rules). Multi-line text becomes `<br>` and `|` is escaped.
+- **Validation**: a `QA` or unknown type, a priority or other value the Row Rules do not allow for it, empty text, or a description matching an existing row (case and whitespace ignored) skips that entry with a warning in the run log, run summary and PR Concerns; the rest of the run still publishes.
+- **Placement**: a fresh 6-hex id not present in the file, inserted after the last row of the same Type and priority rank, so the table keeps its [Structure](#structure) order. A create run adds them only when it has changes beyond `TODO.md`, and never on a `Remove TODO.md row <id>` request.
+- **Stray edits**: any other `TODO.md` line the agent adds, edits or removes is restored from the base before publishing and listed in the same warning; the agent's `QA` rows and the runner's removal of `todo_ids` rows stand. A local `local-create-pr` or `local-update-pr` session edits `TODO.md` directly instead.
+
 ## Machine-Read Contract
 
 `infrastructure/agent-sandbox/solve-todo.sh` and `solve-todo-runner.sh` locate, extract, and remove an item by matching `^| <id> |` at the start of its row (`<br>` is expanded to newlines and `\|` unescaped on extraction). Keep the id in the leading cell and the row on one line, or `pnpm agentic-pr-create <id>` cannot find it.
 
-`solve-todo-runner.sh` and `update-pr-runner.sh` (`change`) let the agent add or edit `QA` rows only (`pr_validate_todo_edits` in `publish-pr.sh`); any other TODO.md line the agent changed fails the run, and resolved rows are still removed by the runner from `todo_ids`. Apart from a `Remove TODO.md row <id>` request, a create run whose only change is TODO.md publishes nothing.
+`solve-todo-runner.sh` and `update-pr-runner.sh` (`change`) keep the agent's `QA` row edits, add its [follow-up rows](#follow-up-rows) and restore every other TODO.md line it changed (`pr_restore_todo_edits` in `publish-pr.sh`); resolved rows are still removed by the runner from `todo_ids`. Apart from a `Remove TODO.md row <id>` request, a create run whose only change is TODO.md publishes nothing.
 
 `audit-todo-runner.sh` diffs the same `^| <id> |` match before and after its run and aborts rather than committing if an id vanished without being reported resolved, if one was added or renumbered, or if any `QA` row changed. An id is a permanent handle: correct a row in place, never reissue it.
 

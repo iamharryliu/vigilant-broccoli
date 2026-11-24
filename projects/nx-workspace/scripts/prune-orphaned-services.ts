@@ -192,38 +192,13 @@ const renderList = (names: string[]) =>
   names.length ? names.map(name => `\`${name}\``).join(', ') : 'none';
 
 function renderMarkdown(report: Report): string {
-  const orphanTotal = report.providers.reduce(
-    (sum, provider) => sum + provider.orphans.length,
-    0,
-  );
-  const errorTotal = report.providers.reduce(
-    (sum, provider) => sum + provider.errors.length,
-    0,
-  );
-  return [
-    '# Orphaned services report',
-    '',
-    `- Run: ${report.generatedAt}`,
-    `- Commit: \`${report.commit}\``,
-    `- Declared names scanned: ${report.declaredNameCount}`,
-    `- Orphans: ${orphanTotal}`,
-    `- Listing errors: ${errorTotal}`,
-    '',
-    '| Provider | Live | Declared | Orphans | Errors / warnings |',
-    '| --- | --- | --- | --- | --- |',
-    ...report.providers.map(
-      provider =>
-        `| ${provider.provider} | ${provider.live.length} | ${provider.declaredCount} | ${provider.orphans.length} | ${[...provider.errors, ...provider.warnings].join('; ') || 'none'} |`,
-    ),
-    '',
-    ...report.providers.flatMap(provider => [
-      `## ${provider.provider}`,
-      '',
-      `- Orphans: ${renderList(provider.orphans)}`,
-      `- Live: ${renderList(provider.live)}`,
-      '',
-    ]),
-  ].join('\n');
+  const rows = report.providers
+    .filter(provider => provider.orphans.length)
+    .map(
+      provider => `| ${provider.provider} | ${renderList(provider.orphans)} |`,
+    );
+  if (!rows.length) return 'No orphaned services.';
+  return ['| Provider | Orphans |', '| --- | --- |', ...rows].join('\n');
 }
 
 const flagValue = (args: string[], flag: string) => {

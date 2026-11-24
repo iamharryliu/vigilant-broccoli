@@ -9,7 +9,7 @@ cd "$(dirname "$0")/../.."
 . ./infrastructure/agent-sandbox/load-env-from-vault.sh
 
 export CAREER_DIR="$PWD/notes/personal/career"
-export JOB_HUNT_FRAME_ANCESTORS="'self' https://manager.vigilant-broccoli.app"
+export JOB_HUNT_FRAME_ANCESTORS="'self' https://manager.vigilant-broccoli.internal"
 
 cd projects/nx-workspace
 exec nx run job-hunt-next:docker:up

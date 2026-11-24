@@ -29,15 +29,15 @@ The local platform (HTTPS proxy, Grafana, Loki, Prometheus, log collection, Head
 | `k3s/manifests/charts/alloy.yaml` | Alloy log collector: host files, PM2, Docker containers and pod logs to Loki |
 | `k3s/manifests/charts/argo-cd.yaml` | Argo CD in the `argocd` namespace, without Dex, notifications or the ApplicationSet controller |
 | `k3s/manifests/charts/grafana.yaml` | Grafana with the Loki and Prometheus datasources provisioned |
-| `k3s/manifests/charts/headlamp.yaml` | Headlamp web UI at `headlamp.vigilant-broccoli.app` |
+| `k3s/manifests/charts/headlamp.yaml` | Headlamp web UI at `headlamp.vigilant-broccoli.internal` |
 | `k3s/manifests/charts/loki.yaml` | Single-binary Loki on the filesystem, 30-day retention |
 | `k3s/manifests/charts/prometheus.yaml` | Single Prometheus server plus kube-state-metrics, 15-day retention |
 | `k3s/manifests/charts/traefik-config.yaml` | Override for k3s's bundled Traefik: ExternalName Services, JSON access logs and latency buckets |
 | `k3s/manifests/coredns-custom.yaml` | CoreDNS `.server` block that pins `host.k3d.internal`, so a Docker restart that drops k3d's entry no longer 502s the host services |
-| `k3s/manifests/platform/argocd.yaml` | ExternalName Service and Ingress for `argocd.vigilant-broccoli.app` |
+| `k3s/manifests/platform/argocd.yaml` | ExternalName Service and Ingress for `argocd.vigilant-broccoli.internal` |
 | `k3s/manifests/platform/dashboards/` | Grafana dashboards as JSON, loaded through a `grafana_dashboard`-labelled ConfigMap |
 | `k3s/manifests/platform/host-services.yaml` | ExternalName Services for `local-manager-next` (1337) and Immich (2283) on the Mac |
-| `k3s/manifests/platform/ingresses.yaml` | `*.vigilant-broccoli.app` Ingresses with TLS |
+| `k3s/manifests/platform/ingresses.yaml` | `*.vigilant-broccoli.internal` Ingresses with TLS |
 | `k3s/manifests/platform/redirect-https.yaml` | Traefik Middleware redirecting those hosts from HTTP to HTTPS |
 
 ## Tools
@@ -56,14 +56,14 @@ All pinned in the root `mise.toml`; run `mise install`.
 
 1. Free loopback 80/443 (the cluster's load balancer binds them), then `pnpm local:k3s:up` and `pnpm local:k3s:apply`.
 2. `pnpm local:k3s:status` until pods are `Running`; the first apply pulls images and charts, which took about seven minutes on a new cluster.
-3. Open `https://grafana.vigilant-broccoli.app` (`admin`; `pnpm local:k3s:grafana:password` copies the password), `https://manager.vigilant-broccoli.app`, `https://images.vigilant-broccoli.app`, `https://loki.vigilant-broccoli.app/ready` and `https://argocd.vigilant-broccoli.app` (`admin`; `pnpm local:k3s:argocd:password` copies the password). The hostnames come from [hosts](../../hosts), copied into `/etc/hosts`.
-4. `pnpm local:k3s:headlamp:token` copies a 24-hour login token to the clipboard and opens `https://headlamp.vigilant-broccoli.app`; paste it into the ID token prompt.
+3. Open `https://grafana.vigilant-broccoli.internal` (`admin`; `pnpm local:k3s:grafana:password` copies the password), `https://manager.vigilant-broccoli.internal`, `https://images.vigilant-broccoli.internal`, `https://loki.vigilant-broccoli.internal/ready` and `https://argocd.vigilant-broccoli.internal` (`admin`; `pnpm local:k3s:argocd:password` copies the password). The hostnames come from [hosts](../../hosts), copied into `/etc/hosts`.
+4. `pnpm local:k3s:headlamp:token` copies a 24-hour login token to the clipboard and opens `https://headlamp.vigilant-broccoli.internal`; paste it into the ID token prompt.
 5. `pnpm local:k3s:stop` keeps state between sessions; `pnpm local:k3s:down` deletes the cluster, including Grafana and Loki data.
 
 ## Platform
 
 - **GitOps:** `apply.sh` installs Argo CD and creates the `local-platform` Application once; from then on Argo CD syncs `k3s/manifests` from `main` on GitHub (public, so no credentials), deletes resources removed from Git and reverts manual edits. Merging a manifest change is the deploy. `local-tls` is created outside Git and never pruned. `pnpm local:k3s:status` shows the sync and health state; the UI shows each resource and its diff.
-- **Ingress:** k3s's bundled Traefik replaces nginx. Each `*.vigilant-broccoli.app` Ingress uses the `local-tls` Secret (the mkcert wildcard from `setup-certs.sh`) and the `redirect-https` Middleware. Apps on the Mac are reached through ExternalName Services pointing at `host.k3d.internal`.
+- **Ingress:** k3s's bundled Traefik replaces nginx. Each `*.vigilant-broccoli.internal` Ingress uses the `local-tls` Secret (the mkcert wildcard from `setup-certs.sh`) and the `redirect-https` Middleware. Apps on the Mac are reached through ExternalName Services pointing at `host.k3d.internal`.
 - **Logs:** Alloy runs as one replica pinned to the server node, which holds the host mounts, and ships to Loki under these `job` labels:
 
   | `job` | Source |
@@ -74,7 +74,7 @@ All pinned in the root `mise.toml`; run `mise install`.
   | `varlogs` | `/var/log/*log` on the Mac |
 
 - **Metrics:** Prometheus scrapes the apiserver, kubelet/cAdvisor (container CPU and memory), kube-state-metrics and every pod annotated `prometheus.io/scrape`, which includes k3s's bundled Traefik. Query it in Grafana Explore through the `Prometheus` datasource; it has no Ingress. Traefik's `traefik_service_*` series are labelled `service="<namespace>-<service>-<port>@kubernetes"`, e.g. `local-platform-local-manager-next-1337@kubernetes`.
-- **Dashboards:** Grafana's sidecar loads every ConfigMap labelled `grafana_dashboard=1` in `local-platform`; add a JSON file under `platform/dashboards/` and list it in that kustomization's `configMapGenerator`. Dashboards pick the Loki datasource through a `datasource` variable. `local-manager-next (Local)` charts requests, status codes, latency and top paths for `manager.vigilant-broccoli.app` from Traefik's JSON access logs (`{namespace="kube-system", container="traefik"} | json`), alongside the PM2 error and output logs; its `Traefik metrics (Prometheus)` row charts the same request rate and latency from Traefik's metrics, picked through a `metrics` datasource variable.
+- **Dashboards:** Grafana's sidecar loads every ConfigMap labelled `grafana_dashboard=1` in `local-platform`; add a JSON file under `platform/dashboards/` and list it in that kustomization's `configMapGenerator`. Dashboards pick the Loki datasource through a `datasource` variable. `local-manager-next (Local)` charts requests, status codes, latency and top paths for `manager.vigilant-broccoli.internal` from Traefik's JSON access logs (`{namespace="kube-system", container="traefik"} | json`), alongside the PM2 error and output logs; its `Traefik metrics (Prometheus)` row charts the same request rate and latency from Traefik's metrics, picked through a `metrics` datasource variable.
 - **Storage:** Grafana, Loki and Prometheus use `local-path` PVCs, which live inside the node containers. They survive `stop`/`start` and Docker restarts, not `local:k3s:down`.
 
 ## Nuances
@@ -105,7 +105,7 @@ k3d applies `ports`, `volumes` and container `labels` only when it creates the n
 
 ### The redirect loops on a non-443 test port
 
-Traefik's `redirectScheme` builds the HTTPS URL without the request's port, so a cluster created on a test port such as 28443 answers HTTPS requests with a 301 to port 443. Test with the real hostname instead, for example `curl --connect-to ::127.0.0.1:28443 https://grafana.vigilant-broccoli.app/`.
+Traefik's `redirectScheme` builds the HTTPS URL without the request's port, so a cluster created on a test port such as 28443 answers HTTPS requests with a 301 to port 443. Test with the real hostname instead, for example `curl --connect-to ::127.0.0.1:28443 https://grafana.vigilant-broccoli.internal/`.
 
 ### Pinning a `uid` on the provisioned datasource crash-loops Grafana
 

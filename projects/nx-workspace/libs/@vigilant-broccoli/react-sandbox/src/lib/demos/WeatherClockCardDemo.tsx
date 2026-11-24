@@ -71,8 +71,12 @@ const NUMBER_FIELDS = [
   { key: 'humidityPercent', label: 'Humidity (%)' },
   { key: 'windSpeedKph', label: 'Wind (km/h)' },
   { key: 'windMaxKph', label: 'Wind max (km/h)' },
+  { key: 'windGustKph', label: 'Gust (km/h)' },
+  { key: 'windGustMaxKph', label: 'Gust max (km/h)' },
   { key: 'precipitationMm', label: 'Precipitation (mm)' },
   { key: 'precipitationSumMm', label: 'Precipitation today (mm)' },
+  { key: 'snowfallCm', label: 'Snowfall (cm)' },
+  { key: 'snowfallSumCm', label: 'Snowfall today (cm)' },
 ] as const;
 
 const PREPARATION_FIELDS: { key: keyof Preparation; label: string }[] = [
@@ -104,8 +108,12 @@ export const buildWeather = (
   humidityPercent: 72,
   windSpeedKph: 14,
   windMaxKph: 27,
+  windGustKph: 22,
+  windGustMaxKph: 38,
   precipitationMm: 0.2,
   precipitationSumMm: 1.4,
+  snowfallCm: 0,
+  snowfallSumCm: 0,
   condition: WEATHER_CONDITION.PARTLY_CLOUDY,
   isDay: true,
   forecast: buildForecast(forecastDays),

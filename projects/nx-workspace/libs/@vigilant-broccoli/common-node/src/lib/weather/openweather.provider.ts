@@ -26,7 +26,7 @@ interface OpenWeatherCondition {
 interface OpenWeatherCurrentResponse {
   dt: number;
   main: { temp: number; feels_like: number; humidity: number };
-  wind: { speed: number };
+  wind: { speed: number; gust?: number };
   rain?: { '1h'?: number };
   snow?: { '1h'?: number };
   weather: OpenWeatherCondition[];
@@ -38,7 +38,7 @@ interface OpenWeatherForecastResponse {
   list: Array<{
     dt: number;
     main: { temp: number };
-    wind: { speed: number };
+    wind: { speed: number; gust?: number };
     rain?: { '3h'?: number };
     snow?: { '3h'?: number };
     weather: OpenWeatherCondition[];
@@ -132,7 +132,9 @@ const toCurrent = (data: OpenWeatherCurrentResponse): CurrentWeather => ({
   feelsLikeC: data.main.feels_like,
   humidityPercent: data.main.humidity,
   windSpeedKph: toKph(data.wind.speed),
+  windGustKph: toKph(data.wind.gust ?? data.wind.speed),
   precipitationMm: (data.rain?.['1h'] ?? 0) + (data.snow?.['1h'] ?? 0),
+  snowfallCm: data.snow?.['1h'] ?? 0,
   condition: toConditionFromOpenWeatherId(data.weather[0].id),
   isDay: isDayIcon(data.weather[0].icon),
 });
@@ -168,7 +170,9 @@ const toDaily = (
     {
       temps: number[];
       winds: number[];
+      gusts: number[];
       precipitationMm: number;
+      snowfallCm: number;
       conditions: WeatherCondition[];
     }
   >();
@@ -180,27 +184,38 @@ const toDaily = (
     const bucket = buckets.get(localDate) ?? {
       temps: [],
       winds: [],
+      gusts: [],
       precipitationMm: 0,
+      snowfallCm: 0,
       conditions: [],
     };
     bucket.temps.push(item.main.temp);
     bucket.winds.push(toKph(item.wind.speed));
+    bucket.gusts.push(toKph(item.wind.gust ?? item.wind.speed));
     bucket.precipitationMm +=
       (item.rain?.['3h'] ?? 0) + (item.snow?.['3h'] ?? 0);
+    bucket.snowfallCm += item.snow?.['3h'] ?? 0;
     bucket.conditions.push(toConditionFromOpenWeatherId(item.weather[0].id));
     buckets.set(localDate, bucket);
   });
 
   return Array.from(buckets.entries())
     .slice(0, dailyCount)
-    .map(([date, { temps, winds, precipitationMm, conditions }]) => ({
-      date,
-      tempMinC: Math.min(...temps),
-      tempMaxC: Math.max(...temps),
-      windMaxKph: Math.max(...winds),
-      precipitationSumMm: precipitationMm,
-      condition: conditions[Math.floor(conditions.length / 2)],
-    }));
+    .map(
+      ([
+        date,
+        { temps, winds, gusts, precipitationMm, snowfallCm, conditions },
+      ]) => ({
+        date,
+        tempMinC: Math.min(...temps),
+        tempMaxC: Math.max(...temps),
+        windMaxKph: Math.max(...winds),
+        windGustMaxKph: Math.max(...gusts),
+        precipitationSumMm: precipitationMm,
+        snowfallSumCm: snowfallCm,
+        condition: conditions[Math.floor(conditions.length / 2)],
+      }),
+    );
 };
 
 export const fetchOpenWeatherSnapshot = async (

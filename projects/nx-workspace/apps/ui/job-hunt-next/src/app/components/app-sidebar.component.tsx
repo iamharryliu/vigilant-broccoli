@@ -10,11 +10,13 @@ import {
   FileUser,
   LayoutGrid,
   ListChecks,
+  Network,
   Target,
   NotebookPen,
   ScrollText,
   Settings,
   UserRound,
+  Workflow,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -38,9 +40,11 @@ const TAB_ICON: Record<AppTab, LucideIcon> = {
   [APP_TAB.CAREER_EXPERIENCE.value]: ScrollText,
   [APP_TAB.RESUME.value]: FileUser,
   [APP_TAB.MATCHES.value]: Target,
+  [APP_TAB.SKILLS.value]: Network,
   [APP_TAB.NOTES.value]: NotebookPen,
   [APP_TAB.TASKS.value]: ListChecks,
   [APP_TAB.RUNS.value]: Activity,
+  [APP_TAB.WORKFLOW.value]: Workflow,
   [APP_TAB.SETTINGS.value]: Settings,
 };
 
@@ -55,13 +59,13 @@ const NAV_GROUPS = [
     id: 'career-profile',
     titleKey: 'NAV.GROUP_CAREER_PROFILE',
     icon: UserRound,
-    tabs: [APP_TAB.CAREER_EXPERIENCE, APP_TAB.RESUME],
+    tabs: [APP_TAB.CAREER_EXPERIENCE, APP_TAB.SKILLS, APP_TAB.RESUME],
   },
   {
     id: 'workspace',
     titleKey: 'NAV.GROUP_WORKSPACE',
     icon: LayoutGrid,
-    tabs: [APP_TAB.TASKS, APP_TAB.NOTES],
+    tabs: [APP_TAB.TASKS, APP_TAB.NOTES, APP_TAB.WORKFLOW],
   },
 ] as const;
 
@@ -138,6 +142,8 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
     <>
       <Sidebar
         LinkComponent={Link}
+        searchable
+        onNavigate={router.push}
         className="max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-30"
         mobileOpen={mobileOpen}
         onMobileClose={onMobileClose}

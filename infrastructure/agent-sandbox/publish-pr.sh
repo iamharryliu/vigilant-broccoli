@@ -1,6 +1,6 @@
 #!/bin/bash
 # Shared by solve-todo-runner.sh and update-pr-runner.sh (sourced, never run).
-# Holds the single-PR publishing steps: TODO.md row cleanup, commit, push, PR
+# Holds the single-PR publishing steps: TODO.md row cleanup and follow-up rows, commit, push, PR
 # creation and the draft-PR rescue of a failed create run. Git, pushes and PR
 # creation stay here; the agent never runs them.
 #
@@ -45,32 +45,65 @@ pr_changed_files() {
 
 pr_todo_ids_in() { grep -oE '^\|[[:space:]]*[0-9a-f]{6}[[:space:]]*\|' | grep -oE '[0-9a-f]{6}' | sort -u; }
 
+TODO_ROWS_HELPER=${TODO_ROWS_HELPER:-$(dirname "${BASH_SOURCE[0]}")/todo-rows.py}
+
 # QA rows (docs/todo-pattern.md#qa-rows) are the one part of TODO.md a solving
 # agent edits itself; a create run writes this placeholder until its PR exists.
-PR_QA_ROW_RE='^[|][[:space:]]*[0-9a-f]{6}[[:space:]]*[|][[:space:]]*QA[[:space:]]*[|]'
 PR_QA_PLACEHOLDER='PR: pending'
 
-# Refuses TODO.md edits other than added or folded QA rows and removals of the
-# declared resolved rows, so the agent cannot rewrite unrelated backlog rows.
+# Prompt text for the create and `change` update runs, which apply both helpers below.
+# shellcheck disable=SC2034 # Read by the sourcing runners' prompts.
+FOLLOW_UP_TODOS_RULE="- Never write non-QA TODO.md lines yourself: the runner owns every row except QA rows and restores any other TODO.md line you change. To leave a follow-up row for work this PR deliberately leaves out, declare it in follow_up_todos and the runner adds it (docs/todo-pattern.md#follow-up-rows)."
+# shellcheck disable=SC2034
+FOLLOW_UP_TODOS_FIELD="  - follow_up_todos: array of new non-QA TODO.md rows for work this PR deliberately leaves out (omit or [] when none), each an object with type, priority, agent, effort, model (optional), brief, description and recommended_fix valued per docs/todo-pattern.md#row-rules; the runner validates each, assigns its id and adds it, skipping invalid entries or duplicate descriptions with a warning"
+
+# Markdown bullets the runner adds to the PR body's Concerns, after the agent's.
+PR_RUNNER_CONCERNS=""
+
+# Reports a problem the runner worked around instead of failing the run: in the
+# log, as an Actions warning annotation (also shown in write-pr-step-summary.sh's
+# run summary) and as a Concerns bullet with the optional detail lines fenced.
+#   $1 one-line message  $2 detail lines (optional)
+pr_warn() {
+  local message=$1 details=${2:-}
+  echo "WARNING: ${message}" >&2
+  [ -z "$details" ] || printf '%s\n' "$details" | sed 's/^/  /' >&2
+  local annotation=${message//%/%25}
+  [ -z "$details" ] || annotation+=" $(printf '%s\n' "$details" | wc -l | tr -d ' ') line(s), listed in the log and the PR's Concerns."
+  printf '::warning title=Agent sandbox runner::%s\n' "$(pr_one_line "$annotation")"
+  PR_RUNNER_CONCERNS+="- ⚠️ **Runner warning:** ${message}"$'\n'
+  [ -z "$details" ] || PR_RUNNER_CONCERNS+="  ~~~text"$'\n'"$(printf '%s\n' "$details" | sed 's/^/  /')"$'\n'"  ~~~"$'\n'
+}
+
+# Keeps added, folded or removed QA rows and removals of the declared resolved
+# rows. Every other TODO.md line the agent changed is restored from the base
+# and reported, so a stray backlog edit neither fails a finished run nor survives.
 #   $1 base ref/sha  $2... resolved ids
-pr_validate_todo_edits() {
-  local base=$1 line id bad=""
+pr_restore_todo_edits() {
+  local base=$1 base_file dropped
   shift
   git cat-file -e "$base:TODO.md" 2>/dev/null || return 0
-  while IFS= read -r line; do
-    case $line in '+++ '* | '--- '*) continue ;; esac
-    printf '%s\n' "${line:1}" | grep -qE "$PR_QA_ROW_RE" && continue
-    if [ "${line:0:1}" = - ]; then
-      id=$(printf '%s\n' "${line:1}" | pr_todo_ids_in || true)
-      [ -n "$id" ] && printf '%s\n' "$@" | grep -qx "$id" && continue
-    fi
-    bad+="  ${line}"$'\n'
-  done < <(git diff --no-color --no-ext-diff -U0 "$base" -- TODO.md | grep -E '^[+-]' || true)
-  if [ -n "$bad" ]; then
-    echo "ERROR: TODO.md lines changed outside QA rows; the runner owns every other row:" >&2
-    printf '%s' "$bad" >&2
-    return 1
-  fi
+  base_file=$(mktemp)
+  git show "$base:TODO.md" >"$base_file" || { rm -f "$base_file"; return 1; }
+  dropped=$(python3 "$TODO_ROWS_HELPER" restore "$base_file" TODO.md "$@") || { rm -f "$base_file"; return 1; }
+  rm -f "$base_file"
+  [ -n "$dropped" ] || return 0
+  pr_warn "The agent changed TODO.md lines outside QA rows; the runner restored them to the run's base and published the rest. Declare new rows in follow_up_todos (docs/todo-pattern.md#follow-up-rows). Dropped changes:" "$dropped"
+}
+
+# Adds the rows the agent declared in follow_up_todos with fresh ids. A rejected
+# entry is skipped with a warning, never failing the run's other work.
+#   $1 metadata file
+pr_apply_follow_up_todos() {
+  local meta=$1 output kind first second third
+  [ -f "$meta" ] && [ -f TODO.md ] || return 0
+  output=$(python3 "$TODO_ROWS_HELPER" follow-ups "$meta" TODO.md) || return 1
+  while IFS=$'\t' read -r kind first second third; do
+    case $kind in
+      ADDED) echo "Added follow-up TODO row ${first} (${second}): ${third}" >&2 ;;
+      REJECTED) pr_warn "Follow-up TODO row not added: ${first}" ;;
+    esac
+  done <<<"$output"
 }
 
 # Replaces the PR link placeholder on the QA rows this branch added or changed
@@ -191,7 +224,7 @@ pr_apply_todo_cleanup() {
   vanished=$(comm -23 <(printf '%s\n' "$before" | sed '/^$/d') <(printf '%s\n' "$after" | sed '/^$/d'))
   for id in "$@"; do vanished=$(printf '%s\n' "$vanished" | grep -vx "$id" || true); done
   if [ -n "$(printf '%s' "$vanished" | sed '/^$/d')" ]; then
-    echo "ERROR: TODO row(s) removed that this run did not declare as resolved: $(echo $vanished)" >&2
+    echo "ERROR: TODO row(s) removed that this run did not declare as resolved: ${vanished//$'\n'/ }" >&2
     return 1
   fi
   for id in "$@"; do
@@ -235,7 +268,7 @@ pr_publish() {
 
   local body url screenshots
   screenshots=$(python3 "$SCREENSHOTS_HELPER" --metadata "$META_FILE") || return 1
-  body=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$pr_summary" PR_NEXT_STEPS="$pr_next_steps" PR_CONCERNS="$pr_concerns" PR_SUGGESTIONS="$pr_suggestions" PR_SCREENSHOTS="$screenshots" \
+  body=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$pr_summary" PR_NEXT_STEPS="$pr_next_steps" PR_CONCERNS="$pr_concerns" PR_SUGGESTIONS="$pr_suggestions" PR_SCREENSHOTS="$screenshots" PR_RUNNER_CONCERNS="$PR_RUNNER_CONCERNS" \
     HISTORY_SOURCE="$PR_HISTORY_SOURCE" HISTORY_COMMAND="$PR_HISTORY_COMMAND" HISTORY_PROMPT="$history_prompt" \
     HISTORY_SUMMARY="$subject" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
     python3 "$MERGE_BODY_HELPER") || return 1
