@@ -401,6 +401,30 @@ jobs:
           path: 'projects/nx-workspace/_site'
           name: github-pages-${{ github.run_attempt }}
 
+      # The run's artifact list lags a finished upload by several seconds, and
+      # deploy-pages looks the artifact up once without retrying, so it fails
+      # with "No artifacts named ... were found" unless we wait for it here.
+      - name: Wait for Pages artifact
+        if: steps.check.outputs.has_deployments == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_NAME: github-pages-${{ github.run_attempt }}
+          TIMEOUT_SECONDS: 60
+        run: |
+          deadline=$((SECONDS + TIMEOUT_SECONDS))
+          while true; do
+            count=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?name=${ARTIFACT_NAME}" --jq '.total_count') || count=0
+            if [[ "$count" -gt 0 ]]; then
+              echo "Artifact ${ARTIFACT_NAME} is listed"
+              break
+            fi
+            if (( SECONDS >= deadline )); then
+              echo "::error::Artifact ${ARTIFACT_NAME} was not listed for this run after ${TIMEOUT_SECONDS}s"
+              exit 1
+            fi
+            sleep 5
+          done
+
       - name: Deploy to GitHub Pages
         id: deployment
         if: steps.check.outputs.has_deployments == 'true'
