@@ -1,9 +1,9 @@
 name: deploy-docs-md
-run-name: deploy-docs-md (${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }})
+run-name: deploy-docs-md (${{ inputs.environment || 'staging' }})
 
 on:
   push:
-    branches: [main, production]
+    branches: [main]
     paths:
       - notes/**
       - .github/workflows/deploy-docs-md.yml
@@ -24,11 +24,11 @@ permissions:
 concurrency:
   # Keyed on environment so a production promotion and a staging push never
   # land in the same group — one environment can never cancel the other.
-  group: deploy-docs-md-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+  group: deploy-docs-md-${{ inputs.environment || 'staging' }}
   cancel-in-progress: false
 
 env:
-  DEPLOY_ENVIRONMENT: ${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+  DEPLOY_ENVIRONMENT: ${{ inputs.environment || 'staging' }}
 
 jobs:
   deploy-docs-md:

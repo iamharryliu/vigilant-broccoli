@@ -1,8 +1,8 @@
 name: deploy
-run-name: deploy (${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }})
+run-name: deploy (${{ inputs.environment || 'staging' }})
 on:
   push:
-    branches: ['main', 'production']
+    branches: ['main']
     paths:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy.yml'
@@ -35,13 +35,13 @@ concurrency:
   # Keyed on environment, not just ref, so a production dispatch and a staging
   # push that happen to share a ref (e.g. production dispatched from `main`)
   # never land in the same group — one environment can never cancel the other.
-  group: deploy-${{ github.ref }}-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+  group: deploy-${{ github.ref }}-${{ inputs.environment || 'staging' }}
   # Render provisioning must finish before another run can reuse its service.
-  cancel-in-progress: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) != 'production' && vars.RENDER_LLM_STAGING_ENABLED != 'true' }}
+  cancel-in-progress: ${{ (inputs.environment || 'staging') != 'production' && vars.RENDER_LLM_STAGING_ENABLED != 'true' }}
 
 env:
   DOCKERHUB_USERNAME: iamharryliu
-  DEPLOY_ENVIRONMENT: ${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+  DEPLOY_ENVIRONMENT: ${{ inputs.environment || 'staging' }}
 
 jobs:
   notify-start:
@@ -82,7 +82,7 @@ jobs:
 
   deploy-npm-packages:
     needs: gitleaks
-    if: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) == 'production' }}
+    if: ${{ (inputs.environment || 'staging') == 'production' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     outputs:
@@ -146,7 +146,7 @@ jobs:
 
   deploy-apps:
     concurrency:
-      group: ${{ vars.RENDER_LLM_STAGING_ENABLED == 'true' && (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) == 'staging' && 'render-llm-staging' || format('deploy-apps-{0}', github.run_id) }}
+      group: ${{ vars.RENDER_LLM_STAGING_ENABLED == 'true' && (inputs.environment || 'staging') == 'staging' && 'render-llm-staging' || format('deploy-apps-{0}', github.run_id) }}
       cancel-in-progress: false
     needs: gitleaks
     runs-on: ubuntu-24.04

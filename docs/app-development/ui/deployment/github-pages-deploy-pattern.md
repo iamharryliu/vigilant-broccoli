@@ -7,6 +7,6 @@ GitHub Pages permits one custom domain per site, so `status.vigilant-broccoli.ap
 ## How it works
 
 - An app participates iff its `project.json` defines a `deploy-github-pages` target: `dependsOn: ["build"]`, copies `dist/<project>` into `_site/` (`parallel: false`).
-- The `deploy-github-pages` job in `deploy.yml` runs on pushes to main only (the `production` branch never deploys Pages). It skips unless a project with the target is affected (or the run is a dispatch, or `deploy.yml` itself changed), then runs each app's target as an **explicit step** with `VITE_BASE_PATH` set to that app's serving path, uploads `_site` once (`upload-pages-artifact`), and deploys (`deploy-pages`).
+- The `deploy-github-pages` job in `deploy.yml` runs on pushes to main only (production deploys never deploy Pages: `deploy-release` passes `skip_pages`). It skips unless a project with the target is affected (or the run is a dispatch, or `deploy.yml` itself changed), then runs each app's target as an **explicit step** with `VITE_BASE_PATH` set to that app's serving path, uploads `_site` once (`upload-pages-artifact`), and deploys (`deploy-pages`).
 - Build-time data generated into `public/` by a non-cached target (`project-overview`'s `repo-timeline.json` and `project-graph.json`) is copied into `_site` by the `deploy-github-pages` target explicitly, on top of `dist/` — a cache-hit `build` would otherwise ship a stale copy.
 - `component-library` is not staged on GitHub Pages; it lives on Cloudflare Pages at `components.vigilant-broccoli.app`.

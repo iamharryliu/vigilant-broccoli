@@ -124,7 +124,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   gcp:vm:vault:seal           Seal Vault
   gcp:vm:vault:save-secrets-local     Save Vault secrets locally
   gcp:vm:vault:set-secrets    Set secrets in Vault
-  vault:store-promotion-key <pem>  Store the production-promotion GitHub App key in Vault
 
 🔑 SECRETS
   secret-rotation:all         Run the local rotations, dispatch ci-rotate-secrets, rotate the OCI key, then back up Vault to Bitwarden

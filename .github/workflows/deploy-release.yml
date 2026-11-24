@@ -1,0 +1,62 @@
+name: deploy-release
+
+# Gate between a green staging deploy and the production deploy. Follows
+# deploy-demo-apps in listening to deploy's deploy-fanout dispatch; the
+# production run's own fan-out (environment: production) is ignored here.
+on:
+  repository_dispatch:
+    types: [deploy-fanout]
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+  id-token: write
+  pages: write
+
+concurrency:
+  group: deploy-release
+  cancel-in-progress: false
+
+jobs:
+  verify-staging:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true' && github.event.client_payload.environment == 'staging') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      current: ${{ steps.current.outputs.current }}
+    steps:
+      # Production deploys whatever main is when it runs, so a commit that was
+      # verified on staging but is no longer the head would ship an unverified
+      # one. The newer push's own staging run takes over instead.
+      - name: Check the verified commit is still main
+        id: current
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERIFIED_SHA: ${{ github.event.client_payload.commit_sha || github.sha }}
+        run: |
+          main_sha=$(gh api "repos/${{ github.repository }}/commits/main" --jq .sha)
+          if [ "$main_sha" = "$VERIFIED_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::main moved from ${VERIFIED_SHA} to ${main_sha}; the newer staging run will release."
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: steps.current.outputs.current == 'true'
+
+      # No service token yet: the staging Access policy admits only the owner's
+      # email, so gated UIs are checked for their 302 until a token policy exists.
+      - name: Probe staging
+        if: steps.current.outputs.current == 'true'
+        run: .github/scripts/verify-staging.sh
+
+  deploy-production:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+      skip_pages: true
+    secrets: inherit

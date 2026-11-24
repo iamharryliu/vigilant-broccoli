@@ -268,12 +268,12 @@ resource "google_iam_workload_identity_pool_provider" "github" {
   # storage.objectAdmin on the backup bucket, secretAccessor on a handful of
   # secrets). Any branch can run workflow YAML it adds or edits, so allowing
   # every non-PR event would let branch pushes or dispatches impersonate this
-  # SA and reach that access. Only workflow code merged to main or production
-  # may present it; PR merge refs and all other refs are refused. PR workflows
+  # SA and reach that access. Only workflow code merged to main may
+  # present it; PR merge refs and all other refs are refused. PR workflows
   # use narrow, per-workflow providers instead (github-pr-check in
   # github-actions-pr-check.tf, github-deploy-preview in
   # github-actions-deploy-preview.tf).
-  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}' && assertion.ref in ['refs/heads/main', 'refs/heads/production']"
+  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}' && assertion.ref == 'refs/heads/main'"
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
