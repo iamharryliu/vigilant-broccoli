@@ -64,7 +64,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### project-overview
 
-- The Deployments page shows the commit and deploy age once per pull request next to the author, makes each app name the link to its preview with the same icon as its project-overview card, adds a copy button beside the branch name and tightens the card spacing (PR: pending).
+- The Deployments page shows the commit and deploy age once per pull request next to the author, makes each app name the link to its preview with the same icon as its project-overview card, adds a copy button beside the branch name and tightens the card spacing ([#1768](https://github.com/iamharryliu/vigilant-broccoli/pull/1768)).
 - The home page's Monitoring section now links to the repository's open pull requests and GitHub Actions runs on GitHub, between Status and Deployments ([#1753](https://github.com/iamharryliu/vigilant-broccoli/pull/1753)).
 - The projects site app is now called Project Overview (`project-overview`, formerly `pages-index`), and its staging build publishes to a new `staging-project-overview` Cloudflare Pages project behind the same staging-projects address; the public sites and their pages are unchanged ([#1742](https://github.com/iamharryliu/vigilant-broccoli/pull/1742)).
 
