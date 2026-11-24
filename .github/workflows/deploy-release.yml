@@ -52,8 +52,103 @@ jobs:
         if: steps.current.outputs.current == 'true'
         run: .github/scripts/verify-staging.sh
 
-  deploy-production:
+  # The staging-targeted suites; on a staging fan-out they run only here, so a
+  # failure blocks production. Environment-agnostic suites (shared broker,
+  # socket server, Supabase, Twilio) and test-security-cloudflare-access stay
+  # standalone because they do not test the staging deploy.
+  e2e-email-subscription-service:
     needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-e2e-email-subscription-service.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  e2e-llm:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-e2e-llm.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  e2e-llm-calendar:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-e2e-llm-calendar.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  e2e-storage-service:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-e2e-storage-service.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-api:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-api.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-email:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-email.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-email-subscription-service:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-email-subscription-service.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-llm:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-llm.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-private-network-exposure:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-private-network-exposure.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-storage-service:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-storage-service.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  deploy-production:
+    needs:
+      - verify-staging
+      - e2e-email-subscription-service
+      - e2e-llm
+      - e2e-llm-calendar
+      - e2e-storage-service
+      - security-api
+      - security-email
+      - security-email-subscription-service
+      - security-llm
+      - security-private-network-exposure
+      - security-storage-service
     if: ${{ needs.verify-staging.outputs.current == 'true' }}
     uses: ./.github/workflows/deploy.yml
     with:
