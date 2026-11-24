@@ -1,9 +1,9 @@
 name: deploy-grind-75-react
-run-name: deploy-grind-75-react (${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }})
+run-name: deploy-grind-75-react (${{ inputs.environment || 'staging' }})
 
 on:
   push:
-    branches: [main, production]
+    branches: [main]
     paths:
       - projects/grind-75/**
       - notes/tech/software/general/coding-challenges/grind-75-complexities.md
@@ -25,11 +25,11 @@ permissions:
 concurrency:
   # Keyed on environment so a production promotion and a staging push never
   # land in the same group — one environment can never cancel the other.
-  group: deploy-grind-75-react-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+  group: deploy-grind-75-react-${{ inputs.environment || 'staging' }}
   cancel-in-progress: false
 
 env:
-  DEPLOY_ENVIRONMENT: ${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+  DEPLOY_ENVIRONMENT: ${{ inputs.environment || 'staging' }}
 
 jobs:
   deploy-grind-75-react:

@@ -18,7 +18,7 @@ const DEPLOY_PHASE: AgenticPhase = {
   workflows: [
     {
       name: 'manual-promote-production',
-      summary: 'Fast-forward production to the current main commit.',
+      summary: 'Deploy the current main commit to production.',
       url: 'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-promote-production.yml',
     },
   ],

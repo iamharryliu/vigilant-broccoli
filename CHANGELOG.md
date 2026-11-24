@@ -244,6 +244,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - Terraform now manages the `iamharryliu/iamharryliu` profile repo's settings and gives it a description, so the pages-index GitHub page no longer shows "No description provided." for it ([#1731](https://github.com/iamharryliu/vigilant-broccoli/pull/1731)).
 - The RabbitMQ management UI moved to `queue.vigilant-broccoli.app`, and Grafana and Loki moved to `vigilant-broccoli.app`, with no redirect from `harryliu.dev` ([#1705](https://github.com/iamharryliu/vigilant-broccoli/pull/1705), [#1707](https://github.com/iamharryliu/vigilant-broccoli/pull/1707)).
+- Production now deploys on its own after a green staging deploy, once every staging site answers and the staging e2e and security suites pass; the unused `production` branch and its promotion setup are gone ([#1756](https://github.com/iamharryliu/vigilant-broccoli/pull/1756)).
 
 ### cron-backup
 

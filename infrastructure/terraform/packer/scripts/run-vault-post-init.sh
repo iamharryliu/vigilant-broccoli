@@ -84,9 +84,9 @@ POLICY
 
 # ref is bound alongside repository: without it any job in the repo -- including
 # a pull_request run of a branch-edited workflow, which the agent-sandbox /
-# code-server GitHub App can push -- could read every deploy secret. main and
-# production are the only refs whose workflows legitimately consume this role
-# (deploy.yml runs on both); workflow_dispatch runs must be dispatched on main.
+# code-server GitHub App can push -- could read every deploy secret. main is
+# the only ref whose workflows legitimately consume this role; workflow_dispatch
+# runs must be dispatched on main.
 echo 'Creating role ${VAULT_ROLE_NAME}...'
 vault write auth/jwt/role/${VAULT_ROLE_NAME} - <<ROLE
 {
@@ -95,7 +95,7 @@ vault write auth/jwt/role/${VAULT_ROLE_NAME} - <<ROLE
   \"bound_claims_type\": \"glob\",
   \"bound_claims\": {
     \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
-    \"ref\": [\"refs/heads/main\", \"refs/heads/production\"]
+    \"ref\": \"refs/heads/main\"
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_POLICY_NAME}\"],
@@ -195,30 +195,6 @@ vault write auth/jwt/role/${VAULT_UPPTIME_SYNC_ROLE_NAME} - <<ROLE
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_UPPTIME_SYNC_POLICY_NAME}\"],
-  \"ttl\": \"10m\"
-}
-ROLE
-
-echo 'Writing policy ${VAULT_PROMOTION_POLICY_NAME}...'
-vault policy write ${VAULT_PROMOTION_POLICY_NAME} - <<POLICY
-path \"${VAULT_KV_PATH}/data/production-promotion\" {
-  capabilities = [\"read\"]
-}
-POLICY
-
-echo 'Creating role ${VAULT_PROMOTION_ROLE_NAME}...'
-vault write auth/jwt/role/${VAULT_PROMOTION_ROLE_NAME} - <<ROLE
-{
-  \"role_type\": \"jwt\",
-  \"user_claim\": \"actor\",
-  \"bound_claims\": {
-    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
-    \"workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/manual-promote-production.yml@refs/heads/main\",
-    \"ref\": \"refs/heads/main\",
-    \"event_name\": \"workflow_dispatch\"
-  },
-  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
-  \"policies\": [\"${VAULT_PROMOTION_POLICY_NAME}\"],
   \"ttl\": \"10m\"
 }
 ROLE

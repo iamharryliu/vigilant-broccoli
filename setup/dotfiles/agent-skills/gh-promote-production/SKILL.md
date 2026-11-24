@@ -1,6 +1,6 @@
 ---
 name: gh-promote-production
-description: In vigilant-broccoli, dispatch the manual-promote-production workflow to fast-forward the production branch to the current main commit.
+description: In vigilant-broccoli, dispatch the manual-promote-production workflow to dispatch the production deploys from the current main commit.
 ---
 
 Use the current vigilant-broccoli Git root and run `gh` from it. Outside this repo, ask which checkout to use; never default to the skill installation checkout.
@@ -14,4 +14,4 @@ Run only on explicit `gh-promote-production` invocation; it authorizes exactly o
    ```
 
 2. Find the run with `gh run list --workflow manual-promote-production.yml --limit 1 --json url,createdAt` and report its URL. Do not wait for the run.
-3. Tell the user to check the run summary: the job no-ops when `production` already equals `main`, and refuses non-fast-forward promotions. The production deploy follows from the push.
+3. Tell the user to check the run: it fails if `main` moved after it started (rerun to promote the latest commit); otherwise it dispatches the `deploy`, `deploy-docs-md` and `deploy-context-md` production runs.
