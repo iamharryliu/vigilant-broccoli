@@ -85,7 +85,11 @@ sudo wg-quick up vb
 npm run gcp:vm:post-init
 ```
 
-Initializes Vault, saves unseal keys + root token to GCP Secret Manager, unseals, and configures KV engine, JWT auth, and github-actions role.
+Initializes Vault, saves unseal keys + root token to GCP Secret Manager, unseals, and configures the KV engine and JWT auth. Then create the GitHub Actions JWT roles and policies, which Terraform manages:
+
+```bash
+pnpm tf:vault:apply
+```
 
 After every VM restart, you'll need to re-unseal Vault — see step 10 below.
 

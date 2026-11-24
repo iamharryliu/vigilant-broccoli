@@ -117,7 +117,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   gcp:vm:status               Get GCP VM status
   gcp:vm:stop                 Stop GCP VM
   gcp:vm:start                Start GCP VM
-  gcp:vm:post-init            Run Vault post-init script
+  gcp:vm:post-init            Bootstrap Vault (init, KV and JWT auth mounts); roles come from tf:vault:apply
   gcp:vm:regen-cert           Regenerate cert and update WireGuard
   gcp:vm:update-wg            Update WireGuard endpoint
 

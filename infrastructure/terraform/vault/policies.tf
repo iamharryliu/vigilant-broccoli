@@ -55,6 +55,21 @@ locals {
         capabilities = ["patch"]
       }
     EOT
+
+    # Read-only view of the policies and JWT roles this module manages, for
+    # cron-terraform-drift's plan of this workspace. Both policy read paths are
+    # granted because the provider's API client has used each.
+    "github-actions-tf-drift-policy" = <<-EOT
+      path "sys/policies/acl/*" {
+        capabilities = ["read"]
+      }
+      path "sys/policy/*" {
+        capabilities = ["read"]
+      }
+      path "auth/${var.jwt_backend}/role/*" {
+        capabilities = ["read"]
+      }
+    EOT
   }
 }
 
