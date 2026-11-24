@@ -7,3 +7,4 @@
 | Gundam Wing |
 | Hellsing |
 | Tales from the Crypt |
+| Saint Seiya |
