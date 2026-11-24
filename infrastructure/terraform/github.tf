@@ -35,9 +35,11 @@ resource "github_branch_default" "default" {
   branch     = github_branch.main.branch
 }
 
-resource "github_branch" "production" {
-  repository = github_repository.vigilant_broccoli.name
-  branch     = "production"
+resource "github_issue_label" "release_hold" {
+  repository  = github_repository.vigilant_broccoli.name
+  name        = "release-hold"
+  color       = "B60205"
+  description = "deploy-release verifies staging, then holds production until a manual dispatch"
 }
 
 resource "github_actions_secret" "gcp_service_account" {

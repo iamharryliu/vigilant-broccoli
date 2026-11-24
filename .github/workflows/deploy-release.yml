@@ -13,6 +13,7 @@ permissions:
   contents: write
   id-token: write
   pages: write
+  pull-requests: read
 
 concurrency:
   group: deploy-release
@@ -136,7 +137,11 @@ jobs:
       environment: staging
     secrets: inherit
 
-  deploy-production:
+  # A release-hold label on the merged PR, or RELEASE_HOLD=true for every
+  # release, stops after verification so staging can be checked by hand. Runs
+  # after the suites so a hold set while they run still counts; a manual
+  # dispatch is the approval and ignores it.
+  check-hold:
     needs:
       - verify-staging
       - e2e-email-subscription-service
@@ -150,6 +155,29 @@ jobs:
       - security-private-network-exposure
       - security-storage-service
     if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      held: ${{ steps.hold.outputs.held }}
+    steps:
+      - name: Check for a release hold
+        id: hold
+        if: ${{ github.event_name != 'workflow_dispatch' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_HOLD: ${{ vars.RELEASE_HOLD }}
+          VERIFIED_SHA: ${{ github.event.client_payload.commit_sha }}
+        run: |
+          labels=$(gh api "repos/${{ github.repository }}/commits/${VERIFIED_SHA}/pulls" --jq '[.[].labels[].name] | join(",")')
+          if [[ "$RELEASE_HOLD" == true || ",${labels}," == *",release-hold,"* ]]; then
+            echo "held=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Release held: staging is verified. Check it, then run: gh workflow run deploy-release"
+            echo "Release held (\`release-hold\` label or \`RELEASE_HOLD\`). Check staging, then run \`gh workflow run deploy-release\`." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  deploy-production:
+    needs: check-hold
+    if: ${{ needs.check-hold.outputs.held != 'true' }}
     uses: ./.github/workflows/deploy.yml
     with:
       environment: production
