@@ -25,4 +25,4 @@ Run only on explicit `local-update-pr-claude` invocation; it authorizes one tmux
      'claude --model <model> --permission-mode auto "$(cat /tmp/vb-local-pr-<slug>.prompt)"'
    ```
 
-5. Report the PR, branch, worktree, instruction, model with its reason and `tmux attach -t vb-pr-<slug>`. Do not wait; the session ends with the agent's PR URL or a failure visible on attach.
+5. Report the PR, branch, worktree, instruction, model with its reason and `tmux attach -t vb-pr-<slug>`. Do not wait; the session ends with the agent's PR URL or a failure visible on attach. Add that the worktree and branch stay until `/local-session-cleanup` removes them after the PR merges.
