@@ -35,8 +35,8 @@ const SHORT_SHA_LENGTH = 7;
 
 const STYLE = {
   root: 'h-full overflow-auto flex flex-col gap-4',
-  list: 'grid grid-cols-1 lg:grid-cols-2 gap-4',
-  card: 'p-4 flex flex-col gap-2',
+  list: 'flex flex-col gap-4',
+  card: 'p-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-4',
   apps: 'flex flex-col gap-1',
   appLink: `${LINK_CLASS} break-all inline-flex items-center gap-2`,
 };
