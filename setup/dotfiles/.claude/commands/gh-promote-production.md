@@ -1,1 +1,0 @@
-../../agent-skills/gh-promote-production/SKILL.md
