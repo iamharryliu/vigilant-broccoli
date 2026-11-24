@@ -59,6 +59,9 @@ vault write auth/jwt/config \
   bound_issuer=${VAULT_JWT_ISSUER} \
   oidc_discovery_url=${VAULT_JWT_ISSUER}
 
+# The roles and policies below are also managed by Terraform in
+# infrastructure/terraform/vault/ (pnpm tf:vault:apply). Change both together
+# until these writes are removed, or the next apply reverts one side.
 echo 'Writing policy ${VAULT_POLICY_NAME}...'
 vault policy write ${VAULT_POLICY_NAME} - <<POLICY
 path \"${VAULT_KV_PATH}/data/secrets\" {

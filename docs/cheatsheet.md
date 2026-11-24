@@ -40,8 +40,11 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
 🏗️  TERRAFORM
   tf:plan                     Load vault env and run terraform plan
   tf:import                   Load vault env and run terraform import <address> <id>
-  tf:apply                    Load vault env, apply terraform, and run post-apply
+  tf:apply                    Load vault env, apply terraform, run post-apply, then tf:vault:apply
   tf:post-apply               Run post-apply script
+  tf:vault:init               Init the Vault roles/policies workspace (infrastructure/terraform/vault)
+  tf:vault:plan               Load Vault provider env and plan Vault's JWT roles and policies
+  tf:vault:apply              Load Vault provider env and apply Vault's JWT roles and policies
   oci:config:sync-local       Refresh ~/.oci/config + key from Vault (after a rotation)
   tf:output                   Show terraform outputs
   tf:unlock                   Load vault env and force-unlock the HCP Terraform workspace
