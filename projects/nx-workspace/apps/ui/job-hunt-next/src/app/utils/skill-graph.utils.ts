@@ -20,14 +20,20 @@ export type SkillGraphOptions = {
 
 // A vocabulary term missing here lands in "Other" rather than vanishing.
 const SKILL_GROUPS: Record<string, string[]> = {
-  AI: [
+  AI: ['AI-assisted development'],
+  'LLM frameworks': [
     'AI Agents',
-    'AI-assisted development',
-    'Computer vision',
+    'LangChain',
+    'LangGraph',
     'LLM',
-    'Machine Learning',
     'Model Context Protocol',
     'RAG',
+  ],
+  'Machine learning': [
+    'Computer vision',
+    'Machine Learning',
+    'PyTorch',
+    'TensorFlow',
   ],
   Architecture: [
     'Distributed systems',
@@ -52,6 +58,8 @@ const SKILL_GROUPS: Record<string, string[]> = {
     'Dynamics 365 & Power Platform',
     'Integration platforms',
     'Microsoft 365',
+    'Salesforce',
+    'WordPress',
   ],
   'Cloud and infrastructure': [
     'AWS',
@@ -92,10 +100,12 @@ const SKILL_GROUPS: Record<string, string[]> = {
     'Agile',
     'Bundlers',
     'End-to-end testing',
+    'Gradle',
     'Nx',
     'Object-Oriented Programming',
     'Unit testing',
   ],
+  'Game development': ['Unity', 'Unreal Engine'],
   Frontend: ['Angular', 'Figma', 'HTML and CSS', 'React', 'Svelte', 'Vue'],
   'Industrial and embedded': ['Industrial automation'],
   Mobile: ['Mobile development', 'React Native'],
@@ -108,6 +118,7 @@ const SKILL_GROUPS: Record<string, string[]> = {
     'Java',
     'JavaScript',
     'Kotlin',
+    'MATLAB',
     'PHP',
     'Python',
     'Ruby',

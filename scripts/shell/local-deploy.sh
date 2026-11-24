@@ -18,18 +18,5 @@ nx run music-next:pm2:reload
 nx run local-manager-next:pm2:reload
 
 # Checked after the PM2 reloads so Docker startup never delays them.
-if ! docker info > /dev/null 2>&1; then
-  echo "Docker is not running; starting Docker Desktop..."
-  open -a Docker
-  DOCKER_WAIT_SECONDS=120
-  waited=0
-  until docker info > /dev/null 2>&1; do
-    if [ "$waited" -ge "$DOCKER_WAIT_SECONDS" ]; then
-      echo "Docker did not become ready within ${DOCKER_WAIT_SECONDS}s; aborting job-hunt-next rebuild." >&2
-      exit 1
-    fi
-    sleep 2
-    waited=$((waited + 2))
-  done
-fi
+"$REPO_ROOT/scripts/shell/ensure-docker-running.sh"
 pnpm --dir "$REPO_ROOT" job-hunt:docker:up
