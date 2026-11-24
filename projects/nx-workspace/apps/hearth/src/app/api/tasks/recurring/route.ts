@@ -6,6 +6,7 @@ import {
 import {
   RECURRING_TASKS_TABLE,
   badRequest,
+  isValidMonthlyDates,
   isValidMonthlyNth,
   serverError,
   toRecurringTask,
@@ -16,10 +17,14 @@ export const runtime = 'nodejs';
 const INVALID_MONTHLY_NTH =
   'monthlyNth must be null or a non-empty array of 1-4 or -1';
 
+const INVALID_MONTHLY_DATES =
+  'monthlyDates must be null or a non-empty array of 1-31';
+
 const UPDATABLE_COLUMNS = {
   title: 'title',
   days: 'days',
   monthlyNth: 'monthly_nth',
+  monthlyDates: 'monthly_dates',
   assignedUserId: 'assigned_user_id',
 };
 
@@ -41,10 +46,18 @@ export const GET = async (req: NextRequest) => {
 
 export const POST = async (req: NextRequest) => {
   const supabase = getSupabase(req);
-  const { homeId, title, days, monthlyNth = null } = await req.json();
+  const {
+    homeId,
+    title,
+    days,
+    monthlyNth = null,
+    monthlyDates = null,
+  } = await req.json();
   if (!homeId || !title || !Array.isArray(days))
     return badRequest('homeId, title and days are required');
   if (!isValidMonthlyNth(monthlyNth)) return badRequest(INVALID_MONTHLY_NTH);
+  if (!isValidMonthlyDates(monthlyDates))
+    return badRequest(INVALID_MONTHLY_DATES);
 
   // New tasks land above every existing one.
   const { data: firstTask, error: positionError } = await supabase
@@ -63,6 +76,7 @@ export const POST = async (req: NextRequest) => {
       title,
       days,
       monthly_nth: monthlyNth,
+      monthly_dates: monthlyDates,
       position: (firstTask?.position ?? 1) - 1,
     })
     .select()
@@ -90,6 +104,11 @@ export const PATCH = async (req: NextRequest) => {
   if (!body.id) return badRequest('Missing id');
   if (body.monthlyNth !== undefined && !isValidMonthlyNth(body.monthlyNth))
     return badRequest(INVALID_MONTHLY_NTH);
+  if (
+    body.monthlyDates !== undefined &&
+    !isValidMonthlyDates(body.monthlyDates)
+  )
+    return badRequest(INVALID_MONTHLY_DATES);
 
   const updates = {
     updated_at: new Date().toISOString(),

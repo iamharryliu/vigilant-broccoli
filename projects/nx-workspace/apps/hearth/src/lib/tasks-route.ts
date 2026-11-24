@@ -1,6 +1,10 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { DefaultTask, MONTHLY_ORDINALS } from '../app/components/tasks.utils';
+import {
+  MONTHLY_ORDINALS,
+  MONTH_DATES,
+} from '@vigilant-broccoli/react-lib-tasks/recurrence';
+import { DefaultTask } from '../app/components/tasks.utils';
 
 export const RECURRING_TASKS_TABLE = 'home_recurring_tasks';
 export const RECURRING_TASK_COMPLETIONS_TABLE =
@@ -12,6 +16,7 @@ export const toRecurringTask = (row: Record<string, unknown>) => ({
   title: row.title,
   days: row.days,
   monthlyNth: row.monthly_nth ?? null,
+  monthlyDates: row.monthly_dates ?? null,
   position: row.position,
   homeId: row.home_id,
   createdAt: row.created_at,
@@ -25,6 +30,12 @@ export const isValidMonthlyNth = (value: unknown) =>
     value.length > 0 &&
     value.every(nth => MONTHLY_ORDINALS.some(ordinal => ordinal.nth === nth)));
 
+export const isValidMonthlyDates = (value: unknown) =>
+  value === null ||
+  (Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(date => MONTH_DATES.includes(date)));
+
 export const serverError = (message: string) =>
   Response.json(
     { error: message },
@@ -37,14 +48,21 @@ export const badRequest = (message: string) =>
 const WEEKDAY_NUMBERS = [0, 1, 2, 3, 4, 5, 6];
 
 export const isValidImportedTask = (value: unknown): value is DefaultTask => {
-  const { title, days, monthlyNth = null } = (value ?? {}) as DefaultTask;
+  const {
+    title,
+    days,
+    monthlyNth = null,
+    monthlyDates = null,
+  } = (value ?? {}) as DefaultTask;
   return (
     typeof title === 'string' &&
     title.trim() !== '' &&
     Array.isArray(days) &&
     days.length > 0 &&
     days.every(day => WEEKDAY_NUMBERS.includes(day)) &&
-    isValidMonthlyNth(monthlyNth)
+    isValidMonthlyNth(monthlyNth) &&
+    isValidMonthlyDates(monthlyDates) &&
+    !(monthlyNth && monthlyDates)
   );
 };
 
@@ -67,16 +85,19 @@ export const importRecurringTasks = async (
   const idByTitle = new Map(existing.map(({ id, title }) => [title, id]));
   const importedTitles = new Set(tasks.map(({ title }) => title));
 
-  const imported = tasks.map(({ title, days, monthlyNth }, position) => ({
-    id: idByTitle.get(title),
-    title,
-    row: {
-      days,
-      monthly_nth: monthlyNth ?? null,
-      position,
-      archived_at: null,
-    },
-  }));
+  const imported = tasks.map(
+    ({ title, days, monthlyNth, monthlyDates }, position) => ({
+      id: idByTitle.get(title),
+      title,
+      row: {
+        days,
+        monthly_nth: monthlyNth ?? null,
+        monthly_dates: monthlyDates ?? null,
+        position,
+        archived_at: null,
+      },
+    }),
+  );
   const omitted = existing
     .filter(({ title }) => !importedTitles.has(title))
     .map(({ id }, index) => ({ id, row: { position: tasks.length + index } }));

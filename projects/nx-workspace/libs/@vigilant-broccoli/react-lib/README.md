@@ -16,6 +16,7 @@ Shared React component library.
 | Badge | [View](https://components.vigilant-broccoli.app/badge) |
 | Button List | [View](https://components.vigilant-broccoli.app/button-list) |
 | Buttons | [View](https://components.vigilant-broccoli.app/buttons) |
+| Calendar | [View](https://components.vigilant-broccoli.app/calendar) |
 | Callout | [View](https://components.vigilant-broccoli.app/callout) |
 | Card | [View](https://components.vigilant-broccoli.app/card) |
 | Checkbox | [View](https://components.vigilant-broccoli.app/checkbox) |
@@ -58,6 +59,7 @@ Shared React component library.
 | Textarea | [View](https://components.vigilant-broccoli.app/textarea) |
 | Theme Preference Control | [View](https://components.vigilant-broccoli.app/theme-preference-control) |
 | Toaster | [View](https://components.vigilant-broccoli.app/toaster) |
+| Toggle Chip Group | [View](https://components.vigilant-broccoli.app/toggle-chip-group) |
 | Toggle Group | [View](https://components.vigilant-broccoli.app/toggle-group) |
 | Tooltip | [View](https://components.vigilant-broccoli.app/tooltip) |
 | Typography | [View](https://components.vigilant-broccoli.app/typography) |

@@ -1,6 +1,6 @@
 # React Lib Tasks
 
-Google Tasks list (`GoogleTasksComponent`), task capture and its dialog, task sorting helpers, a localStorage adapter for using the list without signing in (`createLocalTasksAdapter`), and the shared `/api/tasks/**` route handlers (`@vigilant-broccoli/react-lib-tasks/google-tasks-server`).
+Google Tasks list (`GoogleTasksComponent`), task capture and its dialog, task sorting helpers, a localStorage adapter for using the list without signing in (`createLocalTasksAdapter`), the shared `/api/tasks/**` route handlers (`@vigilant-broccoli/react-lib-tasks/google-tasks-server`), and the recurring-schedule picker (`TaskScheduleFields`, from `@vigilant-broccoli/react-lib-tasks/task-schedule-fields`) with its pure schedule logic (`@vigilant-broccoli/react-lib-tasks/recurrence`, safe to import from server code).
 
 ## Table of Contents
 
@@ -11,6 +11,7 @@ Google Tasks list (`GoogleTasksComponent`), task capture and its dialog, task so
 
 | Component | Demo |
 | --- | --- |
+| Task Schedule Fields | [View](https://components.vigilant-broccoli.app/task-schedule-fields) |
 | Tasks | [View](https://components.vigilant-broccoli.app/tasks) |
 
 ## Stack

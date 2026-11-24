@@ -253,6 +253,12 @@ export const BUILT_WITH: Record<string, BuiltWithItem[]> = {
     { name: 'Text', entryId: 'typography' },
   ],
   tabs: [{ name: 'ToggleIndicator', entryId: 'toggle-group' }],
+  'task-schedule-fields': [
+    { name: 'Button', entryId: 'buttons' },
+    { name: 'Calendar', entryId: 'calendar' },
+    { name: 'SegmentedControl', entryId: 'segmented-control' },
+    { name: 'ToggleChipGroup', entryId: 'toggle-chip-group' },
+  ],
   tasks: [
     { name: 'Button', entryId: 'buttons' },
     { name: 'Card', entryId: 'card' },
@@ -276,6 +282,7 @@ export const BUILT_WITH: Record<string, BuiltWithItem[]> = {
     { name: 'Button', entryId: 'buttons' },
     { name: 'Text', entryId: 'typography' },
   ],
+  'toggle-chip-group': [{ name: 'Button', entryId: 'buttons' }],
   'upptime-status-list': [
     { name: 'Dialog', entryId: 'dialog' },
     { name: 'Skeleton', entryId: 'skeleton' },

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   Button,
+  Calendar,
   CopyPastable,
   DeleteItemConfirmationDialog,
   DownloadButton,
@@ -14,6 +15,7 @@ import {
   SpeechToTextToggleButton,
   Text,
   ThemePreferenceControl,
+  ToggleChipGroup,
   ToggleGroup,
   ToggleGroupItem,
   UPTIME_STATUS,
@@ -163,6 +165,52 @@ export const ThemePreferenceControlDemo = () => (
     <ThemePreferenceControl fullWidth />
   </div>
 );
+
+const SUNDAY = 0;
+
+export const CalendarDemo = () => {
+  const [selected, setSelected] = useState<Date | undefined>(new Date());
+  return (
+    <div className="flex flex-wrap gap-6">
+      <Calendar mode="single" selected={selected} onSelect={setSelected} />
+      <Calendar isHighlighted={date => date.getDay() === SUNDAY} />
+    </div>
+  );
+};
+
+const CHIP_WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
+  day => ({ value: day, label: day }),
+);
+const CHIP_DATES = Array.from({ length: 31 }, (_, i) => ({
+  value: i + 1,
+  label: String(i + 1),
+}));
+
+const toggleSelection = <T,>(values: T[], value: T) =>
+  values.includes(value) ? values.filter(v => v !== value) : [...values, value];
+
+export const ToggleChipGroupDemo = () => {
+  const [days, setDays] = useState<string[]>(['Mon', 'Wed']);
+  const [dates, setDates] = useState<number[]>([1, 15]);
+  return (
+    <div className="flex max-w-md flex-col gap-3">
+      <ToggleChipGroup
+        label="Weekdays"
+        shape="oval"
+        options={CHIP_WEEKDAYS}
+        selected={days}
+        onToggle={day => setDays(prev => toggleSelection(prev, day))}
+      />
+      <ToggleChipGroup
+        label="Dates"
+        columns={10}
+        options={CHIP_DATES}
+        selected={dates}
+        onToggle={date => setDates(prev => toggleSelection(prev, date))}
+      />
+    </div>
+  );
+};
 
 const TOGGLE_OPTIONS = ['Day', 'Week', 'Month'];
 
