@@ -1,7 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Callout, CalloutText, Card, Text } from '@vigilant-broccoli/react-lib';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Callout,
+  CalloutText,
+  Card,
+  CopyButton,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import {
   PREVIEW_DEPLOYMENTS_ERROR,
   PreviewDeploymentPullRequest,
@@ -9,9 +15,9 @@ import {
 } from '@vigilant-broccoli/github-workspace-js';
 
 const LABEL = {
-  PREVIEW: 'Preview',
   UPDATED: 'Updated',
   BY: 'by',
+  COPY_BRANCH: 'Copy branch name',
 };
 
 const MESSAGE = {
@@ -30,10 +36,9 @@ const SHORT_SHA_LENGTH = 7;
 const STYLE = {
   root: 'h-full overflow-auto flex flex-col gap-4',
   list: 'grid grid-cols-1 lg:grid-cols-2 gap-4',
-  card: 'p-4 flex flex-col gap-3',
-  apps: 'flex flex-col gap-2',
-  appRow: 'flex flex-wrap items-baseline gap-x-3 gap-y-1',
-  appLink: `${LINK_CLASS} break-all`,
+  card: 'p-4 flex flex-col gap-2',
+  apps: 'flex flex-col gap-1',
+  appLink: `${LINK_CLASS} break-all inline-flex items-center gap-2`,
 };
 
 const externalLinkProps = { target: '_blank', rel: 'noopener noreferrer' };
@@ -64,47 +69,67 @@ const errorMessage = (
     ? `${MESSAGE.RATE_LIMITED}${result.rateLimitResetAt ? ` ${MESSAGE.RATE_LIMIT_RESET} ${formatTime(result.rateLimitResetAt)}.` : ''}`
     : MESSAGE.UPSTREAM;
 
-const PullRequestCard = ({ pull }: { pull: PreviewDeploymentPullRequest }) => (
-  <Card className={STYLE.card}>
-    <div className="flex flex-col gap-1">
-      <a href={pull.url} {...externalLinkProps} className={LINK_CLASS}>
-        <Text weight="bold">
-          #{pull.number} {pull.title}
+// A push deploys every changed app of the PR at once, so the newest app
+// deployment stands for the commit and time of the whole card.
+const latestDeployment = (pull: PreviewDeploymentPullRequest) =>
+  pull.apps.reduce((latest, app) =>
+    app.deployedAt > latest.deployedAt ? app : latest,
+  );
+
+const PullRequestCard = ({
+  pull,
+  renderAppIcon,
+}: {
+  pull: PreviewDeploymentPullRequest;
+  renderAppIcon?: (app: string) => ReactNode;
+}) => {
+  const latest = latestDeployment(pull);
+  return (
+    <Card className={STYLE.card}>
+      <div className="flex flex-col">
+        <a href={pull.url} {...externalLinkProps} className={LINK_CLASS}>
+          <Text weight="bold">
+            #{pull.number} {pull.title}
+          </Text>
+        </a>
+        <div className="flex items-center gap-1">
+          <Text size="2" color="gray" className="break-all">
+            <code>{pull.headRef}</code>
+          </Text>
+          <CopyButton text={pull.headRef} label={LABEL.COPY_BRANCH} />
+        </div>
+        <Text size="2" color="gray" className="break-all">
+          {pull.author && `${LABEL.BY} ${pull.author} · `}
+          <code>{latest.commit.slice(0, SHORT_SHA_LENGTH)}</code> ·{' '}
+          <time dateTime={latest.deployedAt} title={latest.deployedAt}>
+            {formatAge(latest.deployedAt)}
+          </time>
         </Text>
-      </a>
-      <Text size="2" color="gray" className="break-all">
-        {pull.author && `${LABEL.BY} ${pull.author} · `}
-        <code>{pull.headRef}</code>
-      </Text>
-    </div>
-    <ul className={STYLE.apps}>
-      {pull.apps.map(app => (
-        <li key={app.app} className={STYLE.appRow}>
-          <Text size="2" weight="medium">
-            {app.app}
-          </Text>
-          <a
-            href={app.aliasUrl}
-            {...externalLinkProps}
-            className={STYLE.appLink}
-          >
-            <Text size="2">{LABEL.PREVIEW}</Text>
-          </a>
-          <Text size="1" color="gray">
-            <code>{app.commit.slice(0, SHORT_SHA_LENGTH)}</code> ·{' '}
-            <time dateTime={app.deployedAt} title={app.deployedAt}>
-              {formatAge(app.deployedAt)}
-            </time>
-          </Text>
-        </li>
-      ))}
-    </ul>
-  </Card>
-);
+      </div>
+      <ul className={STYLE.apps}>
+        {pull.apps.map(app => (
+          <li key={app.app}>
+            <a
+              href={app.aliasUrl}
+              {...externalLinkProps}
+              className={STYLE.appLink}
+            >
+              {renderAppIcon?.(app.app)}
+              <Text size="2" weight="medium">
+                {app.app}
+              </Text>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+};
 
 interface PreviewDeploymentsProps {
   // Resolves the result however the host app reaches GitHub.
   loadPreviewDeployments: () => Promise<PreviewDeploymentsResult>;
+  renderAppIcon?: (app: string) => ReactNode;
 }
 
 // Each load costs two unauthenticated GitHub calls against a 60 per hour per
@@ -113,6 +138,7 @@ const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
 export const PreviewDeployments = ({
   loadPreviewDeployments,
+  renderAppIcon,
 }: PreviewDeploymentsProps) => {
   const [result, setResult] = useState<PreviewDeploymentsResult | null>(null);
   const lastFetchedAt = useRef(0);
@@ -171,7 +197,11 @@ export const PreviewDeployments = ({
       ) : result?.pullRequests.length ? (
         <div className={STYLE.list}>
           {result.pullRequests.map(pull => (
-            <PullRequestCard key={pull.number} pull={pull} />
+            <PullRequestCard
+              key={pull.number}
+              pull={pull}
+              renderAppIcon={renderAppIcon}
+            />
           ))}
         </div>
       ) : (
