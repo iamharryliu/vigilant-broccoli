@@ -7,6 +7,7 @@ update_pr_vm_paths() {
   FORMAT_CHANGED_HELPER="$run_dir/format-changed.sh"
   MERGE_BODY_HELPER="$run_dir/merge-pr-body.py"
   SCREENSHOTS_HELPER="$run_dir/pr-screenshots.py"
+  TODO_ROWS_HELPER="$run_dir/todo-rows.py"
   CI_LOG="$run_dir/pr-ci-failures.log"
   RUN_LOG="$run_dir/pr-ci-run.log"
   UPDATE_PR_HISTORY_SOURCE='code-server VM'

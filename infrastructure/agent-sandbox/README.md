@@ -136,8 +136,9 @@ and a human or a `TODO.md` row re-scopes it.
 `publish-pr.sh`, sourced by `solve-todo-runner.sh` (and by `update-pr-runner.sh` for its TODO helpers), holds the shared steps:
 
 - validates the agent's `todo_ids` (6-hex ids that have a row and are named in the request) before publishing, and removes
-  from `TODO.md` only those rows, failing a run that deleted any other row or edited anything but
-  [QA rows](../../docs/todo-pattern.md#qa-rows);
+  from `TODO.md` only those rows; restores any other line the agent changed outside
+  [QA rows](../../docs/todo-pattern.md#qa-rows) and adds its `follow_up_todos` rows through `todo-rows.py`, warning
+  instead of failing ([follow-up rows](../../docs/todo-pattern.md#follow-up-rows));
 - commits, pushes and opens the PR with its title, summary, next steps, concerns, suggestions, screenshots and history row,
   then replaces the `PR: pending` placeholder on this PR's QA rows with the PR URL, and on its `CHANGELOG.md` bullets
   with the `[#N](url)` link, in a follow-up commit;
