@@ -1,11 +1,20 @@
 name: deploy
-run-name: deploy (${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }})
+run-name: deploy (${{ inputs.environment || 'staging' }})
 on:
   push:
-    branches: ['main', 'production']
+    branches: ['main']
     paths:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy.yml'
+      # Snapshot sources outside the nx workspace (see "Check if deployment
+      # needed"); keep in sync with each app's snapshot.config.json sources.
+      - 'notes/**'
+      - 'CONTEXT.md'
+      - 'TODO.md'
+      - 'docs/**'
+      - 'setup/dotfiles/agent-skills/**'
+      - '**/CONTEXT.md'
+      - 'projects/grind-75/**'
   workflow_dispatch:
     inputs:
       environment:
@@ -24,6 +33,10 @@ on:
         description: 'Skip the GitHub Pages deploy — set by callers that invoke this workflow more than once per run, since the pages artifact name is unique per run, not per call'
         type: boolean
         default: false
+      production_base:
+        description: 'Commit production last shipped; a production run then deploys only what changed since it instead of every deploy:production target'
+        type: string
+        default: ''
 
 permissions:
   actions: read
@@ -35,13 +48,13 @@ concurrency:
   # Keyed on environment, not just ref, so a production dispatch and a staging
   # push that happen to share a ref (e.g. production dispatched from `main`)
   # never land in the same group — one environment can never cancel the other.
-  group: deploy-${{ github.ref }}-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+  group: deploy-${{ github.ref }}-${{ inputs.environment || 'staging' }}
   # Render provisioning must finish before another run can reuse its service.
-  cancel-in-progress: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) != 'production' && vars.RENDER_LLM_STAGING_ENABLED != 'true' }}
+  cancel-in-progress: ${{ (inputs.environment || 'staging') != 'production' && vars.RENDER_LLM_STAGING_ENABLED != 'true' }}
 
 env:
   DOCKERHUB_USERNAME: iamharryliu
-  DEPLOY_ENVIRONMENT: ${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+  DEPLOY_ENVIRONMENT: ${{ inputs.environment || 'staging' }}
 
 jobs:
   notify-start:
@@ -76,13 +89,44 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+      # The CLI instead of gitleaks-action, which rejects repository_dispatch:
+      # deploy-release calls this workflow from a deploy-fanout dispatch. Keep the
+      # version pinned, since newer rules could flag history that passes today.
+      - name: Install gitleaks
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_VERSION: 8.24.3
+          GITLEAKS_SHA256: 9991e0b2903da4c8f6122b5c3186448b927a5da4deef1fe45271c3793f4ee29c
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfL -o "$RUNNER_TEMP/$archive" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${archive}"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/$archive" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" gitleaks
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+
+      # A push scans only its own commits, as gitleaks-action did; every other
+      # event (dispatches, releases, ci-rotate-secrets) scans the full history.
+      - name: Scan for secrets
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          log_opts=()
+          if [[ "$EVENT_NAME" == push && -n "$BEFORE_SHA" && ! "$BEFORE_SHA" =~ ^0+$ ]]; then
+            log_opts=("--log-opts=${BEFORE_SHA}..${GITHUB_SHA}")
+          fi
+          gitleaks detect --redact -v --exit-code=2 --report-format=sarif --report-path=results.sarif "${log_opts[@]}"
+
+      - name: Upload gitleaks report
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: gitleaks-results
+          path: results.sarif
+          if-no-files-found: ignore
 
   deploy-npm-packages:
     needs: gitleaks
-    if: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) == 'production' }}
+    if: ${{ (inputs.environment || 'staging') == 'production' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     outputs:
@@ -123,7 +167,7 @@ jobs:
         if: steps.check.outputs.has_packages == 'true'
         working-directory: ./projects/nx-workspace
         env:
-          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.vigilant-broccoli.app
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
         run: pnpm exec nx run-many -t build --projects="${{ steps.check.outputs.projects }}"
 
@@ -146,7 +190,7 @@ jobs:
 
   deploy-apps:
     concurrency:
-      group: ${{ vars.RENDER_LLM_STAGING_ENABLED == 'true' && (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) == 'staging' && 'render-llm-staging' || format('deploy-apps-{0}', github.run_id) }}
+      group: ${{ vars.RENDER_LLM_STAGING_ENABLED == 'true' && (inputs.environment || 'staging') == 'staging' && 'render-llm-staging' || format('deploy-apps-{0}', github.run_id) }}
       cancel-in-progress: false
     needs: gitleaks
     runs-on: ubuntu-24.04
@@ -167,7 +211,19 @@ jobs:
         working-directory: ./projects/nx-workspace
         env:
           RENDER_LLM_STAGING_ENABLED: ${{ vars.RENDER_LLM_STAGING_ENABLED }}
+          PRODUCTION_BASE: ${{ inputs.production_base }}
         run: |
+          # nx-set-shas tracks the last successful run on main, which staging
+          # pushes keep moving, so production diffs from the commit deploy-release
+          # last shipped instead. Without a base that is an ancestor of this
+          # commit (manual dispatch, secret rotation, first release) production
+          # deploys every target.
+          PRODUCTION_AFFECTED=false
+          if [[ "$DEPLOY_ENVIRONMENT" == "production" && -n "$PRODUCTION_BASE" ]] && git merge-base --is-ancestor "$PRODUCTION_BASE" "$NX_HEAD" 2>/dev/null; then
+            NX_BASE="$PRODUCTION_BASE"
+            PRODUCTION_AFFECTED=true
+          fi
+
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
 
@@ -181,13 +237,26 @@ jobs:
             RUN_TARGETS="deploy,deploy:render"
           fi
 
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_ENVIRONMENT" == "production" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
+          if [[ "$DEPLOY_YML_CHANGED" -gt 0 ]] || { [[ "$PRODUCTION_AFFECTED" != true ]] && [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_ENVIRONMENT" == "production" ]]; }; then
             ALL_COMMA=$(pnpm exec nx show projects --withTarget=$DEPLOY_TARGET | tr '\n' ',' | sed 's/,$//')
             echo "has_deployments=true" >> $GITHUB_OUTPUT
             echo "projects=$ALL_COMMA" >> $GITHUB_OUTPUT
             echo "deploy_cmd=pnpm exec nx run-many -t $RUN_TARGETS" >> $GITHUB_OUTPUT
           else
             AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=$DEPLOY_TARGET --base=$NX_BASE --head=$NX_HEAD | tr '\n' ',' | sed 's/,$//')
+            # These apps build a snapshot of files outside the nx workspace, so
+            # nx affected cannot see those files change; deploy-preview.yml
+            # maps the same paths for previews.
+            if echo "$CHANGED_FILES" | grep -qE "^(CONTEXT\.md|TODO\.md|docs/|setup/dotfiles/agent-skills/)|/CONTEXT\.md$"; then
+              AFFECTED_COMMA+=",context-md"
+            fi
+            if echo "$CHANGED_FILES" | grep -q "^notes/"; then
+              AFFECTED_COMMA+=",docs-md"
+            fi
+            if echo "$CHANGED_FILES" | grep -qE "^projects/grind-75/|^notes/tech/software/general/coding-challenges/grind-75-complexities\.md$"; then
+              AFFECTED_COMMA+=",grind-75-react"
+            fi
+            AFFECTED_COMMA=$(echo "$AFFECTED_COMMA" | tr ',' '\n' | sed '/^$/d' | sort -u | paste -sd, -)
             if [[ -n "$AFFECTED_COMMA" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
               echo "projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
@@ -267,16 +336,16 @@ jobs:
         env:
           COMMIT_SHA: ${{ github.sha }}
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
-          VAULT_ADDR: https://vault.harryliu.dev
+          VAULT_ADDR: https://vault.vigilant-broccoli.app
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
-          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.vigilant-broccoli.app
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
           RENDER_OWNER_ID: ${{ vars.RENDER_OWNER_ID }}
         run: ${{ steps.check.outputs.deploy_cmd }}
 
       # Every Docker Hub repo's description and overview come from the
-      # pages-index image registry; syncing all of them is a dozen idempotent
+      # project-overview image registry; syncing all of them is a dozen idempotent
       # API calls, so it does not need to track which images this run pushed.
       # Not load-bearing for the deploy, hence continue-on-error.
       - name: Sync Docker Hub descriptions
@@ -288,19 +357,19 @@ jobs:
           DOCKERHUB_TOKEN: ${{ env.DOCKERHUB_TOKEN }}
         run: pnpm exec tsx scripts/update-dockerhub-descriptions.ts
 
-      # Cloudflare proxies api.harryliu.dev and staging-api.harryliu.dev to the
+      # Cloudflare proxies api.vigilant-broccoli.app and staging-api.vigilant-broccoli.app to the
       # fly apps, so fly needs a cert for each hostname or the origin TLS
       # handshake fails. `certs add` errors when the cert exists, so only add it
       # when `certs show` finds none.
-      - name: Ensure fly certs for api.harryliu.dev and staging-api.harryliu.dev
+      - name: Ensure fly certs for api.vigilant-broccoli.app and staging-api.vigilant-broccoli.app
         if: steps.check.outputs.has_deployments == 'true'
         env:
           FLY_API_TOKEN: ${{ env.FLY_API_TOKEN }}
         run: |
-          flyctl certs show api.harryliu.dev -a production-vb-express >/dev/null 2>&1 \
-            || flyctl certs add api.harryliu.dev -a production-vb-express
-          flyctl certs show staging-api.harryliu.dev -a staging-vb-express >/dev/null 2>&1 \
-            || flyctl certs add staging-api.harryliu.dev -a staging-vb-express
+          flyctl certs show api.vigilant-broccoli.app -a production-vb-express >/dev/null 2>&1 \
+            || flyctl certs add api.vigilant-broccoli.app -a production-vb-express
+          flyctl certs show staging-api.vigilant-broccoli.app -a staging-vb-express >/dev/null 2>&1 \
+            || flyctl certs add staging-api.vigilant-broccoli.app -a staging-vb-express
 
   deploy-github-pages:
     needs: gitleaks
@@ -350,14 +419,14 @@ jobs:
           secrets: |
             kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
 
-      - name: Stage pages-index landing artifact
+      - name: Stage project-overview landing artifact
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
           VITE_BASE_PATH: /
-          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
+          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.vigilant-broccoli.app
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
-        run: pnpm exec nx run pages-index:deploy-github-pages
+        run: pnpm exec nx run project-overview:deploy-github-pages
 
       - name: Setup Pages
         if: steps.check.outputs.has_deployments == 'true'
@@ -369,6 +438,30 @@ jobs:
         with:
           path: 'projects/nx-workspace/_site'
           name: github-pages-${{ github.run_attempt }}
+
+      # The run's artifact list lags a finished upload by several seconds, and
+      # deploy-pages looks the artifact up once without retrying, so it fails
+      # with "No artifacts named ... were found" unless we wait for it here.
+      - name: Wait for Pages artifact
+        if: steps.check.outputs.has_deployments == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_NAME: github-pages-${{ github.run_attempt }}
+          TIMEOUT_SECONDS: 60
+        run: |
+          deadline=$((SECONDS + TIMEOUT_SECONDS))
+          while true; do
+            count=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?name=${ARTIFACT_NAME}" --jq '.total_count') || count=0
+            if [[ "$count" -gt 0 ]]; then
+              echo "Artifact ${ARTIFACT_NAME} is listed"
+              break
+            fi
+            if (( SECONDS >= deadline )); then
+              echo "::error::Artifact ${ARTIFACT_NAME} was not listed for this run after ${TIMEOUT_SECONDS}s"
+              exit 1
+            fi
+            sleep 5
+          done
 
       - name: Deploy to GitHub Pages
         id: deployment

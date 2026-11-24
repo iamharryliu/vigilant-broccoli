@@ -24,7 +24,7 @@ Public album gallery at photography.harryliu.dev. Albums are the subfolders of `
 `GET /api/public/photography/albums` and `GET /api/public/photography/photos/<album>/<file>` in `apps/api/vb-express` (`src/routes/public-photography.ts`) need no API key and are registered outside every protected scope, like the public event-calendars route. They read through `bucket-service` with `provider=cloudflare-r2`, so neither the site nor VB Express holds R2 credentials.
 
 - `albums` lists the bucket on each request and sends `Cache-Control: public, max-age=60`. The bucket list is unprefixed, so its cost grows with the total object count of the shared bucket
-- `photos` serves only `photography/<album>/<image>` keys (two segments, image extension, no `..`), never other bucket content, and sends `Cache-Control: public, max-age=86400`. `api.harryliu.dev` is proxied by Cloudflare, so repeat views are served from its edge cache; the staging API on `fly.dev` is not
+- `photos` serves only `photography/<album>/<image>` keys (two segments, image extension, no `..`), never other bucket content, and sends `Cache-Control: public, max-age=86400`. `api.vigilant-broccoli.app` is proxied by Cloudflare, so repeat views are served from its edge cache; the staging API on `fly.dev` is not
 - CORS for the Pages origins is scoped to the `/api/public/` prefix without credentials in `main.ts`; `<img>` loads need none
 
 ## Viewer
@@ -33,4 +33,4 @@ Clicking a photo opens `ImageCarouselDialog` from `react-lib-media`: full-screen
 
 ## Environments
 
-`src/environments/environment.ts` points at `staging-vb-express.fly.dev`; `environment.production.ts` (used by `deploy:production` through the `production-env` mode) at `api.harryliu.dev`. There is no `:preview` trio, because preview origins are not in the public CORS allowlist.
+`src/environments/environment.ts` points at `staging-vb-express.fly.dev`; `environment.production.ts` (used by `deploy:production` through the `production-env` mode) at `api.vigilant-broccoli.app`. There is no `:preview` trio, because preview origins are not in the public CORS allowlist.

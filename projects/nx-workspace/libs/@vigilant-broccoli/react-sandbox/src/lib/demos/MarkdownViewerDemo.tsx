@@ -20,11 +20,22 @@ Your **Markdown** content goes here.
 
 ## Text and lists
 
+### Heading levels
+
+#### Fourth-level heading
+
+##### Fifth-level heading
+
+###### Sixth-level heading
+
 ### Unordered and ordered
 
 - First item
   - Nested item
+    - Deeper nested item
 - Second item
+
+A long unbroken URL wraps inside the viewer: https://example.com/a/very/long/path/that/keeps/going/without/any/spaces/to/break/on/so/it/would/widen/the/page/on/a/phone, as does \`inline.code.with.a.very.long.unbroken.identifier.that.keeps.going\`.
 
 1. Step one
 2. Step two
@@ -45,10 +56,16 @@ Your **Markdown** content goes here.
 | CollapsibleList | react-lib | yes |
 | MarkdownViewer | docs-explorer | opt-in |
 
+| App | Framework | Hosting | Auth | Database | Uses MarkdownViewer for |
+| --- | --- | --- | --- | --- | --- |
+| docs-md | Vite | Cloudflare Pages | None | None | Rendering repository documentation |
+| job-hunt-next | Next.js | Local Docker | Session | Postgres | Notes preview and the Workflow page |
+
 ## Code
 
 \`\`\`ts
 const greet = (name: string) => \`Hello, \${name}\`;
+const describe = (items: string[]) => items.map((item, index) => \`\${index + 1}. \${item}\`).join(', ');
 \`\`\`
 
 \`\`\`bash
@@ -62,7 +79,13 @@ echo hi
 flowchart LR
   A[Markdown] --> B[Split by heading]
   B --> C[CollapsibleList]
+  C --> D[Nested blocks]
+  D --> E[Mermaid diagrams]
 \`\`\`
+
+## Image
+
+<img src="/favicon.svg" alt="Wide image" width="1200" height="240">
 
 ## Rules and HTML
 

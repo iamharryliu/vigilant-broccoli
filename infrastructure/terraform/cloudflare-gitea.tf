@@ -1,4 +1,4 @@
-# git.harryliu.dev — Gitea on the OCI VM, proxied through Cloudflare and gated
+# git.vigilant-broccoli.app — Gitea on the OCI VM, proxied through Cloudflare and gated
 # by Zero Trust Access. Two policies: owner email (browser web UI) and a
 # non-identity service token so git-over-HTTPS and CI (ci-health-check's origin
 # probe, rotate-gitea-token.sh's /api/v1 verification) keep working. The private

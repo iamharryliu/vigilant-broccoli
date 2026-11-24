@@ -7,7 +7,7 @@ Use the current vigilant-broccoli Git root. Outside this repo, ask which checkou
 
 `CHANGELOG.md` holds one collapsible `<details>` block per month (`<summary>November 2026</summary>`), newest first, directly under the `<!-- changelog-entries -->` anchor. Fold the pull requests merged to `main` since the `<!-- changelog-through: <sha> -->` marker into the section for the UTC month each one merged in: edit that month's section when it exists, otherwise add it above the older months. A weekly run therefore keeps growing the current month until the month turns over. The unattended runner collects the PRs (number, merge month, title, body, labels, changed paths) into a JSON file; read that file instead of discovering PRs yourself, and read a PR's diff only when its title and body do not say what changed.
 
-Each month is a `<details>` block with a blank line after the `<summary>` and before `</details>`, so GitHub and projects.harryliu.dev (which renders each block as a collapsible item) both render the Markdown inside it:
+Each month is a `<details>` block with a blank line after the `<summary>` and before `</details>`, so GitHub and projects.vigilant-broccoli.app (which renders each block as a collapsible item) both render the Markdown inside it:
 
 ```markdown
 <details>

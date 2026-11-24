@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Sidebar as SharedSidebar,
   SidebarCTA,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/sidebar';
 import { NAV_LINKS, NavLink } from '../app.consts';
 import { useIsMobile } from '../../lib/use-is-mobile';
 import { ROUTES } from '../../lib/routes';
@@ -70,6 +70,7 @@ type SidebarProps = {
 
 export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const isMobile = useIsMobile();
 
   const items: SidebarCTA[] = NAV_LINKS.map(link =>
@@ -81,6 +82,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
       items={items}
       LinkComponent={Link}
       searchable
+      onNavigate={router.push}
       className={SIDEBAR_POSITION}
       mobileOpen={mobileOpen}
       onMobileClose={onMobileClose}

@@ -24,3 +24,4 @@ Google Tasks list (`GoogleTasksComponent`), task capture and its dialog, task so
   - `common-js`
   - `google-workspace`
   - `react-lib`
+  - `react-lib-checklist`

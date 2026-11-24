@@ -27,7 +27,7 @@ module.exports = {
         // request.nextUrl.origin is this bind address (127.0.0.1:1340), not
         // the manager's public origin Spotify has registered as the redirect
         // URI and the post-callback redirect must land on.
-        SPOTIFY_REDIRECT_BASE_URL: 'https://manager.vigilant-broccoli.app',
+        SPOTIFY_REDIRECT_BASE_URL: 'https://manager.vigilant-broccoli.internal',
         ...scrubbedEnv,
       },
       instances: 1,

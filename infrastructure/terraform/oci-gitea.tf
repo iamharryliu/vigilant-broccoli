@@ -147,7 +147,7 @@ resource "oci_core_instance" "gitea" {
 }
 
 resource "cloudflare_dns_record" "gitea" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.gitea_domain
   content = oci_core_instance.gitea.public_ip
   type    = "A"
@@ -157,7 +157,7 @@ resource "cloudflare_dns_record" "gitea" {
 
 # DNS-only so git-SSH on :2222 reaches the VM directly (the proxy can't forward it).
 resource "cloudflare_dns_record" "gitea_ssh" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.gitea_ssh_domain
   content = oci_core_instance.gitea.public_ip
   type    = "A"

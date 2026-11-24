@@ -12,7 +12,13 @@ iptables -F
 ipset destroy $IPSET_NAME 2>/dev/null || true
 ipset create $IPSET_NAME hash:net
 
-for cidr in $(curl -fsSL https://api.github.com/meta | jq -r '(.web + .api + .git)[]' | grep -v ':'); do
+# Unauthenticated /meta shares the host IP's 60-per-hour rate limit, so on a
+# busy Actions runner it can 403. A failure inside the loop's command
+# substitution would not trip `set -e`, silently allowing no GitHub CIDRs.
+META_AUTH=()
+[ -n "${GH_TOKEN:-}" ] && META_AUTH=(-H "Authorization: Bearer $GH_TOKEN")
+GITHUB_CIDRS=$(curl -fsSL "${META_AUTH[@]}" https://api.github.com/meta | jq -r '(.web + .api + .git)[]' | grep -v ':')
+for cidr in $GITHUB_CIDRS; do
   ipset add $IPSET_NAME "$cidr" -exist
 done
 
@@ -52,7 +58,10 @@ if curl -fsS --connect-timeout 5 https://example.com >/dev/null 2>&1; then
   echo "Firewall verification failed: example.com is reachable" >&2
   exit 1
 fi
-if ! curl -fsS --connect-timeout 10 https://api.github.com/zen >/dev/null; then
+# Any HTTP answer proves the route is open. Without -f, a 403 from GitHub's
+# unauthenticated per-IP rate limit (shared hosted-runner IPs exhaust it)
+# no longer reads as the firewall blocking GitHub; only a failed connection does.
+if ! curl -sS -o /dev/null --connect-timeout 10 https://api.github.com/zen; then
   echo "Firewall verification failed: api.github.com is unreachable" >&2
   exit 1
 fi

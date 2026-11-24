@@ -9,6 +9,36 @@
     "CONFIRM": "Delete item",
     "COUNT": "Confirmed {count} times"
   },
+  "SEARCH_DIALOG": {
+    "OPEN": "Open search",
+    "HINT": "Press / or the button, type to filter, then Enter to select.",
+    "TITLE": "Search",
+    "DESCRIPTION": "Search the example pages and press Enter to open one.",
+    "PLACEHOLDER": "Search pages...",
+    "EMPTY": "No results",
+    "ITEMS": {
+      "STATUS": {
+        "TITLE": "Status",
+        "DESCRIPTION": "Service health and uptime"
+      },
+      "DEPLOYMENTS": {
+        "TITLE": "Deployments",
+        "DESCRIPTION": "Open PRs with preview deployments"
+      },
+      "CHANGELOG": {
+        "TITLE": "Changelog",
+        "DESCRIPTION": "Monthly summary of merged changes"
+      },
+      "DOCKER": {
+        "TITLE": "Docker Images",
+        "DESCRIPTION": "Published container images"
+      },
+      "NPM": {
+        "TITLE": "npm Packages",
+        "DESCRIPTION": "Published libraries"
+      }
+    }
+  },
   "SELECT_DEMO": {
     "STRING": "String options",
     "NUMBER": "Numbers, including zero",
@@ -29,8 +59,12 @@
   },
   "FOUNDATIONS": {
     "INPUT": {
-      "NAME": "Input and Textarea",
-      "SUMMARY": "Text fields in default, disabled, invalid and long-content states, with labels and validation messages."
+      "NAME": "Input",
+      "SUMMARY": "Single-line text field in default, disabled, invalid and long-content states, with labels and validation messages."
+    },
+    "TEXTAREA": {
+      "NAME": "Textarea",
+      "SUMMARY": "Multi-line text field in default, disabled, invalid and long-content states, with labels and validation messages."
     },
     "CHECKBOX": {
       "NAME": "Checkbox",
@@ -142,8 +176,11 @@
       "MONOSPACE_TEXT": "Monospace Text",
       "SOCIAL_SIGNIN_BUTTONS": "Social Signin Buttons",
       "CHAT_SEND_BUTTON": "Chat Send Button",
-      "BUTTON_LIST": "Button List",
       "CHAT_PLACEHOLDER": "Type a message…"
+    },
+    "BUTTON_LIST": {
+      "DEFAULT": "Default",
+      "EXTERNAL": "External links"
     },
     "AVATAR": {
       "SIZES": "Sizes",
@@ -189,6 +226,11 @@
     },
     "SWITCH": {
       "LABEL": "Receive updates"
+    },
+    "LIST_HEADER": {
+      "TITLE_ROW": "Title row",
+      "CARD_HEADER_ACTION": "Card header action",
+      "LIST_TITLE": "Groceries"
     }
   }
 }

@@ -23,3 +23,43 @@ export interface MatchSkill {
 // Matches page reloads the suggestions.
 export const JOB_MATCH_SKILLS_CHANGED_EVENT = 'job-match-skills-changed';
 export const JOB_MATCHES_CHANGED_EVENT = 'job-matches-changed';
+
+export const SWEDISH_REQUIREMENT = {
+  REQUIRED: 'required',
+  PREFERRED: 'preferred',
+  NOT_MENTIONED: 'not-mentioned',
+} as const;
+
+export type SwedishRequirement =
+  (typeof SWEDISH_REQUIREMENT)[keyof typeof SWEDISH_REQUIREMENT];
+
+export interface MatchAbbreviation {
+  term: string;
+  meaning: string;
+}
+
+// Written by a match-brief run from one posting; a field the posting does not
+// state is an empty string or list.
+export interface MatchBrief {
+  summary: string;
+  level: string;
+  location: string;
+  workMode: string;
+  compensation: string;
+  workAuthorization: string;
+  swedish: SwedishRequirement;
+  responsibilities: string[];
+  mustHave: string[];
+  niceToHave: string[];
+  redFlags: string[];
+  // Abbreviations the posting uses, alphabetical by term.
+  abbreviations: MatchAbbreviation[];
+}
+
+// `brief` is null until one is generated, and again once a recapture changes
+// the posting's text.
+// `briefRunning` is true while a run for the posting is queued or running.
+export type MatchBriefState = {
+  brief: MatchBrief | null;
+  briefRunning: boolean;
+};

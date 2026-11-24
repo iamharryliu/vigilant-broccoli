@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, DoorOpen } from 'lucide-react';
 import {
   Badge,
   cn,
@@ -15,22 +15,24 @@ import {
   EllipsisCTA,
 } from '@vigilant-broccoli/react-lib';
 import {
+  IMAGE_GALLERY_LAYOUT,
   ImageCarouselDialog,
-  ImageFilmstrip,
+  ImageGallery,
 } from '@vigilant-broccoli/react-lib-media';
 import { CRUDItemFormDialog } from '@vigilant-broccoli/react-lib-crud-list';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { WhereIsItem } from '../../lib/types';
-import { ROUTES } from '../../lib/routes';
+import { ROUTES, WHERE_IS_ENDPOINT } from '../../lib/routes';
 import { WhereIsFormComponent, WhereIsFormValues } from './where-is-form';
 import { WhereIsLabel } from './where-is-label';
 import { sortTags } from './where-is-tags';
+import { saveWhereIsUpdate, toWhereIsFormValues } from './save-where-is';
 import {
-  saveWhereIsUpdate,
-  toWhereIsFormValues,
-  WHERE_IS_ENDPOINT,
-} from './save-where-is';
+  WhereIsRoomsContext,
+  findRoomName,
+  useWhereIsRoomsOrFetch,
+} from './where-is-rooms';
 
 const WHERE_IS_COPY = {
   LIST: { TITLE: 'Storage Areas', EMPTY_MESSAGE: '' },
@@ -54,6 +56,7 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
   const [updateOpen, setUpdateOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
+  const roomsContext = useWhereIsRoomsOrFetch(item?.homeId);
 
   useEffect(() => {
     if (!session?.access_token) return;
@@ -92,6 +95,7 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
   if (!item) return null;
 
   const formValues = toWhereIsFormValues(item);
+  const roomName = findRoomName(roomsContext.rooms, item.roomId);
 
   return (
     <div className="space-y-6">
@@ -126,16 +130,27 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
           </div>
         </div>
 
-        <CRUDItemFormDialog
-          open={updateOpen}
-          onOpenChange={setUpdateOpen}
-          formType={FORM_TYPE.UPDATE}
-          initialFormValues={formValues}
-          FormComponent={WhereIsFormComponent as never}
-          submitHandler={handleUpdate as never}
-          copy={WHERE_IS_COPY}
-          showCloseButton
-        />
+        <WhereIsRoomsContext.Provider value={roomsContext}>
+          <CRUDItemFormDialog
+            open={updateOpen}
+            onOpenChange={setUpdateOpen}
+            formType={FORM_TYPE.UPDATE}
+            initialFormValues={formValues}
+            FormComponent={WhereIsFormComponent as never}
+            submitHandler={handleUpdate as never}
+            copy={WHERE_IS_COPY}
+            showCloseButton
+          />
+        </WhereIsRoomsContext.Provider>
+
+        {roomName && (
+          <div className="flex items-center gap-1.5 text-[var(--gray-11)]">
+            <DoorOpen size={16} aria-hidden />
+            <Text size="2" color="gray">
+              {roomName}
+            </Text>
+          </div>
+        )}
 
         {item.description && (
           <Text size="3" color="gray" as="p">
@@ -143,19 +158,16 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
           </Text>
         )}
 
-        <Text size="1" color="gray" as="p">
-          Added{' '}
-          {new Date(item.createdAt).toLocaleDateString(undefined, {
-            dateStyle: 'medium',
-          })}
-        </Text>
-
         {item.imageUrls.length > 0 && (
           <>
-            <ImageFilmstrip
-              urls={item.imageUrls}
-              alt={item.title}
-              onSelect={setCarouselIndex}
+            <ImageGallery
+              layout={IMAGE_GALLERY_LAYOUT.STACK}
+              items={item.imageUrls.map((url, i) => ({
+                id: url,
+                imageUrl: url,
+                label: `${item.title} ${i + 1}`,
+                onSelect: () => setCarouselIndex(i),
+              }))}
             />
             <ImageCarouselDialog
               images={item.imageUrls}
@@ -176,6 +188,13 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
             ))}
           </div>
         )}
+
+        <Text size="1" color="gray" as="p">
+          Added{' '}
+          {new Date(item.createdAt).toLocaleDateString(undefined, {
+            dateStyle: 'medium',
+          })}
+        </Text>
       </div>
 
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>

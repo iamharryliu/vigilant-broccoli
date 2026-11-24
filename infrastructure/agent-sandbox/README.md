@@ -9,12 +9,16 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Running on the code-server VM](#running-on-the-code-server-vm)
 - [Running in CI](#running-in-ci)
 - [Publishing a pull request](#publishing-a-pull-request)
+- [Metadata file](#metadata-file)
 - [PR screenshots](#pr-screenshots)
 - [Ending without changes](#ending-without-changes)
 - [Auditing the backlog](#auditing-the-backlog)
+- [Auditing code comments](#auditing-code-comments)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
+- [Refreshing READMEs](#refreshing-readmes)
 - [Auditing the inventories](#auditing-the-inventories)
 - [Auditing documentation accuracy](#auditing-documentation-accuracy)
+- [Auditing free-tier documentation](#auditing-free-tier-documentation)
 - [Auditing agent context](#auditing-agent-context)
 - [Auditing the public URL registry](#auditing-the-public-url-registry)
 - [Stack](#stack)
@@ -56,7 +60,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 - `pnpm agentic-pr-create --vm <id...>` or `--vm --prompt "<task>"` runs the solve in the code-server container on the OCI VM instead of a local Docker sandbox, so the Mac can sleep or disconnect while it runs. Claude by default; `--agent codex [--codex-model <m>]` runs Codex instead, with either a Vault access token or the login made on the VM (below). `--model` still applies to Claude, and `--local`/`--agent ollama` are rejected.
 - `solve-vm.sh` loads the GitHub App credentials from Vault, delivers a fresh 1-hour installation token to the VM (the same file `manual-refresh-code-server-github-token` writes), then streams `solve-vm-session.sh` into the container over `pnpm code-server:ssh`'s SSH path. For `--agent codex` the Vault `AGENT_CODEX_ACCESS_TOKEN` is prepended to that same SSH stdin, so it is never in argv, Terraform state or cloud-init (unlike `CLAUDE_CODE_OAUTH_TOKEN`, which is baked in, so a Codex token rotation needs no VM replace). `solve-vm-session.sh` hands it to each run through a `0600` file in the run directory that `run_solve` deletes before the runner starts; the runner then logs Codex into a throwaway home outside `/tmp` and unsets the variable, so the agent cannot read it. Every request gets its own worktree of `/config/vigilant-broccoli` off fresh `origin/main` and a detached tmux session running `solve-todo-runner.sh`, which publishes PRs exactly as the sandbox does.
-- Signed-in Codex: when Vault has no `AGENT_CODEX_ACCESS_TOKEN`, or with `--vm --agent codex --codex-signed-in`, solves use the Codex login in the container's `/config/.codex` instead (the runner's `CODEX_SIGNED_IN=1` mode: no throwaway home, no token delivery). Sign in once from the VM: open the web terminal at `shell.harryliu.dev` (or `pnpm code-server:ssh`) and run `codex login --device-auth`, whose device-code flow works headless. `solve-vm.sh` checks for `/config/.codex/auth.json` before launching and fails with that instruction if neither a token nor a login exists. A Vault token still wins unless `--codex-signed-in` is passed, so token mode is unchanged. Tradeoffs: the login expires and needs a fresh `codex login` when it does; the agent runs as the same user and can read `auth.json`, unlike the throwaway-home token mode; and the VM has no egress firewall. `/config` is the `code_server_config` Docker volume, so the login survives the 15-minute image-update recreate but not a VM replace (`code-server:replace`/`reset`), after which sign in again.
+- Signed-in Codex: when Vault has no `AGENT_CODEX_ACCESS_TOKEN`, or with `--vm --agent codex --codex-signed-in`, solves use the Codex login in the container's `/config/.codex` instead (the runner's `CODEX_SIGNED_IN=1` mode: no throwaway home, no token delivery). Sign in once from the VM: open the web terminal at `shell.vigilant-broccoli.app` (or `pnpm code-server:ssh`) and run `codex login --device-auth`, whose device-code flow works headless. `solve-vm.sh` checks for `/config/.codex/auth.json` before launching and fails with that instruction if neither a token nor a login exists. A Vault token still wins unless `--codex-signed-in` is passed, so token mode is unchanged. Tradeoffs: the login expires and needs a fresh `codex login` when it does; the agent runs as the same user and can read `auth.json`, unlike the throwaway-home token mode; and the VM has no egress firewall. `/config` is the `code_server_config` Docker volume, so the login survives the 15-minute image-update recreate but not a VM replace (`code-server:replace`/`reset`), after which sign in again.
 - Concurrent runs are isolated by worktree, run directory and tmux session; fetches are serialized with `flock`. All runs share one token file, so each launch extends earlier runs, but a run still has to push within an hour of the latest launch. The VM's 2 OCPUs and 14 GB, shared with code-server, are the practical limit: about two or three solves at once.
 - Logs live in `/config/agentic-runs/<run>/run.log` (ending with `RUN_EXIT::<status>`); in the code-server terminal, `tmux ls` lists running solves and `tmux attach -t <run>` follows one. A successful run removes its worktree and local `agent/*` branches; a failed one keeps the worktree for inspection.
 - Unlike the Docker sandbox there is no egress firewall: the agent runs as the container's `abc` user, alongside the code-server password and Claude token in its environment (the Codex token is not left there), so the runner's default auto permission mode (see [Running in CI](#running-in-ci)) is the main guard. Create runner and skill updates take effect from `main`, since create worktrees check out `origin/main`; updates stream their runner from the invoking checkout and load canonical skills from fresh `origin/main` before checking out the PR. Codex is in the VM image only after `deploy-code-server-image` publishes it and the 15-minute `code-server-update.timer` recreates the container.
@@ -132,8 +136,9 @@ and a human or a `TODO.md` row re-scopes it.
 `publish-pr.sh`, sourced by `solve-todo-runner.sh` (and by `update-pr-runner.sh` for its TODO helpers), holds the shared steps:
 
 - validates the agent's `todo_ids` (6-hex ids that have a row and are named in the request) before publishing, and removes
-  from `TODO.md` only those rows, failing a run that deleted any other row or edited anything but
-  [QA rows](../../docs/todo-pattern.md#qa-rows);
+  from `TODO.md` only those rows; restores any other line the agent changed outside
+  [QA rows](../../docs/todo-pattern.md#qa-rows) and adds its `follow_up_todos` rows through `todo-rows.py`, warning
+  instead of failing ([follow-up rows](../../docs/todo-pattern.md#follow-up-rows));
 - commits, pushes and opens the PR with its title, summary, next steps, concerns, suggestions, screenshots and history row,
   then replaces the `PR: pending` placeholder on this PR's QA rows with the PR URL, and on its `CHANGELOG.md` bullets
   with the `[#N](url)` link, in a follow-up commit;
@@ -280,7 +285,7 @@ opens one PR citing where each removed fact is retained. It runs Opus by default
 ## Auditing the public URL registry
 
 `pnpm agentic-pr-create-url-audit` runs `audit-urls.sh`, which checks that every public URL (each environment and demo) has
-an Upptime entry, a pages-index card and a browser quick link, and every published Docker image a pages-index registry
+an Upptime entry, a project-overview card and a browser quick link, and every published Docker image a project-overview registry
 entry and a README Containers row, then opens one PR fixing drift.
 `cron-agentic-pr-create-url-audit` runs the same script weekly (`55 6 * * 0`).
 

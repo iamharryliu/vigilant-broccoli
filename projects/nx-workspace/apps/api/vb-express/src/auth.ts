@@ -12,7 +12,7 @@ import {
 const CLIENT_ORIGINS = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-  'https://sandbox.harryliu.dev',
+  'https://sandbox.vigilant-broccoli.app',
 ];
 // Created by supabase/migrations; must match the schema those tables live in.
 const AUTH_SCHEMA = 'vb_express_auth';

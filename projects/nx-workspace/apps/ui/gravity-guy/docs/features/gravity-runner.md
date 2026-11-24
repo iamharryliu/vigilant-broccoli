@@ -27,12 +27,12 @@ The production build includes TypeScript checking. The application is deployed o
 
 | Environment | Nx command from repository root | Vercel project | URL | Access |
 | --- | --- | --- | --- | --- |
-| Production | `pnpm nx run gravity-guy:deploy:production` | `production-gravity-guy` | <https://gravity-guy.harryliu.dev/> | Public |
-| Staging | `pnpm nx deploy gravity-guy` | `staging-gravity-guy` | <https://staging-gravity-guy.harryliu.dev/> | Vercel team authentication |
+| Production | `pnpm nx run gravity-guy:deploy:production` | `production-gravity-guy` | <https://gravity-guy.vigilant-broccoli.app/> | Public |
+| Staging | `pnpm nx deploy gravity-guy` | `staging-gravity-guy` | <https://staging-gravity-guy.vigilant-broccoli.app/> | Vercel team authentication |
 
 The build target explicitly sets `NODE_ENV=production` so Nx task environment defaults cannot make the prerender use a development React runtime. Targets use `scripts/deploy-vercel.ts`, which creates the project on first deploy, applies the shared Next.js build settings and uploads prebuilt output. The common workflow deploys staging on affected `main` pushes and production on `production` branch pushes; the manual app workflow can deploy either environment. Staging monitoring expects an anonymous HTTP 302 without following redirects; production expects HTTP 200.
 
-Terraform manages the production `gravity-guy.harryliu.dev` DNS-only CNAME in `cloudflare-vercel-apps.tf`. Its post-apply domain sync attaches the hostname to `production-gravity-guy`; Vercel serves HTTPS.
+Terraform manages the production `gravity-guy.vigilant-broccoli.app` DNS-only CNAME in `cloudflare-vercel-apps.tf`. Its post-apply domain sync attaches the hostname to `production-gravity-guy`; Vercel serves HTTPS.
 
 Gravity Guy remains stateless on the server. There are no API routes, database tables, server sessions or application secrets. Online rooms use Supabase Realtime with the shared public URL and publishable key supplied at build time; no sign-in or OAuth redirect configuration is needed. Local game state stays inside one browser; best scores and settings use local storage, and paused-run snapshots use session storage. Staging and production use different origins, so browser data does not transfer between them. Only the existing Vercel deployment token is needed by the deployment runner; it is never sent to the game.
 

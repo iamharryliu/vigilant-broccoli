@@ -19,8 +19,12 @@ export interface LocalWeather {
   humidityPercent: number;
   windSpeedKph: number;
   windMaxKph: number;
+  windGustKph: number;
+  windGustMaxKph: number;
   precipitationMm: number;
   precipitationSumMm: number;
+  snowfallCm: number;
+  snowfallSumCm: number;
   condition: WeatherCondition;
   isDay: boolean;
   forecast?: ForecastDay[];
@@ -48,8 +52,12 @@ export const toLocalWeather = (
     humidityPercent: current.humidityPercent,
     windSpeedKph: current.windSpeedKph,
     windMaxKph: today.windMaxKph,
+    windGustKph: current.windGustKph,
+    windGustMaxKph: today.windGustMaxKph,
     precipitationMm: current.precipitationMm,
     precipitationSumMm: today.precipitationSumMm,
+    snowfallCm: current.snowfallCm,
+    snowfallSumCm: today.snowfallSumCm,
     condition: current.condition,
     isDay: current.isDay,
     forecast: daily.map(day => ({

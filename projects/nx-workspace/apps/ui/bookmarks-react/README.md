@@ -17,5 +17,5 @@ Personal bookmark manager with browser-local storage and JSON import/export.
   - `common-js`
   - `public-links`
   - `react-lib`
-  - `react-lib-higher-level`
   - `react-lib-quick-links`
+  - `sidebar`

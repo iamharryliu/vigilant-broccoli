@@ -25,12 +25,15 @@ jobs:
       # secrets.GCP_SERVICE_ACCOUNT: refreshing the Google resources needs
       # project-wide read that the shared SA deliberately lacks. The provider
       # only accepts this workflow on main, so these variables grant nothing
-      # elsewhere.
+      # elsewhere. github-actions-tf-drift-role adds read-only access to Vault's
+      # policies and JWT roles, and its exported token plans infrastructure/terraform/vault.
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
           gcp_workload_identity_provider: ${{ vars.TF_DRIFT_WIF_PROVIDER }}
           gcp_service_account: ${{ vars.TF_DRIFT_SERVICE_ACCOUNT }}
+          role: github-actions-tf-drift-role
+          export_token: 'true'
           secrets: |
             kv/data/secrets TF_CLOUD_TOKEN | TF_TOKEN_app_terraform_io ;
             kv/data/secrets CLOUDFLARE_API_TOKEN | CLOUDFLARE_API_TOKEN ;
@@ -42,6 +45,16 @@ jobs:
             kv/data/secrets TF_AWS_ACCESS_KEY_ID | AWS_ACCESS_KEY_ID ;
             kv/data/secrets TF_AWS_SECRET_ACCESS_KEY | AWS_SECRET_ACCESS_KEY ;
             kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | TF_VAR_claude_code_oauth_token ;
+
+      # The vault provider sends these on every request, as the vault-secrets
+      # action does internally; that action does not expose them.
+      - name: Fetch Cloudflare Access service token for Vault
+        id: vault-cf-access
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3
+        with:
+          secrets: |-
+            cf_access_client_id:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_ID
+            cf_access_client_secret:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_SECRET
 
       - name: Write OCI credentials
         run: |
@@ -59,43 +72,55 @@ jobs:
       # The repo is public, so the plan body (attribute values, IPs, rendered
       # cloud-init) never reaches the log: stdout goes to /dev/null and only
       # resource addresses and actions are summarized below. -lock=false keeps
-      # a read-only plan from blocking a local `pnpm tf:apply`.
+      # a read-only plan from blocking a local `pnpm tf:apply`. Both root modules
+      # are planned; drifted lists the ones whose plan has changes.
       - name: Terraform plan
         id: plan
-        working-directory: infrastructure/terraform
+        env:
+          VAULT_ADDR: https://vault.vigilant-broccoli.app
+          TF_VAR_cf_access_client_id: ${{ steps.vault-cf-access.outputs.cf_access_client_id }}
+          TF_VAR_cf_access_client_secret: ${{ steps.vault-cf-access.outputs.cf_access_client_secret }}
         run: |
           set -uo pipefail
-          terraform init -input=false
-          terraform plan -input=false -lock=false -detailed-exitcode -out=drift.tfplan > /dev/null
-          PLAN_EXIT=$?
-          if [ "$PLAN_EXIT" -eq 1 ]; then
-            exit 1
-          fi
-          echo "drift=$([ "$PLAN_EXIT" -eq 2 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          drifted=""
+          for dir in infrastructure/terraform infrastructure/terraform/vault; do
+            terraform -chdir="$dir" init -input=false > /dev/null || exit 1
+            terraform -chdir="$dir" plan -input=false -lock=false -detailed-exitcode -out=drift.tfplan > /dev/null
+            PLAN_EXIT=$?
+            if [ "$PLAN_EXIT" -eq 1 ]; then
+              echo "::error::terraform plan failed in $dir"
+              exit 1
+            fi
+            [ "$PLAN_EXIT" -ne 2 ] || drifted+="$dir "
+          done
+          echo "drifted=${drifted% }" >> "$GITHUB_OUTPUT"
 
       - name: Report drift
-        if: steps.plan.outputs.drift == 'true'
-        working-directory: infrastructure/terraform
+        if: steps.plan.outputs.drifted != ''
+        env:
+          DRIFTED: ${{ steps.plan.outputs.drifted }}
         run: |
           set -euo pipefail
           {
             echo "## Terraform drift detected"
             echo
-            echo "| Address | Actions | Source |"
-            echo "| --- | --- | --- |"
-            terraform show -json drift.tfplan | jq -r '
+            echo "| Module | Address | Actions | Source |"
+            echo "| --- | --- | --- | --- |"
+            for dir in $DRIFTED; do
+              terraform -chdir="$dir" show -json drift.tfplan | jq -r --arg dir "$dir" '
               [
                 (.resource_drift // [] | .[] | {address, actions: .change.actions, source: "changed outside Terraform"}),
                 (.resource_changes // [] | .[] | select(.mode == "managed" and .change.actions != ["no-op"]) | {address, actions: .change.actions, source: "planned"}),
                 (.output_changes // {} | to_entries[] | select(.value.actions != ["no-op"]) | {address: "output.\(.key)", actions: .value.actions, source: "planned"})
               ][]
-              | "| `\(.address)` | \(.actions | join(", ")) | \(.source) |"'
+              | "| `\($dir)` | `\(.address)` | \(.actions | join(", ")) | \(.source) |"'
+            done
             echo
-            echo 'Run `pnpm tf:plan` locally for the full diff, then `pnpm tf:apply` or fix the config.'
+            echo 'Run `pnpm tf:plan` (or `pnpm tf:vault:plan` for `infrastructure/terraform/vault`) locally for the full diff, then `pnpm tf:apply` or fix the config.'
           } >> "$GITHUB_STEP_SUMMARY"
           cat "$GITHUB_STEP_SUMMARY"
           exit 1
 
-      - name: Remove plan file
+      - name: Remove plan files
         if: always()
-        run: rm -f infrastructure/terraform/drift.tfplan
+        run: rm -f infrastructure/terraform/drift.tfplan infrastructure/terraform/vault/drift.tfplan

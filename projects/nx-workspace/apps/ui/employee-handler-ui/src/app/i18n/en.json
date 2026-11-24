@@ -14,8 +14,6 @@
     "AUTH_CALLBACK": "Signing In"
   },
   "SIDEBAR": {
-    "LIGHT_MODE": "Light mode",
-    "DARK_MODE": "Dark mode",
     "LOGOUT": "Logout"
   },
   "SETTINGS": {
@@ -27,6 +25,16 @@
       "OPTION": {
         "EN": "English",
         "SV": "Swedish"
+      }
+    },
+    "THEME": {
+      "TITLE": "Theme",
+      "DESCRIPTION": "Follow the system appearance or choose light or dark.",
+      "LABEL": "Theme",
+      "OPTION": {
+        "SYSTEM": "System",
+        "LIGHT": "Light",
+        "DARK": "Dark"
       }
     }
   },

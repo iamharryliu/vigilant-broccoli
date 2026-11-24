@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { KEYBOARD_SHORTCUTS_MARKDOWN } from '../content/keyboard-shortcuts.md';
 
 type Props = {
@@ -39,7 +40,9 @@ export const ShortcutsOverlay = ({ open }: Props) => {
       }`}
     >
       <div className="max-w-md w-full mx-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-xl p-6 prose prose-sm dark:prose-invert">
-        <ReactMarkdown>{KEYBOARD_SHORTCUTS_MARKDOWN}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {KEYBOARD_SHORTCUTS_MARKDOWN}
+        </ReactMarkdown>
       </div>
     </div>
   );

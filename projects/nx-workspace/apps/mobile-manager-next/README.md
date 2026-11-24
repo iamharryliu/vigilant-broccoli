@@ -5,6 +5,7 @@ Mobile dashboard with calendar, tasks, notepad, weather, language learning and q
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 - [Environment](#environment)
 
 ## Stack
@@ -35,12 +36,23 @@ Mobile dashboard with calendar, tasks, notepad, weather, language learning and q
   - `react-lib-tasks`
   - `realtime`
   - `security-news`
+  - `sidebar`
 - Cloud services
   - Google Workspace APIs
   - Nominatim / OpenStreetMap
   - Open-Meteo
   - Supabase
-  - vb-express
+
+## App Dependencies
+
+- [Context MD](../ui/context-md) - embeds
+- [Docs MD](../ui/docs-md) - embeds
+- [Personal Website (React)](../ui/personal-website-react) - embeds
+- [Project Overview](../ui/project-overview) - embeds
+- [Tasks](../ui/tasks-next) - embeds
+- [Utilities UI](../ui/utilities-ui) - embeds
+- [VB Express](../api/vb-express) - calls
+- [Weather](../ui/weather-next) - embeds
 
 ## Environment
 

@@ -1,0 +1,73 @@
+import { createHash } from 'crypto';
+import type { StoredJobMatchesPosting } from '@vigilant-broccoli/common-js';
+import type { MatchBrief, MatchBriefState } from '../app/constants/matches';
+import { getJobHuntDb } from './job-application-runs.db';
+import { isMatchBriefRunning } from './match-brief-inflight';
+import { listMatchPostings } from './job-matches.db';
+
+const BRIEFS_TABLE = 'job_match_briefs';
+
+interface BriefRow {
+  url: string;
+  text_hash: string;
+  brief: string;
+}
+
+const ensureTable = () => {
+  const db = getJobHuntDb();
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS ${BRIEFS_TABLE} (
+      url TEXT PRIMARY KEY,
+      text_hash TEXT NOT NULL,
+      brief TEXT NOT NULL,
+      generated_at TEXT NOT NULL
+    )
+  `);
+  return db;
+};
+
+export const hashPostingText = (text: string) =>
+  createHash('sha256').update(text).digest('hex');
+
+export const saveMatchBrief = (
+  url: string,
+  textHash: string,
+  brief: MatchBrief,
+) => {
+  ensureTable()
+    .prepare(
+      `INSERT INTO ${BRIEFS_TABLE} (url, text_hash, brief, generated_at) VALUES (?, ?, ?, ?)
+       ON CONFLICT(url) DO UPDATE SET text_hash = excluded.text_hash, brief = excluded.brief, generated_at = excluded.generated_at`,
+    )
+    .run(url, textHash, JSON.stringify(brief), new Date().toISOString());
+};
+
+export const deleteMatchBrief = (url: string) => {
+  ensureTable().prepare(`DELETE FROM ${BRIEFS_TABLE} WHERE url = ?`).run(url);
+};
+
+export const clearMatchBriefs = () => {
+  ensureTable().exec(`DELETE FROM ${BRIEFS_TABLE}`);
+};
+
+// Briefs stored before abbreviations existed lack that field, so it defaults
+// to empty. A brief belongs to the text it was written from: a recapture that changed
+// the posting leaves it stale, so it is not returned.
+export const listPostingsWithBriefs = (): (StoredJobMatchesPosting &
+  MatchBriefState)[] => {
+  const rows = ensureTable()
+    .prepare(`SELECT url, text_hash, brief FROM ${BRIEFS_TABLE}`)
+    .all() as unknown as BriefRow[];
+  const byUrl = new Map(rows.map(row => [row.url, row]));
+  return listMatchPostings().map(posting => {
+    const row = byUrl.get(posting.url);
+    return {
+      ...posting,
+      brief:
+        row && row.text_hash === hashPostingText(posting.text)
+          ? ({ abbreviations: [], ...JSON.parse(row.brief) } as MatchBrief)
+          : null,
+      briefRunning: isMatchBriefRunning(posting.url),
+    };
+  });
+};

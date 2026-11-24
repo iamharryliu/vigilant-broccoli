@@ -9,8 +9,12 @@ locals {
     "staging-findme",
     "staging-grind-75-react",
     "staging-harryliu-dev-react",
+    # Superseded by staging-project-overview; keep its Access gate until the old
+    # Pages project is deleted.
+    "staging-pages-index",
     "staging-photography-react",
     "staging-pomodoro-react",
+    "staging-project-overview",
     "staging-text-tools-ui",
     "staging-utilities-ui",
     "staging-waiting-games",
@@ -18,19 +22,20 @@ locals {
   ])
 
   staging_pages_domains = {
-    staging-calendars          = "staging-calendar.harryliu.dev"
+    staging-calendars          = "staging-calendar.${var.harryliu_dev_domain}"
     staging-component-library  = "staging-components.${var.vigilant_broccoli_domain}"
     staging-context-md         = "staging-context.${var.vigilant_broccoli_domain}"
-    staging-docs-md            = "staging-docs.${var.vigilant_broccoli_domain}"
-    staging-findme             = "staging-findme.harryliu.dev"
+    staging-docs-md            = "staging-docs.${var.harryliu_dev_domain}"
+    staging-findme             = "staging-findme.${var.vigilant_broccoli_domain}"
     staging-grind-75-react     = "staging-grind-75.${var.vigilant_broccoli_domain}"
-    staging-harryliu-dev-react = "staging.harryliu.dev"
-    staging-photography-react  = "staging-photography.harryliu.dev"
+    staging-harryliu-dev-react = "staging.${var.harryliu_dev_domain}"
+    staging-photography-react  = "staging-photography.${var.harryliu_dev_domain}"
     staging-pomodoro-react     = "staging-pomodoro.${var.vigilant_broccoli_domain}"
+    staging-project-overview   = "staging-projects.${var.vigilant_broccoli_domain}"
     staging-text-tools-ui      = "staging-text-tools.${var.vigilant_broccoli_domain}"
     staging-utilities-ui       = "staging-utilities.${var.vigilant_broccoli_domain}"
     staging-waiting-games      = "staging-waiting.${var.vigilant_broccoli_domain}"
-    staging-whiteboard         = "staging-whiteboard.harryliu.dev"
+    staging-whiteboard         = "staging-whiteboard.${var.vigilant_broccoli_domain}"
   }
 }
 

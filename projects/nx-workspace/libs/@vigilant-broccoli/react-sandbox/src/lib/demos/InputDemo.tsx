@@ -5,39 +5,40 @@ import { DemoSection } from './DemoSection';
 
 const STATES = ['DEFAULT', 'DISABLED', 'ERROR', 'LONG_CONTENT'] as const;
 
-export const InputDemo = () => {
+const FIELD = {
+  INPUT: { Control: Input, labelKey: 'FOUNDATION_DEMO.INPUT' },
+  TEXTAREA: { Control: Textarea, labelKey: 'FOUNDATION_DEMO.TEXTAREA' },
+} as const;
+
+const FieldStatesDemo = ({ field }: { field: keyof typeof FIELD }) => {
   const { t } = useTranslation();
   const id = useId();
+  const { Control, labelKey } = FIELD[field];
   return (
     <div className="flex flex-col gap-6">
       {STATES.map(state => {
         const invalid = state === 'ERROR';
-        const errorId = `${id}-${state}-error`;
-        const value =
-          state === 'LONG_CONTENT' ? t('FOUNDATION_DEMO.LONG_TEXT') : undefined;
-        const sharedProps = {
-          disabled: state === 'DISABLED',
-          'aria-invalid': invalid || undefined,
-          'aria-describedby': invalid ? errorId : undefined,
-          placeholder: t('FOUNDATION_DEMO.PLACEHOLDER'),
-          defaultValue: value,
-          className: invalid ? 'border-destructive' : undefined,
-        };
+        const controlId = `${id}-${state}`;
+        const errorId = `${controlId}-error`;
         return (
           <DemoSection key={state} title={t(`FOUNDATION_DEMO.${state}`)}>
-            <div className="grid min-w-0 gap-4 sm:grid-cols-2">
-              <div className="min-w-0 space-y-2">
-                <Text as="label" htmlFor={`${id}-${state}-input`} size="2">
-                  {t('FOUNDATION_DEMO.INPUT')}
-                </Text>
-                <Input id={`${id}-${state}-input`} {...sharedProps} />
-              </div>
-              <div className="min-w-0 space-y-2">
-                <Text as="label" htmlFor={`${id}-${state}-textarea`} size="2">
-                  {t('FOUNDATION_DEMO.TEXTAREA')}
-                </Text>
-                <Textarea id={`${id}-${state}-textarea`} {...sharedProps} />
-              </div>
+            <div className="min-w-0 max-w-md space-y-2">
+              <Text as="label" htmlFor={controlId} size="2">
+                {t(labelKey)}
+              </Text>
+              <Control
+                id={controlId}
+                disabled={state === 'DISABLED'}
+                aria-invalid={invalid || undefined}
+                aria-describedby={invalid ? errorId : undefined}
+                placeholder={t('FOUNDATION_DEMO.PLACEHOLDER')}
+                defaultValue={
+                  state === 'LONG_CONTENT'
+                    ? t('FOUNDATION_DEMO.LONG_TEXT')
+                    : undefined
+                }
+                className={invalid ? 'border-destructive' : undefined}
+              />
             </div>
             {invalid && (
               <Text as="p" id={errorId} size="2" className="text-destructive">
@@ -50,3 +51,7 @@ export const InputDemo = () => {
     </div>
   );
 };
+
+export const InputDemo = () => <FieldStatesDemo field="INPUT" />;
+
+export const TextareaDemo = () => <FieldStatesDemo field="TEXTAREA" />;

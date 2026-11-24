@@ -10,13 +10,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import {
-  CircleCheck,
-  ExternalLink,
-  Trash2,
-  Undo2,
-  type LucideIcon,
-} from 'lucide-react';
+import { CircleCheck, ExternalLink, Trash2, Undo2 } from 'lucide-react';
 import {
   FILE_ENTRY_KIND,
   FileEntry,
@@ -24,6 +18,12 @@ import {
 } from '@vigilant-broccoli/common-js';
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Input,
   Tabs,
   TabsContent,
@@ -112,8 +112,6 @@ type ApplicationDetails = {
   // missing too.
   gaps: string[] | null;
 };
-
-type ItemAction = EllipsisAction & { icon: LucideIcon };
 
 type ExpansionContextValue = {
   loadDetails: (item: ApplicationItem) => Promise<ApplicationDetails>;
@@ -392,6 +390,7 @@ export const JobApplicationList = () => {
   const [loaded, setLoaded] = useState(false);
   const [defaultExpandedIds, setDefaultExpandedIds] = useState<string[]>([]);
   const [search, setSearch] = useState('');
+  const [confirmingClear, setConfirmingClear] = useState(false);
 
   const load = useCallback(
     async (expandLatest: boolean) => {
@@ -481,13 +480,13 @@ export const JobApplicationList = () => {
     [t],
   );
 
-  const itemActions = (item: ApplicationItem): ItemAction[] => [
+  const itemActions = (item: ApplicationItem): EllipsisAction[] => [
     ...APPLICATION_STATUSES.filter(status => status !== item.status).map(
-      (status): ItemAction => ({
+      (status): EllipsisAction => ({
         label: t('APPLICATIONS.MARK_STATUS', {
           status: t(STATUS_LABEL_KEYS[status]).toLowerCase(),
         }),
-        icon: CircleCheck,
+        icon: <CircleCheck size={16} />,
         onSelect: () => setStatus(item, status),
       }),
     ),
@@ -495,14 +494,14 @@ export const JobApplicationList = () => {
       ? [
           {
             label: t('APPLICATIONS.CLEAR_STATUS'),
-            icon: Undo2,
+            icon: <Undo2 size={16} />,
             onSelect: () => setStatus(item, null),
           },
         ]
       : []),
     {
       label: t('APPLICATIONS.DELETE'),
-      icon: Trash2,
+      icon: <Trash2 size={16} />,
       color: 'red',
       onSelect: () => deleteApplication(item),
       confirm: {
@@ -559,6 +558,21 @@ export const JobApplicationList = () => {
     }
   };
 
+  const clearApplications = async () => {
+    setConfirmingClear(false);
+    try {
+      const response = await fetch(
+        `${API_ENDPOINTS.JOB_APPLICATIONS}?all=true`,
+        { method: HTTP_METHOD.DELETE },
+      );
+      if (!response.ok) throw new Error((await response.json()).error);
+      setItems([]);
+      toast.success(t('APPLICATIONS.CLEARED'));
+    } catch (error) {
+      toast.error(errorMessage(error, t('APPLICATIONS.CLEAR_FAILED')));
+    }
+  };
+
   const query = search.trim().toLowerCase();
   const visibleItems = useMemo(
     () =>
@@ -591,14 +605,49 @@ export const JobApplicationList = () => {
     <>
       <ExpansionContext.Provider value={{ loadDetails }}>
         {loaded && items.length > 0 && (
-          <Input
-            type="search"
-            value={search}
-            onChange={event => setSearch(event.target.value)}
-            placeholder={t('APPLICATIONS.SEARCH_PLACEHOLDER')}
-            className="mb-2"
-          />
+          <div className="mb-2 flex gap-2">
+            <Input
+              type="search"
+              value={search}
+              onChange={event => setSearch(event.target.value)}
+              placeholder={t('APPLICATIONS.SEARCH_PLACEHOLDER')}
+            />
+            {!IS_DEMO && (
+              <Button
+                variant="outline"
+                className="shrink-0"
+                onClick={() => setConfirmingClear(true)}
+              >
+                <Trash2 />
+                {t('APPLICATIONS.CLEAR')}
+              </Button>
+            )}
+          </div>
         )}
+        <Dialog open={confirmingClear} onOpenChange={setConfirmingClear}>
+          <DialogContent className="max-w-[480px]">
+            <DialogHeader>
+              <DialogTitle>{t('APPLICATIONS.CLEAR_TITLE')}</DialogTitle>
+              <DialogDescription>
+                {t('APPLICATIONS.CLEAR_DESCRIPTION', {
+                  count: String(items.length),
+                })}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setConfirmingClear(false)}
+              >
+                {t('APPLICATIONS.CANCEL')}
+              </Button>
+              <Button variant="destructive" onClick={clearApplications}>
+                <Trash2 />
+                {t('APPLICATIONS.CLEAR')}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         {loaded && (
           <CRUDItemList
             items={visibleItems}

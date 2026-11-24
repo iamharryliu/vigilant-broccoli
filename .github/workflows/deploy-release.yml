@@ -1,0 +1,223 @@
+name: deploy-release
+
+# Gate between a green staging deploy and the production deploy. Follows
+# deploy-demo-apps in listening to deploy's deploy-fanout dispatch; the
+# production run's own fan-out (environment: production) is ignored here.
+on:
+  repository_dispatch:
+    types: [deploy-fanout]
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+  id-token: write
+  pages: write
+  pull-requests: read
+
+concurrency:
+  group: deploy-release
+  cancel-in-progress: false
+
+env:
+  # Lightweight tag on the commit production last shipped; deploy.yml diffs from it.
+  PRODUCTION_TAG: production-deployed
+
+jobs:
+  verify-staging:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true' && github.event.client_payload.environment == 'staging') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      current: ${{ steps.current.outputs.current }}
+    steps:
+      # Production deploys whatever main is when it runs, so a commit that was
+      # verified on staging but is no longer the head would ship an unverified
+      # one. The newer push's own staging run takes over instead.
+      - name: Check the verified commit is still main
+        id: current
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERIFIED_SHA: ${{ github.event.client_payload.commit_sha || github.sha }}
+        run: |
+          main_sha=$(gh api "repos/${{ github.repository }}/commits/main" --jq .sha)
+          if [ "$main_sha" = "$VERIFIED_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::main moved from ${VERIFIED_SHA} to ${main_sha}; the newer staging run will release."
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: steps.current.outputs.current == 'true'
+
+      # No service token yet: the staging Access policy admits only the owner's
+      # email, so gated UIs are checked for their 302 until a token policy exists.
+      - name: Probe staging
+        if: steps.current.outputs.current == 'true'
+        run: .github/scripts/verify-staging.sh
+
+  # The staging-targeted suites; on a staging fan-out they run only here, so a
+  # failure blocks production. Environment-agnostic suites (shared broker,
+  # socket server, Supabase, Twilio) and test-security-cloudflare-access stay
+  # standalone because they do not test the staging deploy.
+  e2e-email-subscription-service:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-e2e-email-subscription-service.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  e2e-llm:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-e2e-llm.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  e2e-llm-calendar:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-e2e-llm-calendar.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  e2e-storage-service:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-e2e-storage-service.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-api:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-api.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-email:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-email.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-email-subscription-service:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-email-subscription-service.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-llm:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-llm.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-private-network-exposure:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-private-network-exposure.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security-storage-service:
+    needs: verify-staging
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    uses: ./.github/workflows/test-security-storage-service.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  # A release-hold label on the merged PR, or RELEASE_HOLD=true for every
+  # release, stops after verification so staging can be checked by hand. Runs
+  # after the suites so a hold set while they run still counts; a manual
+  # dispatch is the approval and ignores it.
+  check-hold:
+    needs:
+      - verify-staging
+      - e2e-email-subscription-service
+      - e2e-llm
+      - e2e-llm-calendar
+      - e2e-storage-service
+      - security-api
+      - security-email
+      - security-email-subscription-service
+      - security-llm
+      - security-private-network-exposure
+      - security-storage-service
+    if: ${{ needs.verify-staging.outputs.current == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      held: ${{ steps.hold.outputs.held }}
+      production_base: ${{ steps.base.outputs.sha }}
+    steps:
+      # Empty when the tag does not exist yet, so deploy.yml deploys everything.
+      - name: Find the commit production last shipped
+        id: base
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(gh api "repos/${{ github.repository }}/git/ref/tags/${PRODUCTION_TAG}" --jq .object.sha 2>/dev/null || true)
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+          echo "Production base: ${sha:-none (full deploy)}"
+
+      - name: Check for a release hold
+        id: hold
+        if: ${{ github.event_name != 'workflow_dispatch' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_HOLD: ${{ vars.RELEASE_HOLD }}
+          VERIFIED_SHA: ${{ github.event.client_payload.commit_sha }}
+        run: |
+          labels=$(gh api "repos/${{ github.repository }}/commits/${VERIFIED_SHA}/pulls" --jq '[.[].labels[].name] | join(",")')
+          if [[ "$RELEASE_HOLD" == true || ",${labels}," == *",release-hold,"* ]]; then
+            echo "held=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Release held: staging is verified. Check it, then run: gh workflow run deploy-release"
+            echo "Release held (\`release-hold\` label or \`RELEASE_HOLD\`). Check staging, then run \`gh workflow run deploy-release\`." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  deploy-production:
+    needs: check-hold
+    if: ${{ needs.check-hold.outputs.held != 'true' }}
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+      skip_pages: true
+      production_base: ${{ needs.check-hold.outputs.production_base }}
+    secrets: inherit
+
+  # Only a successful release moves the tag, so a failed or partial production
+  # deploy is retried from the older base next time. Other production paths
+  # (a manual deploy dispatch, ci-rotate-secrets) leave it, which only widens
+  # the next release's diff.
+  tag-production:
+    needs: deploy-production
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASED_SHA: ${{ github.event.client_payload.commit_sha || github.sha }}
+    steps:
+      - name: Move the production tag to the released commit
+        run: |
+          if gh api "repos/${GH_REPO}/git/ref/tags/${PRODUCTION_TAG}" > /dev/null 2>&1; then
+            gh api -X PATCH "repos/${GH_REPO}/git/refs/tags/${PRODUCTION_TAG}" -f sha="$RELEASED_SHA" -F force=true > /dev/null
+          else
+            gh api -X POST "repos/${GH_REPO}/git/refs" -f ref="refs/tags/${PRODUCTION_TAG}" -f sha="$RELEASED_SHA" > /dev/null
+          fi
+          echo "${PRODUCTION_TAG} -> ${RELEASED_SHA}"

@@ -1,0 +1,72 @@
+import { DotPaths } from '@vigilant-broccoli/react-lib';
+import en from '../i18n/en.json';
+import {
+  GAMES_ROUTE,
+  CAREER_EXPERIENCE_ROUTE,
+  CHANGELOG_ROUTE,
+  DEPLOYMENTS_ROUTE,
+  PROJECT_GRAPH_ROUTE,
+  STATUS_ROUTE,
+} from './routes';
+
+type TranslationKey = DotPaths<typeof en>;
+
+interface BreadcrumbNode {
+  labelKey: TranslationKey;
+  parent: string | null;
+}
+
+export interface BreadcrumbEntry {
+  path: string;
+  labelKey: TranslationKey;
+}
+
+const BREADCRUMB_TREE: Record<string, BreadcrumbNode> = {
+  [GAMES_ROUTE]: { labelKey: 'GAMES_PAGE.TITLE', parent: '/' },
+  '/': { labelKey: 'HOME.TITLE', parent: null },
+  [STATUS_ROUTE]: { labelKey: 'STATUS_PAGE.TITLE', parent: '/' },
+  [DEPLOYMENTS_ROUTE]: { labelKey: 'DEPLOYMENTS_PAGE.TITLE', parent: '/' },
+  [CHANGELOG_ROUTE]: { labelKey: 'CHANGELOG_PAGE.TITLE', parent: '/' },
+  [CAREER_EXPERIENCE_ROUTE]: {
+    labelKey: 'CAREER_EXPERIENCE_PAGE.TITLE',
+    parent: '/',
+  },
+  '/repo-timeline': { labelKey: 'REPO_TIMELINE_PAGE.TITLE', parent: '/' },
+  [PROJECT_GRAPH_ROUTE]: { labelKey: 'PROJECT_GRAPH_PAGE.TITLE', parent: '/' },
+  '/github': {
+    labelKey: 'GITHUB_REPOS_PAGE.TITLE',
+    parent: '/',
+  },
+  '/docker': {
+    labelKey: 'DOCKER_IMAGES_PAGE.TITLE',
+    parent: '/',
+  },
+  '/npm': {
+    labelKey: 'NPM_PACKAGES_PAGE.TITLE',
+    parent: '/',
+  },
+  '/web-applications': { labelKey: 'WEB_APPLICATIONS_PAGE.TITLE', parent: '/' },
+  '/api-services': { labelKey: 'API_SERVICES_PAGE.TITLE', parent: '/' },
+};
+
+const resolveParent = (pathname: string): string | null => {
+  const node = BREADCRUMB_TREE[pathname];
+  if (node) return node.parent;
+
+  const trimmed = pathname.slice(0, pathname.lastIndexOf('/')) || '/';
+  return trimmed !== pathname && BREADCRUMB_TREE[trimmed] ? trimmed : null;
+};
+
+export const getBreadcrumbAncestors = (pathname: string): BreadcrumbEntry[] => {
+  const crumbs: BreadcrumbEntry[] = [];
+  let current = resolveParent(pathname);
+
+  while (current) {
+    const node = BREADCRUMB_TREE[current];
+    if (!node) break;
+    crumbs.unshift({ path: current, labelKey: node.labelKey });
+    current = node.parent;
+  }
+
+  return crumbs;
+};

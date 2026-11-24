@@ -5,6 +5,7 @@ export * from './lib/ChatHistorySidebar';
 export * from './lib/ChatInput';
 export * from './lib/ChatMarkdown';
 export * from './lib/ChatMessages';
+export * from './lib/ConfirmDeleteDialog';
 export * from './lib/useChatHistory';
 export * from './lib/useChatStream';
 export * from './lib/ChatSettings';

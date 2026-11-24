@@ -97,6 +97,74 @@ else
     "$([ "$AT_VENUE" -ge 1 ] && echo true || echo false)"
 fi
 
+
+# Times in a travel listing are local to each airport, so each end carries its
+# own offset; a single shared offset shifts one of them by an hour. Run once
+# per input form: pasted text and a screenshot go through different prompt paths.
+check_flights() {
+  local source="$1"
+  local request_body="$2"
+  local response
+
+  echo ""
+  echo "Testing /api/calendar/parse (flights across time zones, $source)..."
+  response=$(curl -s -X POST "${VB_EXPRESS_URL}/api/calendar/parse" \
+    -H "Content-Type: application/json" \
+    -H "x-api-key: ${VB_EXPRESS_API_KEY}" \
+    -d "$request_body")
+
+  echo "Response: $response"
+  echo ""
+
+  local labels=(
+    "flights ($source) return one event per leg"
+    "Copenhagen departure ($source) is 12:55 at +01:00"
+    "Keflavík arrival ($source) is 15:25 at +00:00"
+    "Keflavík departure ($source) is 17:00 at +00:00"
+    "Toronto arrival ($source) is 18:15 at -05:00"
+  )
+
+  if echo "$response" | grep -qiE "$BILLING_ERROR_PATTERN"; then
+    for label in "${labels[@]}"; do
+      echo "✓ $label [skipped: billing quota exhausted]"
+      PASS=$((PASS + 1))
+    done
+    return
+  fi
+
+  if [ "$(echo "$response" | jq -r 'type == "object" and has("events")' 2>/dev/null || echo false)" != "true" ]; then
+    echo "✗ flights ($source) response has no events array — cannot assert against it"
+    FAIL=$((FAIL + 1))
+    return
+  fi
+
+  # Matches the instant's wall time and offset on either flight; "-00:00" and
+  # "+00:00" are the same offset.
+  flight_has() {
+    echo "$response" | jq -r --arg field "$1" --arg pattern "$2" \
+      '[.events[] | select(.[$field] | test($pattern))] | length' 2>/dev/null || echo "0"
+  }
+  local count
+  count=$(echo "$response" | jq -r '.events | length')
+  check "${labels[0]}" "$([ "$count" -eq 2 ] && echo true || echo false)"
+  check "${labels[1]}" "$([ "$(flight_has start 'T12:55:00[+]01:00$')" -ge 1 ] && echo true || echo false)"
+  check "${labels[2]}" "$([ "$(flight_has end 'T15:25:00[+-]00:00$')" -ge 1 ] && echo true || echo false)"
+  check "${labels[3]}" "$([ "$(flight_has start 'T17:00:00[+-]00:00$')" -ge 1 ] && echo true || echo false)"
+  check "${labels[4]}" "$([ "$(flight_has end 'T18:15:00-05:00$')" -ge 1 ] && echo true || echo false)"
+}
+
+FLIGHTS_DIR="$(dirname "$0")/fixtures"
+
+check_flights "text" "$(jq -n \
+  --rawfile text "$FLIGHTS_DIR/calendar-parse-flights.txt" \
+  --arg timeZone "$TIME_ZONE" \
+  '{ text: $text, timeZone: $timeZone }')"
+
+check_flights "screenshot" "$(jq -n \
+  --arg base64 "$(base64 < "$FLIGHTS_DIR/calendar-parse-flights.png" | tr -d '\n')" \
+  --arg timeZone "$TIME_ZONE" \
+  '{ images: [{ name: "flights.png", base64: $base64, mimeType: "image/png" }], timeZone: $timeZone }')"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 

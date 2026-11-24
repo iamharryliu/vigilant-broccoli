@@ -1,5 +1,5 @@
 # CI access to Vault on vb-free-vm: cloudflared tunnel (outbound from the VM,
-# so the ephemeral external IP never matters) exposed at vault.harryliu.dev,
+# so the ephemeral external IP never matters) exposed at vault.vigilant-broccoli.app,
 # gated by a Cloudflare Access service token. Concurrent workflows are fine —
 # plain HTTPS, no per-connection state (unlike IAP tunnels or a shared
 # WireGuard peer). Authorization stays with Vault's GitHub OIDC JWT roles.
@@ -36,8 +36,8 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "vault" {
   }
 }
 
-resource "cloudflare_dns_record" "vault" {
-  zone_id = var.cloudflare_zone_id
+resource "cloudflare_dns_record" "vault_vigilant_broccoli_app" {
+  zone_id = data.cloudflare_zones.vigilant_broccoli.result[0].id
   name    = var.vault_domain
   content = "${cloudflare_zero_trust_tunnel_cloudflared.vault.id}.cfargotunnel.com"
   type    = "CNAME"
@@ -65,6 +65,9 @@ resource "cloudflare_zero_trust_access_application" "vault" {
   domain           = var.vault_domain
   type             = "self_hosted"
   session_duration = "24h"
+  destinations = [
+    { type = "public", uri = var.vault_domain },
+  ]
 
   policies = [{
     id         = cloudflare_zero_trust_access_policy.vault_ci.id

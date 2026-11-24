@@ -260,6 +260,7 @@ export const VB_LINKS: QuickLink[] = [
     VB_APP_URL.EMPLOYEE_HANDLER_DEMO,
     VB_APP_URL.JOB_HUNT_DEMO,
     VB_APP_URL.OFFICE_PRESENCE_DEMO,
+    VB_APP_URL.OFFICE_PRESENCE_SERVICE_DEMO,
     { ...VB_APP_URL.DOCS, EMBED: true },
     { ...VB_APP_URL.CONTEXT, EMBED: true },
     {
@@ -308,6 +309,11 @@ export const VB_LINKS: QuickLink[] = [
     VB_MONITORING_URL.LOKI,
     VB_MONITORING_URL.SOCKET_SERVER,
     VB_APP_URL.CAREER,
+    VB_APP_URL.PROJECT_OVERVIEW,
+    {
+      NAME: `${VB_APP_URL.PROJECT_OVERVIEW.NAME} (Staging)`,
+      URL: VB_APP_URL.PROJECT_OVERVIEW.STAGING_URL,
+    },
   ]),
   {
     label: VB_MONITORING_URL.DEPLOYMENTS.NAME,
@@ -331,7 +337,7 @@ export const VB_LINKS: QuickLink[] = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   ...toQuickLinks(LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI, [
-    { NAME: 'Grafana (Cloud)', URL: 'https://grafana.harryliu.dev/' },
+    { NAME: 'Grafana (Cloud)', URL: 'https://grafana.vigilant-broccoli.app/' },
   ]),
 ];
 

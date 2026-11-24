@@ -9,6 +9,7 @@ set -euo pipefail
 # so does RESULT::no-changes, which a runner prints only with the agent's reason.
 # A failed solve run also prints a RESULT:: marker (salvaged, salvage-nothing,
 # salvage-push-failed, salvage-pr-failed) saying what became of its partial work.
+# Runner warning annotations are appended to the same Details line.
 LOG_FILE=${1:?Usage: write-pr-step-summary.sh <log_file> <exit_status> [label]}
 STATUS=${2:?Usage: write-pr-step-summary.sh <log_file> <exit_status> [label]}
 LABEL=${3:-}
@@ -35,6 +36,9 @@ case "$RESULT_MARKER" in
   salvage-push-failed) NOTE="The agent run did not finish and its partial work could not be pushed, so it was not saved." ;;
   salvage-pr-failed) NOTE="The agent run did not finish; its partial work was pushed to the run's branch but no pull request could be opened." ;;
 esac
+# Problems the runner worked around without failing (pr_warn in publish-pr.sh).
+WARNINGS=$(sed -n 's/^::warning title=Agent sandbox runner:://p' "$LOG_FILE" 2>/dev/null | sed 's/%25/%/g; s/^/Warning: /' | paste -sd ' ' - || true)
+NOTE=$(printf '%s %s' "$NOTE" "$WARNINGS" | sed 's/^ *//; s/ *$//')
 
 if [ "$STATUS" != 0 ]; then
   OUTCOME=failed

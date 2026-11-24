@@ -11,7 +11,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   cheatsheet                  Browse, filter and run these commands
   cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
   cheatsheet:aliases          Print the shell alias cheatsheet
-  dockerhub:descriptions      Push every Docker Hub repo's description and overview from the pages-index image registry (Vault DOCKERHUB_TOKEN)
+  dockerhub:descriptions      Push every Docker Hub repo's description and overview from the project-overview image registry (Vault DOCKERHUB_TOKEN)
   repo-stats                  Regenerate the managed repo-stats line in README.md and about.md
   repo-stats:check            Fail if a managed repo-stats copy (README, about, resume) is stale
   deps:align-pins             Align app/lib dependency ranges with the nx-workspace root (40-edit cap); run `pnpm -C projects/nx-workspace install --lockfile-only` after
@@ -40,8 +40,11 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
 🏗️  TERRAFORM
   tf:plan                     Load vault env and run terraform plan
   tf:import                   Load vault env and run terraform import <address> <id>
-  tf:apply                    Load vault env, apply terraform, and run post-apply
+  tf:apply                    Load vault env, apply terraform, run post-apply, then tf:vault:apply
   tf:post-apply               Run post-apply script
+  tf:vault:init               Init the Vault roles/policies workspace (infrastructure/terraform/vault)
+  tf:vault:plan               Load Vault provider env and plan Vault's JWT roles and policies
+  tf:vault:apply              Load Vault provider env and apply Vault's JWT roles and policies
   oci:config:sync-local       Refresh ~/.oci/config + key from Vault (after a rotation)
   tf:output                   Show terraform outputs
   tf:unlock                   Load vault env and force-unlock the HCP Terraform workspace
@@ -55,7 +58,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   gitea:restore [zip|gs://]   Restore Gitea from a local dump zip or GCS (default: latest GCS backup)
 
 💻 CODE SERVER
-  code-server:open            Open code.harryliu.dev
+  code-server:open            Open code.vigilant-broccoli.app
   code-server:password        Copy code-server password to clipboard
   code-server:ssh             SSH into code-server VM
   code-server:logs            Follow code-server container logs
@@ -82,7 +85,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   immich:replace              Replace the VM via terraform (fresh host)
 
 📈 GRAFANA (observability VM)
-  grafana:open                Open grafana.harryliu.dev
+  grafana:open                Open grafana.vigilant-broccoli.app
   grafana:password            Copy Grafana admin password to clipboard
   grafana:ssh                 SSH into Grafana/Loki VM
   grafana:dashboards:push     Sync grafana-dashboards/*.json to the VM
@@ -114,7 +117,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   gcp:vm:status               Get GCP VM status
   gcp:vm:stop                 Stop GCP VM
   gcp:vm:start                Start GCP VM
-  gcp:vm:post-init            Run Vault post-init script
+  gcp:vm:post-init            Bootstrap Vault (init, KV and JWT auth mounts); roles come from tf:vault:apply
   gcp:vm:regen-cert           Regenerate cert and update WireGuard
   gcp:vm:update-wg            Update WireGuard endpoint
 
@@ -124,7 +127,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   gcp:vm:vault:seal           Seal Vault
   gcp:vm:vault:save-secrets-local     Save Vault secrets locally
   gcp:vm:vault:set-secrets    Set secrets in Vault
-  vault:store-promotion-key <pem>  Store the production-promotion GitHub App key in Vault
 
 🔑 SECRETS
   secret-rotation:all         Run the local rotations (incl. the log shipper token), dispatch ci-rotate-secrets, rotate the OCI key, verify Loki health, then back up Vault to Bitwarden
@@ -171,7 +173,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   job-hunt:docker:logs  Tail the job-hunt-next container logs
   local-manager-next:start       Start local-manager-next via PM2 and save the process list
   event-calendars:sync        Sync every event calendar with sources from Facebook to Google Calendar (exits non-zero on failure, 3 when Facebook login is required; logs to ~/.vb-manager/event-calendars-sync.log)
-  deploy:local                Pull latest (ff-only), install nx-workspace deps, then reload cloud-services-next, local-services-next, music-next and local-manager-next via PM2 and save the process list, then rebuild the job-hunt-next container
+  deploy:local                Pull latest (ff-only), install nx-workspace deps, then reload cloud-services-next, local-services-next, music-next and local-manager-next via PM2 and save the process list, then rebuild the job-hunt-next container (starting Docker first if needed)
+  deploy:job-hunt             Pull latest (ff-only), install nx-workspace deps, then rebuild the job-hunt-next container (starting Docker first if needed)
   deploy:local-manager        Pull latest (ff-only), install nx-workspace deps, then reload local-manager-next via PM2 and save the process list
   cloud-services-next:logs    Tail cloud-services-next PM2 logs
   local-services-next:logs    Tail local-services-next PM2 logs
@@ -214,7 +217,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   agentic-pr-create-inventory-audit  Headlessly check docs/fork-identity-inventory.md and the Secret Inventory in docs/infrastructure/secret-management.md against the accounts, domains and secret references used in code, Terraform and workflows (candidates from scripts/ci/inventory-drift.sh), fix missing or stale rows without touching secret values in an ephemeral sandbox container, then open one PR of at most 2 files; opens none if the inventories match (sonnet; --model <m> to override)
   agentic-pr-create-prune  Headlessly sweep the repo for dead code, unused dependencies, broken doc links/anchors, orphaned docs/scripts/workflows and cheatsheet drift in an ephemeral sandbox container, remove only items grep shows have zero references, then open one capped PR listing the evidence and skipped candidates; opens none if nothing is provably dead (sonnet; --model <m> to override)
   agentic-pr-create-readmes  Headlessly refresh every README.md against docs/app-readme-pattern.md and the current code, plus the generated repo counts, in an ephemeral sandbox container, then open one PR of at most 20 files listing the evidence and skipped candidates; opens none if nothing drifted (sonnet; --model <m> to override)
-  agentic-pr-create-url-audit  Headlessly verify every public URL has synchronized Upptime entries, pages-index cards and browser quick links per environment and demo in an ephemeral sandbox container, fix drift, then open one capped PR (15 files) listing the evidence and skipped candidates; opens none if consistent (sonnet; --model <m> to override)
+  agentic-pr-create-url-audit  Headlessly verify every public URL has synchronized Upptime entries, project-overview cards and browser quick links per environment and demo in an ephemeral sandbox container, fix drift, then open one capped PR (15 files) listing the evidence and skipped candidates; opens none if consistent (sonnet; --model <m> to override)
   GitHub Actions: manual-agentic-pr-update selects operation=change|fix-ci|resolve-conflicts; instruction is required for change, optional for fix-ci, blank for resolve-conflicts
   agentic-pr-update [--vm [--agent codex] [--codex-model <m>] [--codex-signed-in]] [--operation <op>] <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container or detached code-server VM session (checks out the branch, runs the agent on your instruction, runs pre-commit, and pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
                                 (--operation fix-ci [<instruction>] fixes a PR's failing CI from its check logs; --operation resolve-conflicts merges origin/main and resolves conflicts, taking no instruction)
@@ -225,12 +228,15 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   gh:actions:deploy           Trigger deploy workflow
   gh:actions:health-check     Trigger ci-health-check workflow
   gh:actions:kill-services    Trigger kill-services workflow
-  gh:actions:promote-production  Trigger manual-promote-production (fast-forward production to main)
+  gh:actions:release          Trigger deploy-release (verify staging, then deploy main to production)
   gh:actions:rotate-secrets   Trigger ci-rotate-secrets workflow
   gh:actions:run-tests        Trigger all post-deploy test workflows
   gh:actions:replace-code-server  Trigger code-server VM replace workflow
   gh:actions:refresh-code-server-github-token  Mint a 1-hour GitHub App token and drop it on the code-server VM
   gh:actions:security-cloudflare-access  Trigger Cloudflare Access security check workflow
+  gh:release:hold             Hold every production release (set RELEASE_HOLD=true)
+  gh:release:hold-pr          Hold one PR's release: pnpm gh:release:hold-pr <number> (adds release-hold)
+  gh:release:unhold           Resume automatic releases (delete RELEASE_HOLD); release held work with gh:actions:release
 
 🔍 AUDIT
   audit                       Run vulnerability audit tree
@@ -245,5 +251,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
 
 Local agent commands (Codex `$name`, Claude `/name`):
 
+- `serve-local [PR_NUMBER] [--port N]` — Check out the PR (or keep the current branch) in the main checkout, free the port (default 3000) and serve its app.
 - `local-session-status` — One read-only snapshot of known dispatches.
 - `local-session-retry-publish [session]` — After a reported token refresh, notify the single known publishing-blocked idle agent or an explicitly selected session. See [usage and limitations](../setup/dotfiles/agent-skills/local-session-retry-publish/SKILL.md).

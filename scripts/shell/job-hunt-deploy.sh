@@ -1,0 +1,14 @@
+#!/bin/bash
+# Fast-forward the current branch from its upstream, install nx-workspace dependencies, then rebuild the job-hunt-next container, first starting Docker Desktop when the daemon is not running.
+# set -e aborts before the rebuild when the pull fails, so the container never serves stale code.
+set -e
+# Nx's interactive TUI waits for `q` after multi-task runs, stalling the script.
+export NX_TUI=false
+
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+
+git -C "$REPO_ROOT" pull --ff-only
+# The nx-workspace is its own pnpm workspace, so a root `pnpm i` skips dependencies added by the pulled commits.
+pnpm --dir "$REPO_ROOT/projects/nx-workspace" install --frozen-lockfile
+"$REPO_ROOT/scripts/shell/ensure-docker-running.sh"
+pnpm --dir "$REPO_ROOT" job-hunt:docker:up

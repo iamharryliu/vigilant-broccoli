@@ -446,6 +446,30 @@ export const swaggerSpec = createSwaggerSpec({
         },
       },
     },
+    '/api/storage/download-urls': {
+      post: {
+        summary:
+          'Get presigned download URLs for several files from storage-service in one request',
+        parameters: [STORAGE_PROVIDER_PARAM, STORAGE_BUCKET_NAME_PARAM],
+        requestBody: jsonBody({
+          type: 'object',
+          required: ['fileNames', 'expiresInSeconds'],
+          properties: {
+            fileNames: {
+              type: 'array',
+              maxItems: 500,
+              items: { type: 'string' },
+            },
+            expiresInSeconds: { type: 'number' },
+          },
+        }),
+        responses: {
+          '200': { description: '{ urls: string[] } in fileNames order' },
+          '401': UNAUTHORIZED_RESPONSE,
+          '500': STORAGE_ERROR_RESPONSE,
+        },
+      },
+    },
     '/api/storage/files': {
       get: {
         summary: 'List files in a storage-service bucket',

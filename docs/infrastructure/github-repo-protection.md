@@ -1,11 +1,11 @@
 # GitHub Repository Protection
 
-How `main` and `production` are protected, which actors bypass them, and the traps that follow from that.
+How `main` is protected, which actors bypass it, and the traps that follow from that.
 
 ## Table of Contents
 
 - [Ruleset and bypass actors](#ruleset-and-bypass-actors)
-- [Production promotion](#production-promotion)
+- [Production deploys](#production-deploys)
 - [Operational traps](#operational-traps)
 
 ## Ruleset and bypass actors
@@ -16,37 +16,11 @@ How `main` and `production` are protected, which actors bypass them, and the tra
 
 Upptime executes in `iamharryliu/uptime` using that repository's temporary `GITHUB_TOKEN`. The separate configuration-sync App is installed only on the monitoring repository and never bypasses protection here. A stolen App private key can mint fresh installation tokens until revoked; token expiry only bounds theft of an individual token.
 
-## Production promotion
+## Production deploys
 
-`production` is only ever moved by `manual-promote-production.yml`, which fast-forwards it to the current `main` commit. Two Terraform-managed rulesets in `github.tf` cover the branch; they are separate because a bypass actor skips every rule in its ruleset.
+There is no `production` branch or ruleset. `deploy-release.yml` releases production after a verified staging deploy, or on a manual run (`pnpm gh:actions:release`, on `main`): it calls `deploy` with `environment: production` and the commit in the `production-deployed` tag, so only targets changed since the last release deploy (including the Docs MD, Agent Context and Grind 75 sites), then moves the tag to the released commit.
 
-| Ruleset | Rules | Bypass actors |
-| --- | --- | --- |
-| `production-protection` | `deletion`, `non_fast_forward` | None — the promotion App and admins obey it |
-| `production-update` | `update` | The `production-promotion` App (`always`) |
-
-`main`'s ruleset is unchanged: admins stay its bypass actor, and merge commits already in `main`'s history promote normally (fast-forward is about `production` being an ancestor of the pushed commit, not about linear history).
-
-**Usage.** `pnpm gh:actions:promote-production` (or Actions → `manual-promote-production` → Run workflow on `main`). The job refuses to run from any other ref, fetches `main` and `production` explicitly, captures the `main` SHA once, fails unless `production` is its ancestor (divergence), exits green when they are already equal, then pushes that exact SHA to `refs/heads/production` without force using a one-hour installation token scoped to this repository with `contents: write`. Promotions are serialized by the `manual-promote-production` concurrency group (`cancel-in-progress: false`); a conflicting update that lands in between is rejected by the non-force push, so rerun after checking the new state. Because the push is made with an App token rather than `GITHUB_TOKEN`, it triggers the `push: production` runs of `deploy`, `deploy-docs-md` and `deploy-context-md` (still subject to their `paths` filters, so a promotion touching none of those paths deploys nothing).
-
-**The App.** A dedicated private GitHub App, `production-promotion`, webhooks inactive, installed only on `iamharryliu/vigilant-broccoli`, with repository permission **Contents: read and write** (Metadata read is implicit). It is not the agent-sandbox/code-server App and that App gets no production bypass. If a promotion that includes `.github/workflows/**` changes is rejected for lacking `workflows` permission, add Workflows write to the App and accept the new permission request on the installation.
-
-**Rollout order.** Follow this order when redoing the setup, e.g. for a new App or key:
-
-1. Register and install the App as above; note its numeric App ID and generate a private key.
-2. Store the key: `pnpm vault:store-promotion-key <path-to-pem>` (validates the key, base64-encodes it and writes `PRODUCTION_PROMOTION_GH_APP_PRIVATE_KEY` to `kv/production-promotion` on the Vault VM). `backup-vault-secrets.ts` reads only `kv/data/secrets`, so `kv/production-promotion` is not in the Bitwarden backup; the App's private key can be regenerated in its settings if lost.
-3. Run `pnpm gcp:vm:post-init` to create `github-actions-production-promotion-role`/`-policy` (bound on `repository`, `workflow_ref` of this workflow file on `main`, `ref` `refs/heads/main` and `event_name` `workflow_dispatch`, reading only `kv/data/production-promotion`).
-4. Set `production_promotion_gh_app_id` in `infrastructure/terraform/variables.tf`, then locally `pnpm tf:plan` and `pnpm tf:apply` (applies stay local — see [terraform.md](../ci/terraform.md)). This creates the dedicated GCP identity and WIF provider (same `workflow_ref`/`ref`/`event_name` conditions, mapped as `attribute.workflow_ref` only), the `PRODUCTION_PROMOTION_*` Actions variables (variables, not secrets) and activates `production-update`. Until the App ID is non-zero, `production-update` is `disabled` and the workflow job is skipped, but `production-protection` is already enforced: nobody can force-push or delete `production`.
-5. Merge the workflow to `main`, then run it once and confirm the deploy runs on `production` start.
-
-**Credential rotation.** Generate a new key on the App, store it with `pnpm vault:store-promotion-key <path-to-pem>`, run the workflow once to confirm, then delete the old key in the App settings. A leaked key can mint tokens until revoked, and those tokens can update `production` (not delete or rewind it); revoke the key first, then inspect `production` history.
-
-**Enforcement limits.**
-
-- Rulesets cannot restrict which branch a push to `production` comes from. The App bypass allows any `contents: write` push, so "only from `main`" is enforced by the workflow, and the trust boundary is the App's private key: only the workflow file at `@refs/heads/main` can mint the Vault identity that reads it. The shared GCP `github` provider separately allows only `main` and `production` refs.
-- Fast-forward-only is enforced by the ruleset (no bypass); fast-forward-from-`main` is enforced by the workflow.
-- Admins can still edit or delete the rulesets (and the App's bypass) in the GitHub UI or via Terraform, and then push. Drift shows up in `cron-terraform-drift`.
-- Promotion is not the only way to deploy production. Other entry points deploy the `production` environment from whatever ref is dispatched, with no ancestry check: `deploy` (`workflow_dispatch` input `environment: production`), `manual-deploy-app` (`environment: production`), `deploy-docs-md` and `deploy-context-md` (their `environment` input), and `ci-rotate-secrets`, which calls `deploy` for production on purpose. Whoever can dispatch workflows (admins; the agent-sandbox App has no `actions` write) can therefore deploy production without moving the `production` branch. Vault's `github-actions-role` is bound to `refs/heads/main` and `refs/heads/production`, so a dispatch from another branch fails to read secrets, but a dispatch from `main` succeeds.
+- `deploy-release` is not the only way to deploy production. Other entry points deploy the `production` environment from whatever ref is dispatched, with no ancestry check: `deploy` (`workflow_dispatch` input `environment: production`), `manual-deploy-app` (`environment: production`), and `ci-rotate-secrets`, which calls `deploy` for production on purpose. Whoever can dispatch workflows (admins; the agent-sandbox App has no `actions` write) can therefore deploy production from any ref. Vault's `github-actions-role` and the shared GCP `github` provider accept only `refs/heads/main`, so a dispatch from another branch fails to read secrets, but a dispatch from `main` succeeds.
 
 ## Operational traps
 

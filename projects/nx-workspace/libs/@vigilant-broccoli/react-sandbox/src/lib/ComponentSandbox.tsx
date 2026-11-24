@@ -3,6 +3,7 @@ import {
   Blocks,
   CalendarDays,
   FileText,
+  FolderOpen,
   Image as ImageIcon,
   KeyRound,
   Layers,
@@ -10,24 +11,28 @@ import {
   Link2,
   List,
   ListChecks,
+  ListTodo,
   Menu,
-  Moon,
+  MessageSquare,
   Music,
   Package,
+  PanelLeft,
+  Search,
   Settings as SettingsIcon,
-  Sun,
   Trophy,
+  Type as TypeIcon,
   Wrench,
 } from 'lucide-react';
 import {
+  ButtonList,
+  ThemePreferenceControl,
   ThemeProvider,
-  useTheme,
   useDocumentTitle,
   Switch,
   Heading,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/sidebar';
 import {
   AlarmUtilityContent,
   CalculatorUtilityContent,
@@ -35,6 +40,7 @@ import {
   CurrencyConverterUtilityContent,
   PomodoroEngine,
   PomodoroUtilityContent,
+  QrReaderUtilityContent,
   StopwatchUtilityContent,
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
@@ -50,7 +56,7 @@ import {
   useTranslation as useSandboxTranslation,
 } from './i18n';
 import sandboxEn from './i18n/en.json';
-import { InputDemo } from './demos/InputDemo';
+import { InputDemo, TextareaDemo } from './demos/InputDemo';
 import { CheckboxDemo } from './demos/CheckboxDemo';
 import { BadgeDemo } from './demos/BadgeDemo';
 import { CardDemo } from './demos/CardDemo';
@@ -59,6 +65,58 @@ import { SegmentedControlDemo } from './demos/SegmentedControlDemo';
 import { AvatarDemo } from './demos/AvatarDemo';
 import { UserAvatarDemo } from './demos/UserAvatarDemo';
 import { ButtonDemo } from './demos/ButtonDemo';
+import { IconButtonDemo } from './demos/IconButtonDemo';
+import { ButtonListDemo } from './demos/ButtonListDemo';
+import { BUILT_WITH } from './built-with';
+import { EntryDirectoryDemo } from './demos/EntryDirectoryDemo';
+import {
+  CopyPastableDemo,
+  DeleteItemConfirmationDialogDemo,
+  DownloadButtonDemo,
+  DropdownMenuDemo,
+  EllipsisCTADemo,
+  KeyboardAccessoryToolbarDemo,
+  PopoverDemo,
+  SearchInputDemo,
+  SignOutButtonDemo,
+  SpeechToTextToggleButtonDemo,
+  ThemePreferenceControlDemo,
+  ToggleGroupDemo,
+  UpptimeStatusListDemo,
+} from './demos/ReactLibExtrasDemo';
+import {
+  ChatPanelDemo,
+  PreviewDeploymentsDemo,
+  SecurityNewsListDemo,
+  WeatherEmbedCardDemo,
+} from './demos/HigherLevelExtrasDemo';
+import {
+  CalendarEventDetailsDemo,
+  CreateCalendarEventDialogDemo,
+} from './demos/CalendarExtrasDemo';
+import { DocsViewerDemo, GraphViewDemo } from './demos/DocsViewerDemo';
+import { FileExplorerDemo } from './demos/FileExplorerDemo';
+import {
+  ChatHistorySidebarDemo,
+  ChatInputAreaDemo,
+  ChatMessagesAreaDemo,
+  ConfirmDeleteDialogDemo,
+} from './demos/ChatbotDemo';
+import {
+  CalloutDemo,
+  ClearableInputDemo,
+  ContextMenuDemo,
+  DialogDemo,
+  EmbedDialogDemo,
+  HighlightMatchDemo,
+  ImageCropDialogDemo,
+  MultiSelectDemo,
+  ProgressDemo,
+  ScrollAreaDemo,
+  SkeletonDemo,
+  StackedImagesDemo,
+  TeamAvatarDemo,
+} from './demos/ReactLibMoreDemo';
 import { CheckListDemo } from './demos/CheckListDemo';
 import { CollapsibleListItemDemo } from './demos/CollapsibleListItemDemo';
 import { CRUDListNoImagesDemo } from './demos/CRUDListNoImagesDemo';
@@ -73,6 +131,8 @@ import { StatusCardListDemo } from './demos/StatusCardListDemo';
 import { TabsDemo } from './demos/TabsDemo';
 import { TooltipDemo } from './demos/TooltipDemo';
 import { LinkCardDemo } from './demos/LinkCardDemo';
+import { ListHeaderDemo } from './demos/ListHeaderDemo';
+import { SearchDialogDemo } from './demos/SearchDialogDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
 import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
@@ -99,12 +159,14 @@ const CRUD_SWITCH_LABEL = {
 // Not an entry id, so it can share the selection state; served at `/`.
 const OVERVIEW_ID = 'components';
 const OVERVIEW_LABEL = 'Components';
+// Typography is a foundation rather than a component, so it sits above
+// Components in the sidebar instead of inside the react-lib group.
+const TYPOGRAPHY_ID = 'typography';
 
-const SETTINGS_LABEL = {
-  GROUP: 'Settings',
-  DARK_MODE_ON: 'Light Mode',
-  DARK_MODE_OFF: 'Dark Mode',
-} as const;
+// Not an entry id either; served at `/settings` and only when the sandbox owns
+// its ThemeProvider (`wrapInTheme`).
+const SETTINGS_ID = 'settings';
+const SETTINGS_LABEL = 'Settings';
 
 const PACKAGE_SCOPE_GROUP_ID = '@vigilant-broccoli';
 const PACKAGE_SCOPE = `${PACKAGE_SCOPE_GROUP_ID}/`;
@@ -112,9 +174,14 @@ const PACKAGE_SCOPE = `${PACKAGE_SCOPE_GROUP_ID}/`;
 // Declaration order is sidebar order: low-level libs first.
 const LIB = {
   REACT_LIB: 'react-lib',
+  CHECKLIST: 'react-lib-checklist',
   HIGHER_LEVEL: 'react-lib-higher-level',
+  ENTRY_DIRECTORY: 'entry-directory',
+  SIDEBAR: 'sidebar',
   QUICK_LINKS: 'react-lib-quick-links',
   DOCS_EXPLORER: 'docs-explorer',
+  FILE_EXPLORER: 'file-explorer',
+  CHATBOT: 'chatbot',
   CALENDAR: 'react-lib-calendar',
   CRUD_LIST: 'react-lib-crud-list',
   TASKS: 'react-lib-tasks',
@@ -127,9 +194,14 @@ const LIB = {
 type Lib = (typeof LIB)[keyof typeof LIB];
 const LIB_ICON = {
   [LIB.REACT_LIB]: Blocks,
+  [LIB.CHECKLIST]: ListTodo,
   [LIB.HIGHER_LEVEL]: Layers,
+  [LIB.ENTRY_DIRECTORY]: Search,
+  [LIB.SIDEBAR]: PanelLeft,
   [LIB.QUICK_LINKS]: Link2,
   [LIB.DOCS_EXPLORER]: FileText,
+  [LIB.FILE_EXPLORER]: FolderOpen,
+  [LIB.CHATBOT]: MessageSquare,
   [LIB.CALENDAR]: CalendarDays,
   [LIB.CRUD_LIST]: List,
   [LIB.TASKS]: ListChecks,
@@ -236,12 +308,28 @@ const ALL_ENTRIES: SandboxEntry[] = [
     content: <BadgeDemo />,
   },
   {
+    id: 'button-list',
+    label: 'Button List',
+    description:
+      'A wrapping row of badge-style buttons with arrow-key navigation, hover focus and an inset focus ring.',
+    lib: LIB.REACT_LIB,
+    content: <ButtonListDemo />,
+  },
+  {
     id: 'buttons',
     label: 'Buttons',
     description:
-      'The full button set - variants, icon buttons, copy and close buttons, provider sign-in buttons and button lists.',
+      'The button set - variants, sizes, states, copy and close buttons and provider sign-in buttons.',
     lib: LIB.REACT_LIB,
     content: <ButtonDemo />,
+  },
+  {
+    id: 'icon-button',
+    label: 'Icon Button',
+    description:
+      'Icon-only buttons in each variant, plus the delete and dark-mode icon buttons.',
+    lib: LIB.REACT_LIB,
+    content: <IconButtonDemo />,
   },
   {
     id: 'card',
@@ -264,7 +352,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'Checklist',
     description:
       'Checkable rows with inline editing, drag reorder and a collapsible completed section, driven entirely by caller-supplied render props.',
-    lib: LIB.REACT_LIB,
+    lib: LIB.CHECKLIST,
     content: <CheckListDemo />,
   },
   {
@@ -332,12 +420,28 @@ const ALL_ENTRIES: SandboxEntry[] = [
     content: <InputDemo />,
   },
   {
+    id: 'textarea',
+    label: sandboxEn.FOUNDATIONS.TEXTAREA.NAME,
+    description: sandboxEn.FOUNDATIONS.TEXTAREA.SUMMARY,
+    lib: LIB.REACT_LIB,
+    foundationKey: 'TEXTAREA',
+    content: <TextareaDemo />,
+  },
+  {
     id: 'link-card',
     label: 'Link Card',
     description:
       'Clickable card with title, description and icon, with a subtle lift on hover; renders an anchor or a router link.',
     lib: LIB.REACT_LIB,
     content: <LinkCardDemo />,
+  },
+  {
+    id: 'list-header',
+    label: 'List Header',
+    description:
+      'Title row with a trailing control, and a Sort select that fits it or a card header action.',
+    lib: LIB.REACT_LIB,
+    content: <ListHeaderDemo />,
   },
   {
     id: 'segmented-control',
@@ -354,6 +458,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Select bound to string, number and object options, each with its own selected-value rendering.',
     lib: LIB.REACT_LIB,
     content: <SelectDemo />,
+  },
+  {
+    id: 'sign-out-button',
+    label: 'Sign Out Button',
+    description:
+      'Standard sign-out action with a logout icon; an async handler shows the pending state.',
+    lib: LIB.REACT_LIB,
+    content: <SignOutButtonDemo />,
   },
   {
     id: 'status-card-list',
@@ -378,6 +490,22 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Tabs with panel content, driven by the react-lib shim over the underlying primitive.',
     lib: LIB.REACT_LIB,
     content: <TabsDemo />,
+  },
+  {
+    id: 'toggle-group',
+    label: 'Toggle Group',
+    description:
+      'Single-select group with a sliding pill and radiogroup arrow-key navigation; the base of Segmented Control and the Tabs list.',
+    lib: LIB.REACT_LIB,
+    content: <ToggleGroupDemo />,
+  },
+  {
+    id: 'theme-preference-control',
+    label: 'Theme Preference Control',
+    description:
+      "System/Light/Dark picker bound to the surrounding ThemeProvider; here it switches this sandbox's theme.",
+    lib: LIB.REACT_LIB,
+    content: <ThemePreferenceControlDemo />,
   },
   {
     id: 'toaster',
@@ -475,7 +603,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     id: 'docs-explorer',
     label: 'Docs Explorer',
     description:
-      'The docs explorer is the file-tree + search shell behind docs.vigilant-broccoli.app. It is not mounted here - it needs a notes tree to browse - so this page links to the live site.',
+      'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site.',
     lib: LIB.DOCS_EXPLORER,
     content: <DocsExplorerDemo />,
   },
@@ -534,6 +662,22 @@ const ALL_ENTRIES: SandboxEntry[] = [
     content: <MobileHomeDemo />,
   },
   {
+    id: 'entry-directory',
+    label: 'Entry Directory',
+    description:
+      'Fuzzy-searchable grouped entries with Rows and Grouped views, arrow-key navigation, and favorites.',
+    lib: LIB.ENTRY_DIRECTORY,
+    content: <EntryDirectoryDemo />,
+  },
+  {
+    id: 'sidebar',
+    label: 'Sidebar',
+    description:
+      "The collapsible navigation rail on the left of this page, which becomes a drawer on narrow screens. This sandbox's own navigation is the live Sidebar.",
+    lib: LIB.SIDEBAR,
+    content: <Text>The Sidebar is the navigation on the left.</Text>,
+  },
+  {
     id: 'audio-button',
     label: 'Audio Button',
     description:
@@ -580,9 +724,285 @@ const ALL_ENTRIES: SandboxEntry[] = [
     lib: LIB.MUSIC,
     content: <MetronomeDemo />,
   },
+  {
+    id: 'copy-pastable',
+    label: 'Copy Pastable',
+    description: 'Read-only text with a copy button.',
+    lib: LIB.REACT_LIB,
+    content: <CopyPastableDemo />,
+  },
+  {
+    id: 'delete-item-confirmation-dialog',
+    label: 'Delete Item Confirmation Dialog',
+    description: 'In-app confirmation dialog for destructive deletes.',
+    lib: LIB.REACT_LIB,
+    content: <DeleteItemConfirmationDialogDemo />,
+  },
+  {
+    id: 'download-button',
+    label: 'Download Button',
+    description: 'Download button with a menu of formats.',
+    lib: LIB.REACT_LIB,
+    content: <DownloadButtonDemo />,
+  },
+  {
+    id: 'dropdown-menu',
+    label: 'Dropdown Menu',
+    description: 'Menu of actions opened from a trigger button.',
+    lib: LIB.REACT_LIB,
+    content: <DropdownMenuDemo />,
+  },
+  {
+    id: 'ellipsis-cta',
+    label: 'Ellipsis CTA',
+    description:
+      'Ellipsis menu with edit, extra actions and a confirmed delete.',
+    lib: LIB.REACT_LIB,
+    content: <EllipsisCTADemo />,
+  },
+  {
+    id: 'keyboard-accessory-toolbar',
+    label: 'Keyboard Accessory Toolbar',
+    description:
+      'Extra keys shown above the on-screen keyboard while a text field is focused on touch devices.',
+    lib: LIB.REACT_LIB,
+    content: <KeyboardAccessoryToolbarDemo />,
+  },
+  {
+    id: 'popover',
+    label: 'Popover',
+    description: 'Floating panel anchored to a trigger.',
+    lib: LIB.REACT_LIB,
+    content: <PopoverDemo />,
+  },
+  {
+    id: 'search-input',
+    label: 'Search Input',
+    description: 'Compact input with a leading search icon.',
+    lib: LIB.REACT_LIB,
+    content: <SearchInputDemo />,
+  },
+  {
+    id: 'search-dialog',
+    label: 'Search Dialog',
+    description:
+      'Command-palette style dialog with fuzzy-filtered results, arrow-key navigation and Enter to select; opens with the / shortcut.',
+    lib: LIB.REACT_LIB,
+    content: <SearchDialogDemo />,
+  },
+  {
+    id: 'speech-to-text-toggle-button',
+    label: 'Speech To Text Toggle Button',
+    description: 'Microphone button that toggles recording.',
+    lib: LIB.REACT_LIB,
+    content: <SpeechToTextToggleButtonDemo />,
+  },
+  {
+    id: 'upptime-status-list',
+    label: 'Upptime Status List',
+    description:
+      'Service status rows with uptime ranges, fed here with sample data.',
+    lib: LIB.REACT_LIB,
+    content: <UpptimeStatusListDemo />,
+  },
+  {
+    id: 'chat-panel',
+    label: 'Chat Panel',
+    description: 'Chat room message list and composer, with local messages.',
+    lib: LIB.HIGHER_LEVEL,
+    content: <ChatPanelDemo />,
+  },
+  {
+    id: 'preview-deployments',
+    label: 'Preview Deployments',
+    description:
+      'Open pull requests with their preview links, from sample data.',
+    lib: LIB.HIGHER_LEVEL,
+    content: <PreviewDeploymentsDemo />,
+  },
+  {
+    id: 'security-news-list',
+    label: 'Security News List',
+    description: 'Matched security news items, from sample data.',
+    lib: LIB.HIGHER_LEVEL,
+    content: <SecurityNewsListDemo />,
+  },
+  {
+    id: 'weather-embed-card',
+    label: 'Weather Embed Card',
+    description: 'Card that embeds the weather app.',
+    lib: LIB.HIGHER_LEVEL,
+    content: <WeatherEmbedCardDemo />,
+  },
+  {
+    id: 'calendar-event-details',
+    label: 'Calendar Event Details',
+    description: 'Details sheet for one calendar event.',
+    lib: LIB.CALENDAR,
+    content: <CalendarEventDetailsDemo />,
+  },
+  {
+    id: 'create-calendar-event-dialog',
+    label: 'Create Calendar Event Dialog',
+    description:
+      'Dialog that turns text or images into calendar events; here any text parses to one sample event.',
+    lib: LIB.CALENDAR,
+    content: <CreateCalendarEventDialogDemo />,
+  },
+  {
+    id: 'docs-viewer',
+    label: 'Docs Viewer',
+    description: 'Markdown docs browser over a small in-memory tree.',
+    lib: LIB.DOCS_EXPLORER,
+    content: <DocsViewerDemo />,
+  },
+  {
+    id: 'graph-view',
+    label: 'Graph View',
+    description: 'Force-directed graph of linked notes.',
+    lib: LIB.DOCS_EXPLORER,
+    content: <GraphViewDemo />,
+  },
+  {
+    id: 'qr-reader',
+    label: 'QR Reader',
+    description: 'Reads a QR code from an uploaded image.',
+    lib: LIB.UTILITY,
+    content: <QrReaderUtilityContent uploadOnly />,
+  },
+  {
+    id: 'file-explorer',
+    label: 'File Explorer',
+    description: 'File browser over an in-memory sample tree.',
+    lib: LIB.FILE_EXPLORER,
+    content: <FileExplorerDemo />,
+  },
+  {
+    id: 'chat-messages-area',
+    label: 'Chat Messages Area',
+    description: 'Chatbot conversation with Markdown and message actions.',
+    lib: LIB.CHATBOT,
+    content: <ChatMessagesAreaDemo />,
+  },
+  {
+    id: 'chat-input-area',
+    label: 'Chat Input Area',
+    description: 'Chatbot composer with image upload and send.',
+    lib: LIB.CHATBOT,
+    content: <ChatInputAreaDemo />,
+  },
+  {
+    id: 'chat-history-sidebar',
+    label: 'Chat History Sidebar',
+    description: 'Chat list with pinning, renaming and delete.',
+    lib: LIB.CHATBOT,
+    content: <ChatHistorySidebarDemo />,
+  },
+  {
+    id: 'confirm-delete-dialog',
+    label: 'Confirm Delete Dialog',
+    description: "The chatbot's confirmation dialog for deleting a chat.",
+    lib: LIB.CHATBOT,
+    content: <ConfirmDeleteDialogDemo />,
+  },
+  {
+    id: 'callout',
+    label: 'Callout',
+    description: 'Inline notice with an icon, in each color.',
+    lib: LIB.REACT_LIB,
+    content: <CalloutDemo />,
+  },
+  {
+    id: 'clearable-input',
+    label: 'Clearable Input',
+    description: 'Input with a clear button once it has a value.',
+    lib: LIB.REACT_LIB,
+    content: <ClearableInputDemo />,
+  },
+  {
+    id: 'context-menu',
+    label: 'Context Menu',
+    description: 'Right-click menu of actions.',
+    lib: LIB.REACT_LIB,
+    content: <ContextMenuDemo />,
+  },
+  {
+    id: 'dialog',
+    label: 'Dialog',
+    description: 'Modal dialog with a header, opened from a trigger.',
+    lib: LIB.REACT_LIB,
+    content: <DialogDemo />,
+  },
+  {
+    id: 'embed-dialog',
+    label: 'Embed Dialog',
+    description: 'Dialog that embeds a page in an iframe.',
+    lib: LIB.REACT_LIB,
+    content: <EmbedDialogDemo />,
+  },
+  {
+    id: 'highlight-match',
+    label: 'Highlight Match',
+    description: 'Text with the parts matching a query highlighted.',
+    lib: LIB.REACT_LIB,
+    content: <HighlightMatchDemo />,
+  },
+  {
+    id: 'image-crop-dialog',
+    label: 'Image Crop Dialog',
+    description: 'Dialog for cropping an image before saving it.',
+    lib: LIB.REACT_LIB,
+    content: <ImageCropDialogDemo />,
+  },
+  {
+    id: 'multi-select',
+    label: 'Multi Select',
+    description: 'Dropdown of checkable options.',
+    lib: LIB.REACT_LIB,
+    content: <MultiSelectDemo />,
+  },
+  {
+    id: 'progress',
+    label: 'Progress',
+    description: 'Horizontal progress bar.',
+    lib: LIB.REACT_LIB,
+    content: <ProgressDemo />,
+  },
+  {
+    id: 'scroll-area',
+    label: 'Scroll Area',
+    description: 'Scroll container with a styled scrollbar.',
+    lib: LIB.REACT_LIB,
+    content: <ScrollAreaDemo />,
+  },
+  {
+    id: 'skeleton',
+    label: 'Skeleton',
+    description: 'Loading placeholders, including the card skeleton.',
+    lib: LIB.REACT_LIB,
+    content: <SkeletonDemo />,
+  },
+  {
+    id: 'stacked-images',
+    label: 'Stacked Images',
+    description: 'Overlapping row of thumbnails.',
+    lib: LIB.REACT_LIB,
+    content: <StackedImagesDemo />,
+  },
+  {
+    id: 'team-avatar',
+    label: 'Team Avatar',
+    description: 'Avatar for a team, with a colored initial fallback.',
+    lib: LIB.REACT_LIB,
+    content: <TeamAvatarDemo />,
+  },
 ];
 
 const ENTRY_STAGE_CLASS = 'flex flex-col gap-3 mt-2';
+const ENTRY_SECTION_LABEL = {
+  BUILT_WITH: 'Built with',
+  DEMO: 'Demo',
+} as const;
 const OVERVIEW_GRID_CLASS =
   'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3';
 const SECTION_ID_PREFIX = 'vigilant-broccoli-';
@@ -629,10 +1049,13 @@ const buildSidebarItems = ({
   selectedId,
   onSelect,
 }: BuildSidebarItemsArgs): SidebarCTA[] => {
+  const typography = entries.find(entry => entry.id === TYPOGRAPHY_ID);
   const libGroups = Object.values(LIB)
     .map(lib => ({
       lib,
-      items: entries.filter(entry => entry.lib === lib),
+      items: entries.filter(
+        entry => entry.lib === lib && entry.id !== TYPOGRAPHY_ID,
+      ),
     }))
     .filter(group => group.items.length > 0)
     .map(group => ({
@@ -647,6 +1070,17 @@ const buildSidebarItems = ({
       })),
     }));
   return [
+    ...(typography
+      ? [
+          {
+            id: TYPOGRAPHY_ID,
+            label: typography.label,
+            icon: TypeIcon,
+            isActive: selectedId === TYPOGRAPHY_ID,
+            onClick: () => onSelect(TYPOGRAPHY_ID),
+          },
+        ]
+      : []),
     {
       id: OVERVIEW_ID,
       label: OVERVIEW_LABEL,
@@ -664,30 +1098,33 @@ const buildSidebarItems = ({
   ];
 };
 
-type BuildSettingsGroupArgs = {
-  dark: boolean;
-  onToggleDark: () => void;
-};
-
-// Kept separate from buildSidebarItems - these are app-chrome toggles, not
-// browsable demo content.
-const buildSettingsGroup = ({
-  dark,
-  onToggleDark,
-}: BuildSettingsGroupArgs): SidebarCTA => ({
-  id: 'settings',
-  label: SETTINGS_LABEL.GROUP,
+// Kept separate from buildSidebarItems - app chrome, not browsable demo
+// content.
+const buildSettingsItem = ({
+  selectedId,
+  onSelect,
+}: Omit<BuildSidebarItemsArgs, 'entries'>): SidebarCTA => ({
+  id: SETTINGS_ID,
+  label: SETTINGS_LABEL,
   icon: SettingsIcon,
-  children: [
-    {
-      label: dark ? SETTINGS_LABEL.DARK_MODE_ON : SETTINGS_LABEL.DARK_MODE_OFF,
-      icon: dark ? Sun : Moon,
-      onClick: onToggleDark,
-    },
-  ],
+  isActive: selectedId === SETTINGS_ID,
+  onClick: () => onSelect(SETTINGS_ID),
 });
 
-const SandboxEntryFrame = ({ entry }: { entry: SandboxEntry }) => (
+const SandboxSettings = () => (
+  <div className="flex max-w-md flex-col gap-6">
+    <Heading size="7">{SETTINGS_LABEL}</Heading>
+    <ThemePreferenceControl fullWidth />
+  </div>
+);
+
+const SandboxEntryFrame = ({
+  entry,
+  onSelect,
+}: {
+  entry: SandboxEntry;
+  onSelect: (id: string) => void;
+}) => (
   <section className="flex flex-col gap-3">
     <header className="flex flex-col gap-1">
       <Heading size="5" className="block">
@@ -697,7 +1134,28 @@ const SandboxEntryFrame = ({ entry }: { entry: SandboxEntry }) => (
         {entry.description}
       </Text>
     </header>
-    <div className={ENTRY_STAGE_CLASS}>{entry.content}</div>
+    {BUILT_WITH[entry.id] && <hr className="border-border" />}
+    {BUILT_WITH[entry.id] && (
+      <section className="flex flex-col gap-2">
+        <Heading as="h2" size="3">
+          {ENTRY_SECTION_LABEL.BUILT_WITH}
+        </Heading>
+        <ButtonList
+          buttons={BUILT_WITH[entry.id].map(({ name, entryId }) => ({
+            label: name,
+            disabled: !entryId,
+            onClick: () => entryId && onSelect(entryId),
+          }))}
+        />
+      </section>
+    )}
+    {BUILT_WITH[entry.id] && <hr className="border-border" />}
+    <section className="flex flex-col gap-2">
+      <Heading as="h2" size="3">
+        {ENTRY_SECTION_LABEL.DEMO}
+      </Heading>
+      <div className={ENTRY_STAGE_CLASS}>{entry.content}</div>
+    </section>
   </section>
 );
 
@@ -724,7 +1182,7 @@ const SandboxOverview = ({ entries, onSelect }: SandboxOverviewProps) => {
         <SandboxOverviewSection
           key={lib}
           lib={lib}
-          entries={entries}
+          entries={entries.filter(entry => entry.id !== TYPOGRAPHY_ID)}
           onSelect={onSelect}
         />
       ))}
@@ -799,16 +1257,16 @@ interface SandboxBodyProps {
   siteName?: string;
   title?: string;
   subtitle?: string;
-  dark: boolean;
-  setDark: (v: boolean) => void;
-  showThemeToggle: boolean;
+  showSettings: boolean;
 }
 
 // Each entry lives at `/<entry id>` (e.g. `/crud-list`) so READMEs can link
 // straight to a component; `/` is the overview. Unknown paths fall back to the
 // overview because Cloudflare Pages serves index.html for them (no 404.html).
 const isSelectableId = (id: string | null): id is string =>
-  id === OVERVIEW_ID || ALL_ENTRIES.some(entry => entry.id === id);
+  id === OVERVIEW_ID ||
+  id === SETTINGS_ID ||
+  ALL_ENTRIES.some(entry => entry.id === id);
 
 const pathFor = (id: string) => (id === OVERVIEW_ID ? '/' : `/${id}`);
 
@@ -837,12 +1295,25 @@ const isPlainLeftClick = (event: MouseEvent<HTMLAnchorElement>) =>
   !event.shiftKey &&
   !event.altKey;
 
-const resolveSelection = (entries: SandboxEntry[], selectedId: string) => {
-  if (selectedId === OVERVIEW_ID) {
+const resolveSelection = (
+  entries: SandboxEntry[],
+  selectedId: string,
+  showSettings: boolean,
+) => {
+  if (selectedId === SETTINGS_ID && showSettings) {
+    return {
+      selectedEntry: undefined,
+      selectedLabel: SETTINGS_LABEL,
+      openGroupId: null,
+      isSettings: true,
+    };
+  }
+  if (selectedId === OVERVIEW_ID || selectedId === SETTINGS_ID) {
     return {
       selectedEntry: undefined,
       selectedLabel: OVERVIEW_LABEL,
       openGroupId: null,
+      isSettings: false,
     };
   }
   const entry = entries.find(e => e.id === selectedId) ?? entries[0];
@@ -850,6 +1321,7 @@ const resolveSelection = (entries: SandboxEntry[], selectedId: string) => {
     selectedEntry: entry,
     selectedLabel: entry.label,
     openGroupId: PACKAGE_SCOPE_GROUP_ID,
+    isSettings: false,
   };
 };
 
@@ -862,9 +1334,7 @@ const SandboxBody = ({
   siteName,
   title,
   subtitle,
-  dark,
-  setDark,
-  showThemeToggle,
+  showSettings,
 }: SandboxBodyProps) => {
   const { t: translateSandbox } = useSandboxTranslation();
   const entries = useMemo(
@@ -899,10 +1369,8 @@ const SandboxBody = ({
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  const { selectedEntry, selectedLabel, openGroupId } = resolveSelection(
-    entries,
-    selectedId,
-  );
+  const { selectedEntry, selectedLabel, openGroupId, isSettings } =
+    resolveSelection(entries, selectedId, showSettings);
 
   const selectId = (id: string) => {
     setSelectedId(id);
@@ -919,11 +1387,11 @@ const SandboxBody = ({
         selectedId,
         onSelect: selectId,
       }),
-      ...(showThemeToggle
-        ? [buildSettingsGroup({ dark, onToggleDark: () => setDark(!dark) })]
+      ...(showSettings
+        ? [buildSettingsItem({ selectedId, onSelect: selectId })]
         : []),
     ],
-    [entries, selectedId, dark, showThemeToggle, setDark],
+    [entries, selectedId, showSettings],
   );
 
   return (
@@ -958,8 +1426,10 @@ const SandboxBody = ({
               {subtitle}
             </Text>
           )}
-          {selectedEntry ? (
-            <SandboxEntryFrame entry={selectedEntry} />
+          {isSettings ? (
+            <SandboxSettings />
+          ) : selectedEntry ? (
+            <SandboxEntryFrame entry={selectedEntry} onSelect={selectId} />
           ) : (
             <SandboxOverview entries={entries} onSelect={selectId} />
           )}
@@ -969,43 +1439,19 @@ const SandboxBody = ({
   );
 };
 
-function ThemedSandbox({
-  title,
-  subtitle,
-  siteName,
-}: ComponentSandboxProps): ReactNode {
-  const { appearance, toggleTheme } = useTheme();
-  return (
-    <div className="w-full h-screen overflow-hidden">
-      <SandboxBody
-        siteName={siteName}
-        title={title}
-        subtitle={subtitle}
-        dark={appearance === 'dark'}
-        setDark={toggleTheme}
-        showThemeToggle
-      />
-    </div>
-  );
-}
-
 function ComponentSandboxContent({
   wrapInTheme = false,
   themeStorageKey,
   ...props
 }: ComponentSandboxProps): ReactNode {
-  const [dark, setDark] = useState(false);
   return wrapInTheme ? (
     <ThemeProvider storageKey={themeStorageKey}>
-      <ThemedSandbox {...props} />
+      <div className="w-full h-screen overflow-hidden">
+        <SandboxBody {...props} showSettings />
+      </div>
     </ThemeProvider>
   ) : (
-    <SandboxBody
-      {...props}
-      dark={dark}
-      setDark={setDark}
-      showThemeToggle={false}
-    />
+    <SandboxBody {...props} showSettings={false} />
   );
 }
 

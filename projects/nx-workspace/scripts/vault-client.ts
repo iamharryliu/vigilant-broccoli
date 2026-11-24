@@ -13,7 +13,7 @@ const CF_ACCESS_CLIENT_SECRET_HEADER = 'CF-Access-Client-Secret';
 
 export const VAULT_SECRET_PATH = 'kv/data/secrets';
 
-// CI reaches Vault at vault.harryliu.dev behind a Cloudflare Access service
+// CI reaches Vault at vault.vigilant-broccoli.app behind a Cloudflare Access service
 // token (VAULT_ADDR + CF_ACCESS_* env). Local runs default to the WireGuard
 // address with the self-signed CA.
 export async function createVaultClient() {

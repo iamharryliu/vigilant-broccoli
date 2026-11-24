@@ -3,7 +3,7 @@ repo: uptime
 
 sites:
   - name: staging-docs
-    url: https://staging-docs.vigilant-broccoli.app/
+    url: https://staging-docs.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-grind-75
@@ -12,6 +12,11 @@ sites:
     expectedStatusCodes: [302]
   - name: staging-context
     url: https://staging-context.vigilant-broccoli.app/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
+  # Pre-rename name kept so its Upptime history slug continues (project-overview).
+  - name: staging-pages-index
+    url: https://staging-projects.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-bookmarks
@@ -39,7 +44,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-findme
-    url: https://staging-findme.harryliu.dev/
+    url: https://staging-findme.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-hearth
@@ -47,7 +52,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-service-manager
-    url: https://staging-api.harryliu.dev/
+    url: https://staging-api.vigilant-broccoli.app/
   - name: staging-media-service
     url: https://staging-media-service.fly.dev/
   - name: staging-component-library
@@ -67,11 +72,11 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-whiteboard
-    url: https://staging-whiteboard.harryliu.dev/
+    url: https://staging-whiteboard.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-weather
-    url: https://staging-weather.harryliu.dev/
+    url: https://staging-weather.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-tasks
@@ -79,11 +84,11 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-balloono
-    url: https://staging-balloono.harryliu.dev/
+    url: https://staging-balloono.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-gravity-guy
-    url: https://staging-gravity-guy.harryliu.dev/
+    url: https://staging-gravity-guy.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-calendars
@@ -105,31 +110,31 @@ sites:
   - name: production-harryliu-dev-resume
     url: https://harryliu.dev/resume
   - name: production-git
-    url: https://git.harryliu.dev/
+    url: https://git.vigilant-broccoli.app/
   - name: production-code-server
-    url: https://code.harryliu.dev/login
+    url: https://code.vigilant-broccoli.app/login
   - name: production-web-terminal
-    url: https://shell.harryliu.dev/
+    url: https://shell.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-sandbox
-    url: https://sandbox.harryliu.dev/
+    url: https://sandbox.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-drive
     url: https://drive.harryliu.dev/
   - name: production-nx-cache
-    url: https://nx-cache.harryliu.dev/health
+    url: https://nx-cache.vigilant-broccoli.app/health
   - name: production-observability-vm
-    url: https://loki.harryliu.dev/health
+    url: https://loki.vigilant-broccoli.app/health
   - name: production-socket-server
-    url: https://socket.harryliu.dev/health
+    url: https://socket.vigilant-broccoli.app/health
   - name: production-findme
-    url: https://findme.harryliu.dev/
+    url: https://findme.vigilant-broccoli.app/
   - name: production-hearth
     url: https://hearth.harryliu.dev/login
   - name: production-service-manager
-    url: https://api.harryliu.dev/
+    url: https://api.vigilant-broccoli.app/
   - name: production-media-service
     url: https://production-media-service.fly.dev/
   - name: production-component-library
@@ -141,15 +146,15 @@ sites:
   - name: production-waiting-games
     url: https://waiting.vigilant-broccoli.app/
   - name: production-whiteboard
-    url: https://whiteboard.harryliu.dev/
+    url: https://whiteboard.vigilant-broccoli.app/
   - name: production-weather
-    url: https://weather.harryliu.dev/
+    url: https://weather.vigilant-broccoli.app/
   - name: production-tasks
     url: https://tasks.harryliu.dev/
   - name: production-balloono
-    url: https://balloono.harryliu.dev/
+    url: https://balloono.vigilant-broccoli.app/
   - name: production-gravity-guy
-    url: https://gravity-guy.harryliu.dev/
+    url: https://gravity-guy.vigilant-broccoli.app/
   - name: production-calendars
     url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile
@@ -161,17 +166,20 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-games
-    url: https://games.harryliu.dev/
+    url: https://games.vigilant-broccoli.app/
   - name: production-career
     url: https://career.harryliu.dev/
   - name: production-deployments
-    url: https://deployments.harryliu.dev/
+    url: https://deployments.vigilant-broccoli.app/
+  # Pre-rename name kept so its Upptime history slug continues (project-overview).
+  - name: production-pages-index
+    url: https://projects.vigilant-broccoli.app/
   - name: production-status
-    url: https://status.harryliu.dev/
+    url: https://status.vigilant-broccoli.app/
   - name: production-uptime
-    url: https://uptime.harryliu.dev/
+    url: https://uptime.vigilant-broccoli.app/
   - name: production-docs
-    url: https://docs.vigilant-broccoli.app/
+    url: https://docs.harryliu.dev/
   - name: production-grind-75
     url: https://grind-75.vigilant-broccoli.app/
   - name: production-context
@@ -188,10 +196,12 @@ sites:
     url: https://demo-job-hunt-next.vercel.app/
   - name: demo-office-presence-ui
     url: https://demo-office-presence-ui.pages.dev/
+  - name: demo-office-presence-service
+    url: https://demo-office-presence-service.fly.dev/
 
 user-agent: upptime-vigilant-broccoli
 status-website:
-  cname: uptime.harryliu.dev
+  cname: uptime.vigilant-broccoli.app
   name: Harry Liu Status
 
 skipDescriptionUpdate: true

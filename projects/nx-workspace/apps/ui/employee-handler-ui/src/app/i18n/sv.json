@@ -14,8 +14,6 @@
     "AUTH_CALLBACK": "Loggar in"
   },
   "SIDEBAR": {
-    "LIGHT_MODE": "Ljust läge",
-    "DARK_MODE": "Mörkt läge",
     "LOGOUT": "Logga ut"
   },
   "SETTINGS": {
@@ -27,6 +25,16 @@
       "OPTION": {
         "EN": "Engelska",
         "SV": "Svenska"
+      }
+    },
+    "THEME": {
+      "TITLE": "Tema",
+      "DESCRIPTION": "Följ systemets utseende eller välj ljust eller mörkt.",
+      "LABEL": "Tema",
+      "OPTION": {
+        "SYSTEM": "System",
+        "LIGHT": "Ljust",
+        "DARK": "Mörkt"
       }
     }
   },

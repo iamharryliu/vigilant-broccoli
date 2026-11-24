@@ -23,12 +23,16 @@ import {
   CalendarEventFormData,
 } from './calendar/components/CalendarEventForm';
 import { WhiteboardEditor } from './whiteboard/components/WhiteboardEditor';
-import { ListTodo, PenLine } from 'lucide-react';
+import {
+  Calendar as CalendarIcon,
+  ListTodo,
+  LucideIcon,
+  PenLine,
+} from 'lucide-react';
 import { TaskList } from './components/TaskList';
 import { PAGE_TITLES, usePageTitle } from '../lib/page-title';
 import { PAGE_BODY_HEIGHT_CLASS, PAGE_PADDING_CLASS } from '../lib/page-layout';
-import { useMobileView } from '../lib/use-mobile-view';
-import { ROUTES } from '../lib/routes';
+import { useMobileReady } from '../lib/use-mobile-view';
 import { useAuthHeader, useJsonAuthHeaders } from './hooks/use-auth-headers';
 
 type ModalState =
@@ -40,10 +44,21 @@ const EVENTS_ENDPOINT = '/api/calendar/events';
 
 const WHITEBOARD_TAB = 'whiteboard';
 const TASKS_TAB = 'tasks';
-const TABS = [WHITEBOARD_TAB, TASKS_TAB];
+const CALENDAR_TAB = 'calendar';
+// The first tab is the default. Desktop keeps the calendar beside the tabs;
+// mobile folds it in as a tab so the page fits one column.
+const DESKTOP_TABS = [WHITEBOARD_TAB, TASKS_TAB];
+const MOBILE_TABS = [TASKS_TAB, WHITEBOARD_TAB, CALENDAR_TAB];
+const TAB_LABELS: Record<string, { label: string; Icon: LucideIcon }> = {
+  [WHITEBOARD_TAB]: { label: 'Whiteboard', Icon: PenLine },
+  [TASKS_TAB]: { label: 'Tasks', Icon: ListTodo },
+  [CALENDAR_TAB]: { label: 'Calendar', Icon: CalendarIcon },
+};
+// Separate keys so a mobile-only Calendar choice never lands on desktop.
 const TAB_STORAGE_KEY = 'home:active-tab';
+const MOBILE_TAB_STORAGE_KEY = 'home:mobile-active-tab';
 
-function HomeDashboard() {
+function HomeDashboard({ isMobile }: { isMobile: boolean }) {
   usePageTitle(PAGE_TITLES.HOME);
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
@@ -53,16 +68,18 @@ function HomeDashboard() {
     null,
   );
 
-  const [activeTab, setActiveTab] = useState(WHITEBOARD_TAB);
+  const tabs = isMobile ? MOBILE_TABS : DESKTOP_TABS;
+  const tabStorageKey = isMobile ? MOBILE_TAB_STORAGE_KEY : TAB_STORAGE_KEY;
+  const [activeTab, setActiveTab] = useState(tabs[0]);
 
   useEffect(() => {
-    const stored = localStorage.getItem(TAB_STORAGE_KEY);
-    if (stored && TABS.includes(stored)) setActiveTab(stored);
-  }, []);
+    const stored = localStorage.getItem(tabStorageKey);
+    if (stored && tabs.includes(stored)) setActiveTab(stored);
+  }, [tabs, tabStorageKey]);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    localStorage.setItem(TAB_STORAGE_KEY, value);
+    localStorage.setItem(tabStorageKey, value);
   };
 
   const token = session?.access_token ?? '';
@@ -132,6 +149,18 @@ function HomeDashboard() {
     fetchEvents();
   };
 
+  const calendar = (
+    <CalendarView
+      events={events}
+      onSelectSlot={(start, end, allDay) =>
+        setModal({ type: 'create', start, end, allDay })
+      }
+      onEventClick={event => setModal({ type: 'edit', event })}
+      onEventDrop={handleEventDrop}
+      onRangeChange={(start, end) => setRange({ start, end })}
+    />
+  );
+
   return (
     <div className={PAGE_PADDING_CLASS}>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -141,14 +170,15 @@ function HomeDashboard() {
           className={cn('flex min-h-0 flex-col', PAGE_BODY_HEIGHT_CLASS)}
         >
           <TabsList className="self-start">
-            <TabsTrigger value={WHITEBOARD_TAB} className="gap-2">
-              <PenLine size={16} />
-              Whiteboard
-            </TabsTrigger>
-            <TabsTrigger value={TASKS_TAB} className="gap-2">
-              <ListTodo size={16} />
-              Tasks
-            </TabsTrigger>
+            {tabs.map(tab => {
+              const { label, Icon } = TAB_LABELS[tab];
+              return (
+                <TabsTrigger key={tab} value={tab} className="gap-2">
+                  <Icon size={16} />
+                  {label}
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
 
           <TabsContent
@@ -167,25 +197,24 @@ function HomeDashboard() {
 
           <TabsContent
             value={TASKS_TAB}
-            className="mt-3 min-h-0 flex-1 overflow-y-auto"
+            className="mt-3 min-h-0 flex-1 flex-col data-[state=active]:flex"
           >
-            <CardContainer title="Tasks">
+            <CardContainer fill>
               <TaskList />
             </CardContainer>
           </TabsContent>
+
+          {isMobile && (
+            <TabsContent
+              value={CALENDAR_TAB}
+              className="mt-3 min-h-0 flex-1 overflow-y-auto"
+            >
+              {calendar}
+            </TabsContent>
+          )}
         </Tabs>
 
-        <div>
-          <CalendarView
-            events={events}
-            onSelectSlot={(start, end, allDay) =>
-              setModal({ type: 'create', start, end, allDay })
-            }
-            onEventClick={event => setModal({ type: 'edit', event })}
-            onEventDrop={handleEventDrop}
-            onRangeChange={(start, end) => setRange({ start, end })}
-          />
-        </div>
+        {!isMobile && <div>{calendar}</div>}
       </div>
 
       <Dialog
@@ -249,7 +278,7 @@ function HomeDashboard() {
 }
 
 export default function HomePage() {
-  const { ready, MobileView } = useMobileView(ROUTES.HOME);
+  const { ready, isMobile } = useMobileReady();
   if (!ready) return null;
-  return MobileView ? <MobileView /> : <HomeDashboard />;
+  return <HomeDashboard isMobile={isMobile} />;
 }

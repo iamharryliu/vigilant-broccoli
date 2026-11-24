@@ -5,6 +5,7 @@ Private OpenAI chatbot for the owner, gated by Vercel Authentication.
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 - [Environment](#environment)
 
 ## Stack
@@ -26,8 +27,11 @@ Private OpenAI chatbot for the owner, gated by Vercel Authentication.
 - Cloud services
   - OpenAI - chat completions and embeddings
   - Supabase - knowledge base vector search
-  - VB Express - text-to-speech of replies and speech-to-text fallback
   - Vercel - Vercel Authentication
+
+## App Dependencies
+
+- [VB Express](../../api/vb-express) - calls
 
 ## Environment
 

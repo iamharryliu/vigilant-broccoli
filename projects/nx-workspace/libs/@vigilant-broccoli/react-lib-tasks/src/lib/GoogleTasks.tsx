@@ -21,10 +21,10 @@ import {
   Button,
   Card,
   CardSkeleton,
-  CheckList,
-  CheckListItem,
   GoogleSigninButton,
+  ListHeader,
   Select,
+  SortSelect,
   Skeleton,
   SpeechToTextToggleButton,
   Text,
@@ -32,6 +32,11 @@ import {
   useRefetchOnFocus,
   useSpeechToText,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CheckList,
+  CheckListItem,
+  CheckListPanel,
+} from '@vigilant-broccoli/react-lib-checklist';
 
 const TASKS_ENDPOINT = '/api/tasks';
 const TASKS_LISTS_ENDPOINT = '/api/tasks/lists';
@@ -531,27 +536,24 @@ const TaskHeader = memo(
 
     return (
       <div className="flex flex-col gap-3">
-        <div className="flex justify-between items-center">
-          {taskListsLoading ? (
-            <div className="animate-pulse bg-muted h-8 w-32 rounded" />
-          ) : (
-            <Text size="5" weight="bold">
-              {selectedTaskList?.title ?? TASKS_TITLE}
-            </Text>
-          )}
-          <div className="flex gap-2 items-center">
-            <Text size="2" color="gray">
-              Sort:
-            </Text>
-            <Select
-              value={sortMode}
-              onValueChange={onSortChange}
-              options={SORT_MODE_OPTIONS}
-              displayMapper={SORT_MODE_LABELS}
-              placeholder="Sort by..."
-            />
-          </div>
-        </div>
+        <ListHeader
+          title={
+            taskListsLoading ? (
+              <div className="animate-pulse bg-muted h-8 w-32 rounded" />
+            ) : (
+              <Text size="5" weight="bold">
+                {selectedTaskList?.title ?? TASKS_TITLE}
+              </Text>
+            )
+          }
+        >
+          <SortSelect
+            value={sortMode}
+            onValueChange={onSortChange}
+            options={SORT_MODE_OPTIONS}
+            labels={SORT_MODE_LABELS}
+          />
+        </ListHeader>
         {showSelector && taskLists.length > 0 && (
           <div className="flex gap-2 items-center">
             <Select
@@ -1138,71 +1140,73 @@ export const GoogleTasksComponent = ({
   const isDragDropEnabled = sortMode === SORT_MODE.DEFAULT;
 
   const body = (
-    <div className="flex flex-col gap-3 p-4 h-full">
-      <TaskHeader
-        taskLists={taskLists}
-        selectedTaskListId={taskListId}
-        onTaskListChange={handleTaskListChange}
-        sortMode={sortMode}
-        onSortChange={handleSortChange}
-        showSelector={showSelector && !propTaskListId}
-        taskListsLoading={taskListsLoading}
-      />
+    <CheckListPanel
+      className="gap-3 p-4 h-full"
+      bodyClassName="px-2 -mx-2"
+      header={
+        <>
+          <TaskHeader
+            taskLists={taskLists}
+            selectedTaskListId={taskListId}
+            onTaskListChange={handleTaskListChange}
+            sortMode={sortMode}
+            onSortChange={handleSortChange}
+            showSelector={showSelector && !propTaskListId}
+            taskListsLoading={taskListsLoading}
+          />
 
-      <AddTaskForm
-        showAddTask={showAddTask}
-        newTaskTitle={newTaskTitle}
-        onTitleChange={setNewTaskTitle}
-        onSubmit={handleCreateTask}
-        onCancel={handleCancelAddTask}
-        onShowForm={() => setShowAddTask(true)}
-        isLoading={isCreatingTask}
-        showVoiceInput={enableVoiceInput}
-        voiceRecording={voiceRecording}
-        voiceProcessing={voiceProcessing}
-        voiceError={voiceError}
-        onVoiceToggle={toggleVoice}
-        extraActions={addTaskActions}
+          <AddTaskForm
+            showAddTask={showAddTask}
+            newTaskTitle={newTaskTitle}
+            onTitleChange={setNewTaskTitle}
+            onSubmit={handleCreateTask}
+            onCancel={handleCancelAddTask}
+            onShowForm={() => setShowAddTask(true)}
+            isLoading={isCreatingTask}
+            showVoiceInput={enableVoiceInput}
+            voiceRecording={voiceRecording}
+            voiceProcessing={voiceProcessing}
+            voiceError={voiceError}
+            onVoiceToggle={toggleVoice}
+            extraActions={addTaskActions}
+          />
+        </>
+      }
+    >
+      <CheckList
+        items={checklistItems}
+        loading={loading}
+        error={error}
+        editingItemId={editingTaskId}
+        editingItemTitle={editingTaskTitle}
+        onToggleCheck={handleToggleCheck}
+        onStartEdit={handleStartEdit}
+        onEditChange={handleEditChange}
+        onSaveEdit={handleSaveEdit}
+        onCancelEdit={handleCancelEdit}
+        enableDragDrop={isDragDropEnabled || enableDragDrop}
+        listId={taskListId}
+        dragOverItem={dragOverTask}
+        emptyLabel="No tasks to display"
+        onDeleteItem={handleDeleteItem}
+        renderItemAccessory={renderItemAccessory}
+        renderItemMeta={renderItemMeta}
+        itemClassName={itemClassName}
+        completedLoading={completedLoading}
+        completedHint={
+          hasOlderCompleted ? getCompletedHint(completedLoadedSince) : undefined
+        }
+        completedFooter={
+          !hasOlderCompleted || loading || completedLoading ? undefined : (
+            <OlderCompletedLoader
+              loading={loadingOlderCompleted}
+              failed={olderCompletedFailed}
+              onLoad={loadOlderCompleted}
+            />
+          )
+        }
       />
-
-      <div className="flex-1 overflow-y-auto min-h-0 px-2 -mx-2">
-        <CheckList
-          items={checklistItems}
-          loading={loading}
-          error={error}
-          editingItemId={editingTaskId}
-          editingItemTitle={editingTaskTitle}
-          onToggleCheck={handleToggleCheck}
-          onStartEdit={handleStartEdit}
-          onEditChange={handleEditChange}
-          onSaveEdit={handleSaveEdit}
-          onCancelEdit={handleCancelEdit}
-          enableDragDrop={isDragDropEnabled || enableDragDrop}
-          listId={taskListId}
-          dragOverItem={dragOverTask}
-          emptyLabel="No tasks to display"
-          onDeleteItem={handleDeleteItem}
-          renderItemAccessory={renderItemAccessory}
-          renderItemMeta={renderItemMeta}
-          itemClassName={itemClassName}
-          completedLoading={completedLoading}
-          completedHint={
-            hasOlderCompleted
-              ? getCompletedHint(completedLoadedSince)
-              : undefined
-          }
-          completedFooter={
-            !hasOlderCompleted || loading || completedLoading ? undefined : (
-              <OlderCompletedLoader
-                loading={loadingOlderCompleted}
-                failed={olderCompletedFailed}
-                onLoad={loadOlderCompleted}
-              />
-            )
-          }
-        />
-      </div>
-    </div>
+    </CheckListPanel>
   );
 
   const content = wrapInCard ? (

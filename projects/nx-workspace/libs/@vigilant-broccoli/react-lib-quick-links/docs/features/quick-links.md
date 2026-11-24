@@ -1,6 +1,6 @@
 # Quick Links
 
-Searchable, grouped link launcher. `QuickLinksDialog` wraps `QuickLinksPanel` in a modal; the panel maps `QuickLink[]` onto `react-lib-higher-level`'s [`SearchableList`](../../../react-lib-higher-level/docs/features/searchable-list.md), which owns search, keyboard navigation and views.
+Searchable, grouped link launcher. `QuickLinksDialog` wraps `QuickLinksPanel` in a modal; the panel maps `QuickLink[]` onto `entry-directory`'s [`EntryDirectory`](../../../entry-directory/docs/features/entry-directory.md), which owns search, keyboard navigation and views.
 
 ## QuickLinksPanel
 

@@ -2,26 +2,22 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, Moon, Sun } from 'lucide-react';
-import { useTheme } from '@vigilant-broccoli/react-lib';
+import { LogOut } from 'lucide-react';
 import {
   Sidebar as SharedSidebar,
   SidebarCTA,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/sidebar';
 import { getSupabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
 import { NAV_LINKS } from '../app.consts';
 import { useTranslation } from '../i18n';
 
-const DARK = 'dark';
 const SIDEBAR_POSITION = 'fixed top-0 left-0 bottom-0 z-30';
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { t } = useTranslation();
-  const { appearance, toggleTheme } = useTheme();
   const { isDemo } = useAuth();
-  const isDark = appearance === DARK;
 
   const navItems: SidebarCTA[] = NAV_LINKS.map(({ labelKey, href, icon }) => ({
     label: t(labelKey),
@@ -29,12 +25,6 @@ export default function Sidebar() {
     icon,
     isActive: pathname.startsWith(href),
   }));
-
-  const themeItem: SidebarCTA = {
-    label: isDark ? t('SIDEBAR.LIGHT_MODE') : t('SIDEBAR.DARK_MODE'),
-    icon: isDark ? Sun : Moon,
-    onClick: toggleTheme,
-  };
 
   const logoutItem: SidebarCTA = {
     label: t('SIDEBAR.LOGOUT'),
@@ -46,9 +36,7 @@ export default function Sidebar() {
   };
 
   // Demo visitors never signed in, so there is no session to log out of.
-  const items = isDemo
-    ? [...navItems, themeItem]
-    : [...navItems, themeItem, logoutItem];
+  const items = isDemo ? navItems : [...navItems, logoutItem];
 
   return (
     <SharedSidebar

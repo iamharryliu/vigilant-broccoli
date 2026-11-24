@@ -16,7 +16,7 @@ if [ -z "${TF_TOKEN_app_terraform_io:-}" ] && [ -z "$TF_TOKEN" ]; then
   exit 1
 fi
 
-VAULT_URL="https://vault.harryliu.dev"
+VAULT_URL="https://vault.vigilant-broccoli.app"
 VAULT_TIMEOUT_SECONDS=5
 
 gcp_secret() {

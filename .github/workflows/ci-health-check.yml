@@ -117,7 +117,7 @@ jobs:
           http_check "staging-weather-next" "https://staging-weather-next.vercel.app/" 302
           http_check "staging-tasks-next" "https://staging-tasks-next.vercel.app/" 302
           http_check "staging-gravity-guy" "https://staging-gravity-guy.vercel.app/" 302
-          http_check "production-gravity-guy" "https://gravity-guy.harryliu.dev/"
+          http_check "production-gravity-guy" "https://gravity-guy.vigilant-broccoli.app/"
           http_check "staging-calendars" "https://staging-calendars.pages.dev" 302
           http_check "staging-photography-react" "https://staging-photography-react.pages.dev" 302
 
@@ -135,7 +135,7 @@ jobs:
           HEALTH=$(curl -s \
             -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
             -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}" \
-            https://vault.harryliu.dev/v1/sys/health) || HEALTH=""
+            https://vault.vigilant-broccoli.app/v1/sys/health) || HEALTH=""
           if [ -n "$HEALTH" ]; then
             SEALED=$(echo "$HEALTH" | jq -r '.sealed')
             INITIALIZED=$(echo "$HEALTH" | jq -r '.initialized')
@@ -159,7 +159,7 @@ jobs:
           GITEA_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
             -H "CF-Access-Client-Id: ${GITEA_CF_ACCESS_CLIENT_ID}" \
             -H "CF-Access-Client-Secret: ${GITEA_CF_ACCESS_CLIENT_SECRET}" \
-            "https://git.harryliu.dev/api/healthz" 2>/dev/null) || GITEA_CODE="timeout"
+            "https://git.vigilant-broccoli.app/api/healthz" 2>/dev/null) || GITEA_CODE="timeout"
           if [ "$GITEA_CODE" = "200" ]; then
             check "gitea" "ok"
           elif [ "$GITEA_CODE" = "302" ]; then
@@ -179,7 +179,7 @@ jobs:
           CODE_SERVER_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
             -H "CF-Access-Client-Id: ${CODE_SERVER_CF_ACCESS_CLIENT_ID}" \
             -H "CF-Access-Client-Secret: ${CODE_SERVER_CF_ACCESS_CLIENT_SECRET}" \
-            "https://code.harryliu.dev/healthz" 2>/dev/null) || CODE_SERVER_CODE="timeout"
+            "https://code.vigilant-broccoli.app/healthz" 2>/dev/null) || CODE_SERVER_CODE="timeout"
           if [ "$CODE_SERVER_CODE" = "200" ]; then
             check "code-server" "ok"
           elif [ "$CODE_SERVER_CODE" = "302" ]; then

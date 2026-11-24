@@ -1,6 +1,6 @@
 ---
 name: local-create-pr-url-audit
-description: In vigilant-broccoli, verify every public URL has synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo, and every published Docker image its pages-index card and README Containers row, and fix drift.
+description: In vigilant-broccoli, verify every public URL has synchronized Upptime entries, project-overview cards and browser quick links for every environment and demo, and every published Docker image its project-overview card and README Containers row, and fix drift.
 ---
 
 Use the current vigilant-broccoli Git root. Outside this repo, ask which checkout to use; never default to the skill installation checkout.
@@ -11,11 +11,11 @@ Audit [public URL registration](../../../../docs/app-development/app-development
 
 - Public URLs: every app with a `deploy`, `deploy:production` or `deploy:demo` target in `project.json` (Cloudflare Pages, Vercel, Fly, GitHub Pages) plus self-hosted services, with each environment's URL and each demo-only deploy. Private services (no public URL, e.g. PM2-on-VM, RabbitMQ) are exempt and covered by `ci-health-check`.
 - Published Docker images: every `iamharryliu/*` image a `project.json` target or `.github/workflows/*.yml` pushes (the set `scripts/node/repo-stats.mjs` counts).
-- Registries: `.upptimerc.yml` `sites` (staging-/production-/demo- names), `apps/ui/pages-index` `WebApplicationsPage.tsx` cards with their i18n keys, and `OPEN_TYPE.BROWSER` entries in `libs/@vigilant-broccoli/public-links/src/lib/quick-links.consts.ts` (URL literals in `infrastructure/src/lib/app.consts.ts` or `monitoring.consts.ts`); for images, `apps/ui/pages-index/src/app/consts/dockerImages.json` (which renders the Docker page cards and `/docker/:image` READMEs) with its `DOCKER_IMAGES_PAGE.*.DESCRIPTION` i18n keys, and the root README `## Containers` table.
+- Registries: `.upptimerc.yml` `sites` (staging-/production-/demo- names), `apps/ui/project-overview` `WebApplicationsPage.tsx` cards with their i18n keys, and `OPEN_TYPE.BROWSER` entries in `libs/@vigilant-broccoli/public-links/src/lib/quick-links.consts.ts` (URL literals in `infrastructure/src/lib/app.consts.ts` or `monitoring.consts.ts`); for images, `apps/ui/project-overview/src/app/consts/dockerImages.json` (which renders the Docker page cards and `/docker/:image` READMEs) with its `DOCKER_IMAGES_PAGE.*.DESCRIPTION` i18n keys, and the root README `## Containers` table.
 
 ## Checks
 
-- Every public URL and environment has an Upptime entry, a pages-index card (with i18n keys in every locale) and a browser quick link.
+- Every public URL and environment has an Upptime entry, a project-overview card (with i18n keys in every locale) and a browser quick link.
 - Every `.upptimerc.yml` site has a matching quick link, including non-proxied `*.pages.dev`/`*.vercel.app`/`fly.dev` and health endpoints.
 - No registry entry points at an app, environment or URL that no longer exists.
 - The `repo-stats` application count matches the `WebApplicationsPage.tsx` cards; run `pnpm repo-stats` after card changes.

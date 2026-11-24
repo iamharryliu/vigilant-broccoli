@@ -7,6 +7,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import {
   compressForLlm,
+  createThumbnail,
   IMAGE_PROFILE,
   ImageProfile,
   MIME_TYPE_JPEG,
@@ -75,6 +76,21 @@ const mediaRoutes: FastifyPluginAsync = async app => {
     MEDIA_SERVICE_ENDPOINT.WHERE_IS_IMAGE,
     MEDIA_SERVICE_ENDPOINT.WHERE_IS_LLM_IMAGE,
     IMAGE_PROFILE.WHERE_IS,
+  );
+
+  app.post(
+    `/${MEDIA_SERVICE_ENDPOINT.WHERE_IS_THUMBNAIL}`,
+    withFile(async (file, reply) =>
+      reply
+        .header(CONTENT_TYPE_HEADER, MIME_TYPE_JPEG)
+        .send(
+          await createThumbnail(
+            file.buffer,
+            file.mimeType,
+            IMAGE_PROFILE.WHERE_IS,
+          ),
+        ),
+    ),
   );
 
   app.post(

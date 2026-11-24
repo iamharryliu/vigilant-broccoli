@@ -5,6 +5,7 @@ The Cloud8 Toronto skating community site.
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 
 ## Stack
 
@@ -20,9 +21,13 @@ The Cloud8 Toronto skating community site.
   - `common-js`
   - `@harry/personal`
   - `react-lib`
-  - `react-lib-higher-level`
+  - `sidebar`
 - Cloud services
   - Google Analytics
   - Google Calendar
   - Google reCAPTCHA
   - Sanity
+
+## App Dependencies
+
+- [VB Express](../../api/vb-express) - calls

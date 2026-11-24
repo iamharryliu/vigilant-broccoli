@@ -5,6 +5,7 @@ Management dashboard with calendar, notepad and quick links home tabs.
 ## Table of Contents
 
 - [Stack](#stack)
+- [App Dependencies](#app-dependencies)
 - [Environment](#environment)
 
 ## Stack
@@ -51,6 +52,7 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - `realtime`
   - `resume`
   - `security-news`
+  - `sidebar`
   - `storage`
 - Cloud services
   - Cloudflare R2
@@ -63,6 +65,23 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - OpenWeatherMap
   - Stripe
   - Supabase
+
+## App Dependencies
+
+- [Cloud Services Next](../cloud-services-next) - embeds
+- [Context MD](../context-md) - embeds
+- [Docs MD](../docs-md) - embeds
+- [Job Hunt](../job-hunt-next) - embeds
+- [Local Services Next](../local-services-next) - embeds
+- [Music Next](../music-next) - embeds
+- [Personal Website (React)](../personal-website-react) - embeds
+- [Project Overview](../project-overview) - embeds
+- [Socket Server (Socket.IO)](../../socket-server-socketio) - calls
+- [Tasks](../tasks-next) - embeds
+- [Text Tools UI](../text-tools-ui) - embeds
+- [Utilities UI](../utilities-ui) - embeds
+- [VB Express](../../api/vb-express) - calls
+- [Weather](../weather-next) - embeds
 
 ## Environment
 
