@@ -1,10 +1,14 @@
-# Stir Fry Recipes
+# Stir Fry
 
 ## Table of Contents
 
-- [Technique](#technique)
+- [General Guidelines](#general-guidelines)
+  - [Tips](#tips)
+- [Sauces](#sauces)
+  - [Sauce Ingredients](#sauce-ingredients)
+  - [Sauce Recipes](#sauce-recipes)
+- [Toppings](#toppings)
 - [Vegetable Choices](#vegetable-choices)
-- [Flavor Bases](#flavor-bases)
 - [Recipe 1](#recipe-1)
   - [Ingredients](#ingredients)
   - [References](#references)
@@ -14,20 +18,56 @@
   - [References](#references-1)
 - [References](#references-2)
 
-## Technique
+## General Guidelines
 
-- Prep
-  - Pat the vegetables dry — surface water steams instead of searing.
-  - Preheat the pan until it just smokes, then add a high-smoke-point oil (peanut, canola, avocado — not olive or butter).
-- Cook
-  - Use high heat throughout, and don't crowd the pan — cook in batches and combine at the end.
-  - Cook stems first, then leaves.
-  - Add salt once vegetables have cooked down, then add garlic — garlic and ginger burn in about 30 seconds at wok heat, so they go in late, not with the oil.
-  - Deglaze with Shaoxing wine poured down the side of the pan, not into the middle, so it vaporizes instead of cooling the food.
-- Finish
-  - Stir fry sauce: oyster sauce, soy sauce.
-  - Add a cornstarch slurry off the heat or on low, stirred into simmering liquid — in a ripping-hot pan it clumps.
-  - Finish off the heat with sesame oil, scallions, or vinegar — heat kills their aroma.
+- Prep before cooking
+  - Mise en place: stir frying moves too fast to chop, measure or mix sauce mid-cook.
+  - Cut pieces to a uniform size so they cook evenly; cut denser vegetables smaller.
+  - Mix the sauce in a bowl beforehand and add it all at once.
+- Cooking
+  - Heat the pan on high, then add the oil and swirl it around to coat the surface.
+  - Add the base aromatics, such as minced garlic and thinly sliced scallion whites.
+  - Add salt once vegetables have cooked down.
+  - Keep the sauce light to avoid pooling.
+
+### Tips
+
+- Don't crowd the pan — cook in batches and combine at the end.
+- Leafy plants: cook the stems first, then the leaves.
+- Deglaze with Shaoxing wine poured down the side of the pan, not into the middle, so it vaporizes instead of cooling the food.
+- Cornstarch slurry thickens a watery sauce into a glaze; mix with cold water and stir in once the sauce simmers.
+
+## Sauces
+
+### Sauce Ingredients
+
+| Ingredient | Role |
+| --- | --- |
+| Chilli oil | Heat and aroma |
+| Cornstarch | Thickens the sauce so it glazes instead of pooling |
+| Dark soy sauce | Deep color and mild sweetness; less salty than soy sauce |
+| Fish sauce | Salty, savory depth |
+| MSG | Umami boost |
+| Oyster sauce | Savory-sweet body and gloss |
+| Salt | Seasoning |
+| Sesame oil | Nutty aroma; add off the heat |
+| Soy sauce | Salt and umami |
+| Sugar | Balances saltiness |
+| White pepper | Mild, earthy heat |
+
+### Sauce Recipes
+
+| Sauce | Aromatics | Ingredients |
+| --- | --- | --- |
+| Garlic stir fry | Fry garlic for 15s | ¼ tsp salt, ¼ tsp sugar, ½ tsp cornstarch, sprinkle of MSG |
+
+## Toppings
+
+| Topping | When to add |
+| --- | --- |
+| Scallions | Off the heat — heat kills their aroma |
+| Sesame oil | Off the heat — heat kills its aroma |
+| Vinegar | Off the heat — heat kills its aroma |
 
 ## Vegetable Choices
 
@@ -39,12 +79,6 @@ See [Density Order](../ingredients/vegetables.md#-density-order-densest--most-te
 | Soft / moisture-heavy | Cabbage, mushrooms, yellow squash |
 | Tender but crisp | Green beans, snap peas |
 | Topping | Garlic, ginger, scallions |
-
-## Flavor Bases
-
-| Style | Aromatics | Sauce |
-| --- | --- | --- |
-| Garlic stir fry | Fry garlic for 15s | ¼ tsp salt, ¼ tsp sugar, ½ tsp cornstarch, sprinkle of MSG |
 
 ## Recipe 1
 
@@ -102,3 +136,4 @@ See [Density Order](../ingredients/vegetables.md#-density-order-densest--most-te
 ## References
 
 - [How to Stir Fry Any Vegetable - Three Basic Flavors and Recipes (蒜蓉炒西兰花/姜汁炒芥兰/虾酱炒通心菜)](https://www.youtube.com/watch?v=a-Yu8qOAEYQ)
+- [Home style fried noodles so delicious and satisfying. Simple, quick, and packed with taste](https://www.youtube.com/watch?v=5ef97NoiAHI)
