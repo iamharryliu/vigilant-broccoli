@@ -88,6 +88,12 @@
       "@vigilant-broccoli/react-lib-tasks/google-tasks-server": [
         "./libs/@vigilant-broccoli/react-lib-tasks/src/lib/google-tasks.server.ts"
       ],
+      "@vigilant-broccoli/react-lib-tasks/recurrence": [
+        "./libs/@vigilant-broccoli/react-lib-tasks/src/lib/recurrence.ts"
+      ],
+      "@vigilant-broccoli/react-lib-tasks/task-schedule-fields": [
+        "./libs/@vigilant-broccoli/react-lib-tasks/src/lib/TaskScheduleFields.tsx"
+      ],
       "@vigilant-broccoli/chatbot": [
         "./libs/@vigilant-broccoli/chatbot/src/index.ts"
       ],

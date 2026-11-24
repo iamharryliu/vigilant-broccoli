@@ -13,14 +13,13 @@ import {
   Textarea,
 } from '@vigilant-broccoli/react-lib';
 import { JSON_CONTENT_TYPE } from '@vigilant-broccoli/common-js';
-import { TaskScheduleFields } from './TaskScheduleFields';
 import {
   ALL_DAYS,
-  RecurringTask,
   describeDays,
   isDaily,
-  toDefaultTask,
-} from './tasks.utils';
+} from '@vigilant-broccoli/react-lib-tasks/recurrence';
+import { TaskScheduleFields } from '@vigilant-broccoli/react-lib-tasks/task-schedule-fields';
+import { RecurringTask, toDefaultTask } from './tasks.utils';
 
 const RECURRING_TASKS_FILENAME = 'recurring-tasks.json';
 
@@ -31,10 +30,13 @@ const EMPTY_DRAFT: TaskDraft = {
   title: '',
   days: ALL_DAYS,
   monthlyNth: null,
+  monthlyDates: null,
 };
 
-const isValidSchedule = ({ days, monthlyNth }: TaskDraft) =>
-  days.length > 0 && (!monthlyNth || monthlyNth.length > 0);
+const isValidSchedule = ({ days, monthlyNth, monthlyDates }: TaskDraft) =>
+  monthlyDates
+    ? monthlyDates.length > 0
+    : days.length > 0 && (!monthlyNth || monthlyNth.length > 0);
 
 type Props = {
   open: boolean;

@@ -10,6 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### hearth
 
+- Recurring tasks can repeat on chosen days of the month (such as the 1st and 15th, with the 29th-31st landing on a short month's last day) as well as every week or on chosen weekdays of the month. The schedule picker is regrouped as Every week, Weekday of month and Date of month with weekday presets, round chips, and a calendar and next-occurrence summary that show the schedule before saving ([#1767](https://github.com/iamharryliu/vigilant-broccoli/pull/1767)).
 - Sidebar search opens a dialog from the Search row or the `/` key and fuzzy-matches every page, with nested pages showing their parent group ([#1744](https://github.com/iamharryliu/vigilant-broccoli/pull/1744)).
 - Grocery items show a store-section badge (produce, dairy, meat and so on, matched from the item's name) and a Sort select beside the list title, on the Grocery page and in Kitchen Planner, can order the list by section, which turns drag-reordering off ([#1740](https://github.com/iamharryliu/vigilant-broccoli/pull/1740)).
 - Where Is shows a storage area's photos as a shuffled stack you page through, moves the added date to the bottom of the details, drops the description from list rows and adds View details, with icons, to each row's menu ([#1733](https://github.com/iamharryliu/vigilant-broccoli/pull/1733)).
@@ -130,6 +131,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- New `Calendar`, a shadcn-style month calendar over `react-day-picker` that needs no stylesheet import and can highlight days without being selectable, and `ToggleChipGroup`, a multi-select group of round toggle buttons (circle, oval or an N-column grid), with demos in the component library ([#1767](https://github.com/iamharryliu/vigilant-broccoli/pull/1767)).
 - Corner radius and fonts are now themeable like colors: setting `--radius`, `--font-sans` or `--font-mono` on a `ThemeScope` or `ThemeProvider` `style` restyles buttons, selects, menus, cards and text across the scope; the defaults look the same as before ([#1730](https://github.com/iamharryliu/vigilant-broccoli/pull/1730)).
 - New `ListHeader` (a title with a trailing control on one row) and `SortSelect` (a "Sort:" label with a select), used by Google Tasks and Hearth's grocery list, with a demo in the component library ([#1740](https://github.com/iamharryliu/vigilant-broccoli/pull/1740)).
 - `EllipsisCTA` actions accept an `icon`, and the default Update and Delete entries show a pencil and a trash can ([#1733](https://github.com/iamharryliu/vigilant-broccoli/pull/1733)).
@@ -143,6 +145,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### component-library
 
+- New Calendar, Toggle Chip Group and Task Schedule Fields pages; the recurring-schedule picker now lives in `react-lib-tasks` ([#1767](https://github.com/iamharryliu/vigilant-broccoli/pull/1767)).
 - Every shared component now has a page, including new chatbot and file-explorer groups, and Button List, Icon Button, Input, Textarea and Toggle Group are split into their own pages. Each page has a Demo section and, for composed components, a Built with button list that opens the pages of the components it uses. Typography moved to the top of the sidebar, above Components, and the Theme Preference Control has its own page ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680), [#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
 - Checklist rows support drag reorder, animated completion and a standard ellipsis menu with confirmed delete ([#1587](https://github.com/iamharryliu/vigilant-broccoli/pull/1587), [#1607](https://github.com/iamharryliu/vigilant-broccoli/pull/1607)).
 - FileExplorer gained file previews, image thumbnails, multi-select, a right-click menu, keyboard navigation and a modal image and PDF viewer ([#1514](https://github.com/iamharryliu/vigilant-broccoli/pull/1514), [#1520](https://github.com/iamharryliu/vigilant-broccoli/pull/1520), [#1530](https://github.com/iamharryliu/vigilant-broccoli/pull/1530), [#1562](https://github.com/iamharryliu/vigilant-broccoli/pull/1562)).

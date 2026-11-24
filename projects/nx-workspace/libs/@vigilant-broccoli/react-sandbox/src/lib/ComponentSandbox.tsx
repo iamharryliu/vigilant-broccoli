@@ -81,6 +81,8 @@ import {
   SignOutButtonDemo,
   SpeechToTextToggleButtonDemo,
   ThemePreferenceControlDemo,
+  CalendarDemo,
+  ToggleChipGroupDemo,
   ToggleGroupDemo,
   UpptimeStatusListDemo,
 } from './demos/ReactLibExtrasDemo';
@@ -142,6 +144,7 @@ import { MobileHomeDemo } from './demos/MobileHomeDemo';
 import { NotepadDemo } from './demos/NotepadDemo';
 import { QuickLinksDemo } from './demos/QuickLinksDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
+import { TaskScheduleFieldsDemo } from './demos/TaskScheduleFieldsDemo';
 import { TasksDemo } from './demos/TasksDemo';
 
 const CRUD_STORAGE_KEYS = {
@@ -492,6 +495,22 @@ const ALL_ENTRIES: SandboxEntry[] = [
     content: <TabsDemo />,
   },
   {
+    id: 'calendar',
+    label: 'Calendar',
+    description:
+      'shadcn-style month calendar over react-day-picker, selectable or display-only with highlighted days.',
+    lib: LIB.REACT_LIB,
+    content: <CalendarDemo />,
+  },
+  {
+    id: 'toggle-chip-group',
+    label: 'Toggle Chip Group',
+    description:
+      'Multi-select round toggle buttons (circle, oval or an N-column grid) for picking several values such as weekdays or dates.',
+    lib: LIB.REACT_LIB,
+    content: <ToggleChipGroupDemo />,
+  },
+  {
     id: 'toggle-group',
     label: 'Toggle Group',
     description:
@@ -645,6 +664,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Runs the shared tasks component against an in-memory tasks API with simulated latency. Voice input calls the mocked transcription and parse endpoints.',
     lib: LIB.TASKS,
     content: <TasksDemo />,
+  },
+  {
+    id: 'task-schedule-fields',
+    label: 'Task Schedule Fields',
+    description:
+      'Recurrence picker: every week, weekday of the month or date of the month, with presets and a calendar that highlights the matching days.',
+    lib: LIB.TASKS,
+    content: <TaskScheduleFieldsDemo />,
   },
   {
     id: 'timer',

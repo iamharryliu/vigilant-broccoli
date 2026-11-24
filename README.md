@@ -205,7 +205,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/react-lib-crud-list](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-crud-list) | Generic create, update and delete list with its form dialog. | `type:domain` |
 | [@vigilant-broccoli/react-lib-higher-level](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-higher-level) | Composite React components such as the notepad and the chat room. | `type:higher-level` |
 | [@vigilant-broccoli/react-lib-quick-links](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-quick-links) | Searchable quick-link panel and dialog with favorites. | `type:higher-level` |
-| [@vigilant-broccoli/react-lib-tasks](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-tasks) | Google Tasks list, task capture dialog and the shared `/api/tasks` route handlers. | `type:domain` |
+| [@vigilant-broccoli/react-lib-tasks](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-tasks) | Google Tasks list, task capture dialog, the shared `/api/tasks` route handlers and the recurring-schedule picker. | `type:domain` |
 | [@vigilant-broccoli/react-lib-media](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-media) | Audio, image and GitHub Actions badge display components. | `type:domain` |
 | [@vigilant-broccoli/react-music-lib](./projects/nx-workspace/libs/@vigilant-broccoli/react-music-lib) | Metronome component. | `type:higher-level` |
 | [@vigilant-broccoli/react-sandbox](./projects/nx-workspace/libs/@vigilant-broccoli/react-sandbox) | Component sandbox and demos for the component library. | `type:higher-level` |
