@@ -7,6 +7,7 @@
 - Development
   - [Software Lifecycle](./general/software-lifecycle.md)
     - [Environment Strategies](./general/environment-strategies.md)
+  - [Software Methodologies](./general/software-methodologies.md)
   - [Software Architecture](./general/software-architecture.md)
     - [CQRS and Event-Driven Architecture](./general/cqrs-and-event-driven-architecture.md)
     - [Software Design Patterns](./general/software-design-patterns.md)

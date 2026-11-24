@@ -114,5 +114,6 @@ The practical consequence is that unattended, high-volume agent loops are cheap 
 
 ## References
 
+- [Agentic Workflow Orchestration](./agentic-workflow-orchestration.md) — session flow from task to dispatched solve, PR review and iterations
 - [Codex](./codex.md) — commands, `config.toml`, sandbox modes
 - [LLM Chat Services](../llm-chat-services.md) — the chat products these subscriptions also cover

@@ -259,6 +259,7 @@ REQUEST_TYPES --> PARAMETERS
 | Analytics | Tracks user behavior to understand how the product is used. |
 | Cache | In-memory store for fast reads and rate limiting, such as Redis or Memcached. |
 | SEO | Search engine optimization: makes pages easier for search engines to find and rank. |
+| UI/UX Polish | Refines usability and visual feel, such as loading states and accessibility. |
 
 ## Environments
 
