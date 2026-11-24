@@ -249,6 +249,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - Every nightly backup (repo, Gitea, MongoDB, Supabase) is now written to both Google Cloud Storage and a private Cloudflare R2 bucket, each pruned to the last 7, and the weekly restore check verifies freshness and restores from both copies ([#1728](https://github.com/iamharryliu/vigilant-broccoli/pull/1728)).
 
+### cron-prune-orphaned-services
+
+- The orphaned services report in the job summary and the `chore/orphaned-services-todo-*` PR body is now a single provider and orphans table, or "No orphaned services.", instead of run details and full live lists (PR: pending).
+
 ### agent-sandbox
 
 - Agent runs no longer fail at start-up when GitHub rate-limits the shared runner address: the firewall's GitHub meta fetch is authenticated and fails fast when it errors, and any reply from api.github.com counts as reachable ([#1630](https://github.com/iamharryliu/vigilant-broccoli/pull/1630), [#1720](https://github.com/iamharryliu/vigilant-broccoli/pull/1720)).
