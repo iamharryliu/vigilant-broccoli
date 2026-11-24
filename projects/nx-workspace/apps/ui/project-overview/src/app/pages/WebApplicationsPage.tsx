@@ -46,9 +46,9 @@ type TranslationKey = Parameters<ReturnType<typeof useTranslation>['t']>[0];
 
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
-const FALLBACK_ICON: LucideIcon = Globe;
+export const FALLBACK_ICON: LucideIcon = Globe;
 
-const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
+export const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   balloono: Gamepad2,
   games: Gamepad2,
   bookmarks: Bookmark,
