@@ -183,3 +183,28 @@ jobs:
       environment: production
       skip_pages: true
     secrets: inherit
+
+  # These sites deploy from their own workflows, whose push triggers only reach
+  # staging, so a release dispatches their production deploys from main too.
+  # Skipped when main moved during the release: the newer commit's release
+  # dispatches them, and dispatching now would ship that unverified commit.
+  deploy-production-sites:
+    needs: deploy-production
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      VERIFIED_SHA: ${{ github.event.client_payload.commit_sha || github.sha }}
+    steps:
+      - name: Dispatch production deploys of the separately deployed sites
+        run: |
+          main_sha=$(gh api "repos/${GH_REPO}/commits/main" --jq .sha)
+          if [ "$main_sha" != "$VERIFIED_SHA" ]; then
+            echo "::notice::main moved from ${VERIFIED_SHA} to ${main_sha}; the newer release dispatches these sites."
+            exit 0
+          fi
+          for workflow in deploy-docs-md deploy-context-md deploy-grind-75-react; do
+            gh workflow run "${workflow}.yml" --ref main -f environment=production
+            echo "Dispatched ${workflow} (production)"
+          done
