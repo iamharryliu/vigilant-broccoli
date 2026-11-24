@@ -51,7 +51,7 @@ The container is stateless and runs as a non-root user; users, sessions and API 
 | Routes | Needs |
 | --- | --- |
 | `/api/auth/*`, `/api/admin/api-keys` | Postgres; Google sign-in needs OAuth. |
-| `/api/storage` | bucket-service |
+| `/api/public/photography/*`, `/api/storage` | bucket-service |
 | `/api/calendar`, `/api/chat`, `/api/llm`, `/api/price-tracker`, `/api/recipe`, `/api/tasks/parse-image`, `/api/voice-list`, `/api/where-is` | llm-service |
 | `/api/messaging`, `POST /contact/send-message` | email-service, Twilio, reCAPTCHA (contact form only) |
 | `/api/public/event-calendars` | Supabase |
