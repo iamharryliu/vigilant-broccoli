@@ -12,6 +12,7 @@
 - [Job Hunt](./job-hunt.md)
 - [Job Hunt Workflow](./job-hunt-workflow.md)
 - [Interviewer Prep](./interviewer-prep.md)
+- [Work Arrangements](./work-arrangements.md)
 
 ## Job Boards
 
