@@ -7,7 +7,9 @@ import {
   RECURRING_TASKS_TABLE,
   badRequest,
   isValidMonthlyDates,
+  isValidAnnualDate,
   isValidMonthlyNth,
+  isValidOnceDate,
   serverError,
   toRecurringTask,
 } from '../../../../lib/tasks-route';
@@ -20,11 +22,17 @@ const INVALID_MONTHLY_NTH =
 const INVALID_MONTHLY_DATES =
   'monthlyDates must be null or a non-empty array of 1-31';
 
+const INVALID_ONCE_DATE = 'onceDate must be null or a YYYY-MM-DD date';
+
+const INVALID_ANNUAL_DATE = 'annualDate must be null or a valid MM-DD date';
+
 const UPDATABLE_COLUMNS = {
   title: 'title',
   days: 'days',
   monthlyNth: 'monthly_nth',
   monthlyDates: 'monthly_dates',
+  onceDate: 'once_date',
+  annualDate: 'annual_date',
   assignedUserId: 'assigned_user_id',
 };
 
@@ -52,12 +60,16 @@ export const POST = async (req: NextRequest) => {
     days,
     monthlyNth = null,
     monthlyDates = null,
+    onceDate = null,
+    annualDate = null,
   } = await req.json();
   if (!homeId || !title || !Array.isArray(days))
     return badRequest('homeId, title and days are required');
   if (!isValidMonthlyNth(monthlyNth)) return badRequest(INVALID_MONTHLY_NTH);
   if (!isValidMonthlyDates(monthlyDates))
     return badRequest(INVALID_MONTHLY_DATES);
+  if (!isValidOnceDate(onceDate)) return badRequest(INVALID_ONCE_DATE);
+  if (!isValidAnnualDate(annualDate)) return badRequest(INVALID_ANNUAL_DATE);
 
   // New tasks land above every existing one.
   const { data: firstTask, error: positionError } = await supabase
@@ -77,6 +89,8 @@ export const POST = async (req: NextRequest) => {
       days,
       monthly_nth: monthlyNth,
       monthly_dates: monthlyDates,
+      once_date: onceDate,
+      annual_date: annualDate,
       position: (firstTask?.position ?? 1) - 1,
     })
     .select()
@@ -109,6 +123,10 @@ export const PATCH = async (req: NextRequest) => {
     !isValidMonthlyDates(body.monthlyDates)
   )
     return badRequest(INVALID_MONTHLY_DATES);
+  if (body.onceDate !== undefined && !isValidOnceDate(body.onceDate))
+    return badRequest(INVALID_ONCE_DATE);
+  if (body.annualDate !== undefined && !isValidAnnualDate(body.annualDate))
+    return badRequest(INVALID_ANNUAL_DATE);
 
   const updates = {
     updated_at: new Date().toISOString(),

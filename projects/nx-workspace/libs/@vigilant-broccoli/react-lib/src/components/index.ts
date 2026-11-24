@@ -13,6 +13,7 @@ export * from './UserAvatar';
 export * from './TeamAvatar';
 export * from './MultiSelect';
 export * from './Calendar';
+export * from './DatePicker';
 export * from './CopyButton';
 export * from './DownloadButton';
 export * from './ContextMenu';

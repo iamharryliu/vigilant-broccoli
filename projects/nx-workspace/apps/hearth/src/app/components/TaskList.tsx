@@ -411,12 +411,22 @@ export function TaskList() {
     days,
     monthlyNth = null,
     monthlyDates = null,
+    onceDate = null,
+    annualDate = null,
   }: TaskDraft) => {
     if (id) {
       setTasks(prev =>
         prev.map(task =>
           task.id === id
-            ? { ...task, title, days, monthlyNth, monthlyDates }
+            ? {
+                ...task,
+                title,
+                days,
+                monthlyNth,
+                monthlyDates,
+                onceDate,
+                annualDate,
+              }
             : task,
         ),
       );
@@ -426,6 +436,8 @@ export function TaskList() {
         days,
         monthlyNth,
         monthlyDates,
+        onceDate,
+        annualDate,
       });
       return;
     }
@@ -436,6 +448,8 @@ export function TaskList() {
       days,
       monthlyNth,
       monthlyDates,
+      onceDate,
+      annualDate,
     });
     const created = await res.json();
     if (created?.id) setTasks(prev => [created, ...prev]);
