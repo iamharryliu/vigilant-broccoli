@@ -19,6 +19,10 @@ concurrency:
   group: deploy-release
   cancel-in-progress: false
 
+env:
+  # Lightweight tag on the commit production last shipped; deploy.yml diffs from it.
+  PRODUCTION_TAG: production-deployed
+
 jobs:
   verify-staging:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true' && github.event.client_payload.environment == 'staging') }}
@@ -159,7 +163,18 @@ jobs:
     timeout-minutes: 5
     outputs:
       held: ${{ steps.hold.outputs.held }}
+      production_base: ${{ steps.base.outputs.sha }}
     steps:
+      # Empty when the tag does not exist yet, so deploy.yml deploys everything.
+      - name: Find the commit production last shipped
+        id: base
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(gh api "repos/${{ github.repository }}/git/ref/tags/${PRODUCTION_TAG}" --jq .object.sha 2>/dev/null || true)
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+          echo "Production base: ${sha:-none (full deploy)}"
+
       - name: Check for a release hold
         id: hold
         if: ${{ github.event_name != 'workflow_dispatch' }}
@@ -182,4 +197,27 @@ jobs:
     with:
       environment: production
       skip_pages: true
+      production_base: ${{ needs.check-hold.outputs.production_base }}
     secrets: inherit
+
+  # Only a successful release moves the tag, so a failed or partial production
+  # deploy is retried from the older base next time. Other production paths
+  # (a manual deploy dispatch, ci-rotate-secrets) leave it, which only widens
+  # the next release's diff.
+  tag-production:
+    needs: deploy-production
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASED_SHA: ${{ github.event.client_payload.commit_sha || github.sha }}
+    steps:
+      - name: Move the production tag to the released commit
+        run: |
+          if gh api "repos/${GH_REPO}/git/ref/tags/${PRODUCTION_TAG}" > /dev/null 2>&1; then
+            gh api -X PATCH "repos/${GH_REPO}/git/refs/tags/${PRODUCTION_TAG}" -f sha="$RELEASED_SHA" -F force=true > /dev/null
+          else
+            gh api -X POST "repos/${GH_REPO}/git/refs" -f ref="refs/tags/${PRODUCTION_TAG}" -f sha="$RELEASED_SHA" > /dev/null
+          fi
+          echo "${PRODUCTION_TAG} -> ${RELEASED_SHA}"

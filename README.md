@@ -138,7 +138,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | Preview | Pull request touching `projects/nx-workspace/**` or docs/agent context; previews of closed PRs are swept daily | Affected `deploy:preview` targets, as Cloudflare Pages `pr-<number>` branches | `deploy-preview`, `cron-cleanup-preview-deployments` |
 | Staging | Push to `main` touching `projects/nx-workspace/**`, or docs/agent context (Agent Context), `notes/**` (Docs MD) or `projects/grind-75/**` (Grind 75); manual dispatch (defaults to staging) | Affected `deploy` targets (all of them on dispatch), plus Agent Context, Docs MD and Grind 75 when their sources change, plus Project Overview on GitHub Pages | `deploy`, `manual-deploy-app` |
 | Demo | Successful staging deploy; manual dispatch | Every `deploy:demo` target | `deploy-demo-apps`, `manual-deploy-app` |
-| Production | Verified staging deploy (`deploy-release`); manual dispatch with `environment: production` | Every `deploy:production` target, plus npm package publishing | `deploy-release`, `deploy`, `manual-deploy-app` |
+| Production | Verified staging deploy (`deploy-release`); manual dispatch with `environment: production` | `deploy:production` targets changed since the last release (every one on a manual `deploy` dispatch, a first release or a `deploy.yml` change), plus npm package publishing | `deploy-release`, `deploy`, `manual-deploy-app` |
 
 ## Containers
 

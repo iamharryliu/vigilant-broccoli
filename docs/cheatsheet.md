@@ -232,6 +232,9 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   gh:actions:replace-code-server  Trigger code-server VM replace workflow
   gh:actions:refresh-code-server-github-token  Mint a 1-hour GitHub App token and drop it on the code-server VM
   gh:actions:security-cloudflare-access  Trigger Cloudflare Access security check workflow
+  gh:release:hold             Hold every production release (set RELEASE_HOLD=true)
+  gh:release:hold-pr          Hold one PR's release: pnpm gh:release:hold-pr <number> (adds release-hold)
+  gh:release:unhold           Resume automatic releases (delete RELEASE_HOLD); release held work with gh:actions:release
 
 🔍 AUDIT
   audit                       Run vulnerability audit tree

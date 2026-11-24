@@ -33,6 +33,10 @@ on:
         description: 'Skip the GitHub Pages deploy — set by callers that invoke this workflow more than once per run, since the pages artifact name is unique per run, not per call'
         type: boolean
         default: false
+      production_base:
+        description: 'Commit production last shipped; a production run then deploys only what changed since it instead of every deploy:production target'
+        type: string
+        default: ''
 
 permissions:
   actions: read
@@ -207,7 +211,19 @@ jobs:
         working-directory: ./projects/nx-workspace
         env:
           RENDER_LLM_STAGING_ENABLED: ${{ vars.RENDER_LLM_STAGING_ENABLED }}
+          PRODUCTION_BASE: ${{ inputs.production_base }}
         run: |
+          # nx-set-shas tracks the last successful run on main, which staging
+          # pushes keep moving, so production diffs from the commit deploy-release
+          # last shipped instead. Without a base that is an ancestor of this
+          # commit (manual dispatch, secret rotation, first release) production
+          # deploys every target.
+          PRODUCTION_AFFECTED=false
+          if [[ "$DEPLOY_ENVIRONMENT" == "production" && -n "$PRODUCTION_BASE" ]] && git merge-base --is-ancestor "$PRODUCTION_BASE" "$NX_HEAD" 2>/dev/null; then
+            NX_BASE="$PRODUCTION_BASE"
+            PRODUCTION_AFFECTED=true
+          fi
+
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
 
@@ -221,7 +237,7 @@ jobs:
             RUN_TARGETS="deploy,deploy:render"
           fi
 
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_ENVIRONMENT" == "production" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
+          if [[ "$DEPLOY_YML_CHANGED" -gt 0 ]] || { [[ "$PRODUCTION_AFFECTED" != true ]] && [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_ENVIRONMENT" == "production" ]]; }; then
             ALL_COMMA=$(pnpm exec nx show projects --withTarget=$DEPLOY_TARGET | tr '\n' ',' | sed 's/,$//')
             echo "has_deployments=true" >> $GITHUB_OUTPUT
             echo "projects=$ALL_COMMA" >> $GITHUB_OUTPUT
