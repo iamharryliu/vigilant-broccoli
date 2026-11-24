@@ -199,7 +199,12 @@
   },
   "SKILLS": {
     "MINE": "My skills",
-    "GRAPH": "Graph"
+    "GRAPH": "Graph",
+    "GLOSSARY": "Glossary"
+  },
+  "SKILLS_GLOSSARY": {
+    "SKILL": "Skill",
+    "DESCRIPTION": "Description"
   },
   "MY_SKILLS": {
     "OWNED": "Skills owned",

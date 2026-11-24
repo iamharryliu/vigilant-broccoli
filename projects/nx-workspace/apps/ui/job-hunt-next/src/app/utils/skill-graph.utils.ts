@@ -58,6 +58,7 @@ const SKILL_GROUPS: Record<string, string[]> = {
     'Dynamics 365 & Power Platform',
     'Integration platforms',
     'Microsoft 365',
+    'NetSuite',
     'Salesforce',
     'WordPress',
   ],

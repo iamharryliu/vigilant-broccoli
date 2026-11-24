@@ -41,6 +41,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### job-hunt-next
 
+- Skills gets a Glossary tab that lists every skill with a short description, and NetSuite joins the tracked skills (PR: pending).
 - Skills groups split AI into LLM frameworks, Machine learning and a smaller AI group, add Game development, and track PyTorch, TensorFlow, LangChain, LangGraph, MATLAB, Gradle, Unity, Unreal Engine, Salesforce and WordPress, with AWS CDK, CloudFormation and Argo CD matching their existing skills ([#1759](https://github.com/iamharryliu/vigilant-broccoli/pull/1759)).
 - Matches gets a Filters dialog (match level, hide internships or graduate roles, the spoken languages you speak), archiving and Mark as applied from each card's ellipsis menu with a separate Archived section, clickable skill badges that list the postings naming them, and a broader skill vocabulary with grouped skills. A new Skills page under Career profile shows your coverage by skill group and a skills graph, and Notes can preview its markdown ([#1754](https://github.com/iamharryliu/vigilant-broccoli/pull/1754)).
 - A sidebar search (the Search row or `/`) finds any page, Applications can be cleared with one confirmed action and shows long dates such as November 21, 2026, Matches writes a brief for each new posting (summary, level, location, work mode, Swedish requirement, must-haves and an alphabetical abbreviations table), and a new Workflow page shows the job hunt diagram ([#1749](https://github.com/iamharryliu/vigilant-broccoli/pull/1749)).
