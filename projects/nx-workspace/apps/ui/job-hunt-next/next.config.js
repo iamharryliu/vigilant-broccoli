@@ -5,10 +5,7 @@ const { composePlugins, withNx } = require('@nx/next');
 // The Job Hunt Workflow note the Workflow page renders, so the page and the
 // note cannot drift apart.
 const NOTES_DIR = join(__dirname, '../../../../../notes');
-const WORKFLOW_NOTE = join(
-  NOTES_DIR,
-  'life-skills/career/job-hunt-workflow.md',
-);
+const WORKFLOW_NOTE = join(NOTES_DIR, 'career/job-hunt-workflow.md');
 
 // Newer than the builtin list webpack knows, so it must be marked external.
 const SERVER_ONLY_EXTERNALS = ['node:sqlite'];

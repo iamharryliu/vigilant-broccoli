@@ -22,7 +22,7 @@
         {
           "env": "NEXT_PUBLIC_JOB_HUNT_DEMO"
         },
-        "{workspaceRoot}/notes/life-skills/career/job-hunt-workflow.md"
+        "{workspaceRoot}/notes/career/job-hunt-workflow.md"
       ],
       "outputs": [
         "{workspaceRoot}/dist/apps/ui/job-hunt-next/.next/!(cache)/**/*",
