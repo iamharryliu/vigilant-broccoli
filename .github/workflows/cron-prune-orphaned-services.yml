@@ -82,7 +82,6 @@ jobs:
           AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
           ACTION: ${{ steps.todo.outputs.action }}
           ORPHAN_TOTAL: ${{ steps.todo.outputs.orphan_total }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
           GH_TOKEN=$(bash infrastructure/agent-sandbox/mint-github-app-token.sh "$AGENT_GH_APP_ID" <(printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY"))
@@ -113,8 +112,6 @@ jobs:
             echo "Daily \`cron-prune-orphaned-services\` run ${ACTION} the TODO.md orphaned-services row (Type \`Chore\`)."
             echo
             cat "$RUNNER_TEMP/orphans.md"
-            echo
-            echo "[Workflow run](${RUN_URL})"
           } > "$RUNNER_TEMP/pr-body.md"
           gh pr create --title "$TITLE" --body-file "$RUNNER_TEMP/pr-body.md"
 
