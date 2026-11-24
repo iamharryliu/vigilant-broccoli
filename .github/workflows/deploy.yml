@@ -6,6 +6,15 @@ on:
     paths:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy.yml'
+      # Snapshot sources outside the nx workspace (see "Check if deployment
+      # needed"); keep in sync with each app's snapshot.config.json sources.
+      - 'notes/**'
+      - 'CONTEXT.md'
+      - 'TODO.md'
+      - 'docs/**'
+      - 'setup/dotfiles/agent-skills/**'
+      - '**/CONTEXT.md'
+      - 'projects/grind-75/**'
   workflow_dispatch:
     inputs:
       environment:
@@ -219,6 +228,19 @@ jobs:
             echo "deploy_cmd=pnpm exec nx run-many -t $RUN_TARGETS" >> $GITHUB_OUTPUT
           else
             AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=$DEPLOY_TARGET --base=$NX_BASE --head=$NX_HEAD | tr '\n' ',' | sed 's/,$//')
+            # These apps build a snapshot of files outside the nx workspace, so
+            # nx affected cannot see those files change; deploy-preview.yml
+            # maps the same paths for previews.
+            if echo "$CHANGED_FILES" | grep -qE "^(CONTEXT\.md|TODO\.md|docs/|setup/dotfiles/agent-skills/)|/CONTEXT\.md$"; then
+              AFFECTED_COMMA+=",context-md"
+            fi
+            if echo "$CHANGED_FILES" | grep -q "^notes/"; then
+              AFFECTED_COMMA+=",docs-md"
+            fi
+            if echo "$CHANGED_FILES" | grep -qE "^projects/grind-75/|^notes/tech/software/general/coding-challenges/grind-75-complexities\.md$"; then
+              AFFECTED_COMMA+=",grind-75-react"
+            fi
+            AFFECTED_COMMA=$(echo "$AFFECTED_COMMA" | tr ',' '\n' | sed '/^$/d' | sort -u | paste -sd, -)
             if [[ -n "$AFFECTED_COMMA" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
               echo "projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
