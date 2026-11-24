@@ -13,7 +13,6 @@
 ## Tips
 
 - Travel with a field jacket that has multiple accessible pockets.
-- Wireless headphone jack.
 - Easy shoes
 - Portable duffel bag.
 - Front open carry-on.
@@ -71,7 +70,7 @@
 ## Nice to have
 
 - Swimwear
-- **Comfort**
+- Comfort
   - Ear Plugs
   - Neck Pillow
   - Light Blanket

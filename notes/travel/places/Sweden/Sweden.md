@@ -20,6 +20,9 @@
   - [Swish](#swish)
 - [Leaning Swedish](#leaning-swedish)
 - [Souvenirs/Gifts](#souvenirsgifts)
+  - [Consumables](#consumables)
+  - [Kitchen](#kitchen)
+  - [Souvenirs](#souvenirs)
 - [Sustainability](#sustainability)
 - [Fun Facts](#fun-facts)
 
@@ -108,25 +111,35 @@
 
 ## Souvenirs/Gifts
 
-- Teaspinner from [Designtorget](https://designtorget.se/)
-- Souvenir shops
-  - Dala horse keychains/coasters/figurines
-- Kitchen
-  - butter knife
-  - cheese slicer
-  - Wettex wipes
-  - Swedish whisks
-- Consumables
-  - Chocolate from [Malmö Chokladfabrik](https://malmochokladfabrik.se/)
-  - candies
-  - Lund tea
-  - cloudberry/hjortron jam
-  - [Schysst Kebab Sauce] (https://schysstkak.se/het-kebabsas)
-  - Max Sauce
-  - [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
-  - Sommarblandning from [https://maps.app.goo.gl/kUKPZbcxV9pbmBLa7]
-  - [Nordic Gastronomy](https://nordgastro.com/)
-  - [A.C. Perchs Thehandel](https://perchs.dk/)
+### Consumables
+
+| Item | Where |
+| --- | --- |
+| [A.C. Perchs Thehandel](https://perchs.dk/) | Tea merchant. |
+| Candies |  |
+| Cloudberry/hjortron jam |  |
+| Lund tea |  |
+| Max Sauce |  |
+| [Nordic Gastronomy](https://nordgastro.com/) |  |
+| [Schysst Kebab Sauce](https://schysstkak.se/het-kebabsas) |  |
+| [Snus](https://sv.wikipedia.org/wiki/Snus) | Grocery and convenience stores. |
+| Sommarblandning | [Map](https://maps.app.goo.gl/kUKPZbcxV9pbmBLa7) |
+
+### Kitchen
+
+| Item | Where |
+| --- | --- |
+| Butter knife |  |
+| Cheese slicer |  |
+| Swedish whisks |  |
+| Wettex wipes/dishcloths | Grocery stores or [Clas Ohlson](https://www.clasohlson.com/se/). |
+
+### Souvenirs
+
+| Item | Where |
+| --- | --- |
+| Dala horse keychains/coasters/figurines | Souvenir shops. |
+| Tealight spinners | [Designtorget](https://designtorget.se/) |
 
 ## Sustainability
 

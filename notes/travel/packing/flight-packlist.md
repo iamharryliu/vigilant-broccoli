@@ -3,4 +3,4 @@
 - Passport
 - Animal passports
 - IDP
-- AUX cable
+- Bluetooth AUX receiver / AUX cable

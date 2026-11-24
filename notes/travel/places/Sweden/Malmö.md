@@ -105,7 +105,7 @@
 | [Granit](https://www.granit.com/) | Minimalist storage and home organisation. |
 | [Lagerhaus](https://www.lagerhaus.se/) | Interior decor, kitchenware, and gifts. |
 | [Åhléns](https://www.ahlens.se/) | Department store with a home and kitchen section. |
-| [Designtorget](https://designtorget.se/) | Swedish design objects and small homeware — see [Souvenirs/Gifts](#souvenirsgifts). |
+| [Designtorget](https://designtorget.se/) | Swedish design objects and small homeware. |
 | [Plantagen](https://www.plantagen.se/) | Plants, garden supplies, and pots. |
 | [Blomsterlandet](https://www.blomsterlandet.se/) | Garden centre and plant nursery. |
 
@@ -212,10 +212,8 @@
 
 ## Souvenirs/Gifts
 
-- Swedish candies
-- Chocolate from [Malmö Chokladfabrik](https://malmochokladfabrik.se/)
-- Tea from [Paloma Tea Company](https://palomateacompany.com/)
-- Coffee beans from [Lilla Kafferosteriet](https://shop.lillakafferosteriet.se/)
-- Swedish tealight spinners from [Designtorget](https://designtorget.se/)
-- Swedish dishcloths (Wettex) - available at grocery stores (see [Grocery](#grocery)) or [Clas Ohlson](https://www.clasohlson.com/se/)
-- Snus
+| Item | Where |
+| --- | --- |
+| Chocolate | [Malmö Chokladfabrik](https://malmochokladfabrik.se/) |
+| Coffee beans | [Lilla Kafferosteriet](https://shop.lillakafferosteriet.se/) |
+| Tea | [Paloma Tea Company](https://palomateacompany.com/) |

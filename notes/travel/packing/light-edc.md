@@ -1,7 +1,5 @@
 # Light EDC
 
-A minimal everyday carry that fits in a jacket pocket or the front pocket of a small bag — the things worth having on any outing without committing to a full [Travel Packlist](./packlist.md).
-
 ## Table of Contents
 
 - [Carry](#carry)
