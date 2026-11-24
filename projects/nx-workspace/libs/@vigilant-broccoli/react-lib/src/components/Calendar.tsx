@@ -54,11 +54,15 @@ export function Calendar({
         week: 'mt-1 flex w-full',
         // The highlight circle (`before:`) always exists, scaled to zero, so
         // selecting and deselecting a day can transition instead of popping.
-        day: 'relative isolate flex h-8 flex-1 items-center justify-center p-0 text-center text-sm transition-colors duration-200 select-none before:absolute before:top-1/2 before:left-1/2 before:-z-10 before:size-8 before:-translate-x-1/2 before:-translate-y-1/2 before:scale-0 before:rounded-full before:bg-primary before:opacity-0 before:transition-all before:duration-200 before:ease-out motion-reduce:transition-none motion-reduce:before:transition-none [&>button]:mx-auto [&>button]:size-8 [&>button]:cursor-pointer [&>button]:rounded-md [&>button]:p-0 [&>button]:font-normal [&>button]:hover:bg-accent [&>button]:hover:text-accent-foreground',
+        day: 'relative isolate flex h-8 flex-1 items-center justify-center p-0 text-center text-sm transition-colors duration-200 select-none before:absolute before:top-1/2 before:left-1/2 before:-z-10 before:size-8 before:-translate-x-1/2 before:-translate-y-1/2 before:scale-0 before:rounded-full before:bg-primary before:opacity-0 before:transition-all before:duration-200 before:ease-out motion-reduce:transition-none motion-reduce:before:transition-none [&>button]:mx-auto [&>button]:size-8 [&>button]:cursor-pointer [&>button]:rounded-full [&>button]:p-0 [&>button]:font-normal [&>button]:hover:bg-accent [&>button]:hover:text-accent-foreground',
         day_button: 'inline-flex items-center justify-center text-sm',
         selected:
           '[&>button]:bg-primary [&>button]:text-primary-foreground [&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground',
-        today: '[&>button]:border [&>button]:border-ring',
+        // A ring around today, drawn on the cell like the highlight because a
+        // display-only calendar renders no day button to border. It is a size
+        // larger than the circle so it still shows around a highlighted today.
+        today:
+          'after:pointer-events-none after:absolute after:top-1/2 after:left-1/2 after:size-9 after:-translate-x-1/2 after:-translate-y-1/2 after:rounded-full after:border after:border-foreground/70',
         outside: 'text-muted-foreground opacity-50',
         disabled: 'text-muted-foreground opacity-50',
         hidden: 'invisible',
