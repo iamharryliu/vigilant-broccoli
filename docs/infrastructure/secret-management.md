@@ -216,12 +216,13 @@ The Bitwarden master password is not stored anywhere: `backup-secrets.sh` prompt
 | --- | --- | --- |
 | Administration | Read and write | Repository settings, default branches, rulesets, vulnerability-alert enablement, allowed actions, and default workflow permissions |
 | Contents | Read and write | Creating and managing branch references |
+| Issues | Read and write | Managing repository labels (`release-hold`) |
 | Pages | Read and write | Managing vigilant-broccoli's GitHub Pages configuration |
 | Secrets | Read and write | Managing `GCP_SERVICE_ACCOUNT` and `GCP_WORKLOAD_IDENTITY_PROVIDER` repository secrets |
 | Variables | Read and write | Managing Upptime configuration and migration flags in both repositories |
 | Metadata | Read | Repository metadata; automatically included |
 
-GitHub documents these requirements for [administration operations](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens#repository-permissions-for-administration), [branch references](https://docs.github.com/en/rest/git/refs#create-a-reference), [Pages](https://docs.github.com/en/rest/pages/pages#update-information-about-a-github-pages-site), [secrets](https://docs.github.com/en/rest/actions/secrets#create-or-update-a-repository-secret), and [variables](https://docs.github.com/en/rest/actions/variables#create-a-repository-variable). The current resources do not require Actions, Workflows, Issues, Pull requests, Deployments, or account/organization permissions. Managing Actions settings uses Administration, while managing Actions variables uses Variables.
+GitHub documents these requirements for [administration operations](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens#repository-permissions-for-administration), [branch references](https://docs.github.com/en/rest/git/refs#create-a-reference), [labels](https://docs.github.com/en/rest/issues/labels#create-a-label), [Pages](https://docs.github.com/en/rest/pages/pages#update-information-about-a-github-pages-site), [secrets](https://docs.github.com/en/rest/actions/secrets#create-or-update-a-repository-secret), and [variables](https://docs.github.com/en/rest/actions/variables#create-a-repository-variable). The current resources do not require Actions, Workflows, Pull requests, Deployments, or account/organization permissions. Managing Actions settings uses Administration, while managing Actions variables uses Variables.
 
 Local `pnpm tf:*` commands load the token through `load-vault-tf-env.sh` (with its [Bitwarden fallback](#local-config-files)), exporting it as `GITHUB_TOKEN`. CI consumers `cron-terraform-drift.yml` and `manual-replace-code-server.yml` load it from Vault `kv/data/secrets` under the same environment variable; their Terraform operations add no further GitHub permissions. Workflow `permissions:` blocks govern the job's built-in token, not this PAT.
 
