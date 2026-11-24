@@ -12,6 +12,7 @@ export const TaskScheduleFieldsDemo = () => {
     days: ALL_DAYS,
     monthlyNth: null,
     monthlyDates: null,
+    onceDate: null,
   });
   return (
     <div className="flex max-w-md flex-col gap-3">

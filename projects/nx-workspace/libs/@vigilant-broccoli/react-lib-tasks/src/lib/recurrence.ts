@@ -13,6 +13,54 @@ export type TaskSchedule = {
    * task repeats by weekday.
    */
   monthlyDates?: number[] | null;
+  /**
+   * Local YYYY-MM-DD of a task that does not repeat, ignoring the other
+   * fields. Null or absent when the task repeats.
+   */
+  onceDate?: string | null;
+  /**
+   * Local MM-DD the task repeats on every year, ignoring the other fields;
+   * Feb 29 falls on Feb 28 in common years. Null or absent when it does not
+   * repeat annually.
+   */
+  annualDate?: string | null;
+};
+
+export const MONTH_LABELS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+/** Days a month can have, counting Feb 29. */
+export const getMaxDaysInMonth = (month: number) =>
+  new Date(2000, month, 0).getDate();
+
+export const toAnnualDate = (month: number, day: number) =>
+  `${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+export const fromAnnualDate = (annualDate: string) => {
+  const [month, day] = annualDate.split('-').map(Number);
+  return { month, day };
+};
+
+const pad = (n: number) => String(n).padStart(2, '0');
+
+export const toDateKey = (date: Date) =>
+  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+
+export const fromDateKey = (key: string) => {
+  const [year, month, day] = key.split('-').map(Number);
+  return new Date(year, month - 1, day);
 };
 
 export const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
@@ -46,19 +94,32 @@ export const LAST_DATE_OF_MONTH = 31;
 export const isEveryDay = (days: number[]) =>
   ALL_DAYS.every(day => days.includes(day));
 
-export const isDaily = ({ days, monthlyNth, monthlyDates }: TaskSchedule) =>
-  !monthlyNth && !monthlyDates && isEveryDay(days);
+export const isDaily = ({
+  days,
+  monthlyNth,
+  monthlyDates,
+  onceDate,
+  annualDate,
+}: TaskSchedule) =>
+  !monthlyNth && !monthlyDates && !onceDate && !annualDate && isEveryDay(days);
 
 const DAYS_PER_WEEK = 7;
+const MAX_NUMBERED_WEEK = 4;
 // Consecutive occurrences of one ordinal weekday are 28 or 35 days apart.
 const MAX_MONTHLY_GAP_DAYS = 5 * DAYS_PER_WEEK;
+const MAX_ANNUAL_GAP_DAYS = 366;
 
 /** Most days that can pass between two occurrences of the schedule. */
 export const getMaxOccurrenceGapDays = ({
   monthlyNth,
   monthlyDates,
+  annualDate,
 }: TaskSchedule) =>
-  monthlyNth || monthlyDates ? MAX_MONTHLY_GAP_DAYS : DAYS_PER_WEEK;
+  annualDate
+    ? MAX_ANNUAL_GAP_DAYS
+    : monthlyNth || monthlyDates
+      ? MAX_MONTHLY_GAP_DAYS
+      : DAYS_PER_WEEK;
 
 const getDaysInMonth = (date: Date) =>
   new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -68,17 +129,35 @@ const isInWeekOfMonth = (date: Date, nth: number) =>
     ? date.getDate() + DAYS_PER_WEEK > getDaysInMonth(date)
     : Math.ceil(date.getDate() / DAYS_PER_WEEK) === nth;
 
+/** The ordinal option a date falls in: 1st-4th, or Last for the fifth week. */
+export const getWeekOfMonthOrdinal = (date: Date) => {
+  const nth = Math.ceil(date.getDate() / DAYS_PER_WEEK);
+  return nth > MAX_NUMBERED_WEEK ? LAST_WEEK_OF_MONTH : nth;
+};
+
 const isOnMonthDate = (date: Date, monthDate: number) =>
   date.getDate() === Math.min(monthDate, getDaysInMonth(date));
 
+const isOnAnnualDate = (date: Date, annualDate: string) => {
+  const { month, day } = fromAnnualDate(annualDate);
+  return (
+    date.getMonth() + 1 === month &&
+    date.getDate() === Math.min(day, getDaysInMonth(date))
+  );
+};
+
 export const occursOn = (
-  { days, monthlyNth, monthlyDates }: TaskSchedule,
+  { days, monthlyNth, monthlyDates, onceDate, annualDate }: TaskSchedule,
   date: Date,
 ) =>
-  monthlyDates
-    ? monthlyDates.some(monthDate => isOnMonthDate(date, monthDate))
-    : days.includes(date.getDay()) &&
-      (!monthlyNth || monthlyNth.some(nth => isInWeekOfMonth(date, nth)));
+  onceDate
+    ? toDateKey(date) === onceDate
+    : annualDate
+      ? isOnAnnualDate(date, annualDate)
+      : monthlyDates
+        ? monthlyDates.some(monthDate => isOnMonthDate(date, monthDate))
+        : days.includes(date.getDay()) &&
+          (!monthlyNth || monthlyNth.some(nth => isInWeekOfMonth(date, nth)));
 
 // Every valid selection recurs within a year; two years leaves headroom.
 const MAX_PREVIEW_SCAN_DAYS = 731;
@@ -139,7 +218,14 @@ export const describeDays = ({
   days,
   monthlyNth,
   monthlyDates,
+  onceDate,
+  annualDate,
 }: TaskSchedule) => {
+  if (onceDate) return `Once on ${formatOccurrenceDate(fromDateKey(onceDate))}`;
+  if (annualDate) {
+    const { month, day } = fromAnnualDate(annualDate);
+    return `Every ${MONTH_LABELS[month - 1]} ${toOrdinalSuffix(day)}`;
+  }
   if (monthlyDates) {
     const dates = [...monthlyDates]
       .sort((a, b) => a - b)

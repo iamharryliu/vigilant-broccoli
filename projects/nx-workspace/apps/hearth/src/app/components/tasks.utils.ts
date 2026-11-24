@@ -48,11 +48,15 @@ export const toDefaultTask = ({
   days,
   monthlyNth,
   monthlyDates,
+  onceDate,
+  annualDate,
 }: RecurringTask): DefaultTask => ({
   title,
   days,
   ...(monthlyNth && { monthlyNth }),
   ...(monthlyDates && { monthlyDates }),
+  ...(onceDate && { onceDate }),
+  ...(annualDate && { annualDate }),
 });
 
 const fromYmd = (ymd: string) => {
@@ -78,6 +82,10 @@ export const getPendingOccurrenceDate = (
       (max, { date }) => (max === null || date > max ? date : max),
       null,
     );
+  // A one-time task stays pending from its date until completed, however
+  // long ago that date was; the scan below only looks back one repeat gap.
+  if (task.onceDate)
+    return !latest && task.onceDate <= toYmd(today) ? task.onceDate : null;
   const cursor = latest
     ? fromYmd(latest)
     : task.createdAt

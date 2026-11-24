@@ -3,6 +3,8 @@ import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   MONTHLY_ORDINALS,
   MONTH_DATES,
+  fromAnnualDate,
+  getMaxDaysInMonth,
 } from '@vigilant-broccoli/react-lib-tasks/recurrence';
 import { DefaultTask } from '../app/components/tasks.utils';
 
@@ -17,6 +19,8 @@ export const toRecurringTask = (row: Record<string, unknown>) => ({
   days: row.days,
   monthlyNth: row.monthly_nth ?? null,
   monthlyDates: row.monthly_dates ?? null,
+  onceDate: row.once_date ?? null,
+  annualDate: row.annual_date ?? null,
   position: row.position,
   homeId: row.home_id,
   createdAt: row.created_at,
@@ -36,6 +40,26 @@ export const isValidMonthlyDates = (value: unknown) =>
     value.length > 0 &&
     value.every(date => MONTH_DATES.includes(date)));
 
+const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+export const isValidOnceDate = (value: unknown) =>
+  value === null ||
+  (typeof value === 'string' &&
+    DATE_KEY_PATTERN.test(value) &&
+    !Number.isNaN(Date.parse(value)));
+
+const ANNUAL_DATE_PATTERN = /^\d{2}-\d{2}$/;
+
+export const isValidAnnualDate = (value: unknown) => {
+  if (value === null) return true;
+  if (typeof value !== 'string' || !ANNUAL_DATE_PATTERN.test(value))
+    return false;
+  const { month, day } = fromAnnualDate(value);
+  return (
+    month >= 1 && month <= 12 && day >= 1 && day <= getMaxDaysInMonth(month)
+  );
+};
+
 export const serverError = (message: string) =>
   Response.json(
     { error: message },
@@ -53,6 +77,8 @@ export const isValidImportedTask = (value: unknown): value is DefaultTask => {
     days,
     monthlyNth = null,
     monthlyDates = null,
+    onceDate = null,
+    annualDate = null,
   } = (value ?? {}) as DefaultTask;
   return (
     typeof title === 'string' &&
@@ -62,7 +88,11 @@ export const isValidImportedTask = (value: unknown): value is DefaultTask => {
     days.every(day => WEEKDAY_NUMBERS.includes(day)) &&
     isValidMonthlyNth(monthlyNth) &&
     isValidMonthlyDates(monthlyDates) &&
-    !(monthlyNth && monthlyDates)
+    isValidOnceDate(onceDate) &&
+    !(monthlyNth && monthlyDates) &&
+    isValidAnnualDate(annualDate) &&
+    !(onceDate && (monthlyNth || monthlyDates)) &&
+    !(annualDate && (onceDate || monthlyNth || monthlyDates))
   );
 };
 
@@ -86,13 +116,18 @@ export const importRecurringTasks = async (
   const importedTitles = new Set(tasks.map(({ title }) => title));
 
   const imported = tasks.map(
-    ({ title, days, monthlyNth, monthlyDates }, position) => ({
+    (
+      { title, days, monthlyNth, monthlyDates, onceDate, annualDate },
+      position,
+    ) => ({
       id: idByTitle.get(title),
       title,
       row: {
         days,
         monthly_nth: monthlyNth ?? null,
         monthly_dates: monthlyDates ?? null,
+        once_date: onceDate ?? null,
+        annual_date: annualDate ?? null,
         position,
         archived_at: null,
       },

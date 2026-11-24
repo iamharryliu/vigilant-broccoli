@@ -10,6 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### hearth
 
+- The recurring-task schedule is one Repeat select: Does not repeat (the default, a single date that stays pending until completed), Daily, Weekdays, Weekends, Every week, Weekday of month, Date of month and Annually (a month and day each year, with Feb 29 landing on Feb 28 in common years). Each mode starts from today's weekday, week of the month or date, and the calendar preview opens from a Preview button (PR: pending).
 - Recurring tasks can repeat on chosen days of the month (such as the 1st and 15th, with the 29th-31st landing on a short month's last day) as well as every week or on chosen weekdays of the month. The schedule picker is regrouped as Every week, Weekday of month and Date of month with weekday presets, round chips, and a calendar and next-occurrence summary that show the schedule before saving ([#1767](https://github.com/iamharryliu/vigilant-broccoli/pull/1767)).
 - Sidebar search opens a dialog from the Search row or the `/` key and fuzzy-matches every page, with nested pages showing their parent group ([#1744](https://github.com/iamharryliu/vigilant-broccoli/pull/1744)).
 - Grocery items show a store-section badge (produce, dairy, meat and so on, matched from the item's name) and a Sort select beside the list title, on the Grocery page and in Kitchen Planner, can order the list by section, which turns drag-reordering off ([#1740](https://github.com/iamharryliu/vigilant-broccoli/pull/1740)).
@@ -132,6 +133,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- New `DatePicker`, a shadcn-style date picker that opens `Calendar` in a popover from a button and closes once a day is chosen (PR: pending).
 - New `Calendar`, a shadcn-style month calendar over `react-day-picker` that needs no stylesheet import and can highlight days without being selectable, and `ToggleChipGroup`, a multi-select group of round toggle buttons (circle, oval or an N-column grid), with demos in the component library ([#1767](https://github.com/iamharryliu/vigilant-broccoli/pull/1767)).
 - Corner radius and fonts are now themeable like colors: setting `--radius`, `--font-sans` or `--font-mono` on a `ThemeScope` or `ThemeProvider` `style` restyles buttons, selects, menus, cards and text across the scope; the defaults look the same as before ([#1730](https://github.com/iamharryliu/vigilant-broccoli/pull/1730)).
 - New `ListHeader` (a title with a trailing control on one row) and `SortSelect` (a "Sort:" label with a select), used by Google Tasks and Hearth's grocery list, with a demo in the component library ([#1740](https://github.com/iamharryliu/vigilant-broccoli/pull/1740)).

@@ -20,7 +20,7 @@ export const POST = async (req: NextRequest) => {
   if (!homeId) return badRequest('Missing homeId');
   if (!Array.isArray(tasks) || !tasks.every(isValidImportedTask))
     return badRequest(
-      'tasks must be an array of { title, days, monthlyNth?, monthlyDates? } with weekdays 0-6',
+      'tasks must be an array of { title, days, monthlyNth?, monthlyDates?, onceDate?, annualDate? } with weekdays 0-6',
     );
 
   const { error: importError } = await importRecurringTasks(

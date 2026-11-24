@@ -17,6 +17,7 @@ import {
   ALL_DAYS,
   describeDays,
   isDaily,
+  toDateKey,
 } from '@vigilant-broccoli/react-lib-tasks/recurrence';
 import { TaskScheduleFields } from '@vigilant-broccoli/react-lib-tasks/task-schedule-fields';
 import { RecurringTask, toDefaultTask } from './tasks.utils';
@@ -25,18 +26,27 @@ const RECURRING_TASKS_FILENAME = 'recurring-tasks.json';
 
 export type TaskDraft = Omit<RecurringTask, 'id'> & { id: string | null };
 
-const EMPTY_DRAFT: TaskDraft = {
+const createEmptyDraft = (): TaskDraft => ({
   id: null,
   title: '',
   days: ALL_DAYS,
   monthlyNth: null,
   monthlyDates: null,
-};
+  onceDate: toDateKey(new Date()),
+});
 
-const isValidSchedule = ({ days, monthlyNth, monthlyDates }: TaskDraft) =>
-  monthlyDates
+const isValidSchedule = ({
+  days,
+  monthlyNth,
+  monthlyDates,
+  onceDate,
+  annualDate,
+}: TaskDraft) =>
+  !!onceDate ||
+  !!annualDate ||
+  (monthlyDates
     ? monthlyDates.length > 0
-    : days.length > 0 && (!monthlyNth || monthlyNth.length > 0);
+    : days.length > 0 && (!monthlyNth || monthlyNth.length > 0));
 
 type Props = {
   open: boolean;
@@ -122,7 +132,7 @@ export function TaskManagerDialog({
           <Button
             variant="outline"
             className="mb-3 w-full"
-            onClick={() => setDraft(EMPTY_DRAFT)}
+            onClick={() => setDraft(createEmptyDraft())}
           >
             <Plus size={14} />
             Add task
