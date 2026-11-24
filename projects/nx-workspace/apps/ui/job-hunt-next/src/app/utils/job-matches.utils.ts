@@ -155,6 +155,7 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
     ],
   },
   { name: 'Salesforce', aliases: ['Apex', 'Salesforce Lightning'] },
+  { name: 'NetSuite', aliases: ['SuiteScript', 'SuiteFlow', 'SuiteTalk'] },
   { name: 'WordPress' },
   { name: 'Docker' },
   { name: 'Kubernetes', aliases: ['K8s', 'Helm'] },

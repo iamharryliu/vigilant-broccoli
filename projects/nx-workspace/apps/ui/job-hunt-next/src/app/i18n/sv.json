@@ -199,7 +199,12 @@
   },
   "SKILLS": {
     "MINE": "Mina kompetenser",
-    "GRAPH": "Graf"
+    "GRAPH": "Graf",
+    "GLOSSARY": "Ordlista"
+  },
+  "SKILLS_GLOSSARY": {
+    "SKILL": "Kompetens",
+    "DESCRIPTION": "Beskrivning"
   },
   "MY_SKILLS": {
     "OWNED": "Kompetenser du har",

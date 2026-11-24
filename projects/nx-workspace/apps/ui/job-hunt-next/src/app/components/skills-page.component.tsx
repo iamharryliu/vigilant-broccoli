@@ -8,11 +8,13 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
 import { MySkillsPage } from './my-skills-page.component';
+import { SkillsGlossaryPage } from './skills-glossary-page.component';
 import { SkillsGraphPage } from './skills-graph-page.component';
 
 const SKILLS_TAB = {
   MINE: 'mine',
   GRAPH: 'graph',
+  GLOSSARY: 'glossary',
 } as const;
 
 const TAB_CONTENT_CLASS =
@@ -28,12 +30,18 @@ export const SkillsPage = () => {
       <TabsList className="shrink-0">
         <TabsTrigger value={SKILLS_TAB.MINE}>{t('SKILLS.MINE')}</TabsTrigger>
         <TabsTrigger value={SKILLS_TAB.GRAPH}>{t('SKILLS.GRAPH')}</TabsTrigger>
+        <TabsTrigger value={SKILLS_TAB.GLOSSARY}>
+          {t('SKILLS.GLOSSARY')}
+        </TabsTrigger>
       </TabsList>
       <TabsContent value={SKILLS_TAB.MINE} className={TAB_CONTENT_CLASS}>
         <MySkillsPage />
       </TabsContent>
       <TabsContent value={SKILLS_TAB.GRAPH} className={TAB_CONTENT_CLASS}>
         <SkillsGraphPage />
+      </TabsContent>
+      <TabsContent value={SKILLS_TAB.GLOSSARY} className={TAB_CONTENT_CLASS}>
+        <SkillsGlossaryPage />
       </TabsContent>
     </Tabs>
   );
