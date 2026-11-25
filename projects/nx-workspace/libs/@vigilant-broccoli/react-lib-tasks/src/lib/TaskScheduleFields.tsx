@@ -167,6 +167,9 @@ export function TaskScheduleFields({ schedule, onChange }: Props) {
           ? !monthlyDates?.length
           : days.length === 0 ||
             (mode === SCHEDULE_MODE.NTH_WEEKDAY && !monthlyNth?.length);
+  const hasUserChoices =
+    mode === SCHEDULE_MODE.DATE ||
+    (!WEEKDAY_FREE_MODES.includes(mode) && !PRESET_DAYS[mode]);
   const [month, setMonth] = useState(() => new Date());
   const today = new Date();
   const [nextOccurrence] = isSelectionEmpty
@@ -284,33 +287,32 @@ export function TaskScheduleFields({ schedule, onChange }: Props) {
             </p>
           )}
         </div>
-        <div className="flex shrink-0 gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={
-              mode === SCHEDULE_MODE.ONCE ||
-              mode === SCHEDULE_MODE.ANNUAL ||
-              !!PRESET_DAYS[mode] ||
-              (mode === SCHEDULE_MODE.DATE
-                ? !monthlyDates?.length
-                : days.length === 0 && !monthlyNth?.length)
-            }
-            onClick={() =>
-              onChange(prev =>
+        <div className="ml-auto flex shrink-0 gap-2">
+          {hasUserChoices && (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={
                 mode === SCHEDULE_MODE.DATE
-                  ? { ...prev, monthlyDates: [] }
-                  : {
-                      ...prev,
-                      days: [],
-                      monthlyNth: prev.monthlyNth ? [] : null,
-                    },
-              )
-            }
-          >
-            <RotateCcw size={14} />
-            Reset
-          </Button>
+                  ? !monthlyDates?.length
+                  : days.length === 0 && !monthlyNth?.length
+              }
+              onClick={() =>
+                onChange(prev =>
+                  mode === SCHEDULE_MODE.DATE
+                    ? { ...prev, monthlyDates: [] }
+                    : {
+                        ...prev,
+                        days: [],
+                        monthlyNth: prev.monthlyNth ? [] : null,
+                      },
+                )
+              }
+            >
+              <RotateCcw size={14} />
+              Reset
+            </Button>
+          )}
           <Button
             size="sm"
             variant="outline"
