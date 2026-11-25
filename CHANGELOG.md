@@ -10,7 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### notepad-react
 
-- New Notepad app at notepad.vigilant-broccoli.app: multiple notes saved in the browser, with no sign-in or server (PR: pending).
+- New Notepad app at notepad.vigilant-broccoli.app: multiple notes saved in the browser, with no sign-in or server ([#1785](https://github.com/iamharryliu/vigilant-broccoli/pull/1785)).
 
 ### hearth
 
