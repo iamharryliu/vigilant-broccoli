@@ -1,5 +1,5 @@
+import { Button, cn, Text } from '@vigilant-broccoli/react-lib';
 import { ComponentPropsWithoutRef, forwardRef, ReactNode } from 'react';
-import { cn } from '../utils/cn';
 
 type KanbanLaneFrameProps = Omit<
   ComponentPropsWithoutRef<'section'>,
@@ -28,3 +28,24 @@ export const KanbanLaneFrame = forwardRef<HTMLElement, KanbanLaneFrameProps>(
   ),
 );
 KanbanLaneFrame.displayName = 'KanbanLaneFrame';
+
+const ADD_LANE_LABEL = '+ Add Lane';
+
+// Forwards its ref and props so it can be a Dialog trigger via `asChild`.
+export const KanbanAddLaneButton = forwardRef<
+  HTMLButtonElement,
+  ComponentPropsWithoutRef<typeof Button>
+>(({ className, children, ...rest }, ref) => (
+  <Button
+    ref={ref}
+    variant="ghost"
+    className={cn(
+      'h-auto min-h-12 w-80 flex-shrink-0 self-stretch border-2 border-dashed',
+      className,
+    )}
+    {...rest}
+  >
+    {children ?? <Text size="3">{ADD_LANE_LABEL}</Text>}
+  </Button>
+));
+KanbanAddLaneButton.displayName = 'KanbanAddLaneButton';

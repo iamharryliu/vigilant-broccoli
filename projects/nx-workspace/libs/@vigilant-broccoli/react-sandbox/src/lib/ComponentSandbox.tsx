@@ -364,7 +364,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'Kanban Board',
     description:
       'Swimlane board with drag-and-drop cards across and within lanes; the caller owns card data and applies each reported move.',
-    lib: LIB.REACT_LIB,
+    lib: LIB.CHECKLIST,
     content: <KanbanBoardDemo />,
   },
   {

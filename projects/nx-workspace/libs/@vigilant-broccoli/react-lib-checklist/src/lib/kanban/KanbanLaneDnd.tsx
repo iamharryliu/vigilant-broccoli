@@ -1,5 +1,8 @@
-import type {
+import {
   Active,
+  closestCenter,
+  closestCorners,
+  CollisionDetection,
   DragEndEvent,
   DragOverEvent,
   DragStartEvent,
@@ -8,12 +11,23 @@ import type {
 import { arrayMove, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ComponentPropsWithoutRef, ReactNode, useState } from 'react';
-import { cn } from '../utils/cn';
+import { cn } from '@vigilant-broccoli/react-lib';
 import { KanbanLaneFrame } from './KanbanLaneFrame';
 
 export const KANBAN_LANE_DRAG_TYPE = 'kanban-lane';
 
 type LaneItem = { id: string };
+
+// A lane drag that also collides with the cards inside lanes flip-flops: each preview reorder moves a card under the pointer, which reorders back, until React gives up.
+export const kanbanCollisionDetection: CollisionDetection = args =>
+  args.active.data.current?.type === KANBAN_LANE_DRAG_TYPE
+    ? closestCenter({
+        ...args,
+        droppableContainers: args.droppableContainers.filter(
+          container => container.data.current?.type === KANBAN_LANE_DRAG_TYPE,
+        ),
+      })
+    : closestCorners(args);
 
 type UseKanbanLaneReorderOptions<TLane extends LaneItem> = {
   lanes: TLane[];
@@ -131,19 +145,6 @@ export const KanbanSortableLane = <TLane extends LaneItem>({
     ...style,
   };
 
-  if (isDragging) {
-    return (
-      <div
-        ref={setNodeRef}
-        style={sortableStyle}
-        className={cn(
-          'h-64 shrink-0 rounded-lg border-2 border-dashed border-blue-400 bg-blue-50 opacity-50 dark:bg-blue-950',
-          className,
-        )}
-      />
-    );
-  }
-
   const dragHandleProps = { ...attributes, ...listeners };
 
   return (
@@ -151,7 +152,12 @@ export const KanbanSortableLane = <TLane extends LaneItem>({
       ref={setNodeRef}
       style={sortableStyle}
       isOver={isOver}
-      className={className}
+      // Contents stay mounted but hidden: unmounting their droppables mid-drag re-fires `onDragOver` in a loop.
+      className={cn(
+        className,
+        isDragging &&
+          'border-2 border-dashed border-blue-400 bg-blue-50 opacity-50 dark:bg-blue-950 [&>*]:invisible',
+      )}
       header={header?.(dragHandleProps)}
       footer={footer}
       {...rest}

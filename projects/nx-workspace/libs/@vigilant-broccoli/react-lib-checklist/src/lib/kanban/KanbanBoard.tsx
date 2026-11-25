@@ -1,5 +1,5 @@
+import { GripVertical } from 'lucide-react';
 import {
-  closestCorners,
   DndContext,
   DragEndEvent,
   DragOverlay,
@@ -12,18 +12,25 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
-  horizontalListSortingStrategy,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical } from 'lucide-react';
 import { ComponentPropsWithoutRef, ReactNode, useState } from 'react';
-import { cn } from '../utils/cn';
-import { KanbanLaneFrame } from './KanbanLaneFrame';
-import { KanbanSortableLane, useKanbanLaneReorder } from './KanbanLaneDnd';
-import { Text } from './Text';
+import { KanbanAddLaneButton, KanbanLaneFrame } from './KanbanLaneFrame';
+import {
+  KanbanLaneDragOverlay,
+  KanbanLaneHeader,
+  KanbanLaneRow,
+  KanbanLaneTitle,
+} from './KanbanLaneChrome';
+import {
+  kanbanCollisionDetection,
+  KanbanSortableLane,
+  useKanbanLaneReorder,
+} from './KanbanLaneDnd';
+import { cn, Text } from '@vigilant-broccoli/react-lib';
 
 export type KanbanCard = {
   id: string;
@@ -50,9 +57,19 @@ type KanbanBoardProps<TCard extends KanbanCard> = {
   // Opts lanes into drag reordering; receives the new lane id order.
   onReorderLanes?: (laneIds: string[]) => void;
   renderLaneFooter?: (lane: KanbanLane) => ReactNode;
+  // Shows the dashed "+ Add Lane" button after the last lane.
+  onAddLane?: () => void;
+  // Trailing header controls, e.g. search or a remove button.
+  renderLaneActions?: (lane: KanbanLane) => ReactNode;
+  // A row under the header, e.g. a sort select.
+  renderLaneToolbar?: (lane: KanbanLane) => ReactNode;
   emptyLaneLabel?: ReactNode;
+  // `row` drops the card border and adds a grip handle, matching CheckList rows.
+  cardVariant?: KanbanCardVariant;
   className?: string;
 };
+
+export type KanbanCardVariant = 'card' | 'row';
 
 const LANE_PREFIX = 'lane:';
 
@@ -60,9 +77,11 @@ const toLaneDropId = (laneId: string) => `${LANE_PREFIX}${laneId}`;
 
 const KanbanSortableCard = ({
   id,
+  variant,
   children,
 }: {
   id: string;
+  variant: KanbanCardVariant;
   children: ReactNode;
 }) => {
   const {
@@ -73,19 +92,30 @@ const KanbanSortableCard = ({
     transition,
     isDragging,
   } = useSortable({ id });
+  const isRow = variant === 'row';
+  const dragProps = { ...attributes, ...listeners };
 
   return (
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        'cursor-grab touch-none rounded-md border border-gray-200 bg-white p-3 shadow-sm active:cursor-grabbing dark:border-gray-700 dark:bg-gray-800',
+        isRow
+          ? 'flex items-start gap-2'
+          : 'cursor-grab touch-none rounded border border-gray-200 px-2 py-2 active:cursor-grabbing dark:border-gray-700',
         isDragging && 'opacity-40',
       )}
-      {...attributes}
-      {...listeners}
+      {...(isRow ? {} : dragProps)}
     >
-      {children}
+      {isRow && (
+        <div
+          {...dragProps}
+          className="cursor-grab touch-none py-2 opacity-50 transition-opacity hover:opacity-100 active:cursor-grabbing"
+        >
+          <GripVertical size={15} />
+        </div>
+      )}
+      <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
 };
@@ -95,10 +125,14 @@ const KanbanLaneColumn = ({
   cardIds,
   emptyLabel,
   footer,
+  actions,
+  toolbar,
   reorderable,
   children,
 }: {
   lane: KanbanLane;
+  actions?: ReactNode;
+  toolbar?: ReactNode;
   cardIds: string[];
   emptyLabel: ReactNode;
   footer?: ReactNode;
@@ -108,30 +142,20 @@ const KanbanLaneColumn = ({
   const { setNodeRef, isOver } = useDroppable({ id: toLaneDropId(lane.id) });
 
   const renderHeader = (dragHandleProps?: ComponentPropsWithoutRef<'div'>) => (
-    <header className="flex items-center justify-between gap-2">
-      <div
-        {...dragHandleProps}
-        className={cn(
-          'flex flex-1 items-center gap-1',
-          dragHandleProps && 'cursor-grab touch-none active:cursor-grabbing',
-        )}
-      >
-        {dragHandleProps && (
-          <GripVertical size={15} className="opacity-40 hover:opacity-70" />
-        )}
-        <Text size="2" weight="bold">
-          {lane.title}
-        </Text>
-      </div>
-      <Text size="1" color="gray">
-        {cardIds.length}
-      </Text>
-    </header>
+    <KanbanLaneHeader
+      title={<KanbanLaneTitle>{lane.title}</KanbanLaneTitle>}
+      dragHandleProps={dragHandleProps}
+      actions={actions}
+      toolbar={toolbar}
+    />
   );
 
   const body = (
     <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
-      <div ref={setNodeRef} className="flex min-h-16 flex-col gap-2">
+      <div
+        ref={setNodeRef}
+        className="-mx-2 flex min-h-16 flex-1 flex-col gap-2 overflow-y-auto px-2"
+      >
         {cardIds.length === 0 ? (
           <div className="rounded-md border border-dashed border-gray-300 p-3 text-center dark:border-gray-600">
             <Text size="1" color="gray">
@@ -145,7 +169,9 @@ const KanbanLaneColumn = ({
     </SortableContext>
   );
 
-  const className = 'w-72 gap-3 bg-gray-100 p-3 dark:bg-gray-900';
+  // Same card as a react-lib-tasks lane, whose `GoogleTasksComponent` wraps its header and list in a `Card`.
+  const className =
+    'h-full w-80 gap-3 overflow-hidden border border-border bg-card p-4 text-card-foreground';
 
   return reorderable ? (
     <KanbanSortableLane
@@ -175,8 +201,12 @@ export const KanbanBoard = <TCard extends KanbanCard>({
   renderCard,
   onMoveCard,
   onReorderLanes,
+  onAddLane,
   renderLaneFooter,
+  renderLaneActions,
+  renderLaneToolbar,
   emptyLaneLabel = 'No cards',
+  cardVariant = 'card',
   className,
 }: KanbanBoardProps<TCard>) => {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -250,54 +280,50 @@ export const KanbanBoard = <TCard extends KanbanCard>({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={kanbanCollisionDetection}
       onDragStart={handleDragStart}
       onDragOver={laneReorder.onDragOver}
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <SortableContext
-        items={laneReorder.lanes.map(lane => lane.id)}
-        strategy={horizontalListSortingStrategy}
+      <KanbanLaneRow
+        laneIds={laneReorder.lanes.map(lane => lane.id)}
+        className={className}
       >
-        <div
-          className={cn(
-            'flex items-start gap-4 overflow-x-auto pb-2',
-            className,
-          )}
-        >
-          {laneReorder.lanes.map(lane => {
-            const laneCards = cardsByLane(lane.id);
-            return (
-              <KanbanLaneColumn
-                key={lane.id}
-                lane={lane}
-                cardIds={laneCards.map(card => card.id)}
-                emptyLabel={emptyLaneLabel}
-                footer={renderLaneFooter?.(lane)}
-                reorderable={!!onReorderLanes}
-              >
-                {laneCards.map(card => (
-                  <KanbanSortableCard key={card.id} id={card.id}>
-                    {renderCard(card)}
-                  </KanbanSortableCard>
-                ))}
-              </KanbanLaneColumn>
-            );
-          })}
-        </div>
-      </SortableContext>
+        {laneReorder.lanes.map(lane => {
+          const laneCards = cardsByLane(lane.id);
+          return (
+            <KanbanLaneColumn
+              key={lane.id}
+              lane={lane}
+              cardIds={laneCards.map(card => card.id)}
+              emptyLabel={emptyLaneLabel}
+              footer={renderLaneFooter?.(lane)}
+              actions={renderLaneActions?.(lane)}
+              toolbar={renderLaneToolbar?.(lane)}
+              reorderable={!!onReorderLanes}
+            >
+              {laneCards.map(card => (
+                <KanbanSortableCard
+                  key={card.id}
+                  id={card.id}
+                  variant={cardVariant}
+                >
+                  {renderCard(card)}
+                </KanbanSortableCard>
+              ))}
+            </KanbanLaneColumn>
+          );
+        })}
+        {onAddLane && <KanbanAddLaneButton onClick={onAddLane} />}
+      </KanbanLaneRow>
       <DragOverlay>
         {activeCard ? (
-          <div className="rounded-md border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+          <div className="rounded border border-gray-200 bg-white px-2 py-2 shadow-lg dark:border-gray-700 dark:bg-gray-800">
             {renderCard(activeCard)}
           </div>
         ) : laneReorder.activeLane ? (
-          <div className="w-72 rotate-1 rounded-lg border border-gray-200 bg-gray-100 p-3 shadow-xl dark:border-gray-700 dark:bg-gray-900">
-            <Text size="2" weight="bold">
-              {laneReorder.activeLane.title}
-            </Text>
-          </div>
+          <KanbanLaneDragOverlay title={laneReorder.activeLane.title} />
         ) : null}
       </DragOverlay>
     </DndContext>

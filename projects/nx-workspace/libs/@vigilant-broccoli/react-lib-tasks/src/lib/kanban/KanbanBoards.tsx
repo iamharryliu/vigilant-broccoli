@@ -7,7 +7,6 @@ import {
   IconButton,
   Input,
   Select,
-  Skeleton,
   Text,
   Dialog,
   DialogTrigger,
@@ -15,10 +14,16 @@ import {
   DialogTitle,
   DialogClose,
   EllipsisCTA,
+} from '@vigilant-broccoli/react-lib';
+import {
   KANBAN_LANE_DRAG_TYPE,
+  kanbanCollisionDetection,
+  KanbanAddLaneButton,
+  KanbanLaneDragOverlay,
+  KanbanLaneRow,
   KanbanSortableLane,
   useKanbanLaneReorder,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-checklist';
 import { CreateTasksDialog } from '../CreateTasksDialog';
 import {
   type GoogleTasksAuthAdapter,
@@ -49,7 +54,6 @@ import {
 import {
   DndContext,
   DragOverlay,
-  closestCorners,
   PointerSensor,
   useSensor,
   useSensors,
@@ -345,7 +349,6 @@ interface SortableLaneProps {
   refreshTrigger: number;
   isTaskDragOver: boolean;
   isDraggingTask: boolean;
-  isDraggingLane: boolean;
   dragOverTask: DragOverTask | null;
   sortMode: SortMode | undefined;
   onSortModeChange: (taskListId: string, sortMode: SortMode) => void;
@@ -428,7 +431,6 @@ const SortableLane = ({
   refreshTrigger,
   isTaskDragOver,
   isDraggingTask,
-  isDraggingLane,
   dragOverTask,
   sortMode,
   onSortModeChange,
@@ -454,18 +456,7 @@ const SortableLane = ({
             showSelector={false}
             enableDragDrop={true}
             enableSearch={false}
-            titleProps={{
-              ...dragHandleProps,
-              className: isDraggingLane
-                ? 'cursor-grabbing'
-                : 'cursor-grab active:cursor-grabbing',
-            }}
-            headerLeading={
-              <GripVertical
-                size={15}
-                className="opacity-40 hover:opacity-70 flex-shrink-0"
-              />
-            }
+            titleProps={dragHandleProps}
             headerActions={
               <ConfirmDeleteDialog
                 trigger={<CloseButton />}
@@ -542,28 +533,6 @@ const TaskDragOverlay = ({
     </div>
   );
 };
-
-const LaneDragOverlay = ({ title }: { title: string }) => (
-  <div
-    className={`${OVERLAY_CLASSES.BASE} ${OVERLAY_CLASSES.LIGHT} ${OVERLAY_CLASSES.DARK} p-3 w-80 rotate-1`}
-  >
-    <div className="flex items-center gap-2">
-      <GripVertical size={15} className="opacity-60 flex-shrink-0" />
-      <Text size="3" weight="bold">
-        {title ? title : <Skeleton className="w-32 h-5" />}
-      </Text>
-    </div>
-    <div className="mt-2 space-y-1.5">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div
-          key={i}
-          className="h-6 rounded bg-gray-100 dark:bg-gray-700"
-          style={{ width: `${80 - i * 15}%` }}
-        />
-      ))}
-    </div>
-  </div>
-);
 
 const BoardDragOverlay = ({ name }: { name: string }) => (
   <div
@@ -989,7 +958,7 @@ export const KanbanBoards = ({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={kanbanCollisionDetection}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
@@ -1283,139 +1252,131 @@ export const KanbanBoards = ({
                 onClick={() => setSearchOpen(true)}
               />
             </div>
-            <SortableContext items={laneReorder.lanes.map(l => l.id)}>
-              <div className="flex gap-2 overflow-x-auto pb-4 h-full">
-                {laneReorder.lanes.map(lane => {
-                  const taskList = taskLists.find(
-                    list => list.id === lane.taskListId,
-                  );
-                  return (
-                    <SortableLane
-                      key={lane.id}
-                      auth={auth}
-                      renderVoiceAction={renderVoiceAction}
-                      lane={lane}
-                      taskList={taskList}
-                      boardId={activeBoardId}
-                      onRemove={removeLane}
-                      refreshTrigger={refreshTrigger}
-                      isTaskDragOver={overTaskListId === lane.taskListId}
-                      isDraggingTask={!!activeTask}
-                      isDraggingLane={!!activeLane}
-                      dragOverTask={
-                        activeTask &&
-                        overTaskListId === lane.taskListId &&
-                        activeTask.taskListId !== lane.taskListId
-                          ? {
-                              id: activeTask.task.id,
-                              title: activeTask.task.title,
-                            }
-                          : null
-                      }
-                      sortMode={sortModes[lane.taskListId]}
-                      onSortModeChange={setSortMode}
-                      onTasksCreated={() => setRefreshTrigger(prev => prev + 1)}
-                    />
-                  );
-                })}
-                <div className="ml-2">
-                  <Dialog
-                    open={showAddLaneDialog}
-                    onOpenChange={setShowAddLaneDialog}
+            <KanbanLaneRow laneIds={laneReorder.lanes.map(l => l.id)}>
+              {laneReorder.lanes.map(lane => {
+                const taskList = taskLists.find(
+                  list => list.id === lane.taskListId,
+                );
+                return (
+                  <SortableLane
+                    key={lane.id}
+                    auth={auth}
+                    renderVoiceAction={renderVoiceAction}
+                    lane={lane}
+                    taskList={taskList}
+                    boardId={activeBoardId}
+                    onRemove={removeLane}
+                    refreshTrigger={refreshTrigger}
+                    isTaskDragOver={overTaskListId === lane.taskListId}
+                    isDraggingTask={!!activeTask}
+                    dragOverTask={
+                      activeTask &&
+                      overTaskListId === lane.taskListId &&
+                      activeTask.taskListId !== lane.taskListId
+                        ? {
+                            id: activeTask.task.id,
+                            title: activeTask.task.title,
+                          }
+                        : null
+                    }
+                    sortMode={sortModes[lane.taskListId]}
+                    onSortModeChange={setSortMode}
+                    onTasksCreated={() => setRefreshTrigger(prev => prev + 1)}
+                  />
+                );
+              })}
+              <div className="ml-2 flex">
+                <Dialog
+                  open={showAddLaneDialog}
+                  onOpenChange={setShowAddLaneDialog}
+                >
+                  <DialogTrigger asChild>
+                    <KanbanAddLaneButton />
+                  </DialogTrigger>
+                  <DialogContent
+                    className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+                    aria-describedby={undefined}
+                    showCloseButton={false}
                   >
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="w-80 h-12 flex-shrink-0 border-2 border-dashed"
-                      >
-                        <Text size="3">+ Add Lane</Text>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent
-                      className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
-                      aria-describedby={undefined}
-                      showCloseButton={false}
-                    >
-                      <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
-                        Add Lane
-                      </DialogTitle>
-                      <div className="flex flex-col gap-3">
-                        {showCreateList ? (
-                          <div className="flex flex-col gap-2">
-                            <Input
-                              placeholder="New list name..."
-                              value={newListName}
-                              onChange={e => setNewListName(e.target.value)}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter') handleCreateList();
-                                else if (e.key === 'Escape')
-                                  setShowCreateList(false);
-                              }}
-                              autoFocus
-                            />
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => setShowCreateList(false)}
-                              >
-                                Back
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={handleCreateList}
-                                disabled={!newListName.trim() || creatingList}
-                              >
-                                {creatingList ? 'Creating...' : 'Create List'}
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <Select
-                              value={availableTaskLists.find(
-                                l => l.id === selectedTaskListId,
-                              )}
-                              onValueChange={list =>
-                                setSelectedTaskListId(list.id)
-                              }
-                              options={availableTaskLists}
-                              optionIdentifier="id"
-                              optionDisplayKey="title"
-                              placeholder={
-                                availableTaskLists.length === 0
-                                  ? 'No task lists available'
-                                  : 'Select task list...'
-                              }
-                            />
+                    <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+                      Add Lane
+                    </DialogTitle>
+                    <div className="flex flex-col gap-3">
+                      {showCreateList ? (
+                        <div className="flex flex-col gap-2">
+                          <Input
+                            placeholder="New list name..."
+                            value={newListName}
+                            onChange={e => setNewListName(e.target.value)}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') handleCreateList();
+                              else if (e.key === 'Escape')
+                                setShowCreateList(false);
+                            }}
+                            autoFocus
+                          />
+                          <div className="flex gap-2">
                             <Button
                               size="sm"
-                              variant="ghost"
-                              onClick={() => setShowCreateList(true)}
+                              variant="secondary"
+                              onClick={() => setShowCreateList(false)}
                             >
-                              + Create new list
+                              Back
                             </Button>
-                          </>
-                        )}
-                        <div className="flex gap-3 justify-end">
-                          <DialogClose asChild>
-                            <Button variant="secondary">Cancel</Button>
-                          </DialogClose>
-                          {!showCreateList && (
                             <Button
-                              onClick={handleAddLane}
-                              disabled={!selectedTaskListId}
+                              size="sm"
+                              onClick={handleCreateList}
+                              disabled={!newListName.trim() || creatingList}
                             >
-                              Add Lane
+                              {creatingList ? 'Creating...' : 'Create List'}
                             </Button>
-                          )}
+                          </div>
                         </div>
+                      ) : (
+                        <>
+                          <Select
+                            value={availableTaskLists.find(
+                              l => l.id === selectedTaskListId,
+                            )}
+                            onValueChange={list =>
+                              setSelectedTaskListId(list.id)
+                            }
+                            options={availableTaskLists}
+                            optionIdentifier="id"
+                            optionDisplayKey="title"
+                            placeholder={
+                              availableTaskLists.length === 0
+                                ? 'No task lists available'
+                                : 'Select task list...'
+                            }
+                          />
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setShowCreateList(true)}
+                          >
+                            + Create new list
+                          </Button>
+                        </>
+                      )}
+                      <div className="flex gap-3 justify-end">
+                        <DialogClose asChild>
+                          <Button variant="secondary">Cancel</Button>
+                        </DialogClose>
+                        {!showCreateList && (
+                          <Button
+                            onClick={handleAddLane}
+                            disabled={!selectedTaskListId}
+                          >
+                            Add Lane
+                          </Button>
+                        )}
                       </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
-            </SortableContext>
+            </KanbanLaneRow>
           </div>
         </div>
       </div>
@@ -1432,7 +1393,7 @@ export const KanbanBoards = ({
         {activeTask ? (
           <TaskDragOverlay task={activeTask.task} />
         ) : activeLane ? (
-          <LaneDragOverlay
+          <KanbanLaneDragOverlay
             title={
               taskLists.find(list => list.id === activeLane.taskListId)
                 ?.title || 'Unknown List'
