@@ -152,7 +152,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib-tasks
 
-- The recurring-schedule picker hides its Reset button for Does not repeat, Daily, Weekdays, Weekends and Annually, where there is nothing to clear (PR: pending).
+- The recurring-schedule picker hides its Reset button for Does not repeat, Daily, Weekdays, Weekends and Annually, where there is nothing to clear ([#1773](https://github.com/iamharryliu/vigilant-broccoli/pull/1773)).
 - Every shared component now has a page, including new chatbot and file-explorer groups, and Button List, Icon Button, Input, Textarea and Toggle Group are split into their own pages. Each page has a Demo section and, for composed components, a Built with button list that opens the pages of the components it uses. Typography moved to the top of the sidebar, above Components, and the Theme Preference Control has its own page ([#1680](https://github.com/iamharryliu/vigilant-broccoli/pull/1680), [#1681](https://github.com/iamharryliu/vigilant-broccoli/pull/1681)).
 - Checklist rows support drag reorder, animated completion and a standard ellipsis menu with confirmed delete ([#1587](https://github.com/iamharryliu/vigilant-broccoli/pull/1587), [#1607](https://github.com/iamharryliu/vigilant-broccoli/pull/1607)).
 - FileExplorer gained file previews, image thumbnails, multi-select, a right-click menu, keyboard navigation and a modal image and PDF viewer ([#1514](https://github.com/iamharryliu/vigilant-broccoli/pull/1514), [#1520](https://github.com/iamharryliu/vigilant-broccoli/pull/1520), [#1530](https://github.com/iamharryliu/vigilant-broccoli/pull/1530), [#1562](https://github.com/iamharryliu/vigilant-broccoli/pull/1562)).
