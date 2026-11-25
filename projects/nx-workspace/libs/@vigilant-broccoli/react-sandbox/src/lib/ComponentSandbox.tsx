@@ -120,6 +120,7 @@ import {
   TeamAvatarDemo,
 } from './demos/ReactLibMoreDemo';
 import { CheckListDemo } from './demos/CheckListDemo';
+import { KanbanBoardDemo } from './demos/KanbanBoardDemo';
 import { CollapsibleListItemDemo } from './demos/CollapsibleListItemDemo';
 import { CRUDListNoImagesDemo } from './demos/CRUDListNoImagesDemo';
 import { WeatherClockCardDemo } from './demos/WeatherClockCardDemo';
@@ -357,6 +358,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Checkable rows with inline editing, drag reorder and a collapsible completed section, driven entirely by caller-supplied render props.',
     lib: LIB.CHECKLIST,
     content: <CheckListDemo />,
+  },
+  {
+    id: 'kanban-board',
+    label: 'Kanban Board',
+    description:
+      'Swimlane board with drag-and-drop cards across and within lanes; the caller owns card data and applies each reported move.',
+    lib: LIB.CHECKLIST,
+    content: <KanbanBoardDemo />,
   },
   {
     id: 'collapsible-list-item',

@@ -8,6 +8,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 <details>
 <summary>November 2026</summary>
 
+### react-lib
+
+- New `KanbanBoard` swimlane component in `react-lib-checklist` with drag-and-drop cards and lane reordering, header slots and CheckList-style rows, shown in the component library ([#1780](https://github.com/iamharryliu/vigilant-broccoli/pull/1780)).
+
 ### hearth
 
 - The whiteboard and notepad text editors support Cmd/Ctrl+Shift+K to delete the selected lines (or the caret's line), keeping the caret in the same column on the line that takes its place ([#1778](https://github.com/iamharryliu/vigilant-broccoli/pull/1778)).
