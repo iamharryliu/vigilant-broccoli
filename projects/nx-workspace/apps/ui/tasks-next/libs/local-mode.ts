@@ -1,35 +1,14 @@
-import { useSyncExternalStore } from 'react';
-import {
-  STORAGE_KEY_SELECTED_TASK_LIST,
-  createLocalTasksAdapter,
-} from '@vigilant-broccoli/react-lib-tasks';
+import { createLocalTasksAdapter } from '@vigilant-broccoli/react-lib-tasks';
 import { signInWithGoogle } from './auth';
+import { STORAGE_MODE, setStorageMode, useStorageMode } from './storage-mode';
 
-const LOCAL_MODE_KEY = 'tasks-local-mode';
 const LOCAL_TASKS_KEY = 'tasks-local-store';
-const LOCAL_MODE_ENABLED = 'true';
 
-const listeners = new Set<() => void>();
+// Leaving local mode returns to Google Tasks.
+export const setLocalMode = (enabled: boolean) =>
+  setStorageMode(enabled ? STORAGE_MODE.LOCAL : STORAGE_MODE.GOOGLE);
 
-const subscribe = (listener: () => void) => {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-};
-
-const isLocalMode = () =>
-  localStorage.getItem(LOCAL_MODE_KEY) === LOCAL_MODE_ENABLED;
-
-export const setLocalMode = (enabled: boolean) => {
-  if (enabled) localStorage.setItem(LOCAL_MODE_KEY, LOCAL_MODE_ENABLED);
-  else localStorage.removeItem(LOCAL_MODE_KEY);
-  // Local and Google list ids differ; a carried-over id fails Google's lookup.
-  localStorage.removeItem(STORAGE_KEY_SELECTED_TASK_LIST);
-  listeners.forEach(listener => listener());
-};
-
-// The server snapshot is false, so local mode applies after hydration.
-export const useLocalMode = () =>
-  useSyncExternalStore(subscribe, isLocalMode, () => false);
+export const useLocalMode = () => useStorageMode() === STORAGE_MODE.LOCAL;
 
 // Leaves local mode first so the Google session takes over on return. Local
 // tasks stay in this browser and reappear if local mode is chosen again.

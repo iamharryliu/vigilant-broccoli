@@ -21,6 +21,9 @@ export const ROUTE = {
 export const API_ENDPOINT = {
   GOOGLE_TOKEN: '/api/auth/google-token',
   TASKS: '/api/tasks',
+  DB_TASKS: '/api/db-tasks',
+  IMPORT_TASKS: '/api/tasks/import',
+  KANBAN_BOARDS: '/api/kanban/boards',
   TASK_LISTS: '/api/tasks/lists',
 } as const;
 

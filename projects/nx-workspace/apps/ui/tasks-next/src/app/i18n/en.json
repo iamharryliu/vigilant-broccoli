@@ -10,8 +10,17 @@
     "REDIRECTING": "Redirecting to Google...",
     "HANDOFF_FAILED": "Sign-in couldn't return to the page. Close this window and try again."
   },
+  "MODE": {
+    "LOCAL": "Local",
+    "GOOGLE": "Google",
+    "DATABASE": "Database"
+  },
+  "VIEW": {
+    "LABEL": "View",
+    "LIST": "Single list",
+    "BOARD": "Kanban board"
+  },
   "LOCAL_MODE": {
-    "ENTER": "Switch to local mode",
     "LEAVE": "Leave local mode"
   },
   "SETTINGS": {
@@ -19,7 +28,7 @@
     "SIGNED_OUT": "Sign in to manage your settings.",
     "EXPORT": {
       "TITLE": "Export task lists",
-      "DESCRIPTION": "Download the selected lists, including completed tasks, as JSON.",
+      "DESCRIPTION": "Download the selected lists, including completed tasks and their kanban boards, as JSON.",
       "SELECT_ALL": "Select all",
       "CLEAR_ALL": "Clear all",
       "SUBMIT": "Export",
@@ -29,7 +38,30 @@
       "LOAD_FAILED": "Couldn't load your task lists.",
       "FAILED": "Export failed. Try again."
     },
+    "IMPORT": {
+      "TITLE": "Import task lists",
+      "DESCRIPTION": "Add the tasks and kanban boards from an exported JSON file. Lists are matched by title and created when missing.",
+      "SUBMIT": "Choose file",
+      "IMPORTING": "Importing...",
+      "PROGRESS": "Imported {count} of {total} tasks...",
+      "DONE": "Imported {count} tasks.",
+      "BOARDS_DONE": "Imported {count} kanban boards.",
+      "NO_BOARDS": "This file has no kanban boards. Export again from the store that has them.",
+      "FAILED": "Import failed. Check the file and try again."
+    },
+    "TABS": {
+      "TASKS": "Tasks",
+      "DATA": "Import / Export",
+      "ACCOUNT": "Account"
+    },
     "TASK_LISTS": {
+      "DEFAULT_BADGE": "Default",
+      "COUNT_TITLE": "Active tasks",
+      "DELETE_ALL": "Delete all task lists",
+      "DELETE_ALL_TITLE": "Delete all task lists",
+      "DELETE_ALL_DESCRIPTION": "Delete every task list and all of their tasks? Google keeps its default list, which can't be deleted. This can't be undone.",
+      "DELETE_ALL_DESCRIPTION_RECREATED": "Delete every task list and all of their tasks? An empty default list is recreated. This can't be undone.",
+      "SET_DEFAULT": "Set as default list",
       "TITLE": "Task lists",
       "NEW_PLACEHOLDER": "New list name",
       "CREATE": "Add list",
@@ -39,6 +71,9 @@
       "DELETE_TITLE": "Delete task list",
       "DELETE_DESCRIPTION": "Delete \"{title}\" and all of its tasks? This can't be undone.",
       "FAILED": "Couldn't update your task lists. Try again."
+    },
+    "STORAGE": {
+      "TITLE": "Storage"
     },
     "ACCOUNT": {
       "TITLE": "Account",

@@ -3,7 +3,7 @@
 ## Overview
 
 - Google Tasks-backed swimlane board in `local-manager-next`
-- Board setup synced per user via MongoDB (cross-machine)
+- Board setup synced per user via Supabase (cross-machine), shared with tasks-next's Google mode
 - Requires Google OAuth session
 
 ## Data Model
@@ -42,22 +42,24 @@
 - Drag to reorder within same lane (calls `/api/tasks/move` with previous task ID)
 - Lane highlights on hover when dragging a task; non-target lanes show subtle drop zone hint
 - Blue drop indicator bar shows between tasks during reorder
-- Per-list sort mode (Default, Eisenhower, Commit Type, Date Created Newest/Oldest) synced with the board via MongoDB
+- Per-list sort mode (Default, Eisenhower, Commit Type, Date Created Newest/Oldest) synced with the board via Supabase
 
 ## State
 
-- Board config (boards, lane order, active board, per-list sort modes): MongoDB, keyed by user email
+- Board config (boards, lane order, active board, per-list sort modes): Supabase `app_kanban_boards`, keyed by user email and the `google` store
 - Synced via `/api/kanban/boards` (GET / PUT), debounced on change
 - Task data: fetched from Google Tasks API via `/api/tasks`, `/api/tasks/lists` (GET, POST, PATCH, DELETE)
 
-## MongoDB Sync
+## Supabase Sync
 
-- Collection `kanban_boards`, one doc per `userEmail` (`MONGODB_URI`, `MONGODB_DB` default `vb-manager`)
-- Client: `src/lib/mongo.ts`; data access: `src/app/api/kanban/db.ts`
+- Table `app_kanban_boards`, one row per `user_email` and `store`; this app always uses `store = 'google'`, the row tasks-next's Google mode reads, so both apps show the same boards (lane task list ids are the user's Google list ids)
+- UI and drag logic: the shared `KanbanBoards` in `react-lib-tasks`; this app supplies its auth adapter, the board store (`createRemoteKanbanStore` over `/api/kanban/boards`) and the voice button
+- Route: `src/app/api/kanban/boards/route.ts` via `createKanbanBoardsRouteHandlers` (secret key, scoped by email); schema in `supabase/migrations/20261125000200_ensure_app_kanban_boards.sql`
 - User email resolved from the Supabase bearer token by `getUserEmail` (`libs/server-auth.ts`)
-- One-time migration: when the user's Mongo doc is empty, existing `localStorage` boards + `google-tasks-sort-mode-*` keys upload, then `localStorage` keys cleared
+- Boards were copied once from the MongoDB `kanban_boards` collection (still in Mongo, unused)
+- One-time migration: when the user's row is empty, existing `localStorage` boards + `google-tasks-sort-mode-*` keys upload, then `localStorage` keys cleared
 - Standalone `GoogleTasksComponent` (outside the board) still uses `localStorage` for sort mode
-- Last-write-wins: each change overwrites the whole user doc (no merge / concurrency control)
+- Last-write-wins: each change overwrites the whole user row (no merge / concurrency control), so two open tabs or apps overwrite each other's boards
 
 ## Drag Overlays
 

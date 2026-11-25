@@ -15,6 +15,7 @@ Run Tasks from the `iamharryliu/tasks-next` image against your own Supabase proj
 2. A Supabase project with the Google provider enabled, using that client's ID and secret.
 3. In Supabase's URL configuration, the exact `https://<your host>/auth/callback` on the redirect allow-list. A `/*` entry does not match it ([Embed](./embed.md#sign-in)).
 4. The `google_oauth_tokens` table: run [`supabase/migrations/20261114000000_ensure_google_oauth_tokens.sql`](../../supabase/migrations/20261114000000_ensure_google_oauth_tokens.sql) in the project's SQL editor.
+5. Optional, for Database storage and kanban boards in Google or Database mode: run [`20261125000000_create_app_tasks.sql`](../../supabase/migrations/20261125000000_create_app_tasks.sql) and [`20261125000100_create_app_kanban_boards.sql`](../../supabase/migrations/20261125000100_create_app_kanban_boards.sql) the same way. Local mode needs neither.
 
 ## Run from Registry
 

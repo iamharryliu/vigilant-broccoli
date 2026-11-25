@@ -5,3 +5,5 @@ export * from './lib/TaskCapture';
 export * from './lib/TaskChecklist';
 export * from './lib/recurrence';
 export * from './lib/TaskScheduleFields';
+export * from './lib/kanban/KanbanBoards';
+export * from './lib/kanban/kanban-store';

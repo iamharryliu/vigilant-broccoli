@@ -1,34 +1,41 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import { Pencil, Star, Trash2 } from 'lucide-react';
 import {
+  Badge,
   Button,
   CardContainer,
-  DeleteItemConfirmationDialog,
-  IconButton,
+  EllipsisCTA,
   Input,
 } from '@vigilant-broccoli/react-lib';
 import type { TaskList } from '../hooks/use-task-lists';
 import { useTranslation } from '../i18n';
 
 const KEY = { ENTER: 'Enter', ESCAPE: 'Escape' } as const;
+const ACTION_ICON_SIZE = 16;
 
 function TaskListRow({
   taskList,
+  activeTaskCount,
   isDefault,
+  isDeletable,
   onRename,
+  onSetDefault,
   onDelete,
   onError,
 }: {
   taskList: TaskList;
+  activeTaskCount: number | undefined;
   isDefault: boolean;
+  isDeletable: boolean;
   onRename: (title: string) => Promise<void>;
+  onSetDefault: () => void;
   onDelete: () => Promise<void>;
   onError: () => void;
 }) {
   const { t } = useTranslation();
   const [draftTitle, setDraftTitle] = useState<string | null>(null);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const saveRename = async () => {
     const title = draftTitle?.trim();
@@ -40,7 +47,18 @@ function TaskListRow({
   return (
     <li className="flex items-center gap-2">
       {draftTitle === null ? (
-        <span className="min-w-0 flex-1 truncate">{taskList.title}</span>
+        <>
+          <span className="min-w-0 truncate">{taskList.title}</span>
+          {isDefault && (
+            <Badge color="blue">{t('SETTINGS.TASK_LISTS.DEFAULT_BADGE')}</Badge>
+          )}
+          <span className="flex-1" />
+          {activeTaskCount !== undefined && (
+            <Badge color="gray" title={t('SETTINGS.TASK_LISTS.COUNT_TITLE')}>
+              {activeTaskCount}
+            </Badge>
+          )}
+        </>
       ) : (
         <Input
           autoFocus
@@ -54,32 +72,37 @@ function TaskListRow({
           }}
         />
       )}
-      <IconButton
-        variant="ghost"
-        icon="edit"
-        title={t('SETTINGS.TASK_LISTS.RENAME')}
-        onClick={() => setDraftTitle(taskList.title)}
-      />
-      {/* Google refuses to delete the default list, which it returns first. */}
-      <IconButton
-        variant="ghost"
-        icon="trash"
-        disabled={isDefault}
-        title={
-          isDefault
-            ? t('SETTINGS.TASK_LISTS.DEFAULT_UNDELETABLE')
-            : t('SETTINGS.TASK_LISTS.DELETE')
-        }
-        onClick={() => setIsDeleteOpen(true)}
-      />
-      <DeleteItemConfirmationDialog
-        open={isDeleteOpen}
-        onOpenChange={setIsDeleteOpen}
-        title={t('SETTINGS.TASK_LISTS.DELETE_TITLE')}
-        description={t('SETTINGS.TASK_LISTS.DELETE_DESCRIPTION', {
-          title: taskList.title,
-        })}
-        deleteItem={() => onDelete().catch(onError)}
+      {/* Only Google refuses to delete its default list, which it returns
+          first; the local and database stores can delete any list but the last. */}
+      <EllipsisCTA
+        actions={[
+          {
+            label: t('SETTINGS.TASK_LISTS.RENAME'),
+            icon: <Pencil size={ACTION_ICON_SIZE} />,
+            onSelect: () => setDraftTitle(taskList.title),
+          },
+          {
+            label: t('SETTINGS.TASK_LISTS.SET_DEFAULT'),
+            icon: <Star size={ACTION_ICON_SIZE} />,
+            disabled: isDefault,
+            onSelect: onSetDefault,
+          },
+          {
+            label: isDeletable
+              ? t('SETTINGS.TASK_LISTS.DELETE')
+              : t('SETTINGS.TASK_LISTS.DEFAULT_UNDELETABLE'),
+            color: 'red',
+            disabled: !isDeletable,
+            onSelect: () => onDelete().catch(onError),
+            confirm: {
+              title: t('SETTINGS.TASK_LISTS.DELETE_TITLE'),
+              description: t('SETTINGS.TASK_LISTS.DELETE_DESCRIPTION', {
+                title: taskList.title,
+              }),
+              confirmLabel: t('SETTINGS.TASK_LISTS.DELETE'),
+            },
+          },
+        ]}
       />
     </li>
   );
@@ -87,16 +110,26 @@ function TaskListRow({
 
 export function TaskListsManager({
   taskLists,
+  activeTaskCounts,
   loadFailed,
+  defaultTaskListId,
+  canDeleteFirstList,
   createTaskList,
   renameTaskList,
   deleteTaskList,
+  deleteTaskLists,
+  setDefaultTaskList,
 }: {
   taskLists: TaskList[] | null;
+  activeTaskCounts: Record<string, number>;
   loadFailed: boolean;
-  createTaskList: (title: string) => Promise<void>;
+  defaultTaskListId: string | null;
+  canDeleteFirstList: boolean;
+  createTaskList: (title: string) => Promise<unknown>;
   renameTaskList: (taskListId: string, title: string) => Promise<void>;
   deleteTaskList: (taskListId: string) => Promise<void>;
+  deleteTaskLists: (taskListIds: string[]) => Promise<void>;
+  setDefaultTaskList: (taskListId: string | null) => void;
 }) {
   const { t } = useTranslation();
   const [newTitle, setNewTitle] = useState('');
@@ -119,6 +152,29 @@ export function TaskListsManager({
     }
   };
 
+  // A stored default whose list was deleted falls back to the first list.
+  const effectiveDefaultId = taskLists?.some(
+    list => list.id === defaultTaskListId,
+  )
+    ? defaultTaskListId
+    : taskLists?.[0]?.id;
+
+  // Google keeps its first list, so only the others are deletable there.
+  const deletableIds = (taskLists ?? [])
+    .filter((_, index) => canDeleteFirstList || index !== 0)
+    .map(list => list.id);
+
+  const handleDeleteAll = async () => {
+    setActionFailed(false);
+    await deleteTaskLists(deletableIds).catch(() => setActionFailed(true));
+    setDefaultTaskList(null);
+  };
+
+  const handleDelete = async (taskListId: string) => {
+    await deleteTaskList(taskListId);
+    if (taskListId === defaultTaskListId) setDefaultTaskList(null);
+  };
+
   const renderLists = () => {
     if (loadFailed) return <p>{t('SETTINGS.EXPORT.LOAD_FAILED')}</p>;
     if (!taskLists) return <p>{t('SETTINGS.EXPORT.LOADING')}</p>;
@@ -128,9 +184,14 @@ export function TaskListsManager({
           <TaskListRow
             key={taskList.id}
             taskList={taskList}
-            isDefault={index === 0}
+            activeTaskCount={activeTaskCounts[taskList.id]}
+            isDefault={taskList.id === effectiveDefaultId}
+            isDeletable={
+              canDeleteFirstList ? taskLists.length > 1 : index !== 0
+            }
             onRename={title => renameTaskList(taskList.id, title)}
-            onDelete={() => deleteTaskList(taskList.id)}
+            onSetDefault={() => setDefaultTaskList(taskList.id)}
+            onDelete={() => handleDelete(taskList.id)}
             onError={() => setActionFailed(true)}
           />
         ))}
@@ -139,9 +200,30 @@ export function TaskListsManager({
   };
 
   return (
-    <CardContainer title={t('SETTINGS.TASK_LISTS.TITLE')}>
+    <CardContainer
+      title={t('SETTINGS.TASK_LISTS.TITLE')}
+      headerAction={
+        <EllipsisCTA
+          actions={[
+            {
+              label: t('SETTINGS.TASK_LISTS.DELETE_ALL'),
+              icon: <Trash2 size={ACTION_ICON_SIZE} />,
+              color: 'red',
+              disabled: deletableIds.length === 0,
+              onSelect: handleDeleteAll,
+              confirm: {
+                title: t('SETTINGS.TASK_LISTS.DELETE_ALL_TITLE'),
+                description: canDeleteFirstList
+                  ? t('SETTINGS.TASK_LISTS.DELETE_ALL_DESCRIPTION_RECREATED')
+                  : t('SETTINGS.TASK_LISTS.DELETE_ALL_DESCRIPTION'),
+                confirmLabel: t('SETTINGS.TASK_LISTS.DELETE_ALL'),
+              },
+            },
+          ]}
+        />
+      }
+    >
       <div className="flex flex-col gap-3">
-        {renderLists()}
         <form
           className="flex gap-2"
           onSubmit={event => void handleCreate(event)}
@@ -156,6 +238,7 @@ export function TaskListsManager({
             {t('SETTINGS.TASK_LISTS.CREATE')}
           </Button>
         </form>
+        {renderLists()}
         {actionFailed && (
           <p className="text-destructive">{t('SETTINGS.TASK_LISTS.FAILED')}</p>
         )}

@@ -161,6 +161,7 @@ export const createGoogleTasksRouteHandlers = (
           accessToken,
           body.taskListId ?? DEFAULT_TASK_LIST_ID,
           body.title,
+          { notes: body.notes, due: body.due, status: body.status },
         );
         return Response.json({ task });
       }),

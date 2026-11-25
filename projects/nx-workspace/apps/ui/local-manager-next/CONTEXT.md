@@ -23,11 +23,11 @@ Next's webpack cache can miss Tailwind classes added only in workspace libs. `ne
 
 ### A failed kanban board fetch must not look like a brand-new account
 
-Keep failed loads distinct from confirmed-empty state in `kanban.component.tsx`: `fetchKanbanState` returns `{ ok: false }` on failure and hydration exits. Falling through to default-board creation would immediately upsert over the user's saved MongoDB boards. The same distinction is necessary in any new hydration flow that saves defaults.
+Keep failed loads distinct from confirmed-empty state in the shared `KanbanBoards` (`react-lib-tasks/src/lib/kanban/KanbanBoards.tsx`): a store's `load` returns `{ ok: false }` on failure and hydration exits. Falling through to default-board creation would immediately upsert over the user's saved MongoDB boards. The same distinction is necessary in any new hydration flow that saves defaults.
 
 ### Kanban's cross-lane drag reads CheckList's internal dnd-kit payload
 
-`kanban.component.tsx` owns the `DndContext` around lanes using `GoogleTasksComponent` with `disableInternalDndContext`. Its handlers and `TaskDragOverlay` read CheckList's untyped payload: `type: 'task'`, `task`, `taskListId`, and droppable `type: 'taskList'`.
+`KanbanBoards` (shared with tasks-next; local-manager's `kanban.component.tsx` only supplies the MongoDB store) owns the `DndContext` around lanes using `GoogleTasksComponent` with `disableInternalDndContext`. Its handlers and `TaskDragOverlay` read CheckList's untyped payload: `type: 'task'`, `task`, `taskListId`, and droppable `type: 'taskList'`.
 
 Despite CheckList's generic typed props, these literals remain task-specific for this consumer. If changing `libs/@vigilant-broccoli/react-lib-checklist/src/lib/CheckList.tsx`'s payload, update the kanban handlers together; TypeScript does not check this coupling.
 

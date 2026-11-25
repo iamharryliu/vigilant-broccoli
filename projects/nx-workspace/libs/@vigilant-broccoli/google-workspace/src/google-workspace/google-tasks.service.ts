@@ -121,11 +121,12 @@ export const createTask = async (
   accessToken: string,
   taskListId: string,
   title: string,
+  fields: Omit<TaskPatch, 'title'> = {},
 ): Promise<GoogleTask> => {
   const client = createClient(accessToken);
   const res = await client.tasks.insert({
     tasklist: taskListId,
-    requestBody: { title },
+    requestBody: { ...fields, title },
   });
   return mapTask(res.data);
 };
