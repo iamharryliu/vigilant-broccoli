@@ -32,7 +32,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### tasks-next
 
-- Kanban boards can be framed by other apps at `/embed/board`, which borrows the embedding page's session, and the board sidebar's left padding is tighter (PR: pending).
+- Kanban boards can be framed by other apps at `/embed/board`, which borrows the embedding page's session, and the board sidebar's left padding is tighter ([#1779](https://github.com/iamharryliu/vigilant-broccoli/pull/1779)).
 - New Google Tasks app at tasks.harryliu.dev, which the manager apps also embed. Sign-in from an embed opens a popup and hands the session back to the frame ([#1600](https://github.com/iamharryliu/vigilant-broccoli/pull/1600), [#1601](https://github.com/iamharryliu/vigilant-broccoli/pull/1601)).
 - Only the manager apps can embed it, and their frames are sandboxed ([#1603](https://github.com/iamharryliu/vigilant-broccoli/pull/1603)).
 - Embedded views fill their frame without padding or a card border ([#1610](https://github.com/iamharryliu/vigilant-broccoli/pull/1610)).
@@ -183,7 +183,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### local-manager-next
 
-- The Kanban page frames the board from Tasks, signed in with the manager's own session, so it shows the same boards and no longer has a separate native board (PR: pending).
+- The Kanban page frames the board from Tasks, signed in with the manager's own session, so it shows the same boards and no longer has a separate native board ([#1779](https://github.com/iamharryliu/vigilant-broccoli/pull/1779)).
 - The embedded calendar now shows event times in your current timezone instead of always Copenhagen time ([#1751](https://github.com/iamharryliu/vigilant-broccoli/pull/1751)).
 - Local services now live under vigilant-broccoli.internal (manager, grafana, loki, images, headlamp, argocd and job-hunt), so they no longer share names with the public vigilant-broccoli.app hosts; update `/etc/hosts` from `infrastructure/local/hosts` and rerun the k3s apply ([#1715](https://github.com/iamharryliu/vigilant-broccoli/pull/1715)).
 - Settings is now split into Appearance, Keyboard Shortcuts and Account sections. The keyboard shortcuts cheatsheet is a table, and Sign Out moved from the sidebar to the Account section ([#1693](https://github.com/iamharryliu/vigilant-broccoli/pull/1693)).
