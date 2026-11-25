@@ -1,6 +1,6 @@
 #!/bin/bash
 # Prints the GitHub App installation token the
-# manual-refresh-code-server-github-token workflow last delivered to the VM,
+# cron-refresh-code-server-github-token workflow last delivered to the VM,
 # refusing once it has expired. Installed as /usr/local/bin/gh-token by the
 # code-server Dockerfile; the gh wrapper feeds it to gh and to git's
 # `gh auth git-credential` helper.

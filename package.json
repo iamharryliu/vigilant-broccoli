@@ -76,7 +76,7 @@
     "logs:shipper:status": "flyctl status --app vb-log-shipper",
     "logs:shipper:logs": "flyctl logs --app vb-log-shipper",
     "gh:actions:replace-code-server": "gh workflow run manual-replace-code-server --repo iamharryliu/vigilant-broccoli",
-    "gh:actions:refresh-code-server-github-token": "gh workflow run manual-refresh-code-server-github-token --repo iamharryliu/vigilant-broccoli",
+    "gh:actions:refresh-code-server-github-token": "gh workflow run cron-refresh-code-server-github-token --repo iamharryliu/vigilant-broccoli",
     "gcp:vm:ssh": "gcloud compute ssh vb-free-vm --zone=us-central1-a --tunnel-through-iap",
     "gcp:vm:status": "gcloud compute instances describe vb-free-vm --zone=us-central1-a --format='value(status)'",
     "gcp:vm:stop": "gcloud compute instances stop vb-free-vm --zone=us-central1-a",

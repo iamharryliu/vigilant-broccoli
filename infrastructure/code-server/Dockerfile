@@ -74,7 +74,7 @@ RUN npm install -g '@anthropic-ai/claude-code@>=2.1.277' @openai/codex pnpm@11.9
 # GitHub access reuses the agent sandbox's GitHub App (Contents + Pull requests
 # + Workflows RW, no ruleset bypass on main, so it can push branches and open
 # PRs) without its private key ever reaching this VM: the
-# manual-refresh-code-server-github-token workflow mints a 1-hour installation
+# cron-refresh-code-server-github-token workflow mints a 1-hour installation
 # token in CI and drops it in /run/secrets/gh-token.json, gh-token reads it,
 # and the gh wrapper shadows /usr/bin/gh so `gh` and git's
 # `gh auth git-credential` helper carry it.
