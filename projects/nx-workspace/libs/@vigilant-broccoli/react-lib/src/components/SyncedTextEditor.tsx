@@ -11,6 +11,7 @@ import { findChangedSpan } from '../utils/text-diff.utils';
 const DEFAULT_PLACEHOLDER = 'Quick notes...';
 const UNDO_KEY = 'z';
 const REDO_KEY = 'y';
+const DELETE_LINE_KEY = 'k';
 const TAB_SIZE = 2;
 const TAB_SPACES = ' '.repeat(TAB_SIZE);
 
@@ -166,6 +167,52 @@ const moveLine = (
   };
 };
 
+const deleteLines = (
+  value: string,
+  selectionStart: number,
+  selectionEnd: number,
+): PendingEdit | null => {
+  if (!value) return null;
+  const { start: blockStart } = getLineBounds(value, selectionStart);
+  // A selection ending at a line start doesn't touch that line.
+  const endsAtLineStart =
+    selectionEnd > selectionStart && value[selectionEnd - 1] === '\n';
+  const { end: blockEnd } = getLineBounds(
+    value,
+    endsAtLineStart ? selectionEnd - 1 : selectionEnd,
+  );
+
+  if (blockEnd === value.length) {
+    // Last line has no trailing newline, so take the preceding one instead.
+    const newValue = value.slice(0, Math.max(0, blockStart - 1));
+    return {
+      value: newValue,
+      selectionStart: newValue.length,
+      selectionEnd: newValue.length,
+    };
+  }
+
+  const newValue = value.slice(0, blockStart) + value.slice(blockEnd + 1);
+  const column = selectionStart - blockStart;
+  const nextLineLength = getLineBounds(newValue, blockStart).end - blockStart;
+  const caret = blockStart + Math.min(column, nextLineLength);
+  return { value: newValue, selectionStart: caret, selectionEnd: caret };
+};
+
+const handleDeleteLineKey = (
+  e: KeyboardEvent<HTMLTextAreaElement>,
+  textarea: HTMLTextAreaElement,
+  applyEdit: (edit: PendingEdit) => void,
+) => {
+  e.preventDefault();
+  const edit = deleteLines(
+    textarea.value,
+    textarea.selectionStart,
+    textarea.selectionEnd,
+  );
+  if (edit) applyEdit(edit);
+};
+
 const handleAltArrowKey = (
   e: KeyboardEvent<HTMLTextAreaElement>,
   textarea: HTMLTextAreaElement,
@@ -311,6 +358,14 @@ export const SyncedTextEditor = ({
     }
     if (e.key === 'Tab') {
       handleTabKey(e, textarea, applyEdit);
+      return;
+    }
+    if (
+      (e.metaKey || e.ctrlKey) &&
+      e.shiftKey &&
+      e.key.toLowerCase() === DELETE_LINE_KEY
+    ) {
+      handleDeleteLineKey(e, textarea, applyEdit);
       return;
     }
     if (e.metaKey || e.ctrlKey) handleUndoRedoKey(e, onUndo, onRedo);
