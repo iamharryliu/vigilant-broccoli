@@ -15,7 +15,9 @@ import {
   DialogTitle,
   DialogClose,
   EllipsisCTA,
-  KanbanLaneFrame,
+  KANBAN_LANE_DRAG_TYPE,
+  KanbanSortableLane,
+  useKanbanLaneReorder,
 } from '@vigilant-broccoli/react-lib';
 import { CreateTasksDialog } from '../CreateTasksDialog';
 import {
@@ -122,7 +124,6 @@ const createDefaultBoard = (): Board => ({
 
 const DRAG_TYPE = {
   TASK: 'task',
-  LANE: 'lane',
   BOARD: 'board',
 } as const;
 
@@ -433,34 +434,6 @@ const SortableLane = ({
   onSortModeChange,
   onTasksCreated,
 }: SortableLaneProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef: setSortableRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: lane.id,
-    data: { type: DRAG_TYPE.LANE, lane },
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? LANE_OPACITY.DRAGGING : LANE_OPACITY.DEFAULT,
-  };
-
-  if (isDragging) {
-    return (
-      <div
-        ref={setSortableRef}
-        style={style}
-        className="w-80 h-64 flex-shrink-0 rounded-lg border-2 border-dashed border-blue-400 bg-blue-50 dark:bg-blue-950 opacity-50"
-      />
-    );
-  }
-
   const laneHighlight = isTaskDragOver
     ? 'bg-blue-50 dark:bg-blue-950'
     : isDraggingTask
@@ -468,63 +441,63 @@ const SortableLane = ({
       : '';
 
   return (
-    <KanbanLaneFrame
-      ref={setSortableRef}
-      style={style}
+    <KanbanSortableLane
+      lane={lane}
       isOver={isTaskDragOver}
       className={`gap-2 w-80 transition-all duration-150 h-full overflow-hidden ${laneHighlight}`}
     >
-      <div className="flex-1 overflow-y-auto min-h-0">
-        <GoogleTasksComponent
-          auth={auth}
-          taskListId={lane.taskListId}
-          showSelector={false}
-          enableDragDrop={true}
-          enableSearch={false}
-          titleProps={{
-            ...attributes,
-            ...listeners,
-            className: isDraggingLane
-              ? 'cursor-grabbing'
-              : 'cursor-grab active:cursor-grabbing',
-          }}
-          headerLeading={
-            <GripVertical
-              size={15}
-              className="opacity-40 hover:opacity-70 flex-shrink-0"
-            />
-          }
-          headerActions={
-            <ConfirmDeleteDialog
-              trigger={<CloseButton />}
-              title="Remove Lane"
-              description={`Remove "${taskList?.title ?? 'this lane'}" from the board?`}
-              onConfirm={() => onRemove(boardId, lane.id)}
-            />
-          }
-          refreshTrigger={refreshTrigger}
-          disableInternalDndContext={true}
-          dragOverTask={dragOverTask}
-          sortMode={sortMode ?? SORT_MODE.DEFAULT}
-          onSortModeChange={onSortModeChange}
-          addTaskActions={
-            <CreateTasksDialog
-              trigger={
-                <IconButton
-                  icon="bot"
-                  variant="outline"
-                  aria-label={CREATE_TASKS_LABEL}
-                />
-              }
-              auth={auth}
-              taskListId={lane.taskListId}
-              onCreated={onTasksCreated}
-              renderVoiceAction={renderVoiceAction}
-            />
-          }
-        />
-      </div>
-    </KanbanLaneFrame>
+      {dragHandleProps => (
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <GoogleTasksComponent
+            auth={auth}
+            taskListId={lane.taskListId}
+            showSelector={false}
+            enableDragDrop={true}
+            enableSearch={false}
+            titleProps={{
+              ...dragHandleProps,
+              className: isDraggingLane
+                ? 'cursor-grabbing'
+                : 'cursor-grab active:cursor-grabbing',
+            }}
+            headerLeading={
+              <GripVertical
+                size={15}
+                className="opacity-40 hover:opacity-70 flex-shrink-0"
+              />
+            }
+            headerActions={
+              <ConfirmDeleteDialog
+                trigger={<CloseButton />}
+                title="Remove Lane"
+                description={`Remove "${taskList?.title ?? 'this lane'}" from the board?`}
+                onConfirm={() => onRemove(boardId, lane.id)}
+              />
+            }
+            refreshTrigger={refreshTrigger}
+            disableInternalDndContext={true}
+            dragOverTask={dragOverTask}
+            sortMode={sortMode ?? SORT_MODE.DEFAULT}
+            onSortModeChange={onSortModeChange}
+            addTaskActions={
+              <CreateTasksDialog
+                trigger={
+                  <IconButton
+                    icon="bot"
+                    variant="outline"
+                    aria-label={CREATE_TASKS_LABEL}
+                  />
+                }
+                auth={auth}
+                taskListId={lane.taskListId}
+                onCreated={onTasksCreated}
+                renderVoiceAction={renderVoiceAction}
+              />
+            }
+          />
+        </div>
+      )}
+    </KanbanSortableLane>
   );
 };
 
@@ -634,10 +607,18 @@ export const KanbanBoards = ({
   } = useBoards(status === 'authenticated', store);
   const [selectedTaskListId, setSelectedTaskListId] = useState<string>('');
   const [activeTask, setActiveTask] = useState<TaskDragData | null>(null);
-  const [activeLane, setActiveLane] = useState<Lane | null>(null);
   const [activeBoard_dnd, setActiveBoard_dnd] = useState<Board | null>(null);
   const [overTaskListId, setOverTaskListId] = useState<string | null>(null);
-  const [draggingLanes, setDraggingLanes] = useState<Lane[] | null>(null);
+  const laneReorder = useKanbanLaneReorder({
+    lanes: activeBoard?.lanes ?? [],
+    onReorder: lanes => activeBoard && reorderLanes(activeBoard.id, lanes),
+    // A lane dragged over a task row or list resolves to the lane that holds that list.
+    resolveOverLaneId: (over, lanes) =>
+      over.data.current?.type === KANBAN_LANE_DRAG_TYPE
+        ? String(over.id)
+        : lanes.find(l => l.taskListId === over.data.current?.taskListId)?.id,
+  });
+  const activeLane = laneReorder.activeLane;
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showNewBoardForm, setShowNewBoardForm] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
@@ -830,60 +811,29 @@ export const KanbanBoards = ({
 
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
+      if (laneReorder.onDragStart(event)) return;
       const { active } = event;
       const dragType = active.data.current?.type;
 
       if (dragType === DRAG_TYPE.TASK) {
         setActiveTask(active.data.current as TaskDragData);
-      } else if (dragType === DRAG_TYPE.LANE) {
-        setActiveLane(active.data.current?.lane);
-        setDraggingLanes(activeBoard?.lanes ?? null);
       } else if (dragType === DRAG_TYPE.BOARD) {
         setActiveBoard_dnd(active.data.current?.board);
       }
     },
-    [activeBoard],
+    [laneReorder],
   );
 
-  const handleDragOver = useCallback((event: DragOverEvent) => {
-    const { active, over } = event;
-    const dragType = active.data.current?.type;
-
-    if (dragType === DRAG_TYPE.TASK) {
-      setOverTaskListId(over?.data.current?.taskListId ?? null);
-      return;
-    }
-
-    if (dragType === DRAG_TYPE.LANE && over) {
-      setDraggingLanes(prev => {
-        if (!prev) return prev;
-
-        const overLaneId =
-          over.data.current?.type === DRAG_TYPE.LANE
-            ? (over.id as string)
-            : over.data.current?.taskListId
-              ? prev.find(l => l.taskListId === over.data.current?.taskListId)
-                  ?.id
-              : undefined;
-
-        if (!overLaneId) return prev;
-
-        const oldIndex = prev.findIndex(l => l.id === active.id);
-        const newIndex = prev.findIndex(l => l.id === overLaneId);
-        if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex)
-          return prev;
-        return arrayMove(prev, oldIndex, newIndex);
-      });
-    }
-  }, []);
-
-  const handleLaneDragEnd = useCallback(() => {
-    setActiveLane(null);
-    if (activeBoard && draggingLanes) {
-      reorderLanes(activeBoard.id, draggingLanes);
-    }
-    setDraggingLanes(null);
-  }, [activeBoard, draggingLanes, reorderLanes]);
+  const handleDragOver = useCallback(
+    (event: DragOverEvent) => {
+      if (laneReorder.onDragOver(event)) return;
+      const { active, over } = event;
+      if (active.data.current?.type === DRAG_TYPE.TASK) {
+        setOverTaskListId(over?.data.current?.taskListId ?? null);
+      }
+    },
+    [laneReorder],
+  );
 
   const handleTaskReorder = useCallback(
     async (taskListId: string, taskId: string, overTaskId: string) => {
@@ -1000,28 +950,27 @@ export const KanbanBoards = ({
 
   const resetDragState = useCallback(() => {
     setActiveTask(null);
-    setActiveLane(null);
     setActiveBoard_dnd(null);
     setOverTaskListId(null);
-    setDraggingLanes(null);
-  }, []);
+    laneReorder.onDragCancel();
+  }, [laneReorder]);
 
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
       const { active, over } = event;
       const dragType = active.data.current?.type;
 
-      if (dragType === DRAG_TYPE.BOARD) {
-        handleBoardDragEnd(active, over);
-      } else if (dragType === DRAG_TYPE.LANE) {
-        handleLaneDragEnd();
-      } else if (dragType === DRAG_TYPE.TASK) {
-        await handleTaskDragEnd(active, over);
+      if (!laneReorder.onDragEnd(event)) {
+        if (dragType === DRAG_TYPE.BOARD) {
+          handleBoardDragEnd(active, over);
+        } else if (dragType === DRAG_TYPE.TASK) {
+          await handleTaskDragEnd(active, over);
+        }
       }
 
       resetDragState();
     },
-    [handleBoardDragEnd, handleLaneDragEnd, handleTaskDragEnd, resetDragState],
+    [handleBoardDragEnd, handleTaskDragEnd, laneReorder, resetDragState],
   );
 
   const availableTaskLists = taskLists.filter(
@@ -1334,11 +1283,9 @@ export const KanbanBoards = ({
                 onClick={() => setSearchOpen(true)}
               />
             </div>
-            <SortableContext
-              items={(draggingLanes ?? activeBoard?.lanes ?? []).map(l => l.id)}
-            >
+            <SortableContext items={laneReorder.lanes.map(l => l.id)}>
               <div className="flex gap-2 overflow-x-auto pb-4 h-full">
-                {(draggingLanes ?? activeBoard?.lanes ?? []).map(lane => {
+                {laneReorder.lanes.map(lane => {
                   const taskList = taskLists.find(
                     list => list.id === lane.taskListId,
                   );

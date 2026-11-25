@@ -12,6 +12,9 @@
 - `renderCard` draws card content (also used for the drag overlay); `renderLaneFooter` adds per-lane actions
 - Dropping on an empty lane area appends to that lane
 
-## Lane frame
+## Lane frame and reordering
 
-- `KanbanLaneFrame`: the lane shell (`header`, `footer`, `isOver` drop ring, forwarded ref and `className`) shared by `KanbanBoard` and react-lib-tasks' `KanbanBoards`, whose lanes keep their own sortable behavior and `CheckList` cards
+- `onReorderLanes(laneIds)` on `KanbanBoard` makes lanes draggable by their grip handle; the board previews the new order while dragging and reports it on drop
+- `KanbanLaneFrame`: the lane shell (`header`, `footer`, `isOver` drop ring, forwarded ref and `className`)
+- `KanbanSortableLane` + `useKanbanLaneReorder`: the sortable lane and its live-reorder state, for boards that own their `DndContext`. Forward the context's `onDragStart`/`onDragOver`/`onDragEnd`/`onDragCancel` to the hook (each returns whether it was a lane drag) and render its `lanes`
+- react-lib-tasks' `KanbanBoards` uses these for lanes; task cards and sidebar boards stay its own, since cards are CheckList rows

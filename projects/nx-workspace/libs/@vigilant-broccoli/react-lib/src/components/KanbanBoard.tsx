@@ -12,18 +12,17 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
+  horizontalListSortingStrategy,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import {
-  ComponentPropsWithoutRef,
-  forwardRef,
-  ReactNode,
-  useState,
-} from 'react';
+import { GripVertical } from 'lucide-react';
+import { ComponentPropsWithoutRef, ReactNode, useState } from 'react';
 import { cn } from '../utils/cn';
+import { KanbanLaneFrame } from './KanbanLaneFrame';
+import { KanbanSortableLane, useKanbanLaneReorder } from './KanbanLaneDnd';
 import { Text } from './Text';
 
 export type KanbanCard = {
@@ -48,6 +47,8 @@ type KanbanBoardProps<TCard extends KanbanCard> = {
   cards: TCard[];
   renderCard: (card: TCard) => ReactNode;
   onMoveCard: (move: KanbanMove) => void;
+  // Opts lanes into drag reordering; receives the new lane id order.
+  onReorderLanes?: (laneIds: string[]) => void;
   renderLaneFooter?: (lane: KanbanLane) => ReactNode;
   emptyLaneLabel?: ReactNode;
   className?: string;
@@ -56,34 +57,6 @@ type KanbanBoardProps<TCard extends KanbanCard> = {
 const LANE_PREFIX = 'lane:';
 
 const toLaneDropId = (laneId: string) => `${LANE_PREFIX}${laneId}`;
-
-type KanbanLaneFrameProps = Omit<
-  ComponentPropsWithoutRef<'section'>,
-  'title'
-> & {
-  header?: ReactNode;
-  footer?: ReactNode;
-  isOver?: boolean;
-};
-
-export const KanbanLaneFrame = forwardRef<HTMLElement, KanbanLaneFrameProps>(
-  ({ header, footer, isOver, className, children, ...rest }, ref) => (
-    <section
-      ref={ref}
-      className={cn(
-        'flex shrink-0 flex-col rounded-lg',
-        isOver && 'ring-2 ring-blue-400',
-        className,
-      )}
-      {...rest}
-    >
-      {header}
-      {children}
-      {footer}
-    </section>
-  ),
-);
-KanbanLaneFrame.displayName = 'KanbanLaneFrame';
 
 const KanbanSortableCard = ({
   id,
@@ -122,45 +95,76 @@ const KanbanLaneColumn = ({
   cardIds,
   emptyLabel,
   footer,
+  reorderable,
   children,
 }: {
   lane: KanbanLane;
   cardIds: string[];
   emptyLabel: ReactNode;
   footer?: ReactNode;
+  reorderable: boolean;
   children: ReactNode;
 }) => {
   const { setNodeRef, isOver } = useDroppable({ id: toLaneDropId(lane.id) });
 
-  return (
-    <KanbanLaneFrame
+  const renderHeader = (dragHandleProps?: ComponentPropsWithoutRef<'div'>) => (
+    <header className="flex items-center justify-between gap-2">
+      <div
+        {...dragHandleProps}
+        className={cn(
+          'flex flex-1 items-center gap-1',
+          dragHandleProps && 'cursor-grab touch-none active:cursor-grabbing',
+        )}
+      >
+        {dragHandleProps && (
+          <GripVertical size={15} className="opacity-40 hover:opacity-70" />
+        )}
+        <Text size="2" weight="bold">
+          {lane.title}
+        </Text>
+      </div>
+      <Text size="1" color="gray">
+        {cardIds.length}
+      </Text>
+    </header>
+  );
+
+  const body = (
+    <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
+      <div ref={setNodeRef} className="flex min-h-16 flex-col gap-2">
+        {cardIds.length === 0 ? (
+          <div className="rounded-md border border-dashed border-gray-300 p-3 text-center dark:border-gray-600">
+            <Text size="1" color="gray">
+              {emptyLabel}
+            </Text>
+          </div>
+        ) : (
+          children
+        )}
+      </div>
+    </SortableContext>
+  );
+
+  const className = 'w-72 gap-3 bg-gray-100 p-3 dark:bg-gray-900';
+
+  return reorderable ? (
+    <KanbanSortableLane
+      lane={lane}
       isOver={isOver}
-      className="w-72 gap-3 bg-gray-100 p-3 dark:bg-gray-900"
-      header={
-        <header className="flex items-center justify-between gap-2">
-          <Text size="2" weight="bold">
-            {lane.title}
-          </Text>
-          <Text size="1" color="gray">
-            {cardIds.length}
-          </Text>
-        </header>
-      }
+      className={className}
+      header={renderHeader}
       footer={footer}
     >
-      <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
-        <div ref={setNodeRef} className="flex min-h-16 flex-col gap-2">
-          {cardIds.length === 0 ? (
-            <div className="rounded-md border border-dashed border-gray-300 p-3 text-center dark:border-gray-600">
-              <Text size="1" color="gray">
-                {emptyLabel}
-              </Text>
-            </div>
-          ) : (
-            children
-          )}
-        </div>
-      </SortableContext>
+      {body}
+    </KanbanSortableLane>
+  ) : (
+    <KanbanLaneFrame
+      isOver={isOver}
+      className={className}
+      header={renderHeader()}
+      footer={footer}
+    >
+      {body}
     </KanbanLaneFrame>
   );
 };
@@ -170,6 +174,7 @@ export const KanbanBoard = <TCard extends KanbanCard>({
   cards,
   renderCard,
   onMoveCard,
+  onReorderLanes,
   renderLaneFooter,
   emptyLaneLabel = 'No cards',
   className,
@@ -182,16 +187,30 @@ export const KanbanBoard = <TCard extends KanbanCard>({
     }),
   );
 
+  const laneReorder = useKanbanLaneReorder({
+    lanes,
+    onReorder: reordered => onReorderLanes?.(reordered.map(lane => lane.id)),
+    resolveOverLaneId: over => {
+      const overId = String(over.id);
+      if (overId.startsWith(LANE_PREFIX))
+        return overId.slice(LANE_PREFIX.length);
+      return (
+        lanes.find(lane => lane.id === overId)?.id ??
+        cards.find(card => card.id === overId)?.laneId
+      );
+    },
+  });
+
   const cardsByLane = (laneId: string) =>
     cards.filter(card => card.laneId === laneId);
   const activeCard = cards.find(card => card.id === activeId);
 
-  // `over` is either a lane droppable (empty area) or another card.
+  // `over` is a lane droppable or lane (empty area, appends) or another card.
   const resolveTarget = (overId: string) => {
-    if (overId.startsWith(LANE_PREFIX)) {
-      const laneId = overId.slice(LANE_PREFIX.length);
-      return { laneId, index: cardsByLane(laneId).length };
-    }
+    const laneId = overId.startsWith(LANE_PREFIX)
+      ? overId.slice(LANE_PREFIX.length)
+      : lanes.find(lane => lane.id === overId)?.id;
+    if (laneId) return { laneId, index: cardsByLane(laneId).length };
     const overCard = cards.find(card => card.id === overId);
     if (!overCard) return null;
     return {
@@ -200,10 +219,14 @@ export const KanbanBoard = <TCard extends KanbanCard>({
     };
   };
 
-  const handleDragStart = ({ active }: DragStartEvent) =>
-    setActiveId(String(active.id));
+  const handleDragStart = (event: DragStartEvent) => {
+    if (laneReorder.onDragStart(event)) return;
+    setActiveId(String(event.active.id));
+  };
 
-  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+  const handleDragEnd = (event: DragEndEvent) => {
+    if (laneReorder.onDragEnd(event)) return;
+    const { active, over } = event;
     setActiveId(null);
     if (!over) return;
     const card = cards.find(c => c.id === active.id);
@@ -219,40 +242,61 @@ export const KanbanBoard = <TCard extends KanbanCard>({
     });
   };
 
+  const handleDragCancel = () => {
+    laneReorder.onDragCancel();
+    setActiveId(null);
+  };
+
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCorners}
       onDragStart={handleDragStart}
+      onDragOver={laneReorder.onDragOver}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setActiveId(null)}
+      onDragCancel={handleDragCancel}
     >
-      <div
-        className={cn('flex items-start gap-4 overflow-x-auto pb-2', className)}
+      <SortableContext
+        items={laneReorder.lanes.map(lane => lane.id)}
+        strategy={horizontalListSortingStrategy}
       >
-        {lanes.map(lane => {
-          const laneCards = cardsByLane(lane.id);
-          return (
-            <KanbanLaneColumn
-              key={lane.id}
-              lane={lane}
-              cardIds={laneCards.map(card => card.id)}
-              emptyLabel={emptyLaneLabel}
-              footer={renderLaneFooter?.(lane)}
-            >
-              {laneCards.map(card => (
-                <KanbanSortableCard key={card.id} id={card.id}>
-                  {renderCard(card)}
-                </KanbanSortableCard>
-              ))}
-            </KanbanLaneColumn>
-          );
-        })}
-      </div>
+        <div
+          className={cn(
+            'flex items-start gap-4 overflow-x-auto pb-2',
+            className,
+          )}
+        >
+          {laneReorder.lanes.map(lane => {
+            const laneCards = cardsByLane(lane.id);
+            return (
+              <KanbanLaneColumn
+                key={lane.id}
+                lane={lane}
+                cardIds={laneCards.map(card => card.id)}
+                emptyLabel={emptyLaneLabel}
+                footer={renderLaneFooter?.(lane)}
+                reorderable={!!onReorderLanes}
+              >
+                {laneCards.map(card => (
+                  <KanbanSortableCard key={card.id} id={card.id}>
+                    {renderCard(card)}
+                  </KanbanSortableCard>
+                ))}
+              </KanbanLaneColumn>
+            );
+          })}
+        </div>
+      </SortableContext>
       <DragOverlay>
         {activeCard ? (
           <div className="rounded-md border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800">
             {renderCard(activeCard)}
+          </div>
+        ) : laneReorder.activeLane ? (
+          <div className="w-72 rotate-1 rounded-lg border border-gray-200 bg-gray-100 p-3 shadow-xl dark:border-gray-700 dark:bg-gray-900">
+            <Text size="2" weight="bold">
+              {laneReorder.activeLane.title}
+            </Text>
           </div>
         ) : null}
       </DragOverlay>

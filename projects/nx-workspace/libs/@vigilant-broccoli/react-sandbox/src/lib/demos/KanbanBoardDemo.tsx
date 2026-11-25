@@ -10,7 +10,7 @@ import {
 
 type DemoCard = KanbanCard & { title: string; tag: string };
 
-const LANES: KanbanLane[] = [
+const SEED_LANES: KanbanLane[] = [
   { id: 'todo', title: 'To do' },
   { id: 'doing', title: 'In progress' },
   { id: 'done', title: 'Done' },
@@ -48,10 +48,14 @@ const applyMove = (cards: DemoCard[], move: KanbanMove): DemoCard[] => {
 
 export const KanbanBoardDemo = () => {
   const [cards, setCards] = useState<DemoCard[]>(seedCards);
+  const [lanes, setLanes] = useState(SEED_LANES);
 
   return (
     <KanbanBoard
-      lanes={LANES}
+      lanes={lanes}
+      onReorderLanes={ids =>
+        setLanes(prev => ids.flatMap(id => prev.filter(lane => lane.id === id)))
+      }
       cards={cards}
       onMoveCard={move => setCards(prev => applyMove(prev, move))}
       renderCard={card => (
