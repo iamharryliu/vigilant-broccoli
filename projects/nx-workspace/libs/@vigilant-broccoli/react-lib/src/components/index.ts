@@ -36,6 +36,7 @@ export * from './DeleteIconButton';
 export * from './SocialSigninButton';
 export * from './StackedImages';
 export * from './CollapsibleList';
+export * from './KanbanBoard';
 export * from './ListHeader';
 export * from './MonospaceText';
 export * from './Text';
