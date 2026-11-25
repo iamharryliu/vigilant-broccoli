@@ -107,7 +107,7 @@ resource "oci_core_instance" "code_server" {
 
   metadata = {
     # The CI key (same as the Gitea/socket VMs) lets
-    # manual-refresh-code-server-github-token.yml SSH in to drop a 1-hour
+    # cron-refresh-code-server-github-token.yml SSH in to drop a 1-hour
     # GitHub App token, so the App's private key never reaches this VM.
     ssh_authorized_keys = "${var.ssh_public_key}${tls_private_key.oci_vm_ci_ssh.public_key_openssh}"
     user_data = base64encode(templatefile("${path.module}/cloud-init-code-server.yaml", {
