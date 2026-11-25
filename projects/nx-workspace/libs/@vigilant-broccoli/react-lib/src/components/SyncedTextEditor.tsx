@@ -174,7 +174,13 @@ const deleteLines = (
 ): PendingEdit | null => {
   if (!value) return null;
   const { start: blockStart } = getLineBounds(value, selectionStart);
-  const { end: blockEnd } = getLineBounds(value, selectionEnd);
+  // A selection ending at a line start doesn't touch that line.
+  const endsAtLineStart =
+    selectionEnd > selectionStart && value[selectionEnd - 1] === '\n';
+  const { end: blockEnd } = getLineBounds(
+    value,
+    endsAtLineStart ? selectionEnd - 1 : selectionEnd,
+  );
 
   if (blockEnd === value.length) {
     // Last line has no trailing newline, so take the preceding one instead.
