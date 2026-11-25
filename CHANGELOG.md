@@ -265,6 +265,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### cron-prune-orphaned-services
 
+- The orphaned services table links each provider to its dashboard and each orphan to its service page, and the PR body no longer ends with a workflow run link ([#1770](https://github.com/iamharryliu/vigilant-broccoli/pull/1770)).
 - The orphaned services report in the job summary and the `chore/orphaned-services-todo-*` PR body is now a single provider and orphans table, or "No orphaned services.", instead of run details and full live lists ([#1757](https://github.com/iamharryliu/vigilant-broccoli/pull/1757)).
 
 ### agent-sandbox

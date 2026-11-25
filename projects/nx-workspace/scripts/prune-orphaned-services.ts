@@ -18,14 +18,18 @@ const VERCEL_API = 'https://api.vercel.com';
 const VERCEL_ORG_ID = 'team_K8XGLgKfYA0WKlMX80jaVSvg';
 const VERCEL_PAGE_SIZE = 100;
 
+interface DashboardLinks {
+  providerUrl: string | null;
+  serviceUrl: (name: string) => string | null;
+}
+
 interface Provider {
   name: string;
   list: () => Promise<string[]> | string[];
   destroy: (name: string) => Promise<void> | void;
   // Resolved once per run so a lookup (the Vercel team slug) is not repeated
-  // per orphan.
-  settingsUrl: () =>
-    Promise<(name: string) => string> | ((name: string) => string);
+  // per orphan. Null URLs mean the link cannot be built.
+  dashboardLinks: () => Promise<DashboardLinks> | DashboardLinks;
 }
 
 const run = (command: string, args: string[]): string =>
@@ -73,8 +77,15 @@ const cloudflarePages: Provider = {
   destroy: name => {
     run('npx', ['wrangler', 'pages', 'project', 'delete', name, '--yes']);
   },
-  settingsUrl: () => name =>
-    `https://dash.cloudflare.com/${process.env.CLOUDFLARE_ACCOUNT_ID}/pages/view/${name}/settings`,
+  dashboardLinks: () => {
+    const accountUrl = process.env.CLOUDFLARE_ACCOUNT_ID
+      ? `https://dash.cloudflare.com/${process.env.CLOUDFLARE_ACCOUNT_ID}`
+      : null;
+    return {
+      providerUrl: accountUrl && `${accountUrl}/workers-and-pages`,
+      serviceUrl: name => accountUrl && `${accountUrl}/pages/view/${name}`,
+    };
+  },
 };
 
 const flyApps: Provider = {
@@ -88,7 +99,10 @@ const flyApps: Provider = {
   destroy: name => {
     run('flyctl', ['apps', 'destroy', name, '--yes']);
   },
-  settingsUrl: () => name => `https://fly.io/apps/${name}/settings`,
+  dashboardLinks: () => ({
+    providerUrl: 'https://fly.io/dashboard',
+    serviceUrl: name => `https://fly.io/apps/${name}`,
+  }),
 };
 
 function vercelHeaders(): Record<string, string> {
@@ -122,13 +136,16 @@ const vercelProjects: Provider = {
     );
     if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
   },
-  settingsUrl: async () => {
+  dashboardLinks: async () => {
     const res = await fetch(`${VERCEL_API}/v2/teams/${VERCEL_ORG_ID}`, {
       headers: vercelHeaders(),
     });
     if (!res.ok) throw new Error(`Vercel team lookup failed: ${res.status}`);
     const { slug } = (await res.json()) as { slug: string };
-    return name => `https://vercel.com/${slug}/${name}/settings`;
+    return {
+      providerUrl: `https://vercel.com/${slug}`,
+      serviceUrl: name => `https://vercel.com/${slug}/${name}`,
+    };
   },
 };
 
@@ -137,6 +154,7 @@ interface ProviderReport {
   live: string[];
   declaredCount: number;
   orphans: string[];
+  providerUrl: string | null;
   orphanLinks: { name: string; url: string | null }[];
   errors: string[];
   warnings: string[];
@@ -158,6 +176,7 @@ async function inspectProvider(
     live: [],
     declaredCount: 0,
     orphans: [],
+    providerUrl: null,
     orphanLinks: [],
     errors: [],
     warnings: [],
@@ -178,24 +197,29 @@ async function inspectProvider(
   report.orphans = report.live.filter(name => !declared.has(name));
   report.declaredCount = report.live.length - report.orphans.length;
   // A failed lookup only costs the links; the orphans are still reported.
-  const urlFor = report.orphans.length
-    ? await Promise.resolve(provider.settingsUrl()).catch(() => null)
+  const links = report.orphans.length
+    ? await Promise.resolve(provider.dashboardLinks()).catch(() => null)
     : null;
+  report.providerUrl = links?.providerUrl ?? null;
   report.orphanLinks = report.orphans.map(name => ({
     name,
-    url: urlFor ? urlFor(name) : null,
+    url: links?.serviceUrl(name) ?? null,
   }));
   return report;
 }
 
-const renderList = (names: string[]) =>
-  names.length ? names.map(name => `\`${name}\``).join(', ') : 'none';
+const renderLink = (text: string, url: string | null) =>
+  url ? `[${text}](${url})` : text;
+
+const renderOrphans = (links: ProviderReport['orphanLinks']) =>
+  links.map(({ name, url }) => renderLink(`\`${name}\``, url)).join(', ');
 
 function renderMarkdown(report: Report): string {
   const rows = report.providers
     .filter(provider => provider.orphans.length)
     .map(
-      provider => `| ${provider.provider} | ${renderList(provider.orphans)} |`,
+      provider =>
+        `| ${renderLink(provider.provider, provider.providerUrl)} | ${renderOrphans(provider.orphanLinks)} |`,
     );
   if (!rows.length) return 'No orphaned services.';
   return ['| Provider | Orphans |', '| --- | --- |', ...rows].join('\n');
