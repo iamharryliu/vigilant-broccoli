@@ -5,6 +5,24 @@ local gridCols = 3
 local cellW, cellH, cellPad = 200, 125, 10
 local snapshotExpirySeconds = 6
 local maxWindowsPerCell = 8
+local spaceNamesSettingKey = "spaceNames"
+local shortcutRowHeight = 24
+local shortcutHeaderHeight = 30
+local shortcutKeyWidth = 150
+local accentColor = {red = 0.3, green = 0.7, blue = 1, alpha = 1}
+
+-- Mirrors docs/cheatsheet-macos-spaces.md; update both together.
+local shortcuts = {
+  {"Hyper + G", "Toggle this grid"},
+  {"Hyper + Arrows", "Move across spaces"},
+  {"Hyper + 1–9", "Go to space N"},
+  {"Hyper + N", "Rename current space"},
+  {"Hyper + /", "Pick a space by name"},
+  {"Hyper + R", "Reload Hammerspoon"},
+}
+
+-- Keyed by space ID, not index, so a name follows its space when spaces are reordered.
+local spaceNames = hs.settings.get(spaceNamesSettingKey) or {}
 
 local function screenUUID()
   return hs.screen.mainScreen():getUUID()
@@ -96,22 +114,23 @@ local function closePreview()
   end
 end
 
+-- Polls the real modifier state: a flagsChanged release event can be dropped while the main thread is busy drawing the grid, leaving it stuck.
 local function closePreviewOnHyperRelease()
   stopHyperWatcher()
-  hyperWatcher = hs.eventtap.new({hs.eventtap.event.types.flagsChanged}, function(e)
-    local flags = e:getFlags()
+  hyperWatcher = hs.timer.doEvery(0.05, function()
+    local flags = hs.eventtap.checkKeyboardModifiers()
     if not (flags.cmd and flags.ctrl and flags.alt and flags.shift) then
       closePreview()
     end
-    return false
   end)
-  hyperWatcher:start()
 end
 
 local function showGridPreview(activeIndex, spaces, holdSeconds)
   local rows = math.ceil(#spaces / gridCols)
   local width = gridCols * cellW + cellPad * (gridCols + 1)
-  local height = rows * cellH + cellPad * (rows + 1)
+  local gridHeight = rows * cellH + cellPad * (rows + 1)
+  local sheetHeight = shortcutHeaderHeight + #shortcuts * shortcutRowHeight + cellPad * 2
+  local height = gridHeight + sheetHeight
   local screenFrame = hs.screen.mainScreen():frame()
   local x = screenFrame.x + (screenFrame.w - width) / 2
   local y = screenFrame.y + (screenFrame.h - height) / 2
@@ -233,11 +252,43 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
 
     addElement({
       type = "text",
-      text = "space " .. i,
+      text = i .. " · " .. (spaceNames[tostring(spaceID)] or "space"),
       textColor = {white = 1, alpha = 1},
       textSize = 13,
       frame = {x = cx, y = cy + cellH - 20, w = cellW, h = 18},
       textAlignment = "center",
+    })
+  end
+
+  local sheetX = cellPad * 2
+  local sheetW = width - cellPad * 4
+
+  addElement({
+    type = "segments",
+    action = "stroke",
+    strokeColor = {white = 0.35, alpha = 1},
+    strokeWidth = 1,
+    coordinates = {{x = sheetX, y = gridHeight}, {x = sheetX + sheetW, y = gridHeight}},
+  })
+
+  addElement({
+    type = "text",
+    text = hs.styledtext.new("Hyper", {font = {name = "Menlo-Bold", size = 13}, color = accentColor})
+      .. hs.styledtext.new("  =  hold Caps Lock  (⌃ ⌥ ⌘ ⇧)", {font = {name = "Menlo", size = 13}, color = {white = 0.85, alpha = 1}}),
+    frame = {x = sheetX, y = gridHeight + cellPad, w = sheetW, h = shortcutHeaderHeight},
+  })
+
+  for i, shortcut in ipairs(shortcuts) do
+    local rowY = gridHeight + cellPad + shortcutHeaderHeight + (i - 1) * shortcutRowHeight
+    addElement({
+      type = "text",
+      text = hs.styledtext.new(shortcut[1], {font = {name = "Menlo-Bold", size = 12}, color = accentColor}),
+      frame = {x = sheetX, y = rowY, w = shortcutKeyWidth, h = shortcutRowHeight},
+    })
+    addElement({
+      type = "text",
+      text = hs.styledtext.new(shortcut[2], {font = {name = "Helvetica Neue", size = 13}, color = {white = 0.85, alpha = 1}}),
+      frame = {x = sheetX + shortcutKeyWidth, y = rowY, w = sheetW - shortcutKeyWidth, h = shortcutRowHeight},
     })
   end
 
@@ -292,6 +343,38 @@ hs.hotkey.bind(hyper, "g", function()
   end
   local index, spaces = currentIndex()
   showGridPreview(index, spaces, nil)
+end)
+
+local function renameCurrentSpace()
+  local index, spaces = currentIndex()
+  local key = tostring(spaces[index])
+  local button, text = hs.dialog.textPrompt("Rename space " .. index, "Empty clears the name.", spaceNames[key] or "", "Save", "Cancel")
+  if button ~= "Save" then return end
+  spaceNames[key] = text ~= "" and text or nil
+  hs.settings.set(spaceNamesSettingKey, spaceNames)
+  showGridPreview(index, spaces, previewCanvas and nil or 2)
+end
+
+local spaceChooser = hs.chooser.new(function(choice)
+  if not choice then return end
+  hs.spaces.gotoSpace(choice.spaceID)
+  local index, spaces = currentIndex()
+  showGridPreview(index, spaces, 2)
+end)
+
+hs.hotkey.bind(hyper, "n", renameCurrentSpace)
+
+hs.hotkey.bind(hyper, "/", function()
+  local _, spaces = currentIndex()
+  local choices = {}
+  for i, spaceID in ipairs(spaces) do
+    table.insert(choices, {
+      text = i .. " · " .. (spaceNames[tostring(spaceID)] or "space"),
+      spaceID = spaceID,
+    })
+  end
+  spaceChooser:choices(choices)
+  spaceChooser:show()
 end)
 
 hs.hotkey.bind(hyper, "r", function() hs.reload() end)
