@@ -112,6 +112,14 @@
       "stagingHref": "https://staging-tasks.harryliu.dev/"
     },
     {
+      "id": "notepad",
+      "href": "https://notepad.vigilant-broccoli.app/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.NOTEPAD.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.NOTEPAD.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/notepad-react/README.md",
+      "stagingHref": "https://staging-notepad.vigilant-broccoli.app/"
+    },
+    {
       "id": "text-tools",
       "href": "https://text-tools.vigilant-broccoli.app/",
       "titleKey": "WEB_APPLICATIONS_PAGE.TEXT_TOOLS.TITLE",

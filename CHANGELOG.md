@@ -8,6 +8,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 <details>
 <summary>November 2026</summary>
 
+### notepad-react
+
+- New Notepad app at notepad.vigilant-broccoli.app: multiple notes saved in the browser, with no sign-in or server (PR: pending).
+
 ### hearth
 
 - The recurring-task schedule is one Repeat select: Does not repeat (the default, a single date that stays pending until completed), Daily, Weekdays, Weekends, Every week, Weekday of month, Date of month and Annually (a month and day each year, with Feb 29 landing on Feb 28 in common years). Each mode starts from today's weekday, week of the month or date, and the calendar preview opens from a Preview button ([#1771](https://github.com/iamharryliu/vigilant-broccoli/pull/1771)).

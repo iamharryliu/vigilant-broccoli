@@ -13,6 +13,7 @@ locals {
     # Pages project is deleted.
     "staging-pages-index",
     "staging-photography-react",
+    "staging-notepad-react",
     "staging-pomodoro-react",
     "staging-project-overview",
     "staging-text-tools-ui",
@@ -30,6 +31,7 @@ locals {
     staging-grind-75-react     = "staging-grind-75.${var.vigilant_broccoli_domain}"
     staging-harryliu-dev-react = "staging.${var.harryliu_dev_domain}"
     staging-photography-react  = "staging-photography.${var.harryliu_dev_domain}"
+    staging-notepad-react      = "staging-notepad.${var.vigilant_broccoli_domain}"
     staging-pomodoro-react     = "staging-pomodoro.${var.vigilant_broccoli_domain}"
     staging-project-overview   = "staging-projects.${var.vigilant_broccoli_domain}"
     staging-text-tools-ui      = "staging-text-tools.${var.vigilant_broccoli_domain}"

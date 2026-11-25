@@ -1,0 +1,78 @@
+{
+  "name": "notepad-react",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/notepad-react/src",
+  "projectType": "application",
+  "tags": ["visibility:public"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/apps/ui/notepad-react"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outDir": "../../../dist/apps/ui/notepad-react"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-notepad-react || npx wrangler pages project create staging-notepad-react --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-notepad-react 10",
+      "dependsOn": ["ensure-cf-project"]
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/notepad-react --project-name staging-notepad-react --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/notepad-react --project-name staging-notepad-react --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-notepad-react || npx wrangler pages project create production-notepad-react --production-branch production"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-notepad-react 10",
+      "dependsOn": ["ensure-cf-project:production"]
+    },
+    "deploy:production": {
+      "command": "npx wrangler pages deploy dist/apps/ui/notepad-react --project-name production-notepad-react --branch production",
+      "dependsOn": [
+        "build",
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-notepad-react || npx wrangler pages project create preview-notepad-react --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-notepad-react",
+      "dependsOn": ["ensure-cf-project:preview"]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/apps/ui/notepad-react --project-name preview-notepad-react --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
+      "dependsOn": ["build", "ensure-cf-project:preview"]
+    }
+  }
+}

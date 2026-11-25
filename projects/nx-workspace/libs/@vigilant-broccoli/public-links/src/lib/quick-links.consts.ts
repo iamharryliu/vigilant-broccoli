@@ -191,6 +191,11 @@ export const VB_LINKS: QuickLink[] = [
       URL: `${VB_GITHUB_REPO_URL}/projects`,
     },
     VB_APP_URL.PERSONAL_WEBSITE,
+    VB_APP_URL.NOTEPAD,
+    {
+      NAME: `${VB_APP_URL.NOTEPAD.NAME} (Staging)`,
+      URL: VB_APP_URL.NOTEPAD.STAGING_URL,
+    },
     VB_APP_URL.TEXT_TOOLS,
     {
       NAME: `${VB_APP_URL.TEXT_TOOLS.NAME} (Staging)`,

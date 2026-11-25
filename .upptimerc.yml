@@ -59,6 +59,10 @@ sites:
     url: https://staging-components.vigilant-broccoli.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
+  - name: staging-notepad
+    url: https://staging-notepad.vigilant-broccoli.app/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: staging-text-tools
     url: https://staging-text-tools.vigilant-broccoli.app/
     maxRedirects: 0
@@ -139,6 +143,8 @@ sites:
     url: https://production-media-service.fly.dev/
   - name: production-component-library
     url: https://components.vigilant-broccoli.app/
+  - name: production-notepad
+    url: https://notepad.vigilant-broccoli.app/
   - name: production-text-tools
     url: https://text-tools.vigilant-broccoli.app/
   - name: production-utilities

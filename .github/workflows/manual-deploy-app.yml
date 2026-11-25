@@ -26,6 +26,7 @@ on:
           - calendars
           - hearth
           - cloud-8-skate-react
+          - notepad-react
           - text-tools-ui
           - utilities-ui
           - waiting-games

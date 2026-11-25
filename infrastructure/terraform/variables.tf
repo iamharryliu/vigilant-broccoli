@@ -286,6 +286,16 @@ variable "context_pages_subdomain" {
   default = "production-context-md.pages.dev"
 }
 
+variable "notepad_pages_project" {
+  type    = string
+  default = "production-notepad-react"
+}
+
+variable "notepad_pages_subdomain" {
+  type    = string
+  default = "production-notepad-react.pages.dev"
+}
+
 variable "text_tools_pages_project" {
   type    = string
   default = "production-text-tools-ui"

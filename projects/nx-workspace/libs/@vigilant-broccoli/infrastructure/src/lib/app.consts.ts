@@ -13,6 +13,11 @@ export const VB_APP_URL = {
     URL: `https://components.${VB_APP_DOMAIN}/`,
     STAGING_URL: `https://staging-components.${VB_APP_DOMAIN}/`,
   },
+  NOTEPAD: {
+    NAME: 'Notepad',
+    URL: `https://notepad.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-notepad.${VB_APP_DOMAIN}/`,
+  },
   TEXT_TOOLS: {
     NAME: 'Text Tools',
     URL: `https://text-tools.${VB_APP_DOMAIN}/`,
