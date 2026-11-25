@@ -1,5 +1,6 @@
 {
   "root": "../../../../../notes",
   "outDir": "public",
-  "sources": ["."]
+  "sources": ["."],
+  "ignoreFilenames": ["AGENTS.md", "CONTEXT.md"]
 }

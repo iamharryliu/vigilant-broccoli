@@ -64,9 +64,10 @@ const matchesSource = (source, name, content) =>
   (!source.filename || source.filename === name) &&
   (!source.contains || content.includes(source.contains));
 
-const collect = (root, outDir, source, filesByPath) => {
+const collect = (root, outDir, source, filesByPath, ignoreFilenames) => {
   const visit = abs => {
     if (shouldIgnore(abs) || abs === outDir) return;
+    if (ignoreFilenames.has(path.basename(abs))) return;
     const rel = normalizeRel(path.relative(root, abs));
     if (fs.statSync(abs).isDirectory()) {
       for (const entry of fs.readdirSync(abs)) visit(path.join(abs, entry));
@@ -205,8 +206,9 @@ if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) {
 }
 
 const filesByPath = new Map();
+const ignoreFilenames = new Set(config.ignoreFilenames ?? []);
 for (const source of config.sources.map(toSource)) {
-  collect(root, outDir, source, filesByPath);
+  collect(root, outDir, source, filesByPath, ignoreFilenames);
 }
 const resolveToKnown = createLinkResolver(new Set(filesByPath.keys()));
 const rewriteLinks = createLinkRewriter(

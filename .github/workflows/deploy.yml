@@ -253,7 +253,7 @@ jobs:
             if echo "$CHANGED_FILES" | grep -q "^notes/"; then
               AFFECTED_COMMA+=",docs-md"
             fi
-            if echo "$CHANGED_FILES" | grep -qE "^projects/grind-75/|^notes/tech/software/general/coding-challenges/grind-75-complexities\.md$"; then
+            if echo "$CHANGED_FILES" | grep -qE "^projects/grind-75/|^notes/tech/software/leetcode\.md$"; then
               AFFECTED_COMMA+=",grind-75-react"
             fi
             AFFECTED_COMMA=$(echo "$AFFECTED_COMMA" | tr ',' '\n' | sed '/^$/d' | sort -u | paste -sd, -)
