@@ -5,8 +5,6 @@
 - [Nuances](#nuances)
   - [PM2 reload needs `pm2 save` for boot resurrect](#pm2-reload-needs-pm2-save-for-boot-resurrect)
   - [Lib-only class changes ship stale CSS from Next's build cache](#lib-only-class-changes-ship-stale-css-from-nexts-build-cache)
-  - [A failed kanban board fetch must not look like a brand-new account](#a-failed-kanban-board-fetch-must-not-look-like-a-brand-new-account)
-  - [Kanban's cross-lane drag reads CheckList's internal dnd-kit payload](#kanbans-cross-lane-drag-reads-checklists-internal-dnd-kit-payload)
   - [Native server dependencies can fail under PM2's Node](#native-server-dependencies-can-fail-under-pm2s-node)
 
 - Keyboard shortcuts cheatsheet (Settings page, see [docs/features/settings.md](./docs/features/settings.md)): when adding, changing, or removing a global keyboard shortcut in `src/app/(pages)/layout.tsx` (`processKeyboardInput` or `useFocusSearchShortcut`), update `KEYBOARD_SHORTCUTS_MARKDOWN` in `src/app/content/keyboard-shortcuts.md.ts` to match.
@@ -20,16 +18,6 @@ Keep `pm2 save` as the final successful step of start/reload: boot restore reads
 ### Lib-only class changes ship stale CSS from Next's build cache
 
 Next's webpack cache can miss Tailwind classes added only in workspace libs. `next.config.js` includes lib source paths, mtimes and sizes in `cache.version` to invalidate it on lib changes. If CSS remains stale, remove `dist/apps/ui/local-manager-next/.next/cache` and rebuild.
-
-### A failed kanban board fetch must not look like a brand-new account
-
-Keep failed loads distinct from confirmed-empty state in the shared `KanbanBoards` (`react-lib-tasks/src/lib/kanban/KanbanBoards.tsx`): a store's `load` returns `{ ok: false }` on failure and hydration exits. Falling through to default-board creation would immediately upsert over the user's saved MongoDB boards. The same distinction is necessary in any new hydration flow that saves defaults.
-
-### Kanban's cross-lane drag reads CheckList's internal dnd-kit payload
-
-`KanbanBoards` (shared with tasks-next; local-manager's `kanban.component.tsx` only supplies the MongoDB store) owns the `DndContext` around lanes using `GoogleTasksComponent` with `disableInternalDndContext`. Its handlers and `TaskDragOverlay` read CheckList's untyped payload: `type: 'task'`, `task`, `taskListId`, and droppable `type: 'taskList'`.
-
-Despite CheckList's generic typed props, these literals remain task-specific for this consumer. If changing `libs/@vigilant-broccoli/react-lib-checklist/src/lib/CheckList.tsx`'s payload, update the kanban handlers together; TypeScript does not check this coupling.
 
 ### Native server dependencies can fail under PM2's Node
 

@@ -16,8 +16,6 @@ export const API_ENDPOINTS = {
   TASKS_MOVE: '/api/tasks/move',
   TASKS_PARSE_TEXT: '/api/tasks/parse-text',
 
-  KANBAN_BOARDS: '/api/kanban/boards',
-
   CALENDAR_EVENTS: '/api/calendar/events',
   EVENT_CALENDARS: '/api/event-calendars',
 
