@@ -1,6 +1,6 @@
 # Embed
 
-`/embed` is the task list for iframes in the manager apps; `/` is the standalone page. Both render `GoogleTasksComponent` against this app's `/api/tasks/**` (the shared `google-tasks-server` handlers) with voice input off, since the app has no speech-to-text or AI parse routes.
+`/embed` is the task list and `/embed/board` the kanban board (`KanbanBoards` on the Google-mode boards row; signed out it shows the list's sign-in prompt) for iframes in the manager apps; `/` is the standalone page. Both render `GoogleTasksComponent` against this app's `/api/tasks/**` (the shared `google-tasks-server` handlers) with voice input off, since the app has no speech-to-text or AI parse routes.
 
 ## Sign-in
 
@@ -30,6 +30,7 @@
 
 ## Consumers
 
+- `local-manager-next`'s Kanban page frames `/embed/board?session=parent` full-bleed (`tasks-kanban-frame.component.tsx`), borrowing the manager's session; same `NEXT_PUBLIC_TASKS_URL` override.
 - `local-manager-next`'s home page frames `tasks.harryliu.dev/embed` inside a bordered wrapper matching its calendar panel; the build-time `NEXT_PUBLIC_TASKS_URL` points it at another instance.
 - `mobile-manager-next`'s Tasks tab (`/?tab=Tasks`) frames `/embed?session=parent` inside a bordered wrapper matching its Calendar tab frame, so the tab uses the manager's session ([Parent session](#parent-session)); the same build-time `NEXT_PUBLIC_TASKS_URL` override applies.
 - Local testing: `localhost:4000/auth/callback` and `localhost:3000` are on the Supabase redirect allow-list, so run this app on port 4000 when the manager holds 3000.

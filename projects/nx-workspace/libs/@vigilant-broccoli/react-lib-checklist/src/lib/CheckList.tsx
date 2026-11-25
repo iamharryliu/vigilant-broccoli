@@ -126,10 +126,10 @@ const SortableRowFrame = ({
   } = useSortable({
     id: item.id,
     // Kept as `type: 'task'` / `task` / `taskListId` (rather than a
-    // generic `item`/`listId`) on purpose: apps/ui/local-manager-next's
-    // kanban.component.tsx reads this exact shape off the raw dnd-kit
-    // drag payload to move tasks across lanes. See the Nuances entry in
-    // that app's CONTEXT.md before renaming any of these keys.
+    // generic `item`/`listId`) on purpose: react-lib-tasks' KanbanBoards
+    // reads this exact shape off the raw dnd-kit drag payload to move tasks
+    // across lanes. See the Nuances entry in that lib's CONTEXT.md before
+    // renaming any of these keys.
     data: { type: 'task', task: item, taskListId: listId },
     disabled: !draggable || isEditing || item.isRemoving,
   });
@@ -228,7 +228,7 @@ export const CheckList = memo(
     const { setNodeRef, isOver } = useDroppable({
       id: listId || DEFAULT_LIST_ID,
       // See the comment in CheckListRow: kept as `type: 'taskList'` /
-      // `taskListId` for kanban.component.tsx's cross-lane drag handlers.
+      // `taskListId` for KanbanBoards' cross-lane drag handlers.
       data: { type: 'taskList', taskListId: listId },
     });
 
