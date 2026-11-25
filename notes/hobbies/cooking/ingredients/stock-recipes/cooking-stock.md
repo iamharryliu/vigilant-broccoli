@@ -18,6 +18,7 @@
 | Carrot | Sweetness, color |
 | Celery | Vegetal backbone, mild bitterness |
 | Garlic | Savory depth |
+| Mushroom Stems | Major umami boost, especially shiitake |
 | Napa Cabbage | Mild sweetness, light cabbage flavor, and umami from the thicker white stems; gives a clean, light rather than strongly aromatic stock |
 | Onion | Sweetness, body |
 
@@ -61,7 +62,6 @@
 | Ginger Peels | Bright, warming |
 | Herb Stems | Fresh herbal flavor; parsley and cilantro |
 | Leek and Scallion Tops | Fresh onion character |
-| Mushroom Stems | Major umami boost, especially shiitake |
 | Onion Skins and Ends | Sweetness, body, and a deep brown color |
 | Tomato Cores | Acidity and umami |
 
