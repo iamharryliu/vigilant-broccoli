@@ -1,6 +1,19 @@
-# Swedish Auxiliary Verb - Satsadverbial
+# Swedish Satsadverbial (Sentence Adverbial)
 
-A word that modifies the entire sentence, often expressing negation, probability, or emphasis. It appears **before the verb in a bisats** and **after the first element in a huvudsats**.
+A word that modifies the entire sentence, often expressing negation, probability, or emphasis. It appears **after the first element in a huvudsats** and **before the verb in a bisats**.
+
+```mermaid
+flowchart TB
+    subgraph H["Huvudsats: satsadverbial after the verb"]
+        direction LR
+        H1["Subject<br/>Jag"] --> H2["Verb<br/>gillar"] --> H3["Satsadverbial<br/>inte"] --> H4["Rest<br/>att läsa"]
+    end
+    subgraph B["Bisats: satsadverbial before the verb"]
+        direction LR
+        B1["Conjunction<br/>när"] --> B2["Subject<br/>jag"] --> B3["Satsadverbial<br/>inte"] --> B4["Verb<br/>är"] --> B5["Rest<br/>trött"]
+    end
+    H ~~~ B
+```
 
 | **English** | **Swedish** |
 | --- | --- |
@@ -42,3 +55,5 @@ A word that modifies the entire sentence, often expressing negation, probability
 | at least | åtminstone |
 | only | bara |
 | gladly / willingly | gärna |
+| rather | hellre |
+| preferably / most of all | helst |

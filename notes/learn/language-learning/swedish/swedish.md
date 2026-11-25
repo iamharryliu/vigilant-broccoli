@@ -9,7 +9,7 @@
 - [Keyboard Shortcuts for Characters](./swedish-keyboard-shortcuts.md)
 - [Verbs](./swedish-verb.md)
 - [Auxiliary Verbs](./swedish-verbs/swedish-auxiliary-verbs.md)
-- [Help Verbs](./swedish-verbs/swedish-help-verbs.md)
+- [Help Verbs](./swedish-verbs/swedish-satsadverbial.md)
 - [Comparison](./adjectives/swedish-adjective-comparison.md)
 - [Irregular Verbs](./swedish-verbs/swedish-irregular-verbs.md)
 - Tenses
@@ -388,8 +388,6 @@ precis/klart/självklat
 | ut - out. If you’re emphasizing movement to the outside, use ut. |
 | ur - out. If you’re emphasizing where it comes from, use ur. |
 
-hellre
-ihop - together
 ungefär halften befolkning paverkas av arstiderna
 
 Adverb type Typical position
@@ -399,7 +397,6 @@ Modal verbs (vill, kan) Before main verb
 
 fabrik som tillverkar möbler.
 
-istallet
 på grund av - because of
 ungefär - about
 

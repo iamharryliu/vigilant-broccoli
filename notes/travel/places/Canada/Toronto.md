@@ -164,3 +164,5 @@
   - [Blue Jays](https://www.mlb.com/bluejays/)
   - [Toronto Raptors](https://www.nba.com/raptors/)
 - Coffee from DeMello
+- [I'm Library People merchandise](https://tplfoundation.ca/imlibrarypeople/)
+- [TTC Shop](https://www.ttcshop.ca/)

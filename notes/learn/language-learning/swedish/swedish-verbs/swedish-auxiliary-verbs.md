@@ -7,6 +7,7 @@
 | **Ha** | to have | _Jag hade läst boken._ | I had read the book. |
 | **Komma att** | will, shall | _Det kommer att regna imorgon._ | It will rain tomorrow. |
 | **Ska / Skall** | shall, will | _Jag ska resa till Spanien._ | I will travel to Spain. |
+| **Skulle** | was going to | _Jag skulle diska._ | I was going to do the dishes. |
 | **Bli** | to become | _Bilen blev stulen._ | The car was stolen. |
 | Modal (Express Ability, Necessity, Permission, etc.) |  |  |  |
 | **Kan** | can | _Jag kan simma._ | I can swim. |
@@ -14,6 +15,7 @@
 | **Måste** | must | _Jag måste arbeta idag._ | I must work today. |
 | **Bör** | should, ought to | _Du bör träna mer._ | You should exercise more. |
 | **Vill** | want | _Jag vill ha kaffe._ | I want coffee. |
+| **Skulle** | would, should | _Jag skulle vilja ha kaffe._ | I would like coffee. |
 | **Brukar** | usually, tend to | _Jag brukar läsa innan jag somnar._ | I usually read before I fall asleep. |
 | Passive ( Form the Passive Voice) |  |  |  |
 | **Bli** | to become | _Huset blev byggt 1990._ | The house was built in 1990. |
