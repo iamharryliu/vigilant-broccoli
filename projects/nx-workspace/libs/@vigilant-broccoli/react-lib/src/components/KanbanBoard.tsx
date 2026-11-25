@@ -17,7 +17,12 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ReactNode, useState } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  forwardRef,
+  ReactNode,
+  useState,
+} from 'react';
 import { cn } from '../utils/cn';
 import { Text } from './Text';
 
@@ -51,6 +56,34 @@ type KanbanBoardProps<TCard extends KanbanCard> = {
 const LANE_PREFIX = 'lane:';
 
 const toLaneDropId = (laneId: string) => `${LANE_PREFIX}${laneId}`;
+
+type KanbanLaneFrameProps = Omit<
+  ComponentPropsWithoutRef<'section'>,
+  'title'
+> & {
+  header: ReactNode;
+  footer?: ReactNode;
+  isOver?: boolean;
+};
+
+export const KanbanLaneFrame = forwardRef<HTMLElement, KanbanLaneFrameProps>(
+  ({ header, footer, isOver, className, children, ...rest }, ref) => (
+    <section
+      ref={ref}
+      className={cn(
+        'flex shrink-0 flex-col rounded-lg',
+        isOver && 'ring-2 ring-blue-400',
+        className,
+      )}
+      {...rest}
+    >
+      {header}
+      {children}
+      {footer}
+    </section>
+  ),
+);
+KanbanLaneFrame.displayName = 'KanbanLaneFrame';
 
 const KanbanSortableCard = ({
   id,
@@ -100,20 +133,21 @@ const KanbanLaneColumn = ({
   const { setNodeRef, isOver } = useDroppable({ id: toLaneDropId(lane.id) });
 
   return (
-    <section
-      className={cn(
-        'flex w-72 shrink-0 flex-col gap-3 rounded-lg bg-gray-100 p-3 dark:bg-gray-900',
-        isOver && 'ring-2 ring-blue-400',
-      )}
+    <KanbanLaneFrame
+      isOver={isOver}
+      className="w-72 gap-3 bg-gray-100 p-3 dark:bg-gray-900"
+      header={
+        <header className="flex items-center justify-between gap-2">
+          <Text size="2" weight="bold">
+            {lane.title}
+          </Text>
+          <Text size="1" color="gray">
+            {cardIds.length}
+          </Text>
+        </header>
+      }
+      footer={footer}
     >
-      <header className="flex items-center justify-between gap-2">
-        <Text size="2" weight="bold">
-          {lane.title}
-        </Text>
-        <Text size="1" color="gray">
-          {cardIds.length}
-        </Text>
-      </header>
       <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
         <div ref={setNodeRef} className="flex min-h-16 flex-col gap-2">
           {cardIds.length === 0 ? (
@@ -127,8 +161,7 @@ const KanbanLaneColumn = ({
           )}
         </div>
       </SortableContext>
-      {footer}
-    </section>
+    </KanbanLaneFrame>
   );
 };
 

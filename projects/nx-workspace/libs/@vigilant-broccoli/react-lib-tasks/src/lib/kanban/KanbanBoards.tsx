@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogClose,
   EllipsisCTA,
+  KanbanLaneFrame,
 } from '@vigilant-broccoli/react-lib';
 import { CreateTasksDialog } from '../CreateTasksDialog';
 import {
@@ -448,46 +449,49 @@ const SortableLane = ({
   }
 
   const laneHighlight = isTaskDragOver
-    ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950'
+    ? 'bg-blue-50 dark:bg-blue-950'
     : isDraggingTask
       ? 'ring-1 ring-dashed ring-gray-300 dark:ring-gray-600'
       : '';
 
   return (
-    <div
+    <KanbanLaneFrame
       ref={setSortableRef}
       style={style}
-      className={`flex flex-col gap-2 w-80 flex-shrink-0 rounded-lg transition-all duration-150 h-full overflow-hidden ${laneHighlight}`}
-    >
-      <div className="flex justify-between items-center px-2 flex-shrink-0">
-        <div
-          {...attributes}
-          {...listeners}
-          className={`flex items-center gap-1 flex-1 ${
-            isDraggingLane
-              ? 'cursor-grabbing'
-              : 'cursor-grab active:cursor-grabbing'
-          }`}
-        >
-          <GripVertical
-            size={15}
-            className="opacity-40 hover:opacity-70 flex-shrink-0"
+      isOver={isTaskDragOver}
+      className={`gap-2 w-80 transition-all duration-150 h-full overflow-hidden ${laneHighlight}`}
+      header={
+        <div className="flex justify-between items-center px-2 flex-shrink-0">
+          <div
+            {...attributes}
+            {...listeners}
+            className={`flex items-center gap-1 flex-1 ${
+              isDraggingLane
+                ? 'cursor-grabbing'
+                : 'cursor-grab active:cursor-grabbing'
+            }`}
+          >
+            <GripVertical
+              size={15}
+              className="opacity-40 hover:opacity-70 flex-shrink-0"
+            />
+            <Text size="3" weight="bold">
+              {taskList?.title ? (
+                taskList.title
+              ) : (
+                <Skeleton className="w-32 h-5" />
+              )}
+            </Text>
+          </div>
+          <ConfirmDeleteDialog
+            trigger={<CloseButton />}
+            title="Remove Lane"
+            description={`Remove "${taskList?.title ?? 'this lane'}" from the board?`}
+            onConfirm={() => onRemove(boardId, lane.id)}
           />
-          <Text size="3" weight="bold">
-            {taskList?.title ? (
-              taskList.title
-            ) : (
-              <Skeleton className="w-32 h-5" />
-            )}
-          </Text>
         </div>
-        <ConfirmDeleteDialog
-          trigger={<CloseButton />}
-          title="Remove Lane"
-          description={`Remove "${taskList?.title ?? 'this lane'}" from the board?`}
-          onConfirm={() => onRemove(boardId, lane.id)}
-        />
-      </div>
+      }
+    >
       <div className="flex-1 overflow-y-auto min-h-0">
         <GoogleTasksComponent
           auth={auth}
@@ -516,7 +520,7 @@ const SortableLane = ({
           }
         />
       </div>
-    </div>
+    </KanbanLaneFrame>
   );
 };
 
