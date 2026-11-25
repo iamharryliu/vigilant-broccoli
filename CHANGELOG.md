@@ -10,7 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
-- New `KanbanBoard` swimlane component with drag-and-drop cards across lanes, shown in the component library (PR: pending).
+- New `KanbanBoard` swimlane component with drag-and-drop cards across lanes, shown in the component library ([#1780](https://github.com/iamharryliu/vigilant-broccoli/pull/1780)).
 
 ### hearth
 
