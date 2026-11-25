@@ -141,7 +141,12 @@ const SortableRowFrame = ({
   };
 
   return (
-    <div ref={setNodeRef} style={style} className={className}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={className}
+      data-checklist-item-id={item.id}
+    >
       {draggable && !isEditing && (
         <div
           {...listeners}

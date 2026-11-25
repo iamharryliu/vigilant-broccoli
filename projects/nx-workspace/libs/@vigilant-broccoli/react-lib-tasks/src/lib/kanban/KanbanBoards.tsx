@@ -27,9 +27,22 @@ import {
   SortMode,
   SORT_MODE,
 } from '../TaskChecklist';
+import {
+  focusTaskRow,
+  TASK_SEARCH_LABEL,
+  TaskSearchDialog,
+  type TaskSearchItem,
+  type TaskSearchList,
+} from '../task-search';
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 import type { Board, KanbanStore, Lane } from './kanban-store';
-import { type ReactNode, useEffect, useState, useCallback } from 'react';
+import {
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+} from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -459,41 +472,34 @@ const SortableLane = ({
       style={style}
       className={`flex flex-col gap-2 w-80 flex-shrink-0 rounded-lg transition-all duration-150 h-full overflow-hidden ${laneHighlight}`}
     >
-      <div className="flex justify-between items-center px-2 flex-shrink-0">
-        <div
-          {...attributes}
-          {...listeners}
-          className={`flex items-center gap-1 flex-1 ${
-            isDraggingLane
-              ? 'cursor-grabbing'
-              : 'cursor-grab active:cursor-grabbing'
-          }`}
-        >
-          <GripVertical
-            size={15}
-            className="opacity-40 hover:opacity-70 flex-shrink-0"
-          />
-          <Text size="3" weight="bold">
-            {taskList?.title ? (
-              taskList.title
-            ) : (
-              <Skeleton className="w-32 h-5" />
-            )}
-          </Text>
-        </div>
-        <ConfirmDeleteDialog
-          trigger={<CloseButton />}
-          title="Remove Lane"
-          description={`Remove "${taskList?.title ?? 'this lane'}" from the board?`}
-          onConfirm={() => onRemove(boardId, lane.id)}
-        />
-      </div>
       <div className="flex-1 overflow-y-auto min-h-0">
         <GoogleTasksComponent
           auth={auth}
           taskListId={lane.taskListId}
           showSelector={false}
           enableDragDrop={true}
+          enableSearch={false}
+          titleProps={{
+            ...attributes,
+            ...listeners,
+            className: isDraggingLane
+              ? 'cursor-grabbing'
+              : 'cursor-grab active:cursor-grabbing',
+          }}
+          headerLeading={
+            <GripVertical
+              size={15}
+              className="opacity-40 hover:opacity-70 flex-shrink-0"
+            />
+          }
+          headerActions={
+            <ConfirmDeleteDialog
+              trigger={<CloseButton />}
+              title="Remove Lane"
+              description={`Remove "${taskList?.title ?? 'this lane'}" from the board?`}
+              onConfirm={() => onRemove(boardId, lane.id)}
+            />
+          }
           refreshTrigger={refreshTrigger}
           disableInternalDndContext={true}
           dragOverTask={dragOverTask}
@@ -646,6 +652,7 @@ export const KanbanBoards = ({
     Record<string, number>
   >({});
   const [listSort, setListSort] = useState<ListSort | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window === 'undefined') return true;
     const stored = localStorage.getItem(STORAGE_KEY_SIDEBAR_OPEN);
@@ -700,6 +707,37 @@ export const KanbanBoards = ({
     };
     fetchActiveTaskCounts();
   }, [showManageLists]);
+
+  // Only lists with a lane can be shown, so search covers those; each list is
+  // attributed to the active board first, then to the first board holding it.
+  const searchLists = useMemo(() => {
+    const orderedBoards = [
+      ...boards.filter(board => board.id === activeBoardId),
+      ...boards.filter(board => board.id !== activeBoardId),
+    ];
+    const seen = new Set<string>();
+    return orderedBoards.flatMap(board =>
+      board.lanes.flatMap((lane): TaskSearchList[] => {
+        if (seen.has(lane.taskListId)) return [];
+        seen.add(lane.taskListId);
+        const title =
+          taskLists.find(list => list.id === lane.taskListId)?.title ?? '';
+        return [{ id: lane.taskListId, title, prefix: board.name }];
+      }),
+    );
+  }, [boards, activeBoardId, taskLists]);
+
+  const handleSearchSelect = useCallback(
+    (item: TaskSearchItem) => {
+      const board =
+        [activeBoard, ...boards].find(b =>
+          b?.lanes.some(lane => lane.taskListId === item.taskListId),
+        ) ?? null;
+      if (board) setActiveBoardId(board.id);
+      focusTaskRow(item.id);
+    },
+    [activeBoard, boards, setActiveBoardId],
+  );
 
   const handleAddLane = useCallback(() => {
     if (selectedTaskListId && activeBoardId) {
@@ -1286,6 +1324,13 @@ export const KanbanBoards = ({
                 confirmDescription={getDeleteBoardDescription(activeBoard.name)}
                 onDelete={() => removeBoard(activeBoard.id)}
               />
+              <IconButton
+                className="ml-auto"
+                variant="ghost"
+                icon="search"
+                aria-label={TASK_SEARCH_LABEL}
+                onClick={() => setSearchOpen(true)}
+              />
             </div>
             <SortableContext
               items={(draggingLanes ?? activeBoard?.lanes ?? []).map(l => l.id)}
@@ -1425,6 +1470,14 @@ export const KanbanBoards = ({
           </div>
         </div>
       </div>
+
+      <TaskSearchDialog
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        lists={searchLists}
+        authFetch={authFetch}
+        onSelect={handleSearchSelect}
+      />
 
       <DragOverlay dropAnimation={null}>
         {activeTask ? (
