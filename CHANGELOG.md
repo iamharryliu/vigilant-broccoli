@@ -36,6 +36,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### tasks-next
 
+- A search icon in the list header and the board header opens a dialog that finds a task in any list (any list with a lane, on the board) and jumps to it, switching list or board and highlighting the task. A kanban lane's title, drag grip, sort and remove button share one header row pair, so a list's name shows once ([#1782](https://github.com/iamharryliu/vigilant-broccoli/pull/1782)).
 - Kanban boards can be framed by other apps at `/embed/board`, which borrows the embedding page's session, and the board sidebar's left padding is tighter ([#1779](https://github.com/iamharryliu/vigilant-broccoli/pull/1779)).
 - New Google Tasks app at tasks.harryliu.dev, which the manager apps also embed. Sign-in from an embed opens a popup and hands the session back to the frame ([#1600](https://github.com/iamharryliu/vigilant-broccoli/pull/1600), [#1601](https://github.com/iamharryliu/vigilant-broccoli/pull/1601)).
 - Only the manager apps can embed it, and their frames are sandboxed ([#1603](https://github.com/iamharryliu/vigilant-broccoli/pull/1603)).
@@ -73,6 +74,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### project-overview
 
+- The Deployments page keeps each pull request as a row with details left and app links right on phones too, wrapping long branch names and links ([#1781](https://github.com/iamharryliu/vigilant-broccoli/pull/1781)).
 - The Deployments page lists pull requests one per row at every width, and from medium screens up each row puts the title, branch and author on the left and the app links on the right ([#1772](https://github.com/iamharryliu/vigilant-broccoli/pull/1772)).
 - The Deployments page shows the commit and deploy age once per pull request next to the author, makes each app name the link to its preview with the same icon as its project-overview card, adds a copy button beside the branch name and tightens the card spacing ([#1768](https://github.com/iamharryliu/vigilant-broccoli/pull/1768)).
 - The home page's Monitoring section now links to the repository's open pull requests and GitHub Actions runs on GitHub, between Status and Deployments ([#1753](https://github.com/iamharryliu/vigilant-broccoli/pull/1753)).

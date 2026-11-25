@@ -36,8 +36,9 @@ const SHORT_SHA_LENGTH = 7;
 const STYLE = {
   root: 'h-full overflow-auto flex flex-col gap-4',
   list: 'flex flex-col gap-4',
-  card: 'p-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-4',
-  apps: 'flex flex-col gap-1',
+  card: 'p-4 flex flex-row items-center justify-between gap-4',
+  details: 'flex flex-col min-w-0',
+  apps: 'flex flex-col gap-1 min-w-0 shrink-0 max-w-[50%]',
   appLink: `${LINK_CLASS} break-all inline-flex items-center gap-2`,
 };
 
@@ -86,8 +87,12 @@ const PullRequestCard = ({
   const latest = latestDeployment(pull);
   return (
     <Card className={STYLE.card}>
-      <div className="flex flex-col">
-        <a href={pull.url} {...externalLinkProps} className={LINK_CLASS}>
+      <div className={STYLE.details}>
+        <a
+          href={pull.url}
+          {...externalLinkProps}
+          className={`${LINK_CLASS} break-words`}
+        >
           <Text weight="bold">
             #{pull.number} {pull.title}
           </Text>

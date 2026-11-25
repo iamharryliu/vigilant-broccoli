@@ -8,6 +8,13 @@ import {
   useTaskChecklistView,
 } from './TaskChecklist';
 import {
+  focusTaskRow,
+  TASK_SEARCH_LABEL,
+  TaskSearchDialog,
+  type TaskSearchItem,
+} from './task-search';
+import {
+  HTMLAttributes,
   ReactNode,
   useEffect,
   useRef,
@@ -22,6 +29,7 @@ import {
   Card,
   CardSkeleton,
   GoogleSigninButton,
+  IconButton,
   ListHeader,
   Select,
   SortSelect,
@@ -518,6 +526,10 @@ const TaskHeader = memo(
     onTaskListChange,
     sortMode,
     onSortChange,
+    onSearch,
+    titleProps,
+    headerLeading,
+    headerActions,
     showSelector,
     taskListsLoading,
   }: {
@@ -526,6 +538,10 @@ const TaskHeader = memo(
     onTaskListChange: (taskListId: string) => void;
     sortMode: SortMode;
     onSortChange: (value: SortMode) => void;
+    onSearch?: () => void;
+    titleProps?: HTMLAttributes<HTMLDivElement>;
+    headerLeading?: ReactNode;
+    headerActions?: ReactNode;
     showSelector: boolean;
     taskListsLoading: boolean;
   }) => {
@@ -538,24 +554,35 @@ const TaskHeader = memo(
       <div className="flex flex-col gap-3">
         <ListHeader
           title={
-            taskListsLoading ? (
-              <div className="animate-pulse bg-muted h-8 w-32 rounded" />
-            ) : (
-              <Text size="5" weight="bold">
-                {selectedTaskList?.title ?? TASKS_TITLE}
-              </Text>
-            )
+            <div
+              {...titleProps}
+              className={`flex min-w-0 flex-1 items-center gap-1 ${titleProps?.className ?? ''}`}
+            >
+              {headerLeading}
+              {taskListsLoading ? (
+                <div className="animate-pulse bg-muted h-8 w-32 rounded" />
+              ) : (
+                <Text size="5" weight="bold">
+                  {selectedTaskList?.title ?? TASKS_TITLE}
+                </Text>
+              )}
+            </div>
           }
         >
-          <SortSelect
-            value={sortMode}
-            onValueChange={onSortChange}
-            options={SORT_MODE_OPTIONS}
-            labels={SORT_MODE_LABELS}
-          />
+          <div className="flex items-center gap-1">
+            {onSearch && (
+              <IconButton
+                variant="ghost"
+                icon="search"
+                aria-label={TASK_SEARCH_LABEL}
+                onClick={onSearch}
+              />
+            )}
+            {headerActions}
+          </div>
         </ListHeader>
-        {showSelector && taskLists.length > 0 && (
-          <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center">
+          {showSelector && taskLists.length > 0 && (
             <Select
               value={selectedTaskList}
               onValueChange={list => onTaskListChange(list.id)}
@@ -565,8 +592,16 @@ const TaskHeader = memo(
               placeholder="Select task list..."
               triggerClassName="w-full"
             />
+          )}
+          <div className="ml-auto">
+            <SortSelect
+              value={sortMode}
+              onValueChange={onSortChange}
+              options={SORT_MODE_OPTIONS}
+              labels={SORT_MODE_LABELS}
+            />
           </div>
-        )}
+        </div>
       </div>
     );
   },
@@ -849,6 +884,10 @@ export const GoogleTasksComponent = ({
   wrapInCard = true,
   addTaskActions,
   enableVoiceInput = true,
+  enableSearch = true,
+  titleProps,
+  headerLeading,
+  headerActions,
   onUseLocally,
 }: {
   auth: GoogleTasksAuthAdapter;
@@ -864,6 +903,14 @@ export const GoogleTasksComponent = ({
   addTaskActions?: ReactNode;
   // Voice input needs the app's /api/speech-to-text and /api/tasks/parse-text.
   enableVoiceInput?: boolean;
+  // Search icon in the header; opens a dialog over the tasks of every list.
+  enableSearch?: boolean;
+  // Header slots: `titleProps` is spread onto the flex-1 title region (e.g. a
+  // drag handle's listeners), `headerLeading` precedes the title and
+  // `headerActions` follows the search icon.
+  titleProps?: HTMLAttributes<HTMLDivElement>;
+  headerLeading?: ReactNode;
+  headerActions?: ReactNode;
   // Shows a signed-out option to switch the app to a local adapter, e.g. one
   // from createLocalTasksAdapter.
   onUseLocally?: () => void;
@@ -928,6 +975,7 @@ export const GoogleTasksComponent = ({
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editingTaskTitle, setEditingTaskTitle] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     if (propTaskListId) {
@@ -1054,6 +1102,19 @@ export const GoogleTasksComponent = ({
     setSelectedTaskListId(newTaskListId);
   }, []);
 
+  const handleSearchSelect = useCallback(
+    (item: TaskSearchItem) => {
+      const isDefaultListHit =
+        taskListId === DEFAULT_TASK_LIST_ID &&
+        item.taskListId === taskLists[0]?.id;
+      if (!propTaskListId && !isDefaultListHit) {
+        setSelectedTaskListId(item.taskListId);
+      }
+      focusTaskRow(item.id);
+    },
+    [propTaskListId, taskListId, taskLists],
+  );
+
   const handleToggleCheck = useCallback(
     (item: CheckListItem) => {
       const task = tasks.find(t => t.id === item.id);
@@ -1151,6 +1212,10 @@ export const GoogleTasksComponent = ({
             onTaskListChange={handleTaskListChange}
             sortMode={sortMode}
             onSortChange={handleSortChange}
+            onSearch={enableSearch ? () => setSearchOpen(true) : undefined}
+            titleProps={titleProps}
+            headerLeading={headerLeading}
+            headerActions={headerActions}
             showSelector={showSelector && !propTaskListId}
             taskListsLoading={taskListsLoading}
           />
@@ -1206,6 +1271,15 @@ export const GoogleTasksComponent = ({
           )
         }
       />
+      {enableSearch && (
+        <TaskSearchDialog
+          open={searchOpen}
+          onOpenChange={setSearchOpen}
+          lists={taskLists}
+          authFetch={authFetch}
+          onSelect={handleSearchSelect}
+        />
+      )}
     </CheckListPanel>
   );
 
