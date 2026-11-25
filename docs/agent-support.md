@@ -130,7 +130,7 @@ ln -s CONTEXT.md <dir>/AGENTS.md
 ln -s ../../agent-skills/<name>/SKILL.md setup/dotfiles/.claude/commands/<name>.md
 ```
 
-`ci-pr-check` verifies tracked symlinks and exact targets. Move/delete adapters with their source. Tools that replace symlinks with regular files cause Git typechanges and fail this check. New harnesses need an adapter and a CI-check update. Windows without symlink support is unsupported; the repo targets macOS/Linux.
+`scripts/ci/verify-agent-adapters.sh` verifies staged/tracked symlinks and exact targets; it runs as the `verify-agent-adapters` pre-commit hook and in the `ci-pr-check` `Verify agent adapters` step. Move/delete adapters with their source. Tools that replace symlinks with regular files cause Git typechanges and fail this check. New harnesses need an adapter and a CI-check update. Windows without symlink support is unsupported; the repo targets macOS/Linux.
 
 Format canonical sources, not adapters ([why](../projects/nx-workspace/CONTEXT.md#nx-formatting-must-not-hand-the-agent-symlinks-to-prettier)). The context site at `context.vigilant-broccoli.app` snapshots canonical sources only; a new directory `CONTEXT.md` is picked up automatically by the `snapshot.config.json` `{ "path": ".", "filename": "CONTEXT.md" }` source, so it needs no config edit. When a new kind of agent-context file appears (a new place `CONTEXT.md` points at, a new skills/commands directory), add it to the `context-md` app's `snapshot.config.json` `sources`, to the matching `push.paths` and `context-md` pattern in `.github/workflows/deploy.yml` and to the `AGENT_CONTEXT_CHANGED` patterns in `.github/workflows/deploy-preview.yml` so the site picks it up and redeploys on change.
 

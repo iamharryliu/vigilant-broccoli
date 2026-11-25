@@ -2,7 +2,7 @@
 
 | Tool | Purpose | Configuration | Enforcement (local/CI) |
 | --- | --- | --- | --- |
-| Agent adapter check | Fails when a `CONTEXT.md` or shared skill is missing a tracked `AGENTS.md`/command symlink | [ci-pr-check.yml](../.github/workflows/ci-pr-check.yml) (`Verify agent adapters` step) | CI: `pre-commit` job in `ci-pr-check`. No local hook. |
+| Agent adapter check | Fails when a `CONTEXT.md` or shared skill is missing a tracked `AGENTS.md`/command symlink | [verify-agent-adapters.sh](../scripts/ci/verify-agent-adapters.sh) (also the `Verify agent adapters` step in [ci-pr-check.yml](../.github/workflows/ci-pr-check.yml)) | Local pre-commit hook `verify-agent-adapters` (staged index); CI: `pre-commit` job in `ci-pr-check`. |
 | Agent sandbox image build | Builds the sandbox Dockerfile to catch a broken mise pin, download or apt error | [test-smoke-agent-sandbox-image.yml](../.github/workflows/test-smoke-agent-sandbox-image.yml) | CI only: pull requests and `main` pushes touching `infrastructure/agent-sandbox/**`; build only, never pushed. |
 | Black | Formats Python | [.pre-commit-config.yaml](../.pre-commit-config.yaml) | Local: pre-commit hook. CI: `pre-commit` job in `ci-pr-check`. |
 | CodeQL | Static analysis raising code-scanning alerts (escaping, injection, insecure randomness) | GitHub default setup in repository settings; no workflow file. Triage: [cron-agentic-pr-create-codeql-alerts.yml](../.github/workflows/cron-agentic-pr-create-codeql-alerts.yml) | CI: GitHub-hosted service scanning pushes and PRs; `cron-agentic-pr-create-codeql-alerts` weekly fixes genuine alerts and lists dismissals ([policy](./ci/agentic-pr-maintenance.md#open-codeql-alerts)). No local enforcement. |

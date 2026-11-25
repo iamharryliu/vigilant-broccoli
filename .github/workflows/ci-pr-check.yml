@@ -140,26 +140,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Verify agent adapters
-        run: |
-          set -euo pipefail
-          STATUS=0
-          check_link() {
-            if [ "$(git ls-files -s "$1" | cut -d' ' -f1)" != 120000 ]; then
-              echo "::error file=$1::missing, or not a tracked symlink"
-              STATUS=1
-            elif [ "$(git cat-file blob ":$1")" != "$2" ]; then
-              echo "::error file=$1::must point at $2"
-              STATUS=1
-            fi
-          }
-          for ctx in $(git ls-files 'CONTEXT.md' '*/CONTEXT.md'); do
-            check_link "$(dirname "$ctx")/AGENTS.md" CONTEXT.md
-          done
-          for skill in $(git ls-files 'setup/dotfiles/agent-skills/*/SKILL.md'); do
-            name=$(basename "$(dirname "$skill")")
-            check_link "setup/dotfiles/.claude/commands/$name.md" "../../agent-skills/$name/SKILL.md"
-          done
-          exit "$STATUS"
+        run: ./scripts/ci/verify-agent-adapters.sh
 
       - uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # v5.2.9
         with:

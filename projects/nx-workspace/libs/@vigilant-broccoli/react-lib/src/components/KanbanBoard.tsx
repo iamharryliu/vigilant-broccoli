@@ -61,7 +61,7 @@ type KanbanLaneFrameProps = Omit<
   ComponentPropsWithoutRef<'section'>,
   'title'
 > & {
-  header: ReactNode;
+  header?: ReactNode;
   footer?: ReactNode;
   isOver?: boolean;
 };
