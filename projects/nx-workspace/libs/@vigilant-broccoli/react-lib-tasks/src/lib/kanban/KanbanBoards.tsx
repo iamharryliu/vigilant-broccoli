@@ -1009,9 +1009,7 @@ export const KanbanBoards = ({
       <div className="flex h-full">
         <div
           className={`transition-all duration-300 border-r flex flex-col gap-4 overflow-hidden ${
-            sidebarOpen
-              ? 'w-64 py-4 pr-4 pl-6 overflow-y-auto'
-              : 'w-0 p-0 border-r-0'
+            sidebarOpen ? 'w-64 p-4 overflow-y-auto' : 'w-0 p-0 border-r-0'
           }`}
         >
           {sidebarOpen && (

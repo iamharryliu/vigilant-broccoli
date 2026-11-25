@@ -6,6 +6,7 @@ export const APP_DESCRIPTION =
 export const PAGE_TITLE = {
   HOME: 'Google Tasks',
   EMBED: 'Embedded Tasks',
+  EMBED_BOARD: 'Embedded Kanban',
   LOGIN: 'Sign In',
   AUTH_CALLBACK: 'Signing In',
   SETTINGS: 'Settings',

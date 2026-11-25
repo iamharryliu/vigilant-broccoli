@@ -2,6 +2,7 @@
 
 ## Overview
 
+- The Kanban page frames tasks-next's `/embed/board?session=parent` (`tasks-kanban-frame.component.tsx`), so the board UI, drag logic and Supabase row below live in tasks-next; the native `kanban.component.tsx` and `/api/kanban/boards` route are no longer rendered by the page. See [tasks-next Embed](../../../tasks-next/docs/features/embed.md)
 - Google Tasks-backed swimlane board in `local-manager-next`
 - Board setup synced per user via Supabase (cross-machine), shared with tasks-next's Google mode
 - Requires Google OAuth session
