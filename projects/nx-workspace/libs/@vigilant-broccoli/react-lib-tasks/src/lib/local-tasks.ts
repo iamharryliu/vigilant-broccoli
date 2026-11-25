@@ -13,6 +13,12 @@ type LocalTask = {
   status: TaskStatus;
 };
 
+type NewTaskFields = {
+  notes?: string;
+  due?: string;
+  status?: TaskStatus;
+};
+
 type LocalTaskList = { id: string; title: string };
 
 // Tasks per list are kept in display order, so array order is the position.
@@ -30,6 +36,7 @@ const ENDPOINT = {
   TASK_LISTS: '/api/tasks/lists',
   MOVE: '/api/tasks/move',
   CREATE_MANY: '/api/tasks/create',
+  IMPORT: '/api/tasks/import',
 } as const;
 
 const json = (body: unknown, status: number = HTTP_STATUS_CODES.OK) =>
@@ -69,13 +76,27 @@ export const createLocalTasksAdapter = ({
       ? (taskListId as string)
       : store.taskLists[0].id;
 
-  const addTask = (store: LocalTasksStore, listId: string, title: string) => {
-    const task: LocalTask = {
+  const buildTask = (title: string, fields: NewTaskFields = {}): LocalTask => {
+    const now = new Date().toISOString();
+    const status = fields.status ?? 'needsAction';
+    return {
       id: crypto.randomUUID(),
       title,
-      updated: new Date().toISOString(),
-      status: 'needsAction',
+      notes: fields.notes,
+      due: fields.due,
+      updated: now,
+      completed: status === 'completed' ? now : undefined,
+      status,
     };
+  };
+
+  const addTask = (
+    store: LocalTasksStore,
+    listId: string,
+    title: string,
+    fields?: NewTaskFields,
+  ) => {
+    const task = buildTask(title, fields);
     store.tasks[listId] = [task, ...(store.tasks[listId] ?? [])];
     return task;
   };
@@ -110,7 +131,11 @@ export const createLocalTasksAdapter = ({
     }
 
     if (method === HTTP_METHOD.POST) {
-      const task = addTask(store, listId, body.title ?? '');
+      const task = addTask(store, listId, body.title ?? '', {
+        notes: body.notes,
+        due: body.due,
+        status: body.status as TaskStatus | undefined,
+      });
       write(store);
       return json({ task });
     }
@@ -199,6 +224,22 @@ export const createLocalTasksAdapter = ({
     return json({ success: true });
   };
 
+  // Writes the store once for the whole batch, and keeps the batch's order at
+  // the top of the list, unlike repeated POSTs which each land in front.
+  const importMany = (body: {
+    taskListId?: string;
+    tasks?: (NewTaskFields & { title: string })[];
+  }) => {
+    const store = read();
+    const listId = resolveListId(store, body.taskListId);
+    const added = (body.tasks ?? []).map(({ title, ...fields }) =>
+      buildTask(title, fields),
+    );
+    store.tasks[listId] = [...added, ...(store.tasks[listId] ?? [])];
+    write(store);
+    return json({ count: added.length });
+  };
+
   const createMany = (body: { items?: string[]; taskListId?: string }) => {
     const store = read();
     const listId = resolveListId(store, body.taskListId);
@@ -230,6 +271,8 @@ export const createLocalTasksAdapter = ({
         return moveTask(body);
       case ENDPOINT.CREATE_MANY:
         return createMany(body);
+      case ENDPOINT.IMPORT:
+        return importMany(body);
       default:
         return notFound(`${url.pathname} is unavailable without signing in`);
     }

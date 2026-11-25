@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Button,
@@ -8,15 +8,30 @@ import {
   Checkbox,
   GoogleSigninButton,
   IconButton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   downloadJson,
 } from '@vigilant-broccoli/react-lib';
+import {
+  setDefaultTaskListId,
+  useDefaultTaskListId,
+} from '../../../libs/default-task-list';
 import { signOut, tasksAuth, useAuthStatus } from '../../../libs/auth';
 import {
   localTasksAuth,
   setLocalMode,
   signInFromLocalMode,
-  useLocalMode,
 } from '../../../libs/local-mode';
+import {
+  STORAGE_MODE,
+  type StorageMode,
+  useStorageMode,
+} from '../../../libs/storage-mode';
+import { dbTasksAuth } from '../../../libs/db-tasks-auth';
+import { KANBAN_STORE_BY_MODE } from '../../../libs/kanban-store';
+import type { KanbanStore } from '@vigilant-broccoli/react-lib-tasks';
 import { API_ENDPOINT, ROUTE } from '../app.const';
 import {
   type AuthFetch,
@@ -25,6 +40,9 @@ import {
   useTaskLists,
 } from '../hooks/use-task-lists';
 import { useTranslation } from '../i18n';
+import { toTransferredKanban, type TransferredKanban } from './kanban-transfer';
+import { StorageModeSelect } from './StorageModeSelect';
+import { ImportTaskLists } from './ImportTaskLists';
 import { TaskListsManager } from './TaskListsManager';
 
 const EXPORT_FILENAME_PREFIX = 'tasks-export';
@@ -38,7 +56,11 @@ const fetchTasks = async (authFetch: AuthFetch, taskListId: string) =>
     )
   ).tasks;
 
-const exportTaskLists = async (authFetch: AuthFetch, taskLists: TaskList[]) => {
+const exportTaskLists = async (
+  authFetch: AuthFetch,
+  taskLists: TaskList[],
+  kanban: TransferredKanban | null,
+) => {
   const exportedAt = new Date().toISOString();
   const lists = await Promise.all(
     taskLists.map(async list => ({
@@ -47,17 +69,19 @@ const exportTaskLists = async (authFetch: AuthFetch, taskLists: TaskList[]) => {
     })),
   );
   downloadJson(
-    { exportedAt, taskLists: lists },
+    { exportedAt, taskLists: lists, ...(kanban && { kanban }) },
     `${EXPORT_FILENAME_PREFIX}-${exportedAt.slice(0, 10)}`,
   );
 };
 
 function ExportTaskLists({
   authFetch,
+  kanbanStore,
   taskLists,
   loadFailed,
 }: {
   authFetch: AuthFetch;
+  kanbanStore: KanbanStore;
   taskLists: TaskList[] | null;
   loadFailed: boolean;
 }) {
@@ -82,7 +106,13 @@ function ExportTaskLists({
     setIsExporting(true);
     setExportFailed(false);
     try {
-      await exportTaskLists(authFetch, selectedLists);
+      // A failed load must not export as "no boards", so it fails the export.
+      const loaded = await kanbanStore.load();
+      if (!loaded.ok) throw new Error('Boards unavailable');
+      const kanban = loaded.state
+        ? toTransferredKanban(loaded.state, selectedLists)
+        : null;
+      await exportTaskLists(authFetch, selectedLists, kanban);
     } catch {
       setExportFailed(true);
     } finally {
@@ -158,17 +188,68 @@ function ExportTaskLists({
   );
 }
 
-function TaskListSettings({ authFetch }: { authFetch: AuthFetch }) {
+const SETTINGS_TAB = {
+  TASKS: 'tasks',
+  DATA: 'data',
+  ACCOUNT: 'account',
+} as const;
+
+function SettingsTabs({
+  authFetch,
+  mode,
+  account,
+}: {
+  authFetch: AuthFetch;
+  mode: StorageMode;
+  account: ReactNode;
+}) {
+  const { t } = useTranslation();
   const taskListsState = useTaskLists(authFetch);
+  const defaultTaskListId = useDefaultTaskListId(mode);
   return (
-    <>
-      <TaskListsManager {...taskListsState} />
-      <ExportTaskLists
-        authFetch={authFetch}
-        taskLists={taskListsState.taskLists}
-        loadFailed={taskListsState.loadFailed}
-      />
-    </>
+    <Tabs defaultValue={SETTINGS_TAB.TASKS}>
+      <TabsList>
+        <TabsTrigger value={SETTINGS_TAB.TASKS}>
+          {t('SETTINGS.TABS.TASKS')}
+        </TabsTrigger>
+        <TabsTrigger value={SETTINGS_TAB.DATA}>
+          {t('SETTINGS.TABS.DATA')}
+        </TabsTrigger>
+        <TabsTrigger value={SETTINGS_TAB.ACCOUNT}>
+          {t('SETTINGS.TABS.ACCOUNT')}
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value={SETTINGS_TAB.TASKS}>
+        <TaskListsManager
+          {...taskListsState}
+          defaultTaskListId={defaultTaskListId}
+          canDeleteFirstList={mode !== STORAGE_MODE.GOOGLE}
+          setDefaultTaskList={taskListId =>
+            setDefaultTaskListId(mode, taskListId)
+          }
+        />
+      </TabsContent>
+      <TabsContent value={SETTINGS_TAB.DATA} className="flex flex-col gap-4">
+        <ExportTaskLists
+          authFetch={authFetch}
+          kanbanStore={KANBAN_STORE_BY_MODE[mode]}
+          taskLists={taskListsState.taskLists}
+          loadFailed={taskListsState.loadFailed}
+        />
+        <ImportTaskLists
+          authFetch={authFetch}
+          kanbanStore={KANBAN_STORE_BY_MODE[mode]}
+          taskLists={taskListsState.taskLists}
+          loadFailed={taskListsState.loadFailed}
+          createTaskList={taskListsState.createTaskList}
+          refreshTaskLists={taskListsState.refreshTaskLists}
+          supportsBulkImport={mode !== STORAGE_MODE.GOOGLE}
+        />
+      </TabsContent>
+      <TabsContent value={SETTINGS_TAB.ACCOUNT} className="flex flex-col gap-4">
+        {account}
+      </TabsContent>
+    </Tabs>
   );
 }
 
@@ -176,7 +257,7 @@ export function SettingsView() {
   const { t } = useTranslation();
   const router = useRouter();
   const authStatus = useAuthStatus();
-  const isLocalMode = useLocalMode();
+  const mode = useStorageMode();
   const isSignedIn = authStatus === 'authenticated';
 
   const handleSignOut = async () => {
@@ -185,44 +266,63 @@ export function SettingsView() {
   };
 
   const renderContent = () => {
-    if (isLocalMode) {
+    if (mode === STORAGE_MODE.LOCAL) {
       return (
-        <>
-          {/* Keyed by mode so each adapter loads its own lists. */}
-          <TaskListSettings key="local" authFetch={localTasksAuth.authFetch} />
-          <CardContainer title={t('SETTINGS.ACCOUNT.TITLE')}>
-            <div className="flex flex-col items-start gap-3">
-              <p className="text-sm text-muted-foreground">
-                {isSignedIn
-                  ? t('SETTINGS.ACCOUNT.LOCAL_MODE_SIGNED_IN')
-                  : t('SETTINGS.ACCOUNT.LOCAL_MODE')}
-              </p>
-              {/* The Google session survives local mode, so a signed-in user
-                  switches straight back instead of signing in again. */}
-              {isSignedIn ? (
-                <Button variant="outline" onClick={() => setLocalMode(false)}>
-                  {t('LOCAL_MODE.LEAVE')}
-                </Button>
-              ) : (
-                <GoogleSigninButton
-                  onClick={() => void signInFromLocalMode()}
-                />
-              )}
-            </div>
-          </CardContainer>
-        </>
+        <SettingsTabs
+          // Keyed by mode so each adapter loads its own lists.
+          key="local"
+          authFetch={localTasksAuth.authFetch}
+          mode={mode}
+          account={
+            <>
+              <CardContainer title={t('SETTINGS.ACCOUNT.TITLE')}>
+                <div className="flex flex-col items-start gap-3">
+                  <p className="text-sm text-muted-foreground">
+                    {isSignedIn
+                      ? t('SETTINGS.ACCOUNT.LOCAL_MODE_SIGNED_IN')
+                      : t('SETTINGS.ACCOUNT.LOCAL_MODE')}
+                  </p>
+                  {/* The Google session survives local mode, so a signed-in user
+                    switches straight back instead of signing in again. */}
+                  {isSignedIn ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => setLocalMode(false)}
+                    >
+                      {t('LOCAL_MODE.LEAVE')}
+                    </Button>
+                  ) : (
+                    <GoogleSigninButton
+                      onClick={() => void signInFromLocalMode()}
+                    />
+                  )}
+                </div>
+              </CardContainer>
+            </>
+          }
+        />
       );
     }
     if (isSignedIn) {
       return (
-        <>
-          <TaskListSettings key="google" authFetch={tasksAuth.authFetch} />
-          <CardContainer title={t('SETTINGS.ACCOUNT.TITLE')}>
-            <Button variant="outline" onClick={() => void handleSignOut()}>
-              {t('AUTH.SIGN_OUT')}
-            </Button>
-          </CardContainer>
-        </>
+        <SettingsTabs
+          key={mode}
+          authFetch={
+            mode === STORAGE_MODE.DATABASE
+              ? dbTasksAuth.authFetch
+              : tasksAuth.authFetch
+          }
+          mode={mode}
+          account={
+            <>
+              <CardContainer title={t('SETTINGS.ACCOUNT.TITLE')}>
+                <Button variant="outline" onClick={() => void handleSignOut()}>
+                  {t('AUTH.SIGN_OUT')}
+                </Button>
+              </CardContainer>
+            </>
+          }
+        />
       );
     }
     if (authStatus === 'unauthenticated') {
@@ -247,6 +347,11 @@ export function SettingsView() {
           onClick={() => router.push(ROUTE.HOME)}
         />
         <h1 className="text-xl font-semibold">{t('SETTINGS.TITLE')}</h1>
+        {(isSignedIn || mode === STORAGE_MODE.LOCAL) && (
+          <div className="ml-auto">
+            <StorageModeSelect />
+          </div>
+        )}
       </header>
       {renderContent()}
     </main>

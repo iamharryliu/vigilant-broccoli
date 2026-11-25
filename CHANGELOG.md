@@ -40,6 +40,9 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - Tasks can be deleted from a row's ellipsis menu ([#1607](https://github.com/iamharryliu/vigilant-broccoli/pull/1607)).
 - Self-hosting is supported through a published Docker image, with Supabase and framing settings read at runtime ([#1605](https://github.com/iamharryliu/vigilant-broccoli/pull/1605)).
 - New settings page with task-list management, export and sign-out, plus a local mode that works without signing in. Embedders can share their session, so the manager's Tasks tab needs no separate sign-in ([#1634](https://github.com/iamharryliu/vigilant-broccoli/pull/1634), [#1635](https://github.com/iamharryliu/vigilant-broccoli/pull/1635)).
+- A storage select in the header (Google, Database, Local, also on Settings) chooses where tasks live; Database keeps them in Supabase and Local in the browser, and each store has its own lists and default list (PR: pending).
+- Settings is split into Tasks, Import / Export and Account tabs: lists show their active-task counts and an ellipsis menu to rename, set as default or delete, with a Delete all option, and export and import carry tasks, notes, due dates, completion and kanban boards, with a running import count and fast bulk import for Database and Local (PR: pending).
+- A List / Kanban toggle shows every list as a lane on the same kanban board as the local manager, with boards, lane reordering, per-list sort and drag between lanes; boards save to Supabase (Google and Database) or the browser (Local) (PR: pending).
 
 ### job-hunt-next
 
@@ -189,6 +192,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - The home Tasks card embeds tasks.harryliu.dev in place of the native list ([#1600](https://github.com/iamharryliu/vigilant-broccoli/pull/1600), [#1601](https://github.com/iamharryliu/vigilant-broccoli/pull/1601)).
 - Deleting a storage demo file asks for confirmation in a dialog instead of a browser prompt ([#1672](https://github.com/iamharryliu/vigilant-broccoli/pull/1672)).
 - Kanban and to-do lists delete through the standard ellipsis menu ([#1607](https://github.com/iamharryliu/vigilant-broccoli/pull/1607)).
+- Kanban boards sync through Supabase instead of MongoDB and share their boards with the Tasks app's Google mode, so the same boards show in both (PR: pending).
 - The CI Management tab is removed, since the status site shows the same information ([#1633](https://github.com/iamharryliu/vigilant-broccoli/pull/1633)).
 - The settings page's dark mode button is now a System/Light/Dark theme picker, which also sets the theme for cloud services, local services and music ([#1692](https://github.com/iamharryliu/vigilant-broccoli/pull/1692)).
 

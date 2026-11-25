@@ -88,6 +88,9 @@
       "@vigilant-broccoli/react-lib-tasks/google-tasks-server": [
         "./libs/@vigilant-broccoli/react-lib-tasks/src/lib/google-tasks.server.ts"
       ],
+      "@vigilant-broccoli/react-lib-tasks/kanban-boards-server": [
+        "./libs/@vigilant-broccoli/react-lib-tasks/src/lib/kanban/kanban-boards.server.ts"
+      ],
       "@vigilant-broccoli/react-lib-tasks/recurrence": [
         "./libs/@vigilant-broccoli/react-lib-tasks/src/lib/recurrence.ts"
       ],

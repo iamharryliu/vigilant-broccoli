@@ -31,13 +31,23 @@ const taskListUrl = (taskListId: string) =>
 // export selection too. Mutations update state only after the API confirms.
 export const useTaskLists = (authFetch: AuthFetch) => {
   const [taskLists, setTaskLists] = useState<TaskList[] | null>(null);
+  const [activeTaskCounts, setActiveTaskCounts] = useState<
+    Record<string, number>
+  >({});
   const [loadFailed, setLoadFailed] = useState(false);
 
-  useEffect(() => {
-    fetchJson<{ taskLists: TaskList[] }>(authFetch, API_ENDPOINT.TASK_LISTS)
-      .then(data => setTaskLists(data.taskLists))
-      .catch(() => setLoadFailed(true));
+  const loadTaskLists = useCallback(async () => {
+    const data = await fetchJson<{
+      taskLists: TaskList[];
+      activeTaskCounts?: Record<string, number>;
+    }>(authFetch, API_ENDPOINT.TASK_LISTS);
+    setTaskLists(data.taskLists);
+    setActiveTaskCounts(data.activeTaskCounts ?? {});
   }, [authFetch]);
+
+  useEffect(() => {
+    loadTaskLists().catch(() => setLoadFailed(true));
+  }, [loadTaskLists]);
 
   const createTaskList = useCallback(
     async (title: string) => {
@@ -47,6 +57,8 @@ export const useTaskLists = (authFetch: AuthFetch) => {
         jsonInit(HTTP_METHOD.POST, { title }),
       );
       setTaskLists(previous => [...(previous ?? []), taskList]);
+      setActiveTaskCounts(previous => ({ ...previous, [taskList.id]: 0 }));
+      return taskList;
     },
     [authFetch],
   );
@@ -79,9 +91,26 @@ export const useTaskLists = (authFetch: AuthFetch) => {
     [authFetch],
   );
 
+  // Deletes every list in `taskListIds`, then reloads: the local store
+  // recreates an empty default list when its last one is deleted.
+  const deleteTaskLists = useCallback(
+    async (taskListIds: string[]) => {
+      for (const taskListId of taskListIds) {
+        await fetchJson(authFetch, taskListUrl(taskListId), {
+          method: HTTP_METHOD.DELETE,
+        });
+      }
+      await loadTaskLists();
+    },
+    [authFetch, loadTaskLists],
+  );
+
   return {
     taskLists,
+    activeTaskCounts,
     loadFailed,
+    refreshTaskLists: loadTaskLists,
+    deleteTaskLists,
     createTaskList,
     renameTaskList,
     deleteTaskList,
