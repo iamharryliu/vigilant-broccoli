@@ -101,6 +101,7 @@
 | Network management | ELVA11; Tillmobil; vigilant-broccoli |
 | Next.js | ELVA11; Tillmobil; vigilant-broccoli |
 | Node.js | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
+| NoSQL | vigilant-broccoli |
 | npm publishing / semantic versioning | vigilant-broccoli |
 | Nx | ELVA11; Tretton37; vigilant-broccoli |
 | Object-oriented programming | Capco |

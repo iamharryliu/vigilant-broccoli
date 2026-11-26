@@ -7,6 +7,7 @@ import {
   ArchiveRestore,
   ArrowUpDown,
   CheckCheck,
+  ClipboardPaste,
   Filter,
   Loader2,
   Sparkles,
@@ -40,11 +41,13 @@ import {
 import { isActiveRunStatus, RUN_KIND } from '../constants/runs';
 import { useRuns } from '../hooks/use-runs';
 import { useTranslation } from '../i18n';
+import { undoToast } from '../utils/undo-toast.utils';
 import { getMatchesProgress } from '../utils/job-matches-progress.utils';
 import {
   fetchMatchPostings,
   fetchMatchSkills,
   removeMatchPostings,
+  restoreMatchPosting,
   removeMatchSkill,
   setMatchPostingArchived,
   setMatchSkillStatus,
@@ -69,6 +72,7 @@ import {
   sortMatches,
 } from '../utils/job-matches.utils';
 import { SECTION_HEADING_CLASS } from './application-brief.component';
+import { RedoMatchingDialog } from './redo-matching-dialog.component';
 import { MatchFiltersDialog } from './match-filters-dialog.component';
 import {
   SKILL_BADGE_BUTTON_CLASS,
@@ -81,6 +85,9 @@ import { JobMatchSkillsPanel } from './job-match-skills-panel.component';
 const TOP_GAP_COUNT = 12;
 const SORT_STORAGE_KEY = 'job-hunt-matches-sort';
 const LANGUAGES_STORAGE_KEY = 'job-hunt-matches-languages';
+// Matches the card's `duration-300` exit transition.
+const EXIT_ANIMATION_MS = 300;
+const FILTERS_STORAGE_KEY = 'job-hunt-matches-filters';
 
 const LEVEL_BADGE = {
   [MATCH_LEVEL.STRONG]: { color: 'green', key: 'MATCHES.STRONG' },
@@ -94,131 +101,166 @@ const MatchCard = ({
   generating,
   onRemove,
   onArchive,
+  onRedo,
   onGenerateBrief,
+  leaving,
 }: {
   match: JobMatch;
   generating: boolean;
   onRemove: () => void;
   onArchive: (archived: boolean, applied: boolean) => void;
+  onRedo?: () => void;
+  leaving: boolean;
   onGenerateBrief?: () => void;
 }) => {
   const { t } = useTranslation();
   const badge = LEVEL_BADGE[match.level];
   return (
-    <Card className="flex shrink-0 flex-col gap-2 p-4">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 flex-col">
-          <a
-            href={match.url}
-            target="_blank"
-            rel="noreferrer"
-            className="truncate text-sm font-medium underline-offset-2 hover:underline"
-          >
-            {match.role}
-          </a>
-          {(match.company || match.postedAt) && (
-            <span className="truncate text-xs text-muted-foreground">
-              {[
-                match.company,
-                match.postedAt &&
-                  t('MATCHES.POSTED', {
-                    date: new Date(match.postedAt).toLocaleDateString(
-                      undefined,
-                      { month: 'short', day: 'numeric' },
+    // Collapsing the grid row animates the height; the inner wrapper clips.
+    <div
+      className={`grid shrink-0 transition-[grid-template-rows,opacity,transform] duration-300 ease-out ${
+        leaving
+          ? 'grid-rows-[0fr] -translate-x-4 opacity-0'
+          : 'grid-rows-[1fr] opacity-100'
+      }`}
+    >
+      <div className="min-h-0 overflow-hidden">
+        <Card className="flex shrink-0 flex-col gap-2 p-4">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex min-w-0 flex-col">
+              <a
+                href={match.url}
+                target="_blank"
+                rel="noreferrer"
+                className="truncate text-sm font-medium underline-offset-2 hover:underline"
+              >
+                {match.role}
+              </a>
+              {(match.company || match.postedAt) && (
+                <span className="truncate text-xs text-muted-foreground">
+                  {[
+                    match.company,
+                    match.postedAt &&
+                      t('MATCHES.POSTED', {
+                        date: new Date(match.postedAt).toLocaleDateString(
+                          undefined,
+                          { month: 'short', day: 'numeric' },
+                        ),
+                      }),
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </span>
+              )}
+            </div>
+            <div className="flex shrink-0 items-center gap-1">
+              {match.easyApply && (
+                <Badge color="blue" variant="soft" size="1">
+                  {t('MATCHES.EASY_APPLY')}
+                </Badge>
+              )}
+              <Badge color={badge.color} variant="soft" size="1">
+                {t(badge.key)}
+                {match.level !== MATCH_LEVEL.UNKNOWN &&
+                  ` · ${Math.round(match.ratio * 100)}%`}
+              </Badge>
+              {match.applied && (
+                <Badge color="green" variant="solid" size="1">
+                  {t('MATCHES.APPLIED')}
+                </Badge>
+              )}
+              <EllipsisCTA
+                actions={[
+                  ...(match.applied
+                    ? []
+                    : [
+                        {
+                          label: t('MATCHES.MARK_APPLIED'),
+                          icon: <CheckCheck size={16} />,
+                          onSelect: () => onArchive(true, true),
+                        },
+                      ]),
+                  ...(match.applied
+                    ? [
+                        {
+                          label: t('MATCHES.MOVE_TO_ARCHIVED'),
+                          icon: <Archive size={16} />,
+                          onSelect: () => onArchive(true, false),
+                        },
+                      ]
+                    : []),
+                  {
+                    label: match.archived
+                      ? t('MATCHES.UNARCHIVE')
+                      : t('MATCHES.ARCHIVE'),
+                    icon: match.archived ? (
+                      <ArchiveRestore size={16} />
+                    ) : (
+                      <Archive size={16} />
                     ),
-                  }),
-              ]
-                .filter(Boolean)
-                .join(' · ')}
-            </span>
-          )}
-        </div>
-        <div className="flex shrink-0 items-center gap-1">
-          {match.easyApply && (
-            <Badge color="blue" variant="soft" size="1">
-              {t('MATCHES.EASY_APPLY')}
-            </Badge>
-          )}
-          <Badge color={badge.color} variant="soft" size="1">
-            {t(badge.key)}
-            {match.level !== MATCH_LEVEL.UNKNOWN &&
-              ` · ${Math.round(match.ratio * 100)}%`}
-          </Badge>
-          {match.applied && (
-            <Badge color="green" variant="solid" size="1">
-              {t('MATCHES.APPLIED')}
-            </Badge>
-          )}
-          <EllipsisCTA
-            actions={[
-              ...(match.applied
-                ? []
-                : [
-                    {
-                      label: t('MATCHES.MARK_APPLIED'),
-                      icon: <CheckCheck size={16} />,
-                      onSelect: () => onArchive(true, true),
+                    onSelect: () => onArchive(!match.archived, false),
+                  },
+                  ...(onRedo
+                    ? [
+                        {
+                          label: t('MATCHES.REDO'),
+                          icon: <ClipboardPaste size={16} />,
+                          onSelect: onRedo,
+                        },
+                      ]
+                    : []),
+                  {
+                    label: t('MATCHES.REMOVE'),
+                    icon: <Trash2 size={16} />,
+                    color: 'red',
+                    onSelect: onRemove,
+                    confirm: {
+                      title: t('MATCHES.REMOVE_TITLE'),
+                      description: t('MATCHES.REMOVE_DESCRIPTION', {
+                        role: match.role,
+                      }),
+                      confirmLabel: t('MATCHES.REMOVE'),
                     },
-                  ]),
-              {
-                label: match.archived
-                  ? t('MATCHES.UNARCHIVE')
-                  : t('MATCHES.ARCHIVE'),
-                icon: match.archived ? (
-                  <ArchiveRestore size={16} />
-                ) : (
-                  <Archive size={16} />
-                ),
-                onSelect: () => onArchive(!match.archived, false),
-              },
-              {
-                label: t('MATCHES.REMOVE'),
-                icon: <Trash2 size={16} />,
-                color: 'red',
-                onSelect: onRemove,
-                confirm: {
-                  title: t('MATCHES.REMOVE_TITLE'),
-                  description: t('MATCHES.REMOVE_DESCRIPTION', {
-                    role: match.role,
-                  }),
-                  confirmLabel: t('MATCHES.REMOVE'),
-                },
-              },
-            ]}
+                  },
+                ]}
+              />
+            </div>
+          </div>
+          <MatchBriefSummary
+            brief={match.brief}
+            generating={generating}
+            onGenerate={onGenerateBrief}
           />
-        </div>
+          {match.matched.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1">
+              <span className={SECTION_HEADING_CLASS}>
+                {t('MATCHES.MATCHED')}
+              </span>
+              {match.matched.map(skill => (
+                <Badge key={skill} color="green" variant="soft" size="1">
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+          )}
+          {match.gaps.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1">
+              <span className={SECTION_HEADING_CLASS}>{t('MATCHES.GAPS')}</span>
+              {match.gaps.map(skill => (
+                <Badge key={skill} color="orange" variant="outline" size="1">
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+          )}
+          <MatchBriefDetails
+            brief={match.brief}
+            generating={generating}
+            onGenerate={onGenerateBrief}
+          />
+        </Card>
       </div>
-      <MatchBriefSummary
-        brief={match.brief}
-        generating={generating}
-        onGenerate={onGenerateBrief}
-      />
-      {match.matched.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1">
-          <span className={SECTION_HEADING_CLASS}>{t('MATCHES.MATCHED')}</span>
-          {match.matched.map(skill => (
-            <Badge key={skill} color="green" variant="soft" size="1">
-              {skill}
-            </Badge>
-          ))}
-        </div>
-      )}
-      {match.gaps.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1">
-          <span className={SECTION_HEADING_CLASS}>{t('MATCHES.GAPS')}</span>
-          {match.gaps.map(skill => (
-            <Badge key={skill} color="orange" variant="outline" size="1">
-              {skill}
-            </Badge>
-          ))}
-        </div>
-      )}
-      <MatchBriefDetails
-        brief={match.brief}
-        generating={generating}
-        onGenerate={onGenerateBrief}
-      />
-    </Card>
+    </div>
   );
 };
 
@@ -236,6 +278,9 @@ export const JobMatchesPage = () => {
   const [archivedOnly, setArchivedOnly] = useState(false);
   const [appliedOnly, setAppliedOnly] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
+  const [leaving, setLeaving] = useState<Set<string>>(new Set());
+  const [redoing, setRedoing] = useState<StoredMatchPosting | null>(null);
   const [skills, setSkills] = useState<MatchSkill[]>([]);
   const [suggesting, setSuggesting] = useState(false);
   const [confirmingClear, setConfirmingClear] = useState(false);
@@ -276,6 +321,52 @@ export const JobMatchesPage = () => {
       // Blocked or corrupt storage: no language filtering applies.
     }
   }, []);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(
+        localStorage.getItem(FILTERS_STORAGE_KEY) ?? '{}',
+      );
+      if (typeof stored.level === 'string') setLevelFilter(stored.level);
+      setEasyApplyOnly(stored.easyApplyOnly === true);
+      setHideInternships(stored.hideInternships === true);
+      setHideGraduate(stored.hideGraduate === true);
+      setArchivedOnly(stored.archivedOnly === true);
+      setAppliedOnly(stored.appliedOnly === true);
+    } catch {
+      // Blocked or corrupt storage: the filters start cleared.
+    }
+    setFiltersLoaded(true);
+  }, []);
+
+  // Saving waits for the load above, or the cleared defaults would overwrite
+  // the stored choice on first render.
+  useEffect(() => {
+    if (!filtersLoaded) return;
+    try {
+      localStorage.setItem(
+        FILTERS_STORAGE_KEY,
+        JSON.stringify({
+          level: levelFilter,
+          easyApplyOnly,
+          hideInternships,
+          hideGraduate,
+          archivedOnly,
+          appliedOnly,
+        }),
+      );
+    } catch {
+      // Blocked storage: the choice lasts until reload.
+    }
+  }, [
+    filtersLoaded,
+    levelFilter,
+    easyApplyOnly,
+    hideInternships,
+    hideGraduate,
+    archivedOnly,
+    appliedOnly,
+  ]);
 
   const changeLanguages = (next: string[]) => {
     setLanguages(next);
@@ -366,15 +457,59 @@ export const JobMatchesPage = () => {
     }
   };
 
+  // Plays the card's exit animation before the request moves or removes it;
+  // without a url (clear all) there is no card to animate.
+  const exitThen = <T,>(url: string | undefined, request: () => Promise<T>) => {
+    if (!url) return request();
+    setLeaving(previous => new Set(previous).add(url));
+    return new Promise<void>(resolve => setTimeout(resolve, EXIT_ANIMATION_MS))
+      .then(request)
+      .finally(() =>
+        setLeaving(previous => {
+          const next = new Set(previous);
+          next.delete(url);
+          return next;
+        }),
+      );
+  };
+
   const remove = (url?: string) =>
-    removeMatchPostings(url)
-      .then(setPostings)
+    exitThen(url, () => removeMatchPostings(url))
+      .then(next => {
+        setPostings(next);
+        if (url) {
+          undoToast(t('MATCHES.UNDO_DELETED'), t('MATCHES.UNDO'), () =>
+            restoreMatchPosting(url)
+              .then(setPostings)
+              .catch(() => toast.error(t('MATCHES.SAVE_FAILED'))),
+          );
+        }
+      })
       .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
 
-  const archive = (url: string, archived: boolean, applied: boolean) =>
-    setMatchPostingArchived(url, archived, applied)
-      .then(setPostings)
+  const archive = (url: string, archived: boolean, applied: boolean) => {
+    const previous = postings.find(posting => posting.url === url);
+    return exitThen(url, () => setMatchPostingArchived(url, archived, applied))
+      .then(next => {
+        setPostings(next);
+        if (!previous) return;
+        undoToast(
+          t(
+            applied
+              ? 'MATCHES.UNDO_APPLIED'
+              : archived
+                ? 'MATCHES.UNDO_ARCHIVED'
+                : 'MATCHES.UNDO_RESTORED',
+          ),
+          t('MATCHES.UNDO'),
+          () =>
+            setMatchPostingArchived(url, previous.archived, previous.applied)
+              .then(setPostings)
+              .catch(() => toast.error(t('MATCHES.SAVE_FAILED'))),
+        );
+      })
       .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
+  };
 
   // Clearing also drops the suggested skills, which the postings produced.
   const clearAll = () => {
@@ -656,14 +791,24 @@ export const JobMatchesPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <RedoMatchingDialog posting={redoing} onClose={() => setRedoing(null)} />
       {matches.map(match => (
         <MatchCard
           key={match.url}
           match={match}
           generating={briefRunning.has(match.url)}
+          leaving={leaving.has(match.url)}
           onRemove={() => remove(match.url)}
           onArchive={(archived, applied) =>
             archive(match.url, archived, applied)
+          }
+          onRedo={
+            IS_DEMO
+              ? undefined
+              : () =>
+                  setRedoing(
+                    postings.find(posting => posting.url === match.url) ?? null,
+                  )
           }
           onGenerateBrief={IS_DEMO ? undefined : () => generateBrief(match.url)}
         />

@@ -40,7 +40,7 @@ export const addMatchPostings = async (
   return stored;
 };
 
-// Removes one posting, or all of them without a `url`.
+// Soft-deletes one posting, or removes all of them without a `url`.
 export const removeMatchPostings = (url?: string) =>
   fetch(
     url
@@ -58,6 +58,13 @@ export const setMatchPostingArchived = (
     method: HTTP_METHOD.PATCH,
     headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
     body: JSON.stringify({ url, archived, applied }),
+  }).then(readPostings);
+
+export const restoreMatchPosting = (url: string) =>
+  fetch(API_ENDPOINTS.JOB_MATCHES, {
+    method: HTTP_METHOD.PATCH,
+    headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
+    body: JSON.stringify({ url, deleted: false }),
   }).then(readPostings);
 
 type SkillsResponse = { skills: MatchSkill[] };

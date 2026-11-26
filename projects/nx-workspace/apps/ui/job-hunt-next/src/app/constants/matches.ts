@@ -45,6 +45,7 @@ export interface MatchBrief {
   level: string;
   location: string;
   workMode: string;
+  employmentType: string;
   compensation: string;
   workAuthorization: string;
   swedish: SwedishRequirement;

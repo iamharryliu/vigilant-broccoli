@@ -18,6 +18,11 @@ export const APP_TAB = {
   },
   MATCHES: { value: 'matches', path: '/matches', titleKey: 'NAV.MATCHES' },
   SKILLS: { value: 'skills', path: '/skills', titleKey: 'NAV.SKILLS' },
+  SKILLS_GLOSSARY: {
+    value: 'skills-glossary',
+    path: '/skills/glossary',
+    titleKey: 'NAV.GLOSSARY',
+  },
   NOTES: { value: 'notes', path: '/notes', titleKey: 'NAV.NOTES' },
   TASKS: { value: 'tasks', path: '/tasks', titleKey: 'NAV.TASKS' },
   RUNS: { value: 'runs', path: '/runs', titleKey: 'NAV.RUNS' },
@@ -29,6 +34,8 @@ export const APP_TAB = {
   SETTINGS: { value: 'settings', path: '/settings', titleKey: 'NAV.SETTINGS' },
 } as const;
 
+export const SKILLS_GRAPH_PATH = `${APP_TAB.SKILLS.path}/graph`;
+
 export type AppTab = (typeof APP_TAB)[keyof typeof APP_TAB]['value'];
 
 const APP_TABS = Object.values(APP_TAB);
@@ -36,8 +43,13 @@ const APP_TABS = Object.values(APP_TAB);
 export const toTab = (value: string | null) =>
   APP_TABS.find(tab => tab.value === value) ?? APP_TAB.APPLICATIONS;
 
+// A page below a tab's path (`/skills/graph`) belongs to that tab.
 export const toTabFromPath = (pathname: string) =>
-  APP_TABS.find(tab => tab.path === pathname) ?? APP_TAB.APPLICATIONS;
+  APP_TABS.find(tab => tab.path === pathname) ??
+  APP_TABS.find(
+    tab => tab.path !== ROOT_PATH && pathname.startsWith(`${tab.path}/`),
+  ) ??
+  APP_TAB.APPLICATIONS;
 
 export const ROOT_PATH = APP_TAB.APPLICATIONS.path;
 export const RUNS_TAB_URL = APP_TAB.RUNS.path;

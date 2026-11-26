@@ -106,6 +106,10 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
   { name: 'MongoDB' },
   { name: 'DynamoDB' },
   {
+    name: 'NoSQL',
+    aliases: ['No-SQL', 'Cassandra', 'Couchbase', 'CosmosDB', 'Firestore'],
+  },
+  {
     name: 'SQL',
     aliases: ['SQL Server', 'PostgreSQL', 'Postgres', 'MySQL', 'SQLite'],
   },
@@ -223,6 +227,19 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
     // acronym counts.
     caseSensitive: ['HMI'],
   },
+  { name: 'Modbus', aliases: ['Modbus TCP', 'Modbus RTU'] },
+  { name: 'Profinet', aliases: ['PROFINET'] },
+  {
+    name: 'RTOS',
+    aliases: [
+      'real-time operating system',
+      'real-time OS',
+      'FreeRTOS',
+      'Zephyr',
+    ],
+    // "Zephyr" is also a common name outside embedded work.
+    caseSensitive: ['Zephyr'],
+  },
   { name: 'Bash', aliases: ['shell scripting'] },
   { name: 'PowerShell' },
   { name: 'ETL' },
@@ -263,7 +280,9 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
       'Codex',
       'GitHub Copilot',
       'Copilot',
+      'Cursor',
     ],
+    caseSensitive: ['Cursor'],
   },
   {
     name: 'Version control',
@@ -714,7 +733,7 @@ const withBriefLanguages = (languages: string[], brief?: MatchBrief | null) =>
 const INTERNSHIP_TITLE =
   /\b(interns?|internship|praktik\w*|thesis|examensarbete|working student)\b/i;
 const GRADUATE_TITLE =
-  /\b(graduates?|new grad|trainee|early careers?|entry[- ]level)\b/i;
+  /\b(post-?graduates?|graduates?|new grad|trainee|early careers?|entry[- ]level)\b/i;
 
 export const isInternship = (title: string) => INTERNSHIP_TITLE.test(title);
 export const isGraduateRole = (title: string) => GRADUATE_TITLE.test(title);

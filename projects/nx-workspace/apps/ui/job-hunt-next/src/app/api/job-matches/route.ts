@@ -6,8 +6,8 @@ import {
 } from '@vigilant-broccoli/common-js';
 import {
   clearMatchBriefs,
-  deleteMatchBrief,
   listPostingsWithBriefs,
+  purgeExpiredMatchPostings,
 } from '../../../lib/job-match-briefs.db';
 import { startMissingMatchBriefRuns } from '../../../lib/match-brief-runner';
 import { IS_DEMO } from '../../constants/demo';
@@ -15,7 +15,8 @@ import { deleteSuggestedMatchSkills } from '../../../lib/job-match-skills.db';
 import {
   clearMatchPostings,
   clearMatchSkips,
-  deleteMatchPosting,
+  restoreMatchPosting,
+  softDeleteMatchPosting,
   listMatchSkips,
   saveMatchPostings,
   saveMatchSkips,
@@ -56,6 +57,7 @@ const parseSkips = (value: unknown): JobMatchesBookmarkletSkip[] =>
 // The skips are also readable here so a scan that stored fewer postings than
 // the page showed can be explained without the LinkedIn tab's console.
 export async function GET() {
+  purgeExpiredMatchPostings();
   return NextResponse.json({
     postings: listPostingsWithBriefs(),
     skips: listMatchSkips(),
@@ -133,9 +135,18 @@ export async function POST(req: NextRequest) {
 }
 
 // Archives or restores the posting named by `url`; `applied` records that it
-// was archived after applying.
+// was archived after applying. `deleted: false` undoes a soft delete instead.
 export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null);
+  if (isText(body?.url) && body?.deleted === false) {
+    if (!restoreMatchPosting(body.url)) {
+      return NextResponse.json(
+        { error: 'Posting not found' },
+        { status: HTTP_STATUS_CODES.INVALID_PATH },
+      );
+    }
+    return NextResponse.json({ postings: listPostingsWithBriefs() });
+  }
   if (!isText(body?.url) || typeof body?.archived !== 'boolean') {
     return NextResponse.json(
       { error: 'Invalid posting' },
@@ -153,13 +164,12 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ postings: listPostingsWithBriefs() });
 }
 
-// Removes the posting named by `url`, or every stored posting and suggested
-// skill without it.
+// Soft-deletes the posting named by `url` (its brief stays until the purge),
+// or removes every stored posting and suggested skill without it.
 export async function DELETE(req: NextRequest) {
   const url = req.nextUrl.searchParams.get(URL_PARAM);
   if (url) {
-    deleteMatchPosting(url);
-    deleteMatchBrief(url);
+    softDeleteMatchPosting(url);
   } else {
     clearMatchPostings();
     clearMatchBriefs();

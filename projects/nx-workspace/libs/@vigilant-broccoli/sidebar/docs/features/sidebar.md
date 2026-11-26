@@ -39,7 +39,7 @@
 ## Search
 
 - `searchable` adds a "Search..." row (with a `/` hint) that opens react-lib's [`SearchDialog`](../../../react-lib/docs/features/search-dialog.md); `/` opens it too, through `useFocusSearchShortcut`
-- Results are every item with an `href`, flattened out of its groups and fuzzy-matched on label; a nested item's description is its parent group label. Items with only an `onClick` are not searchable
+- Results are every item with an `href`, flattened out of its groups and fuzzy-matched on label; a nested item's description is its parent group label. Items with only an `onClick` are not searchable. `searchEntries` (`{ label, href, description? }`) adds search-only results with no sidebar row; pass a stable array, since it is a memo dependency
 - Picking a result calls `onNavigate(href)` (hearth passes `router.push`; the default is `window.location.assign`) and `onMobileClose`, which closes the drawer and is a no-op on desktop
 - Selecting a normal item also calls `onMobileClose`
 
