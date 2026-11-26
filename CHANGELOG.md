@@ -10,7 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
-- New `CheckboxCardGroup` (a row of bordered checkbox cards for choosing any number of options) and `Hyperlink` (a text link with an optional leading icon that opens absolute URLs in a new tab with an external arrow) components (PR: pending).
+- New `CheckboxCardGroup` (a row of bordered checkbox cards for choosing any number of options) and `Hyperlink` (a text link with an optional leading icon that opens absolute URLs in a new tab with an external arrow) components ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 - New `KanbanBoard` swimlane component in `react-lib-checklist` with drag-and-drop cards and lane reordering, header slots and CheckList-style rows, shown in the component library ([#1780](https://github.com/iamharryliu/vigilant-broccoli/pull/1780)).
 
 ### hearth
@@ -68,7 +68,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - New public app that shows each Grind 75 problem's Go, Python and TypeScript solutions side by side, as language tabs on mobile ([#1471](https://github.com/iamharryliu/vigilant-broccoli/pull/1471), [#1478](https://github.com/iamharryliu/vigilant-broccoli/pull/1478), [#1487](https://github.com/iamharryliu/vigilant-broccoli/pull/1487)).
 - Browser back and forward now move through the app's URL state ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
-- Solutions show only the languages ticked in a row of checkbox cards (Python by default) instead of every language at once, and each problem's title links to its LeetCode page above a walkthrough with its type, technique and time and space complexity from the Grind 75 table. Java and C# solutions were added for the first 12 problems (PR: pending).
+- Solutions show only the languages ticked in a row of checkbox cards (Python by default) instead of every language at once, and each problem's title links to its LeetCode page above a walkthrough with its type, technique and time and space complexity from the Grind 75 table. Java and C# solutions were added for the first 12 problems ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 
 ### photography-react
 
@@ -164,7 +164,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### component-library
 
 - New Calendar, Toggle Chip Group and Task Schedule Fields pages; the recurring-schedule picker now lives in `react-lib-tasks` ([#1767](https://github.com/iamharryliu/vigilant-broccoli/pull/1767)).
-- New Graph page draws how the components depend on one another, sharing its layout and behavior with project-overview's Project Graph, and each component page's "Built with" list is now "Depends on" with a new "Used by" list. The sidebar groups Overview and Graph under Components, and new Checkbox Card Group and Hyperlink pages demo the new components (PR: pending).
+- New Graph page draws how the components depend on one another, sharing its layout and behavior with project-overview's Project Graph, and each component page's "Built with" list is now "Depends on" with a new "Used by" list. The sidebar groups Overview and Graph under Components, and new Checkbox Card Group and Hyperlink pages demo the new components ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 
 ### react-lib-tasks
 
@@ -257,11 +257,11 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - Notes in the Docs Explorer can be shared: a Share item in the note's ellipsis menu (when the host supplies a link) opens a dialog with a copyable link and a QR code ([#1726](https://github.com/iamharryliu/vigilant-broccoli/pull/1726)).
 - The graph camera glides when using the zoom buttons, keys and reset ([#1721](https://github.com/iamharryliu/vigilant-broccoli/pull/1721)).
 - The sticky bar keeps a note's title for collapsed and list aggregate views ([#1723](https://github.com/iamharryliu/vigilant-broccoli/pull/1723)).
-- The top bar also names the subsection you have scrolled into after the note's title, such as "Leet Code › Notes" (PR: pending).
+- The top bar also names the subsection you have scrolled into after the note's title, such as "Leet Code › Notes" ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 
 ### sidebar
 
-- A long sidebar smooth-scrolls the current page's row to the top of the list when the page loads or changes and when its group finishes expanding (PR: pending).
+- A long sidebar smooth-scrolls the current page's row to the top of the list when the page loads or changes and when its group finishes expanding ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 
 ### entry-directory
 
