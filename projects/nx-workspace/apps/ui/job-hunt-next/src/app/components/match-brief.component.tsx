@@ -80,7 +80,7 @@ export const MatchBriefSummary = ({
     <div className="flex flex-col gap-2">
       {brief.summary && <p className="m-0 text-sm">{brief.summary}</p>}
       <div className="flex flex-wrap items-center gap-1">
-        {[brief.level, brief.location, brief.workMode]
+        {[brief.level, brief.employmentType, brief.location, brief.workMode]
           .filter(Boolean)
           .map(chip => (
             <Badge key={chip} color="gray" variant="soft" size="1">
@@ -110,6 +110,7 @@ export const MatchBriefDetails = ({
     ['MATCHES.BRIEF_LEVEL', brief.level],
     ['MATCHES.BRIEF_LOCATION', brief.location],
     ['MATCHES.BRIEF_WORK_MODE', brief.workMode],
+    ['MATCHES.BRIEF_EMPLOYMENT_TYPE', brief.employmentType],
     ['MATCHES.BRIEF_PAY', brief.compensation],
     ['MATCHES.BRIEF_WORK_PERMIT', brief.workAuthorization],
   ] as const;

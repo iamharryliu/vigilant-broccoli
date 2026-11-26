@@ -48,12 +48,13 @@ const buildPrompt = (runDir: string) =>
       '- `summary` is one or two plain sentences on what the role actually is and who it is for.',
       '- `level` is the seniority the posting asks for in a few words, such as "Graduate", "Senior" or "Staff", with years of experience when stated.',
       '- `location` and `workMode` (remote, hybrid or on-site) as stated. `compensation` only when the posting gives pay.',
+      '- `employmentType` is the engagement type as stated, such as "Permanent", "Fixed-term", "Independent contractor", "Freelance", "Consultant", "Part-time" or "Internship".',
       '- `workAuthorization` quotes briefly any visa, work permit or right-to-work requirement.',
       '- `swedish` is "required" when Swedish is a stated requirement, "preferred" when it is a plus, otherwise "not-mentioned".',
       '- `abbreviations` defines every abbreviation, acronym and initialism the posting uses (such as GCP, CI/CD, SLA), each as {"term": the abbreviation as written, "meaning": what it stands for in a few words}. Use the posting\'s own expansion when it gives one. Skip company names and plain words.',
       `- \`responsibilities\`, \`mustHave\`, \`niceToHave\` and \`redFlags\` are short phrases, at most ${MAX_LIST_ITEMS} each. \`mustHave\` and \`niceToHave\` are skills and experience. \`redFlags\` are things a candidate should question, such as a recruiter hiding the employer, an unrealistic stack, or a vague role.`,
     ].join('\n'),
-    `Write one JSON object to ${join(runDir, OUTPUT_FILE)} shaped {"summary": string, "level": string, "location": string, "workMode": string, "compensation": string, "workAuthorization": string, "swedish": "required" | "preferred" | "not-mentioned", "responsibilities": string[], "mustHave": string[], "niceToHave": string[], "redFlags": string[], "abbreviations": {"term": string, "meaning": string}[]}. Other shell commands are blocked.`,
+    `Write one JSON object to ${join(runDir, OUTPUT_FILE)} shaped {"summary": string, "level": string, "location": string, "workMode": string, "employmentType": string, "compensation": string, "workAuthorization": string, "swedish": "required" | "preferred" | "not-mentioned", "responsibilities": string[], "mustHave": string[], "niceToHave": string[], "redFlags": string[], "abbreviations": {"term": string, "meaning": string}[]}. Other shell commands are blocked.`,
   ].join('\n\n');
 
 const text = (value: unknown) =>
@@ -101,6 +102,7 @@ const parseBrief = (content: string): MatchBrief => {
     level: text(raw.level),
     location: text(raw.location),
     workMode: text(raw.workMode),
+    employmentType: text(raw.employmentType),
     compensation: text(raw.compensation),
     workAuthorization: text(raw.workAuthorization),
     swedish: isSwedish(raw.swedish)

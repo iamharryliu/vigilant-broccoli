@@ -31,6 +31,13 @@ export type SidebarCTA = {
   children?: SidebarCTA[];
 };
 
+export type SidebarSearchEntry = {
+  label: string;
+  href: string;
+  // Shown under the label, like a nested item's parent group.
+  description?: string;
+};
+
 export type SidebarBranding = {
   label: string;
   icon?: ComponentType<{ size?: number | string }>;
@@ -49,6 +56,9 @@ export type SidebarProps = {
   branding?: SidebarBranding;
   expandable?: boolean;
   searchable?: boolean;
+  // Search-only destinations with no sidebar row, such as a tab of a page
+  // that has one item.
+  searchEntries?: SidebarSearchEntry[];
   // Client-side navigation for a picked search result; defaults to a full
   // page load so apps without a router still work.
   onNavigate?: (href: string) => void;
@@ -295,6 +305,7 @@ export const Sidebar = ({
   branding,
   expandable = true,
   searchable = false,
+  searchEntries = [],
   onNavigate,
   footer,
   LinkComponent,
@@ -368,8 +379,19 @@ export const Sidebar = ({
   }, [defaultOpenId]);
 
   const searchResults = useMemo(
-    () => (searchable ? toSearchResults(items) : []),
-    [searchable, items],
+    () =>
+      searchable
+        ? [
+            ...toSearchResults(items),
+            ...searchEntries.map(({ label, href, description }) => ({
+              id: href,
+              title: label,
+              description,
+              href,
+            })),
+          ]
+        : [],
+    [searchable, items, searchEntries],
   );
   const openSearch = useCallback(() => setSearchOpen(true), []);
   useFocusSearchShortcut(openSearch, { enabled: searchable });

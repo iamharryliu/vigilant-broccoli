@@ -85,6 +85,7 @@ const SKILL_GROUPS: Record<string, string[]> = {
     'Graph databases',
     'Message queues',
     'MongoDB',
+    'NoSQL',
     'Power BI',
     'Redis',
     'SQL',
@@ -108,7 +109,7 @@ const SKILL_GROUPS: Record<string, string[]> = {
   ],
   'Game development': ['Unity', 'Unreal Engine'],
   Frontend: ['Angular', 'Figma', 'HTML and CSS', 'React', 'Svelte', 'Vue'],
-  'Industrial and embedded': ['Industrial automation'],
+  Hardware: ['Industrial automation', 'Modbus', 'Profinet', 'RTOS'],
   Mobile: ['Mobile development', 'React Native'],
   Languages: [
     'C',

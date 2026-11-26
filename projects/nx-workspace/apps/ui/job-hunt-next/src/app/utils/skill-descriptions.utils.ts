@@ -102,6 +102,8 @@ export const SKILL_DESCRIPTIONS: Record<string, string> = {
     "Microsoft's productivity suite: Outlook, Teams, SharePoint, OneDrive and the Graph API behind them.",
   'Mobile development':
     'Building iOS and Android apps, natively or with cross-platform tools such as Flutter.',
+  Modbus:
+    'Simple master-slave protocol for reading and writing registers on industrial devices over serial or TCP.',
   'Model Context Protocol':
     'Open standard (MCP) for connecting AI assistants to tools and data sources through servers.',
   MongoDB: 'Document database that stores flexible JSON-like records.',
@@ -113,6 +115,8 @@ export const SKILL_DESCRIPTIONS: Record<string, string> = {
     "Oracle's cloud ERP suite for finance, inventory, orders and CRM, customized with SuiteScript, SuiteFlow and SuiteTalk.",
   'Node.js':
     'JavaScript runtime for running servers and tooling outside the browser.',
+  NoSQL:
+    'Databases that store data as documents, key-value pairs or wide columns instead of relational tables.',
   Nx: 'Monorepo build system that caches tasks and runs only what a change affects.',
   'Object-Oriented Programming':
     'Organizing code into objects that bundle data and behavior, with inheritance and polymorphism.',
@@ -127,6 +131,8 @@ export const SKILL_DESCRIPTIONS: Record<string, string> = {
     'General-purpose language popular for backends, scripting, data science and machine learning.',
   PyTorch:
     "Meta's deep-learning framework for building and training neural networks, favored in research.",
+  Profinet:
+    'Industrial Ethernet standard for real-time communication between PLCs and field devices.',
   RAG: 'Retrieval-augmented generation: fetching relevant documents and giving them to an LLM so its answers are grounded in them.',
   React:
     'Component-based UI library for the web, including Next.js and Redux ecosystems.',
@@ -136,6 +142,7 @@ export const SKILL_DESCRIPTIONS: Record<string, string> = {
   'REST API design':
     'Designing HTTP APIs around resources, verbs and status codes.',
   Ruby: 'Expressive scripting language, best known for the Rails web framework.',
+  RTOS: 'Real-time operating systems such as FreeRTOS and Zephyr that guarantee tasks run within fixed deadlines on microcontrollers.',
   Rust: 'Systems language that guarantees memory safety without a garbage collector.',
   Salesforce:
     'Leading cloud CRM platform, extended with Apex code and Lightning components.',
