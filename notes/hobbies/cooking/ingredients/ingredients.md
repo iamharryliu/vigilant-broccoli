@@ -7,8 +7,7 @@
   - **Sauces**
     - [Sauce Recipes](./sauce-recipes/sauce-recipes.md)
   - **Stocks**
-    - [Cooking Stock](./stock-recipes/cooking-stock.md)
-    - [Master Stock](./stock-recipes/master-stock.md)
+    - [Stock Recipes](./stock-recipes/stock-recipes.md)
 - **Dairy**
   - [Cheese](./cheese.md)
   - [Milk](./milk.md)

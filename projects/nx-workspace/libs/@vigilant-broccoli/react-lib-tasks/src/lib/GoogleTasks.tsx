@@ -30,7 +30,6 @@ import {
   CardSkeleton,
   GoogleSigninButton,
   IconButton,
-  ListHeader,
   Select,
   SortSelect,
   Skeleton,
@@ -44,6 +43,8 @@ import {
   CheckList,
   CheckListItem,
   CheckListPanel,
+  KanbanLaneHeader,
+  KanbanLaneTitle,
 } from '@vigilant-broccoli/react-lib-checklist';
 
 const TASKS_ENDPOINT = '/api/tasks';
@@ -528,7 +529,6 @@ const TaskHeader = memo(
     onSortChange,
     onSearch,
     titleProps,
-    headerLeading,
     headerActions,
     showSelector,
     taskListsLoading,
@@ -540,7 +540,6 @@ const TaskHeader = memo(
     onSortChange: (value: SortMode) => void;
     onSearch?: () => void;
     titleProps?: HTMLAttributes<HTMLDivElement>;
-    headerLeading?: ReactNode;
     headerActions?: ReactNode;
     showSelector: boolean;
     taskListsLoading: boolean;
@@ -551,25 +550,19 @@ const TaskHeader = memo(
         : taskLists.find(list => list.id === selectedTaskListId);
 
     return (
-      <div className="flex flex-col gap-3">
-        <ListHeader
-          title={
-            <div
-              {...titleProps}
-              className={`flex min-w-0 flex-1 items-center gap-1 ${titleProps?.className ?? ''}`}
-            >
-              {headerLeading}
-              {taskListsLoading ? (
-                <div className="animate-pulse bg-muted h-8 w-32 rounded" />
-              ) : (
-                <Text size="5" weight="bold">
-                  {selectedTaskList?.title ?? TASKS_TITLE}
-                </Text>
-              )}
-            </div>
-          }
-        >
-          <div className="flex items-center gap-1">
+      <KanbanLaneHeader
+        title={
+          taskListsLoading ? (
+            <div className="animate-pulse bg-muted h-8 w-32 rounded" />
+          ) : (
+            <KanbanLaneTitle>
+              {selectedTaskList?.title ?? TASKS_TITLE}
+            </KanbanLaneTitle>
+          )
+        }
+        dragHandleProps={titleProps}
+        actions={
+          <>
             {onSearch && (
               <IconButton
                 variant="ghost"
@@ -579,30 +572,32 @@ const TaskHeader = memo(
               />
             )}
             {headerActions}
+          </>
+        }
+        toolbar={
+          <div className="flex gap-2 items-center">
+            {showSelector && taskLists.length > 0 && (
+              <Select
+                value={selectedTaskList}
+                onValueChange={list => onTaskListChange(list.id)}
+                options={taskLists}
+                optionIdentifier="id"
+                optionDisplayKey="title"
+                placeholder="Select task list..."
+                triggerClassName="w-full"
+              />
+            )}
+            <div className="ml-auto">
+              <SortSelect
+                value={sortMode}
+                onValueChange={onSortChange}
+                options={SORT_MODE_OPTIONS}
+                labels={SORT_MODE_LABELS}
+              />
+            </div>
           </div>
-        </ListHeader>
-        <div className="flex gap-2 items-center">
-          {showSelector && taskLists.length > 0 && (
-            <Select
-              value={selectedTaskList}
-              onValueChange={list => onTaskListChange(list.id)}
-              options={taskLists}
-              optionIdentifier="id"
-              optionDisplayKey="title"
-              placeholder="Select task list..."
-              triggerClassName="w-full"
-            />
-          )}
-          <div className="ml-auto">
-            <SortSelect
-              value={sortMode}
-              onValueChange={onSortChange}
-              options={SORT_MODE_OPTIONS}
-              labels={SORT_MODE_LABELS}
-            />
-          </div>
-        </div>
-      </div>
+        }
+      />
     );
   },
 );
@@ -886,7 +881,6 @@ export const GoogleTasksComponent = ({
   enableVoiceInput = true,
   enableSearch = true,
   titleProps,
-  headerLeading,
   headerActions,
   onUseLocally,
 }: {
@@ -905,11 +899,9 @@ export const GoogleTasksComponent = ({
   enableVoiceInput?: boolean;
   // Search icon in the header; opens a dialog over the tasks of every list.
   enableSearch?: boolean;
-  // Header slots: `titleProps` is spread onto the flex-1 title region (e.g. a
-  // drag handle's listeners), `headerLeading` precedes the title and
-  // `headerActions` follows the search icon.
+  // Header slots: `titleProps` makes the title region a drag handle (grip plus
+  // listeners), `headerActions` follows the search icon.
   titleProps?: HTMLAttributes<HTMLDivElement>;
-  headerLeading?: ReactNode;
   headerActions?: ReactNode;
   // Shows a signed-out option to switch the app to a local adapter, e.g. one
   // from createLocalTasksAdapter.
@@ -1214,7 +1206,6 @@ export const GoogleTasksComponent = ({
             onSortChange={handleSortChange}
             onSearch={enableSearch ? () => setSearchOpen(true) : undefined}
             titleProps={titleProps}
-            headerLeading={headerLeading}
             headerActions={headerActions}
             showSelector={showSelector && !propTaskListId}
             taskListsLoading={taskListsLoading}
