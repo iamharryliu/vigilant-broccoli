@@ -27,7 +27,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
 ├── projects.harryliu.dev                 301 redirect to projects.vigilant-broccoli.app, path and query preserved (proxied CNAME + `projects_to_vigilant_broccoli` rule in the zone's redirect ruleset, `cloudflare-harryliu-dev.tf`; hash routes survive because browsers carry the fragment across redirects)
 ├── findme.vigilant-broccoli.app          FindMe — Cloudflare Pages `production-findme` (domain + CNAME in the `vigilant-broccoli.app` zone: Terraform `cloudflare-collaboration-apps.tf`)
-├── tasks.harryliu.dev                    Tasks — Vercel `production-tasks-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; `frame-ancestors` limited to the manager apps)
+├── tasks.vigilant-broccoli.app           Tasks — Vercel `production-tasks-next` (CNAME to cname.vercel-dns.com in the `vigilant-broccoli.app` zone, DNS-only: Terraform `cloudflare-vercel-apps.tf`; domain also added on the Vercel project; `frame-ancestors` limited to the manager apps; no redirect from the old `harryliu.dev` host)
 ├── balloono.vigilant-broccoli.app        Balloono — Vercel `production-balloono` (CNAME to cname.vercel-dns.com in the `vigilant-broccoli.app` zone, DNS-only: Terraform `cloudflare-vercel-apps.tf`; domain also added on the Vercel project; online rooms run over public Supabase Realtime channels, no backend of its own)
 ├── manager.harryliu.dev                  Mobile Manager Next — Vercel `production-vb-manager-next-mobile` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; gated by Vercel Authentication)
 ├── chat.harryliu.dev                     Chat — Vercel `production-chat` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; gated by Vercel Authentication)
@@ -128,7 +128,7 @@ github.io                                 GitHub Pages (custom domain projects.v
 | photography.harryliu.dev | staging-photography.harryliu.dev | `staging-photography-react` | Pages |
 | pomodoro.vigilant-broccoli.app | staging-pomodoro.vigilant-broccoli.app | `staging-pomodoro-react` | Pages |
 | projects.vigilant-broccoli.app | staging-projects.vigilant-broccoli.app | `staging-project-overview` | Pages |
-| tasks.harryliu.dev | staging-tasks.harryliu.dev | `staging-tasks-next` | Vercel |
+| tasks.vigilant-broccoli.app | staging-tasks.vigilant-broccoli.app | `staging-tasks-next` | Vercel |
 | text-tools.vigilant-broccoli.app | staging-text-tools.vigilant-broccoli.app | `staging-text-tools-ui` | Pages |
 | utilities.vigilant-broccoli.app | staging-utilities.vigilant-broccoli.app | `staging-utilities-ui` | Pages |
 | waiting.vigilant-broccoli.app | staging-waiting.vigilant-broccoli.app | `staging-waiting-games` | Pages |

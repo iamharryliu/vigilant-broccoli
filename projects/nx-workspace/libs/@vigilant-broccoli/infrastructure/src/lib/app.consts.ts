@@ -55,8 +55,8 @@ export const VB_APP_URL = {
   },
   TASKS: {
     NAME: 'Tasks',
-    URL: `https://tasks.${HARRYLIU_DOMAIN}/`,
-    STAGING_URL: `https://staging-tasks.${HARRYLIU_DOMAIN}/`,
+    URL: `https://tasks.${VB_APP_DOMAIN}/`,
+    STAGING_URL: `https://staging-tasks.${VB_APP_DOMAIN}/`,
   },
   FIND_ME: {
     NAME: 'Find Me',
