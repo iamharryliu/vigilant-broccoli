@@ -62,85 +62,15 @@ export const TYPE_FILTER = {
 } as const;
 export type TypeFilter = (typeof TYPE_FILTER)[keyof typeof TYPE_FILTER];
 
-export const TYPE_FILTER_OPTIONS: {
-  value: TypeFilter;
-  labelKey: TranslationKey;
-}[] = [
-  { value: TYPE_FILTER.ALL, labelKey: 'PROJECT_GRAPH_PAGE.FILTER_ALL' },
-  { value: TYPE_FILTER.APPS, labelKey: 'PROJECT_GRAPH_PAGE.FILTER_APPS' },
-  { value: TYPE_FILTER.LIBS, labelKey: 'PROJECT_GRAPH_PAGE.FILTER_LIBS' },
-];
-
-const TYPE_FILTER_MATCH: Record<TypeFilter, (type: ProjectType) => boolean> = {
-  [TYPE_FILTER.ALL]: () => true,
-  [TYPE_FILTER.APPS]: type => type === PROJECT_TYPE.APP,
-  [TYPE_FILTER.LIBS]: type => type === PROJECT_TYPE.LIB,
+// The URL keeps `apps`/`libs`; the shared graph filters by group id.
+export const TYPE_FILTER_GROUP: Record<TypeFilter, ProjectType | null> = {
+  [TYPE_FILTER.ALL]: null,
+  [TYPE_FILTER.APPS]: PROJECT_TYPE.APP,
+  [TYPE_FILTER.LIBS]: PROJECT_TYPE.LIB,
 };
 
 const SCOPE_PREFIX = /^@[^/]+\//;
 export const toShortName = (name: string) => name.replace(SCOPE_PREFIX, '');
-
-export interface Neighbor {
-  name: string;
-  kind: DependencyKind;
-}
-
-export interface Adjacency {
-  dependsOn: Map<string, Neighbor[]>;
-  dependedOnBy: Map<string, Neighbor[]>;
-}
-
-const pushTo = (
-  map: Map<string, Neighbor[]>,
-  key: string,
-  neighbor: Neighbor,
-) => map.set(key, [...(map.get(key) ?? []), neighbor]);
-
-export const buildAdjacency = (dependencies: GraphDependency[]): Adjacency =>
-  dependencies.reduce<Adjacency>(
-    (adjacency, { source, target, kind }) => {
-      pushTo(adjacency.dependsOn, source, { name: target, kind });
-      pushTo(adjacency.dependedOnBy, target, { name: source, kind });
-      return adjacency;
-    },
-    { dependsOn: new Map(), dependedOnBy: new Map() },
-  );
-
-export const getNeighbors = (adjacency: Adjacency, name: string) =>
-  [
-    ...(adjacency.dependsOn.get(name) ?? []),
-    ...(adjacency.dependedOnBy.get(name) ?? []),
-  ].map(neighbor => neighbor.name);
-
-export const filterDependencies = (
-  dependencies: GraphDependency[],
-  kinds: ReadonlySet<DependencyKind>,
-) => dependencies.filter(({ kind }) => kinds.has(kind));
-
-// Search keeps each match plus its direct neighbors so a project's
-// dependencies stay visible while narrowing.
-export const getVisibleProjects = (
-  data: ProjectGraphData,
-  adjacency: Adjacency,
-  typeFilter: TypeFilter,
-  search: string,
-): GraphProject[] => {
-  const byType = data.projects.filter(project =>
-    TYPE_FILTER_MATCH[typeFilter](project.type),
-  );
-  const query = search.trim().toLowerCase();
-  if (!query) return byType;
-  const matches = byType.filter(project =>
-    project.name.toLowerCase().includes(query),
-  );
-  const keep = new Set(
-    matches.flatMap(project => [
-      project.name,
-      ...getNeighbors(adjacency, project.name),
-    ]),
-  );
-  return byType.filter(project => keep.has(project.name));
-};
 
 interface GraphPalette {
   app: string;

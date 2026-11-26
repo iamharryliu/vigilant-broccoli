@@ -1,4 +1,5 @@
 export * from './lib/DocsExplorer';
+export * from './lib/dependency-graph';
 export * from './lib/docs-snapshot-source';
 export * from './lib/docs-viewer';
 export * from './lib/graph-color-schemes';

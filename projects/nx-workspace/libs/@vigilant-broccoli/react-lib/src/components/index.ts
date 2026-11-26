@@ -22,6 +22,8 @@ export * from './EllipsisCTA';
 export * from './CopyPastable';
 export * from './Select';
 export * from './SortSelect';
+export * from './CheckboxCardGroup';
+export * from './Hyperlink';
 export * from './SegmentedControl';
 export * from './Button';
 export * from './ButtonList';

@@ -1,6 +1,6 @@
 # Grind 75
 
-Browse Grind 75 solutions with every available language side by side.
+Browse Grind 75 solutions in the languages picked with a row of checkbox cards (Python by default), side by side.
 
 ## Table of Contents
 

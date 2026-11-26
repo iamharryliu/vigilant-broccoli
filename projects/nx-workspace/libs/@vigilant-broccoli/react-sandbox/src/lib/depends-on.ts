@@ -1,11 +1,11 @@
-// Shared components each entry's implementation is built from, keyed by entry
+// Shared components each entry's implementation depends on, keyed by entry
 // id. A button opens the entry that demos the component; one without an
 // entryId has no page and is disabled. Lists come from the component's own
 // source, never from what its demo renders around it, so base components and
 // demo-only pages (Error Handling, Mobile Home) have no row.
-export type BuiltWithItem = { name: string; entryId?: string };
+export type DependsOnItem = { name: string; entryId?: string };
 
-export const BUILT_WITH: Record<string, BuiltWithItem[]> = {
+export const DEPENDS_ON: Record<string, DependsOnItem[]> = {
   alarm: [
     { name: 'Badge', entryId: 'badge' },
     { name: 'Button', entryId: 'buttons' },
@@ -309,3 +309,17 @@ export const BUILT_WITH: Record<string, BuiltWithItem[]> = {
     { name: 'Text', entryId: 'typography' },
   ],
 };
+
+// Inverse of DEPENDS_ON: entry id -> ids of the entries that depend on it.
+// An entry listing its own sub-components (entryId pointing back at itself) is
+// not a dependent of itself.
+export const USED_BY: Record<string, string[]> = Object.entries(
+  DEPENDS_ON,
+).reduce<Record<string, string[]>>((usedBy, [id, items]) => {
+  items.forEach(({ entryId }) => {
+    if (!entryId || entryId === id) return;
+    const dependents = usedBy[entryId] ?? [];
+    if (!dependents.includes(id)) usedBy[entryId] = [...dependents, id];
+  });
+  return usedBy;
+}, {});
