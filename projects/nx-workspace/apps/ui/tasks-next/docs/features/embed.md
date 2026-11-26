@@ -21,7 +21,7 @@
 
 ## Framing
 
-- `src/proxy.ts` sends `Content-Security-Policy: frame-ancestors` with `'self'` and the origins in `TASKS_FRAME_ANCESTORS`, so other sites cannot frame a (possibly signed-in) task list to clickjack it. `deploy-vercel.ts` sets it to the manager origins from `infrastructure`'s `local-manager-origins.json` and `mobile-manager-origins.json`; a new embedder needs its origin added there. Same-site `*.harryliu.dev` pages are not trusted by default. Dev also allows any `localhost`/`127.0.0.1` port.
+- `src/proxy.ts` sends `Content-Security-Policy: frame-ancestors` with `'self'` and the origins in `TASKS_FRAME_ANCESTORS`, so other sites cannot frame a (possibly signed-in) task list to clickjack it. `deploy-vercel.ts` sets it to the manager origins from `infrastructure`'s `local-manager-origins.json` and `mobile-manager-origins.json`; a new embedder needs its origin added there. Same-site `*.vigilant-broccoli.app` pages are not trusted by default. Dev also allows any `localhost`/`127.0.0.1` port.
 - The same header carries the rest of the CSP: scripts, styles and requests stay on this origin plus the runtime `SUPABASE_URL` (sessions live in `localStorage`). Next's App Router inlines hydration scripts, so `script-src` keeps `'unsafe-inline'`; a nonce would force dynamic rendering. Dev adds `'unsafe-eval'` and the HMR socket. A new third-party script, image host or API call needs its origin added in `src/proxy.ts`. The policy is built per request, not in `next.config.js` `headers()`, which are fixed at build time ([Self-Hosting](./self-hosting.md)).
 - Embedders should sandbox the frame without `allow-top-navigation`, so a compromised tasks-next cannot redirect them: `allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox` (the sign-in popup needs the last two).
 - Staging is behind Vercel Authentication and cannot be framed.
@@ -31,6 +31,6 @@
 ## Consumers
 
 - `local-manager-next`'s Kanban page frames `/embed/board?session=parent` full-bleed (`tasks-kanban-frame.component.tsx`), borrowing the manager's session; same `NEXT_PUBLIC_TASKS_URL` override.
-- `local-manager-next`'s home page frames `tasks.harryliu.dev/embed` inside a bordered wrapper matching its calendar panel; the build-time `NEXT_PUBLIC_TASKS_URL` points it at another instance.
+- `local-manager-next`'s home page frames `tasks.vigilant-broccoli.app/embed` inside a bordered wrapper matching its calendar panel; the build-time `NEXT_PUBLIC_TASKS_URL` points it at another instance.
 - `mobile-manager-next`'s Tasks tab (`/?tab=Tasks`) frames `/embed?session=parent` inside a bordered wrapper matching its Calendar tab frame, so the tab uses the manager's session ([Parent session](#parent-session)); the same build-time `NEXT_PUBLIC_TASKS_URL` override applies.
 - Local testing: `localhost:4000/auth/callback` and `localhost:3000` are on the Supabase redirect allow-list, so run this app on port 4000 when the manager holds 3000.

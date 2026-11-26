@@ -37,6 +37,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### tasks-next
 
+- Tasks moved to tasks.vigilant-broccoli.app (staging at staging-tasks.vigilant-broccoli.app), and the manager apps embed it from there; the old harryliu.dev hostnames no longer resolve and do not redirect (PR: pending).
 - A search icon in the list header and the board header opens a dialog that finds a task in any list (any list with a lane, on the board) and jumps to it, switching list or board and highlighting the task. A kanban lane's title, drag grip, sort and remove button share one header row pair, so a list's name shows once ([#1782](https://github.com/iamharryliu/vigilant-broccoli/pull/1782)).
 - Kanban boards can be framed by other apps at `/embed/board`, which borrows the embedding page's session, and the board sidebar's left padding is tighter ([#1779](https://github.com/iamharryliu/vigilant-broccoli/pull/1779)).
 - New Google Tasks app at tasks.harryliu.dev, which the manager apps also embed. Sign-in from an embed opens a popup and hands the session back to the frame ([#1600](https://github.com/iamharryliu/vigilant-broccoli/pull/1600), [#1601](https://github.com/iamharryliu/vigilant-broccoli/pull/1601)).
