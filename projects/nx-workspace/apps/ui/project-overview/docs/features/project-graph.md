@@ -1,6 +1,8 @@
 # Project Graph
 
-`/project-graph` — `ProjectGraphPage.tsx`, filtering and palette in `consts/projectGraph.ts`. The canvas is docs-explorer's shared `GraphView` (see its [note-graph.md](../../../../../libs/@vigilant-broccoli/docs-explorer/docs/features/note-graph.md)).
+`/project-graph` — `ProjectGraphPage.tsx` loads the data, keeps state in the query string and supplies colors and copy; palette in `consts/projectGraph.ts`. Everything below that — search, the Apps/Libs filter, edge-kind toggles, legend, canvas and detail panel — is docs-explorer's shared `DependencyGraph` (`dependency-graph.tsx`), which the component library's Component Graph entry also renders, so a change to the layout or behavior reaches both. The canvas is its shared `GraphView` (see [note-graph.md](../../../../../libs/@vigilant-broccoli/docs-explorer/docs/features/note-graph.md)).
+
+The host passes `nodes`, `edges`, `groups` (id, label, color), `edgeKinds` (label, line style), `detailSections`, a controlled `state` with `onStateChange`, and a settings storage prefix. A single group or edge kind hides its filter or toggles, and a chosen color scheme assigns its colors to groups by position.
 
 ## Data
 

@@ -6,8 +6,10 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   MouseEvent,
+  TransitionEvent,
 } from 'react';
 import { ChevronDown, ChevronRight, Search } from 'lucide-react';
 import {
@@ -63,6 +65,24 @@ export type SidebarProps = {
 // What opens a group on a collapsed desktop rail: hovering its row, or only
 // clicking it. Drawers and always-expanded sidebars are click-only either way.
 export type SidebarExpandTrigger = 'hover' | 'click';
+
+// Group content animates open over 300ms; the active row is only measurable
+// once it has.
+const GROUP_OPEN_MS = 350;
+const ACTIVE_ROW_SELECTOR = '[aria-current="page"]';
+const COLLAPSED_GROUP_SELECTOR = '[data-open="false"]';
+
+const findActiveKey = (items: SidebarCTA[]): string | null => {
+  for (const [idx, item] of items.entries()) {
+    if (item.children?.length) {
+      const nested = findActiveKey(item.children);
+      if (nested !== null) return `${item.label}/${nested}`;
+    } else if (item.isActive) {
+      return item.id ?? item.href ?? `${item.label}-${idx}`;
+    }
+  }
+  return null;
+};
 
 const ICON_SIZE = 18;
 const CHEVRON_SIZE = 14;
@@ -159,6 +179,7 @@ const hasIcon = (item: SidebarCTA): boolean =>
 type PolymorphicRowProps = {
   href?: string;
   title?: string;
+  isActive?: boolean;
   className: string;
   onClick?: (e: MouseEvent<HTMLElement>) => void;
   onMouseEnter?: () => void;
@@ -169,6 +190,7 @@ type PolymorphicRowProps = {
 const PolymorphicRow = ({
   href,
   title,
+  isActive,
   className,
   onClick,
   onMouseEnter,
@@ -180,6 +202,7 @@ const PolymorphicRow = ({
       <LinkComponent
         href={href}
         title={title}
+        aria-current={isActive ? 'page' : undefined}
         className={className}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
@@ -193,6 +216,7 @@ const PolymorphicRow = ({
       <a
         href={href}
         title={title}
+        aria-current={isActive ? 'page' : undefined}
         className={className}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
@@ -205,6 +229,7 @@ const PolymorphicRow = ({
     <button
       type="button"
       title={title}
+      aria-current={isActive ? 'page' : undefined}
       className={className}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
@@ -241,6 +266,7 @@ const ItemRow = ({
     <PolymorphicRow
       href={item.href}
       title={item.title}
+      isActive={item.isActive}
       className={cn(
         ROW_BASE,
         item.isActive ? ROW_ACTIVE : ROW_INACTIVE,
@@ -293,6 +319,40 @@ export const Sidebar = ({
     forceExpanded ? defaultOpenId : null,
   );
   const [searchOpen, setSearchOpen] = useState(false);
+
+  // A long list leaves the active row below the fold; bring it into view when
+  // the selection changes, and again as each group on its path finishes
+  // opening. Rows inside a collapsed group are skipped: they have no height.
+  const listRef = useRef<HTMLDivElement>(null);
+  const scrollActiveIntoView = useCallback(() => {
+    const list = listRef.current;
+    const row = list?.querySelector(ACTIVE_ROW_SELECTOR);
+    if (!list || !row || row.closest(COLLAPSED_GROUP_SELECTOR)) return;
+    // Aligns the row with the top of the list, as far as the list's own scroll
+    // range allows; scrolling the list directly keeps ancestors still.
+    const offset =
+      row.getBoundingClientRect().top -
+      list.getBoundingClientRect().top -
+      parseFloat(getComputedStyle(list).paddingTop);
+    list.scrollTo({ top: list.scrollTop + offset, behavior: 'smooth' });
+  }, []);
+  const activeKey = useMemo(() => findActiveKey(items), [items]);
+  useEffect(() => {
+    const frame = requestAnimationFrame(scrollActiveIntoView);
+    const timer = window.setTimeout(scrollActiveIntoView, GROUP_OPEN_MS);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
+  }, [activeKey, scrollActiveIntoView]);
+  const handleGroupOpened = (event: TransitionEvent<HTMLDivElement>) => {
+    const group = event.target as HTMLElement;
+    if (
+      group.dataset.open === 'true' &&
+      group.querySelector(ACTIVE_ROW_SELECTOR)
+    )
+      scrollActiveIntoView();
+  };
 
   // Re-syncs openId whenever defaultOpenId changes (e.g. a new search
   // selection), but only while the sidebar is already fully expanded -
@@ -377,6 +437,8 @@ export const Sidebar = ({
         )}
 
         <div
+          ref={listRef}
+          onTransitionEnd={handleGroupOpened}
           className={cn(
             'flex flex-col flex-1 gap-1 px-2 py-4 overflow-y-auto overflow-x-hidden',
             listJustify,
@@ -619,6 +681,7 @@ const NestedItem = ({
         </span>
       </button>
       <div
+        data-open={isOpen}
         className={cn(
           'grid transition-all duration-300 ease-in-out',
           isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',

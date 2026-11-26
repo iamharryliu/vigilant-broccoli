@@ -1,4 +1,12 @@
-import { MouseEvent, ReactNode, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  MouseEvent,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Blocks,
   CalendarDays,
@@ -15,6 +23,7 @@ import {
   Menu,
   MessageSquare,
   Music,
+  Network,
   Package,
   PanelLeft,
   Search,
@@ -61,13 +70,16 @@ import { CheckboxDemo } from './demos/CheckboxDemo';
 import { BadgeDemo } from './demos/BadgeDemo';
 import { CardDemo } from './demos/CardDemo';
 import { TypographyDemo } from './demos/TypographyDemo';
+import { CheckboxCardGroupDemo } from './demos/CheckboxCardGroupDemo';
+import { ComponentGraphDemo } from './demos/ComponentGraphDemo';
+import { HyperlinkDemo } from './demos/HyperlinkDemo';
 import { SegmentedControlDemo } from './demos/SegmentedControlDemo';
 import { AvatarDemo } from './demos/AvatarDemo';
 import { UserAvatarDemo } from './demos/UserAvatarDemo';
 import { ButtonDemo } from './demos/ButtonDemo';
 import { IconButtonDemo } from './demos/IconButtonDemo';
 import { ButtonListDemo } from './demos/ButtonListDemo';
-import { BUILT_WITH } from './built-with';
+import { DEPENDS_ON, USED_BY } from './depends-on';
 import { EntryDirectoryDemo } from './demos/EntryDirectoryDemo';
 import {
   CopyPastableDemo,
@@ -163,9 +175,13 @@ const CRUD_SWITCH_LABEL = {
 // Not an entry id, so it can share the selection state; served at `/`.
 const OVERVIEW_ID = 'components';
 const OVERVIEW_LABEL = 'Components';
+const OVERVIEW_CHILD_ID = 'overview';
+const OVERVIEW_CHILD_LABEL = 'Overview';
 // Typography is a foundation rather than a component, so it sits above
 // Components in the sidebar instead of inside the react-lib group.
 const TYPOGRAPHY_ID = 'typography';
+// Listed under the Components group beside Overview, not in a lib group.
+const COMPONENT_GRAPH_ID = 'component-graph';
 
 // Not an entry id either; served at `/settings` and only when the sandbox owns
 // its ThemeProvider (`wrapInTheme`).
@@ -286,6 +302,18 @@ const CRUDListSection = () => {
     </div>
   );
 };
+
+// Lets an entry's demo open another entry; set where the selection lives.
+const SelectEntryContext = createContext<(id: string) => void>(() => undefined);
+
+// Reads ALL_ENTRIES when rendered, since it is declared by that array's own
+// `component-graph` entry.
+const ComponentGraphEntry = () => (
+  <ComponentGraphDemo
+    entries={ALL_ENTRIES}
+    onOpen={useContext(SelectEntryContext)}
+  />
+);
 
 const ALL_ENTRIES: SandboxEntry[] = [
   {
@@ -448,12 +476,28 @@ const ALL_ENTRIES: SandboxEntry[] = [
     content: <LinkCardDemo />,
   },
   {
+    id: 'hyperlink',
+    label: 'Hyperlink',
+    description:
+      'Text link with an optional leading icon; absolute URLs open in a new tab with a trailing arrow.',
+    lib: LIB.REACT_LIB,
+    content: <HyperlinkDemo />,
+  },
+  {
     id: 'list-header',
     label: 'List Header',
     description:
       'Title row with a trailing control, and a Sort select that fits it or a card header action.',
     lib: LIB.REACT_LIB,
     content: <ListHeaderDemo />,
+  },
+  {
+    id: 'checkbox-card-group',
+    label: 'Checkbox Card Group',
+    description:
+      'Row of bordered cards, each a checkbox with a label, where any number can be selected.',
+    lib: LIB.REACT_LIB,
+    content: <CheckboxCardGroupDemo />,
   },
   {
     id: 'segmented-control',
@@ -886,6 +930,14 @@ const ALL_ENTRIES: SandboxEntry[] = [
     content: <CreateCalendarEventDialogDemo />,
   },
   {
+    id: 'component-graph',
+    label: 'Graph',
+    description:
+      'Dependency graph of the components in this library, drawn from each entry’s Depends on list.',
+    lib: LIB.REACT_LIB,
+    content: <ComponentGraphEntry />,
+  },
+  {
     id: 'docs-viewer',
     label: 'Docs Viewer',
     description: 'Markdown docs browser over a small in-memory tree.',
@@ -1036,7 +1088,8 @@ const ALL_ENTRIES: SandboxEntry[] = [
 
 const ENTRY_STAGE_CLASS = 'flex flex-col gap-3 mt-2';
 const ENTRY_SECTION_LABEL = {
-  BUILT_WITH: 'Built with',
+  DEPENDS_ON: 'Depends on',
+  USED_BY: 'Used by',
   DEMO: 'Demo',
 } as const;
 const OVERVIEW_GRID_CLASS =
@@ -1086,11 +1139,15 @@ const buildSidebarItems = ({
   onSelect,
 }: BuildSidebarItemsArgs): SidebarCTA[] => {
   const typography = entries.find(entry => entry.id === TYPOGRAPHY_ID);
+  const componentGraph = entries.find(entry => entry.id === COMPONENT_GRAPH_ID);
   const libGroups = Object.values(LIB)
     .map(lib => ({
       lib,
       items: entries.filter(
-        entry => entry.lib === lib && entry.id !== TYPOGRAPHY_ID,
+        entry =>
+          entry.lib === lib &&
+          entry.id !== TYPOGRAPHY_ID &&
+          entry.id !== COMPONENT_GRAPH_ID,
       ),
     }))
     .filter(group => group.items.length > 0)
@@ -1117,12 +1174,32 @@ const buildSidebarItems = ({
           },
         ]
       : []),
+    // A group row only toggles, so the overview page is a child of its own.
     {
       id: OVERVIEW_ID,
       label: OVERVIEW_LABEL,
       icon: LayoutGrid,
-      isActive: selectedId === OVERVIEW_ID,
-      onClick: () => onSelect(OVERVIEW_ID),
+      isActive: selectedId === OVERVIEW_ID || selectedId === COMPONENT_GRAPH_ID,
+      children: [
+        {
+          id: OVERVIEW_CHILD_ID,
+          label: OVERVIEW_CHILD_LABEL,
+          icon: LayoutGrid,
+          isActive: selectedId === OVERVIEW_ID,
+          onClick: () => onSelect(OVERVIEW_ID),
+        },
+        ...(componentGraph
+          ? [
+              {
+                id: COMPONENT_GRAPH_ID,
+                label: componentGraph.label,
+                icon: Network,
+                isActive: selectedId === COMPONENT_GRAPH_ID,
+                onClick: () => onSelect(COMPONENT_GRAPH_ID),
+              },
+            ]
+          : []),
+      ],
     },
     {
       id: PACKAGE_SCOPE_GROUP_ID,
@@ -1160,40 +1237,63 @@ const SandboxEntryFrame = ({
 }: {
   entry: SandboxEntry;
   onSelect: (id: string) => void;
-}) => (
-  <section className="flex flex-col gap-3">
-    <header className="flex flex-col gap-1">
-      <Heading size="5" className="block">
-        {entry.label}
-      </Heading>
-      <Text size="2" color="gray">
-        {entry.description}
-      </Text>
-    </header>
-    {BUILT_WITH[entry.id] && <hr className="border-border" />}
-    {BUILT_WITH[entry.id] && (
-      <section className="flex flex-col gap-2">
-        <Heading as="h2" size="3">
-          {ENTRY_SECTION_LABEL.BUILT_WITH}
+}) => {
+  const dependsOn = DEPENDS_ON[entry.id];
+  const usedBy = (USED_BY[entry.id] ?? [])
+    .map(id => ALL_ENTRIES.find(candidate => candidate.id === id))
+    .filter((dependent): dependent is SandboxEntry => Boolean(dependent))
+    .sort((a, b) => a.label.localeCompare(b.label));
+  return (
+    <section className="flex flex-col gap-3">
+      <header className="flex flex-col gap-1">
+        <Heading size="5" className="block">
+          {entry.label}
         </Heading>
-        <ButtonList
-          buttons={BUILT_WITH[entry.id].map(({ name, entryId }) => ({
-            label: name,
-            disabled: !entryId,
-            onClick: () => entryId && onSelect(entryId),
-          }))}
-        />
+        <Text size="2" color="gray">
+          {entry.description}
+        </Text>
+      </header>
+      {dependsOn && <hr className="border-border" />}
+      {dependsOn && (
+        <section className="flex flex-col gap-2">
+          <Heading as="h2" size="3">
+            {ENTRY_SECTION_LABEL.DEPENDS_ON}
+          </Heading>
+          <ButtonList
+            buttons={dependsOn.map(({ name, entryId }) => ({
+              label: name,
+              disabled: !entryId,
+              onClick: () => entryId && onSelect(entryId),
+            }))}
+          />
+        </section>
+      )}
+      {usedBy.length > 0 && <hr className="border-border" />}
+      {usedBy.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <Heading as="h2" size="3">
+            {ENTRY_SECTION_LABEL.USED_BY}
+          </Heading>
+          <ButtonList
+            buttons={usedBy.map(({ id, label }) => ({
+              label,
+              onClick: () => onSelect(id),
+            }))}
+          />
+        </section>
+      )}
+      <hr className="border-border" />
+      <section className="flex flex-col gap-2">
+        {entry.id !== COMPONENT_GRAPH_ID && (
+          <Heading as="h2" size="3">
+            {ENTRY_SECTION_LABEL.DEMO}
+          </Heading>
+        )}
+        <div className={ENTRY_STAGE_CLASS}>{entry.content}</div>
       </section>
-    )}
-    {BUILT_WITH[entry.id] && <hr className="border-border" />}
-    <section className="flex flex-col gap-2">
-      <Heading as="h2" size="3">
-        {ENTRY_SECTION_LABEL.DEMO}
-      </Heading>
-      <div className={ENTRY_STAGE_CLASS}>{entry.content}</div>
     </section>
-  </section>
-);
+  );
+};
 
 interface SandboxOverviewProps {
   entries: SandboxEntry[];
@@ -1348,7 +1448,7 @@ const resolveSelection = (
     return {
       selectedEntry: undefined,
       selectedLabel: OVERVIEW_LABEL,
-      openGroupId: null,
+      openGroupId: selectedId === OVERVIEW_ID ? OVERVIEW_ID : null,
       isSettings: false,
     };
   }
@@ -1356,7 +1456,8 @@ const resolveSelection = (
   return {
     selectedEntry: entry,
     selectedLabel: entry.label,
-    openGroupId: PACKAGE_SCOPE_GROUP_ID,
+    openGroupId:
+      entry.id === COMPONENT_GRAPH_ID ? OVERVIEW_ID : PACKAGE_SCOPE_GROUP_ID,
     isSettings: false,
   };
 };
@@ -1465,7 +1566,9 @@ const SandboxBody = ({
           {isSettings ? (
             <SandboxSettings />
           ) : selectedEntry ? (
-            <SandboxEntryFrame entry={selectedEntry} onSelect={selectId} />
+            <SelectEntryContext.Provider value={selectId}>
+              <SandboxEntryFrame entry={selectedEntry} onSelect={selectId} />
+            </SelectEntryContext.Provider>
           ) : (
             <SandboxOverview entries={entries} onSelect={selectId} />
           )}
