@@ -75,6 +75,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### project-overview
 
+- The Deployments page stacks each pull request's details above its app links at every width, matching the phone layout, instead of a details-left, apps-right row (PR: pending).
 - The Deployments page keeps each pull request as a row with details left and app links right on phones too, wrapping long branch names and links ([#1781](https://github.com/iamharryliu/vigilant-broccoli/pull/1781)).
 - The Deployments page lists pull requests one per row at every width, and from medium screens up each row puts the title, branch and author on the left and the app links on the right ([#1772](https://github.com/iamharryliu/vigilant-broccoli/pull/1772)).
 - The Deployments page shows the commit and deploy age once per pull request next to the author, makes each app name the link to its preview with the same icon as its project-overview card, adds a copy button beside the branch name and tightens the card spacing ([#1768](https://github.com/iamharryliu/vigilant-broccoli/pull/1768)).
