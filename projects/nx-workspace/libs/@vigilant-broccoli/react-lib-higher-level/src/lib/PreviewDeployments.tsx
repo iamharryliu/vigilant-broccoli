@@ -36,9 +36,9 @@ const SHORT_SHA_LENGTH = 7;
 const STYLE = {
   root: 'h-full overflow-auto flex flex-col gap-4',
   list: 'flex flex-col gap-4',
-  card: 'p-4 flex flex-row items-center justify-between gap-4',
+  card: 'p-4 flex flex-col gap-2',
   details: 'flex flex-col min-w-0',
-  apps: 'flex flex-col gap-1 min-w-0 shrink-0 max-w-[50%]',
+  apps: 'flex flex-col gap-1 min-w-0',
   appLink: `${LINK_CLASS} break-all inline-flex items-center gap-2`,
 };
 
