@@ -10,6 +10,8 @@ import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { AudioButton } from '@vigilant-broccoli/react-lib-media';
 import {
   DeleteItemConfirmationDialog,
+  ToggleGroup,
+  ToggleGroupItem,
   useTextToSpeech,
 } from '@vigilant-broccoli/react-lib';
 import {
@@ -50,7 +52,9 @@ const SELECTION_ID_SUFFIX = `${ID_SEPARATOR}selection`;
 const ERROR_MESSAGE = 'Could not load a word. Tap refresh to try again.';
 
 const TAB_ALL = 'All';
-type Tab = typeof TAB_ALL | WordType;
+const TAB_SEEN = 'Seen';
+type WordTab = typeof TAB_ALL | WordType;
+type Tab = WordTab | typeof TAB_SEEN;
 
 const TABS: { tab: Tab; label: string }[] = [
   { tab: TAB_ALL, label: 'All' },
@@ -58,15 +62,16 @@ const TABS: { tab: Tab; label: string }[] = [
   { tab: WORD_TYPE.ADJECTIVE, label: 'Adjectives' },
   { tab: WORD_TYPE.VERB, label: 'Verbs' },
   { tab: WORD_TYPE.PHRASE, label: 'Phrases' },
+  { tab: TAB_SEEN, label: 'Seen' },
 ];
 
 export const LanguageLearningView = () => {
   const [result, setResult] = useState<WordResult | null>(null);
   const [tab, setTab] = useState<Tab>(TAB_ALL);
+  const [wordTab, setWordTab] = useState<WordTab>(TAB_ALL);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [showSeen, setShowSeen] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
   const [sentences, setSentences] = useState<
     Partial<Record<Language, SentenceResult>>
@@ -84,7 +89,7 @@ export const LanguageLearningView = () => {
 
   // `word` loads that specific English word instead of a random one.
   const loadWord = useCallback(
-    async (nextTab: Tab, word?: string) => {
+    async (nextTab: WordTab, word?: string) => {
       const id = ++requestId.current;
       setIsLoading(true);
       setHasError(false);
@@ -120,6 +125,8 @@ export const LanguageLearningView = () => {
 
   const selectTab = (next: Tab) => {
     setTab(next);
+    if (next === TAB_SEEN) return;
+    setWordTab(next);
     loadWord(next);
   };
 
@@ -176,47 +183,42 @@ export const LanguageLearningView = () => {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       <div className="flex shrink-0 items-center justify-between gap-2">
-        <div role="tablist" className="flex gap-4 overflow-x-auto">
-          {TABS.map(({ tab: name, label }) => (
-            <button
-              key={name}
-              type="button"
-              role="tab"
-              aria-selected={tab === name}
-              onClick={() => selectTab(name)}
-              className={`whitespace-nowrap py-2 text-sm ${tab === name ? 'font-semibold text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'}`}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="min-w-0 overflow-x-auto">
+          <ToggleGroup
+            label="Word type"
+            value={tab}
+            onValueChange={value => selectTab(value as Tab)}
+          >
+            {TABS.map(({ tab: name, label }) => (
+              <ToggleGroupItem
+                key={name}
+                value={name}
+                label={label}
+                className="px-3 py-1.5"
+              >
+                {label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
         </div>
-        <button
-          type="button"
-          onClick={() => loadWord(tab)}
-          disabled={isLoading}
-          aria-label="New word"
-          className="flex h-11 w-11 items-center justify-center text-gray-500 hover:text-gray-900 disabled:opacity-40 dark:text-gray-400 dark:hover:text-gray-100"
-        >
-          <RefreshCw size={20} className={isLoading ? 'animate-spin' : ''} />
-        </button>
+        {tab !== TAB_SEEN && (
+          <button
+            type="button"
+            onClick={() => loadWord(wordTab)}
+            disabled={isLoading}
+            aria-label="New word"
+            className="flex h-11 w-11 shrink-0 items-center justify-center text-gray-500 hover:text-gray-900 disabled:opacity-40 dark:text-gray-400 dark:hover:text-gray-100"
+          >
+            <RefreshCw size={20} className={isLoading ? 'animate-spin' : ''} />
+          </button>
+        )}
       </div>
-      {hasError && (
+      {tab !== TAB_SEEN && hasError && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
           {ERROR_MESSAGE}
         </p>
       )}
-      {result?.antonym && (
-        <button
-          type="button"
-          onClick={() => loadWord(tab, result.antonym)}
-          disabled={isLoading}
-          className="flex shrink-0 items-center gap-2 self-start text-sm text-gray-500 hover:text-gray-900 disabled:opacity-40 dark:text-gray-400 dark:hover:text-gray-100"
-        >
-          <ArrowLeftRight size={16} />
-          {ANTONYM_LABEL}: {result.antonym}
-        </button>
-      )}
-      {result && (
+      {tab !== TAB_SEEN && result && (
         <ul
           ref={listRef}
           className={`flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto pb-[env(safe-area-inset-bottom)] transition-opacity ${isLoading ? 'opacity-40' : ''}`}
@@ -304,18 +306,24 @@ export const LanguageLearningView = () => {
           })}
         </ul>
       )}
-      {seen.length > 0 && (
-        <div className="shrink-0 text-sm text-gray-500 dark:text-gray-400">
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => setShowSeen(open => !open)}
-              aria-expanded={showSeen}
-              className="py-1 hover:text-gray-900 dark:hover:text-gray-100"
-            >
+      {tab !== TAB_SEEN && result?.antonym && (
+        <button
+          type="button"
+          onClick={() => loadWord(wordTab, result.antonym)}
+          disabled={isLoading}
+          className="flex shrink-0 items-center gap-2 self-start rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-40 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
+          <ArrowLeftRight size={16} />
+          {ANTONYM_LABEL}: {result.antonym}
+        </button>
+      )}
+      {tab === TAB_SEEN && (
+        <div className="flex min-h-0 flex-1 flex-col gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex shrink-0 items-center justify-between gap-4">
+            <span>
               {SEEN_LABEL} ({seen.length})
-            </button>
-            {showSeen && (
+            </span>
+            {seen.length > 0 && (
               <button
                 type="button"
                 onClick={() => setIsClearing(true)}
@@ -325,23 +333,21 @@ export const LanguageLearningView = () => {
               </button>
             )}
           </div>
-          {showSeen && (
-            <ul className="mt-2 flex max-h-40 flex-wrap gap-x-4 gap-y-1 overflow-y-auto">
-              {[...seen].reverse().map(word => (
-                <li key={word} className="flex items-center gap-1">
-                  {word}
-                  <button
-                    type="button"
-                    onClick={() => remove(word)}
-                    aria-label={`Remove ${word}`}
-                    className="p-1 hover:text-gray-900 dark:hover:text-gray-100"
-                  >
-                    <X size={14} />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <ul className="flex min-h-0 flex-1 flex-wrap content-start gap-x-4 gap-y-1 overflow-y-auto pb-[env(safe-area-inset-bottom)]">
+            {[...seen].reverse().map(word => (
+              <li key={word} className="flex items-center gap-1">
+                {word}
+                <button
+                  type="button"
+                  onClick={() => remove(word)}
+                  aria-label={`Remove ${word}`}
+                  className="p-1 hover:text-gray-900 dark:hover:text-gray-100"
+                >
+                  <X size={14} />
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
       <DeleteItemConfirmationDialog
