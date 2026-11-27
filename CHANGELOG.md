@@ -226,7 +226,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### mobile-manager-next
 
-- The Language tab's word-type bar is a toggle group with a new Seen option that holds the seen words and Clear all, and the Opposite button is an outline button below the words (PR: pending).
+- The Language tab's word-type bar is a toggle group with a new Seen option that holds the seen words and Clear all, and the Opposite button is an outline button below the words ([#1797](https://github.com/iamharryliu/vigilant-broccoli/pull/1797)).
 - The embedded calendar now shows event times in your current timezone instead of always Copenhagen time ([#1751](https://github.com/iamharryliu/vigilant-broccoli/pull/1751)).
 - A Settings page in the sidebar lets you choose the System, Light or Dark theme ([#1748](https://github.com/iamharryliu/vigilant-broccoli/pull/1748)).
 - Selecting text in the Language tab, or generating an example sentence there, now speaks it right away in that row's language at the tab's 0.75× speed ([#1719](https://github.com/iamharryliu/vigilant-broccoli/pull/1719)).
