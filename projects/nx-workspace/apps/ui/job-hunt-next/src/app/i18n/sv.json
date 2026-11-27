@@ -54,7 +54,7 @@
     "RESTORE_FAILED": "Det gick inte att återställa ansökan",
     "CLEAR": "Rensa alla",
     "CLEAR_TITLE": "Rensa alla ansökningar?",
-    "CLEAR_DESCRIPTION": "Tar bort alla {count} ansökningsmappar med annonser, CV, personliga brev och dokument om kompetensluckor, samt deras statusar. Åtgärden kan inte ångras.",
+    "CLEAR_DESCRIPTION": "Flyttar alla {count} ansökningsmappar, med annonser, CV, personliga brev och dokument om kompetensluckor, till papperskorgen, där du kan återställa dem i 7 dagar.",
     "CLEARED": "Ansökningarna har rensats",
     "NO_DOCUMENTS": "Inget CV eller brev",
     "GENERATE_DOCUMENTS": "Skapa CV och personligt brev",

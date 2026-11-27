@@ -6,10 +6,7 @@ import {
   FileEntry,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
-import {
-  clearAllApplicationStatuses,
-  clearApplicationStatus,
-} from '../../../lib/job-application-state.db';
+import { clearApplicationStatus } from '../../../lib/job-application-state.db';
 import { softDeleteCutoff } from '../../../lib/soft-delete';
 import {
   JOB_APPLICATIONS_ROOT,
@@ -147,8 +144,9 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Removes every application folder and status; loose files in the Job
-// Applications folder stay.
+// Moves every application folder to the trash like a single delete, returning
+// the trashed names for the undo; statuses stay until the purge so a restore
+// keeps them. Loose files in the Job Applications folder stay.
 const clearApplications = async () => {
   const root = resolveJobApplicationsPath('');
   if (!root) {
@@ -163,16 +161,20 @@ const clearApplications = async () => {
       throw error;
     },
   );
-  await Promise.all(
+  const now = Date.now();
+  const trashed = await Promise.all(
     dirents
       .filter(
         dirent =>
           dirent.isDirectory() && !dirent.name.startsWith(HIDDEN_FILE_PREFIX),
       )
-      .map(dirent => rm(join(root, dirent.name), { recursive: true })),
+      .map(async dirent => {
+        const name = `${TRASH_PREFIX}${now}-${dirent.name}`;
+        await rename(join(root, dirent.name), join(root, name));
+        return name;
+      }),
   );
-  clearAllApplicationStatuses();
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, trashed });
 };
 
 // Moves one application folder to the trash, where the purge removes it after

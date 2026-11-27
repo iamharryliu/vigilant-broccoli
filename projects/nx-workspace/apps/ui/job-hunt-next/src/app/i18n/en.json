@@ -54,7 +54,7 @@
     "RESTORE_FAILED": "Failed to restore application",
     "CLEAR": "Clear all",
     "CLEAR_TITLE": "Clear all applications?",
-    "CLEAR_DESCRIPTION": "Deletes all {count} application folders with their postings, resumes, cover letters and gaps files, and their statuses. This can't be undone.",
+    "CLEAR_DESCRIPTION": "Moves all {count} application folders, with their postings, resumes, cover letters and gaps files, to the trash, where you can restore them for 7 days.",
     "CLEARED": "Applications cleared",
     "NO_DOCUMENTS": "No resume or letter",
     "GENERATE_DOCUMENTS": "Generate resume and cover letter",

@@ -676,17 +676,25 @@ export const JobApplicationList = () => {
     }
   };
 
-  const restoreApplication = async (trashed: string) => {
-    try {
-      const response = await fetch(
-        `${API_ENDPOINTS.JOB_APPLICATIONS}?path=${encodeURIComponent(trashed)}`,
-        { method: HTTP_METHOD.PATCH },
+  const restoreApplications = async (trashed: string[]) => {
+    const results = await Promise.allSettled(
+      trashed.map(async name => {
+        const response = await fetch(
+          `${API_ENDPOINTS.JOB_APPLICATIONS}?path=${encodeURIComponent(name)}`,
+          { method: HTTP_METHOD.PATCH },
+        );
+        if (!response.ok) throw new Error((await response.json()).error);
+      }),
+    );
+    const failed = results.find(
+      (result): result is PromiseRejectedResult => result.status === 'rejected',
+    );
+    if (failed) {
+      toast.error(
+        errorMessage(failed.reason, t('APPLICATIONS.RESTORE_FAILED')),
       );
-      if (!response.ok) throw new Error((await response.json()).error);
-      load(false);
-    } catch (error) {
-      toast.error(errorMessage(error, t('APPLICATIONS.RESTORE_FAILED')));
     }
+    load(false);
   };
 
   const deleteApplication = async (item: ApplicationItem) => {
@@ -699,7 +707,7 @@ export const JobApplicationList = () => {
       if (!response.ok) throw new Error(data.error);
       setItems(previous => previous.filter(entry => entry.id !== item.id));
       undoToast(t('APPLICATIONS.DELETED'), t('APPLICATIONS.UNDO'), () =>
-        restoreApplication(data.trashed),
+        restoreApplications([data.trashed]),
       );
     } catch (error) {
       toast.error(errorMessage(error, t('APPLICATIONS.DELETE_FAILED')));
@@ -712,11 +720,14 @@ export const JobApplicationList = () => {
         `${API_ENDPOINTS.JOB_APPLICATIONS}?all=true`,
         { method: HTTP_METHOD.DELETE },
       );
-      if (!response.ok) throw new Error((await response.json()).error);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
       // Applied matches have no folder, so they stay.
       setItems(previous => previous.filter(entry => entry.match));
       setView(LIST_VIEW);
-      toast.success(t('APPLICATIONS.CLEARED'));
+      undoToast(t('APPLICATIONS.CLEARED'), t('APPLICATIONS.UNDO'), () =>
+        restoreApplications(data.trashed),
+      );
     } catch (error) {
       toast.error(errorMessage(error, t('APPLICATIONS.CLEAR_FAILED')));
     }
