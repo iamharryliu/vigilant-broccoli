@@ -10,7 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
-- New `CollapsibleCard` (one collapsible section drawn as a single bordered card, with a tinted header bar and an unstyled body) and `DangerCard` (a red-outlined card with a heading, warning text and a red outline action button) components, shown in the component library (PR: pending).
+- New `CollapsibleCard` (one collapsible section drawn as a single bordered card, with a tinted header bar and an unstyled body) and `DangerCard` (a red-outlined card with a heading, warning text and a red outline action button) components, shown in the component library ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
 - New `CheckboxCardGroup` (a row of bordered checkbox cards for choosing any number of options) and `Hyperlink` (a text link with an optional leading icon that opens absolute URLs in a new tab with an external arrow) components ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 - New `KanbanBoard` swimlane component in `react-lib-checklist` with drag-and-drop cards and lane reordering, header slots and CheckList-style rows, shown in the component library ([#1780](https://github.com/iamharryliu/vigilant-broccoli/pull/1780)).
 
@@ -56,9 +56,9 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### job-hunt-next
 
-- Matches and Applications use tabs that end in Settings, where Clear all sits in a red danger card. Matches splits into Matches, Applied, Archived and Deleted tabs (Deleted lists soft-deleted postings with a Restore action), the card shows a labelled summary with a More information section, and Redo matching and the brief's Regenerate become one Regenerate matching action (PR: pending).
-- Applications also lists postings marked as applied that have no generated application, with a "No resume or letter" badge, disabled Resume and Cover letter tabs and a Generate resume and cover letter action, and the expand caret moves to the right (PR: pending).
-- The Skills page takes over Suggest skills, the suggested skills and the most common gaps, and tracks Headless CMS, Cloudflare, Claude, OpenAI, Agentic coding, Platform engineering and Prompt engineering; the skills graph opens already laid out instead of expanding from a clump (PR: pending).
+- Matches and Applications use tabs that end in Settings, where Clear all sits in a red danger card. Matches splits into Matches, Applied, Archived and Deleted tabs (Deleted lists soft-deleted postings with a Restore action), the card shows a labelled summary with a More information section, and Redo matching and the brief's Regenerate become one Regenerate matching action ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
+- Applications also lists postings marked as applied that have no generated application, with a "No resume or letter" badge, disabled Resume and Cover letter tabs and a Generate resume and cover letter action, and the expand caret moves to the right ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
+- The Skills page takes over Suggest skills, the suggested skills and the most common gaps, and tracks Headless CMS, Cloudflare, Claude, OpenAI, Agentic coding, Platform engineering and Prompt engineering; the skills graph opens already laid out instead of expanding from a clump ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
 - Archive, Mark as applied, Delete and application status changes show an Undo toast in the bottom-left, and cards animate out. Deletes are soft: postings and application folders are held for 7 days, then purged on the next list read. Matches also gain Redo matching (paste new posting text to re-score it), Move to archived for applied postings, an employment type in each brief, filters that persist across refreshes, "Postgraduate" in the graduate filter, NoSQL, Cursor, RTOS, Modbus and Profinet skills with a Hardware group, a top-level Glossary page, a Skills graph URL with an icon tab strip, and sidebar search results for the Skills graph ([#1793](https://github.com/iamharryliu/vigilant-broccoli/pull/1793)).
 - Skills gets a Glossary tab that lists every skill with a short description, and NetSuite joins the tracked skills ([#1760](https://github.com/iamharryliu/vigilant-broccoli/pull/1760)).
 - Skills groups split AI into LLM frameworks, Machine learning and a smaller AI group, add Game development, and track PyTorch, TensorFlow, LangChain, LangGraph, MATLAB, Gradle, Unity, Unreal Engine, Salesforce and WordPress, with AWS CDK, CloudFormation and Argo CD matching their existing skills ([#1759](https://github.com/iamharryliu/vigilant-broccoli/pull/1759)).
@@ -189,7 +189,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### react-lib-crud-list
 
 - `CRUDItemList` gains `leadingItemActions` for ellipsis entries placed before Update ([#1733](https://github.com/iamharryliu/vigilant-broccoli/pull/1733)).
-- `CRUDItemList` gains `chevronAfterActions` to put the expand chevron after the ellipsis menu (PR: pending).
+- `CRUDItemList` gains `chevronAfterActions` to put the expand chevron after the ellipsis menu ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
 
 ### react-lib-media
 
