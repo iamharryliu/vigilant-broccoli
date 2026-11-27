@@ -8,6 +8,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 <details>
 <summary>November 2026</summary>
 
+### notepad-react
+
+- New Notepad app at notepad.vigilant-broccoli.app: multiple notes saved in the browser, with no sign-in or server ([#1785](https://github.com/iamharryliu/vigilant-broccoli/pull/1785)).
+
 ### react-lib
 
 - New `CollapsibleCard` (one collapsible section drawn as a single bordered card, with a tinted header bar and an unstyled body) and `DangerCard` (a red-outlined card with a heading, warning text and a red outline action button) components, shown in the component library ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).

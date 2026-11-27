@@ -44,6 +44,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── deployments.vigilant-broccoli.app       Preview deployments — the project-overview `DeploymentsPage` at the host root (open PRs with a deployed Cloudflare Pages preview, fetched client-side from the GitHub API without a token). Same `status-proxy` Worker and Terraform file as `status.vigilant-broccoli.app` (custom domain in the `vigilant-broccoli.app` zone, hostname from `vb_app_domains`); the app picks `DeploymentsPage` because `window.location.hostname` is this host
 ├── components.vigilant-broccoli.app        Component Library — Cloudflare Pages `production-component-library` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating).
 ├── calendar.harryliu.dev                 Calendars — Cloudflare Pages `production-calendars` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; lists public event calendars from VB Express `GET /api/public/event-calendars` at `api.vigilant-broccoli.app` (staging Pages → `staging-vb-express.fly.dev`), allowed by a narrowly scoped CORS rule on that route only)
+├── notepad.vigilant-broccoli.app                  Notepad — Cloudflare Pages `production-notepad-react` (domain + CNAME: Terraform `cloudflare-notepad.tf`; public, no Access gating; notes stay in the browser's `localStorage`, no backend)
 ├── text-tools.vigilant-broccoli.app               Text Tools UI — Cloudflare Pages `production-text-tools-ui` (domain + CNAME: Terraform `cloudflare-text-tools.tf`; public, no Access gating; embedded by the manager Dev Dashboard via `frame-ancestors`)
 ├── utilities.vigilant-broccoli.app                Utilities UI — Cloudflare Pages `production-utilities-ui` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating)
 ├── waiting.vigilant-broccoli.app                  Waiting Games — Cloudflare Pages `production-waiting-games` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; stateless passive games, no backend)
@@ -126,6 +127,7 @@ github.io                                 GitHub Pages (custom domain projects.v
 | hearth.harryliu.dev | staging-hearth.harryliu.dev | `staging-hearth` | Vercel |
 | manager.harryliu.dev | staging-manager.harryliu.dev | `staging-vb-manager-next-mobile` | Vercel |
 | photography.harryliu.dev | staging-photography.harryliu.dev | `staging-photography-react` | Pages |
+| notepad.vigilant-broccoli.app | staging-notepad.vigilant-broccoli.app | `staging-notepad-react` | Pages |
 | pomodoro.vigilant-broccoli.app | staging-pomodoro.vigilant-broccoli.app | `staging-pomodoro-react` | Pages |
 | projects.vigilant-broccoli.app | staging-projects.vigilant-broccoli.app | `staging-project-overview` | Pages |
 | tasks.vigilant-broccoli.app | staging-tasks.vigilant-broccoli.app | `staging-tasks-next` | Vercel |

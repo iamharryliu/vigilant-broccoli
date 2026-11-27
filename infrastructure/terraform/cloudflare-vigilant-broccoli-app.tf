@@ -17,6 +17,7 @@ locals {
     findme            = "findme.${var.vigilant_broccoli_domain}"
     games             = "games.${var.vigilant_broccoli_domain}"
     grind_75          = "grind-75.${var.vigilant_broccoli_domain}"
+    notepad           = "notepad.${var.vigilant_broccoli_domain}"
     pomodoro          = "pomodoro.${var.vigilant_broccoli_domain}"
     projects          = "projects.${var.vigilant_broccoli_domain}"
     status            = "status.${var.vigilant_broccoli_domain}"
