@@ -38,9 +38,10 @@ import { getMatchesProgress } from '../utils/job-matches-progress.utils';
 import {
   fetchDeletedMatchPostings,
   fetchMatchPostings,
-  fetchMatchSkills,
-  removeMatchPostings,
+  clearMatchPostings,
+  removeMatchPosting,
   restoreMatchPosting,
+  restoreMatchPostings,
   setMatchPostingArchived,
   startMatchBrief,
   type StoredMatchPosting,
@@ -298,7 +299,7 @@ export const JobMatchesPage = () => {
   const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [leaving, setLeaving] = useState<Set<string>>(new Set());
   const [redoing, setRedoing] = useState<StoredMatchPosting | null>(null);
-  const { skills, setSkills } = useMatchSkills();
+  const { skills } = useMatchSkills();
   const { runs } = useRuns();
   const activeBriefRuns =
     runs?.filter(
@@ -443,10 +444,8 @@ export const JobMatchesPage = () => {
     }
   };
 
-  // Plays the card's exit animation before the request moves or removes it;
-  // without a url (clear all) there is no card to animate.
-  const exitThen = <T,>(url: string | undefined, request: () => Promise<T>) => {
-    if (!url) return request();
+  // Plays the card's exit animation before the request moves or removes it.
+  const exitThen = <T,>(url: string, request: () => Promise<T>) => {
     setLeaving(previous => new Set(previous).add(url));
     return new Promise<void>(resolve => setTimeout(resolve, EXIT_ANIMATION_MS))
       .then(request)
@@ -466,16 +465,14 @@ export const JobMatchesPage = () => {
       .then(setDeletedPostings)
       .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
 
-  const remove = (url?: string) =>
-    exitThen(url, () => removeMatchPostings(url))
+  const remove = (url: string) =>
+    exitThen(url, () => removeMatchPosting(url))
       .then(next => {
         setPostings(next);
         fetchDeletedMatchPostings().then(setDeletedPostings);
-        if (url) {
-          undoToast(t('MATCHES.UNDO_DELETED'), t('MATCHES.UNDO'), () =>
-            restoreDeleted(url),
-          );
-        }
+        undoToast(t('MATCHES.UNDO_DELETED'), t('MATCHES.UNDO'), () =>
+          restoreDeleted(url),
+        );
       })
       .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
 
@@ -503,12 +500,20 @@ export const JobMatchesPage = () => {
       .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
   };
 
-  // Clearing also drops the suggested skills, which the postings produced.
   const clearAll = () =>
-    remove()
-      .then(fetchMatchSkills)
-      .then(setSkills)
-      .catch(() => undefined);
+    clearMatchPostings()
+      .then(({ postings: next, deleted }) => {
+        setPostings(next);
+        fetchDeletedMatchPostings().then(setDeletedPostings);
+        undoToast(t('MATCHES.UNDO_CLEARED'), t('MATCHES.UNDO'), () =>
+          restoreMatchPostings(deleted)
+            .then(setPostings)
+            .then(fetchDeletedMatchPostings)
+            .then(setDeletedPostings)
+            .catch(() => toast.error(t('MATCHES.SAVE_FAILED'))),
+        );
+      })
+      .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
 
   const customTerms = useMemo(
     () => skills.filter(skill => skill.status === MATCH_SKILL_STATUS.ACCEPTED),

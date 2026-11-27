@@ -52,5 +52,5 @@ export const useMatchSkills = () => {
     }
   };
 
-  return { skills, setSkills, update, suggest, suggesting };
+  return { skills, update, suggest, suggesting };
 };

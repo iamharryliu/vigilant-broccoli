@@ -47,10 +47,6 @@ export const deleteMatchBrief = (url: string) => {
   ensureTable().prepare(`DELETE FROM ${BRIEFS_TABLE} WHERE url = ?`).run(url);
 };
 
-export const clearMatchBriefs = () => {
-  ensureTable().exec(`DELETE FROM ${BRIEFS_TABLE}`);
-};
-
 // Briefs stored before abbreviations existed lack that field, so it defaults
 // to empty. A brief belongs to the text it was written from: a recapture that changed
 // the posting leaves it stale, so it is not returned.
