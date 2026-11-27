@@ -3,9 +3,8 @@
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import {
-  Button,
+  DangerCard,
   DeleteItemConfirmationDialog,
-  Text,
 } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../../libs/supabase';
 import { useHome } from '../../providers/home-provider';
@@ -29,23 +28,13 @@ export const DeleteHomeCard = ({ homeId, onDeleted }: Props) => {
   };
 
   return (
-    <div className="border border-red-300 dark:border-red-900 rounded-lg px-4 py-3 flex items-center justify-between gap-4">
-      <div>
-        <Text size="2" weight="medium" as="p">
-          Delete this home
-        </Text>
-        <Text size="1" color="gray">
-          Permanently removes this home and everything stored under it,
-          including its members. This cannot be undone.
-        </Text>
-      </div>
-      <Button
-        variant="destructive"
-        onClick={() => setIsConfirming(true)}
-        className="shrink-0"
-      >
-        <Trash2 size={14} /> Delete home
-      </Button>
+    <DangerCard
+      title="Delete this home"
+      description="Permanently removes this home and everything stored under it, including its members. This cannot be undone."
+      actionLabel="Delete home"
+      actionIcon={<Trash2 size={14} />}
+      onAction={() => setIsConfirming(true)}
+    >
       <DeleteItemConfirmationDialog
         open={isConfirming}
         onOpenChange={setIsConfirming}
@@ -53,6 +42,6 @@ export const DeleteHomeCard = ({ homeId, onDeleted }: Props) => {
         description={CONFIRM_DELETE_HOME}
         deleteItem={handleDelete}
       />
-    </div>
+    </DangerCard>
   );
 };
