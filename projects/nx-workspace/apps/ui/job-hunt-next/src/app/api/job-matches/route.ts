@@ -5,17 +5,15 @@ import {
   type JobMatchesBookmarkletSkip,
 } from '@vigilant-broccoli/common-js';
 import {
-  clearMatchBriefs,
   listPostingsWithBriefs,
   purgeExpiredMatchPostings,
 } from '../../../lib/job-match-briefs.db';
 import { startMissingMatchBriefRuns } from '../../../lib/match-brief-runner';
 import { IS_DEMO } from '../../constants/demo';
-import { deleteSuggestedMatchSkills } from '../../../lib/job-match-skills.db';
 import {
-  clearMatchPostings,
-  clearMatchSkips,
   restoreMatchPosting,
+  restoreMatchPostings,
+  softDeleteAllMatchPostings,
   softDeleteMatchPosting,
   listMatchSkips,
   saveMatchPostings,
@@ -27,6 +25,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const URL_PARAM = 'url';
+const DELETED_PARAM = 'deleted';
 const MAX_POSTING_TEXT = 30000;
 const MAX_POSTED_LENGTH = 40;
 
@@ -56,8 +55,11 @@ const parseSkips = (value: unknown): JobMatchesBookmarkletSkip[] =>
 
 // The skips are also readable here so a scan that stored fewer postings than
 // the page showed can be explained without the LinkedIn tab's console.
-export async function GET() {
+export async function GET(req: NextRequest) {
   purgeExpiredMatchPostings();
+  if (req.nextUrl.searchParams.get(DELETED_PARAM) === 'true') {
+    return NextResponse.json({ postings: listPostingsWithBriefs(true) });
+  }
   return NextResponse.json({
     postings: listPostingsWithBriefs(),
     skips: listMatchSkips(),
@@ -135,9 +137,14 @@ export async function POST(req: NextRequest) {
 }
 
 // Archives or restores the posting named by `url`; `applied` records that it
-// was archived after applying. `deleted: false` undoes a soft delete instead.
+// was archived after applying. `deleted: false` undoes a soft delete instead,
+// for the one `url` or the `urls` of a clear all.
 export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null);
+  if (Array.isArray(body?.urls) && body?.deleted === false) {
+    restoreMatchPostings(body.urls.filter(isText));
+    return NextResponse.json({ postings: listPostingsWithBriefs() });
+  }
   if (isText(body?.url) && body?.deleted === false) {
     if (!restoreMatchPosting(body.url)) {
       return NextResponse.json(
@@ -164,17 +171,13 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ postings: listPostingsWithBriefs() });
 }
 
-// Soft-deletes the posting named by `url` (its brief stays until the purge),
-// or removes every stored posting and suggested skill without it.
+// Soft-deletes the posting named by `url`, or every live posting without it;
+// briefs, skips and suggested skills stay until the purge so a restore is whole.
+// The urls it deleted come back so the caller can undo exactly that.
 export async function DELETE(req: NextRequest) {
   const url = req.nextUrl.searchParams.get(URL_PARAM);
-  if (url) {
-    softDeleteMatchPosting(url);
-  } else {
-    clearMatchPostings();
-    clearMatchBriefs();
-    clearMatchSkips();
-    deleteSuggestedMatchSkills();
-  }
-  return NextResponse.json({ postings: listPostingsWithBriefs() });
+  const deleted = url
+    ? (softDeleteMatchPosting(url), [url])
+    : softDeleteAllMatchPostings();
+  return NextResponse.json({ postings: listPostingsWithBriefs(), deleted });
 }

@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readdir, rename, rm, stat } from 'fs/promises';
+import { readdir, readFile, rename, rm, stat } from 'fs/promises';
 import { dirname, join, normalize } from 'path';
 import {
   FILE_ENTRY_KIND,
   FileEntry,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
-import {
-  clearAllApplicationStatuses,
-  clearApplicationStatus,
-} from '../../../lib/job-application-state.db';
+import { clearApplicationStatus } from '../../../lib/job-application-state.db';
 import { softDeleteCutoff } from '../../../lib/soft-delete';
 import {
   JOB_APPLICATIONS_ROOT,
@@ -18,6 +15,8 @@ import {
 } from '../../../lib/paths.server';
 
 const HIDDEN_FILE_PREFIX = '.';
+// Matches APPLICATION_FILE.POSTING in the client's file utils.
+const POSTING_MARKER = '-job-posting-';
 const NOT_FOUND = 'ENOENT';
 const CURRENT_DIR = '.';
 const ALL_PARAM = 'all';
@@ -53,7 +52,40 @@ const purgeExpiredApplications = async () => {
   );
 };
 
+const POSTING_URLS_PARAM = 'postingUrls';
+const POSTING_URL_LINE = /^Posting URL:\s*(\S+)/;
+
+// The `Posting URL:` first line of each application's posting file, so the list
+// can tell which applied matches already have a generated application.
+const listPostingUrls = async () => {
+  const dirents = await readdir(JOB_APPLICATIONS_ROOT, {
+    withFileTypes: true,
+  }).catch(() => []);
+  const urls = await Promise.all(
+    dirents
+      .filter(
+        dirent =>
+          dirent.isDirectory() && !dirent.name.startsWith(HIDDEN_FILE_PREFIX),
+      )
+      .map(async dirent => {
+        const folder = join(JOB_APPLICATIONS_ROOT, dirent.name);
+        const posting = (await readdir(folder).catch(() => [])).find(
+          name => name.includes(POSTING_MARKER) && name.endsWith('.txt'),
+        );
+        if (!posting) return null;
+        const text = await readFile(join(folder, posting), 'utf-8').catch(
+          () => '',
+        );
+        return POSTING_URL_LINE.exec(text)?.[1] ?? null;
+      }),
+  );
+  return urls.filter((url): url is string => !!url);
+};
+
 export async function GET(req: NextRequest) {
+  if (req.nextUrl.searchParams.has(POSTING_URLS_PARAM)) {
+    return NextResponse.json({ urls: await listPostingUrls() });
+  }
   const relativePath = req.nextUrl.searchParams.get(PATH_PARAM) ?? '';
   const directory = resolveJobApplicationsPath(relativePath);
   if (!directory) {
@@ -112,8 +144,9 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Removes every application folder and status; loose files in the Job
-// Applications folder stay.
+// Moves every application folder to the trash like a single delete, returning
+// the trashed names for the undo; statuses stay until the purge so a restore
+// keeps them. Loose files in the Job Applications folder stay.
 const clearApplications = async () => {
   const root = resolveJobApplicationsPath('');
   if (!root) {
@@ -128,16 +161,20 @@ const clearApplications = async () => {
       throw error;
     },
   );
-  await Promise.all(
+  const now = Date.now();
+  const trashed = await Promise.all(
     dirents
       .filter(
         dirent =>
           dirent.isDirectory() && !dirent.name.startsWith(HIDDEN_FILE_PREFIX),
       )
-      .map(dirent => rm(join(root, dirent.name), { recursive: true })),
+      .map(async dirent => {
+        const name = `${TRASH_PREFIX}${now}-${dirent.name}`;
+        await rename(join(root, dirent.name), join(root, name));
+        return name;
+      }),
   );
-  clearAllApplicationStatuses();
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, trashed });
 };
 
 // Moves one application folder to the trash, where the purge removes it after

@@ -10,6 +10,8 @@ export interface CollapsibleListItemConfig {
   content: ReactNode;
   defaultOpen?: boolean;
   className?: string;
+  /** Spacing under the content; defaults to `pb-4`. */
+  contentClassName?: string;
 }
 
 interface CollapsibleListProps {
@@ -100,7 +102,11 @@ export const CollapsibleList = ({
             )}
           </AccordionPrimitive.Header>
           <AccordionPrimitive.Content className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <div className="flex flex-col gap-3 pb-4">{item.content}</div>
+            <div
+              className={`flex flex-col gap-3 ${item.contentClassName ?? 'pb-4'}`}
+            >
+              {item.content}
+            </div>
           </AccordionPrimitive.Content>
         </AccordionPrimitive.Item>
       ))}

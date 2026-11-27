@@ -39,10 +39,6 @@ export const setApplicationStatus = (
     .run(folder, status, new Date().toISOString());
 };
 
-export const clearAllApplicationStatuses = () => {
-  getJobHuntDb().prepare(`DELETE FROM ${APPLICATIONS_TABLE}`).run();
-};
-
 export const clearApplicationStatus = (folder: string) => {
   getJobHuntDb()
     .prepare(`DELETE FROM ${APPLICATIONS_TABLE} WHERE folder = ?`)

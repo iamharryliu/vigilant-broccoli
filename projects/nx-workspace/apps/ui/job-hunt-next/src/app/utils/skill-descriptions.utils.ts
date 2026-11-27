@@ -3,6 +3,8 @@
 export const SKILL_DESCRIPTIONS: Record<string, string> = {
   Agile:
     'Iterative way of delivering software in short cycles with frequent feedback, usually through Scrum or Kanban.',
+  'Agentic coding':
+    'Delegating multi-step programming work to AI agents that read the codebase, edit files, run tests and iterate, with the developer steering and reviewing.',
   'AI Agents':
     'LLM-driven programs that plan, call tools and act over several steps toward a goal.',
   'AI-assisted development':
@@ -22,6 +24,10 @@ export const SKILL_DESCRIPTIONS: Record<string, string> = {
     'Systems language with classes and templates, used where performance matters: games, embedded, trading and graphics.',
   'CI/CD':
     'Automation that builds, tests and ships every change, through tools such as GitHub Actions, Jenkins and Argo CD.',
+  Cloudflare:
+    'Edge network and platform for DNS, CDN, DDoS protection, Workers, Pages and R2 storage.',
+  Claude:
+    "Anthropic's family of LLMs, used through its API and Claude Code for text generation, tool use and agents.",
   'Computer vision':
     'Software that interprets images and video: detection, recognition, tracking and 3D reconstruction.',
   'Data formats': 'Structured ways to exchange data, such as JSON and XML.',
@@ -68,6 +74,8 @@ export const SKILL_DESCRIPTIONS: Record<string, string> = {
   gRPC: "Google's high-performance RPC framework using Protocol Buffers over HTTP/2.",
   'HashiCorp Vault':
     'Secrets manager for storing, rotating and issuing credentials and encryption keys.',
+  'Headless CMS':
+    'Content management system that stores content and serves it over an API, such as Contentful, Strapi or Sanity, leaving the frontend to the developer.',
   'HTML and CSS':
     'The markup and styling languages every web page is built from.',
   'Industrial automation':
@@ -120,6 +128,10 @@ export const SKILL_DESCRIPTIONS: Record<string, string> = {
   Nx: 'Monorepo build system that caches tasks and runs only what a change affects.',
   'Object-Oriented Programming':
     'Organizing code into objects that bundle data and behavior, with inheritance and polymorphism.',
+  OpenAI:
+    'AI company behind the GPT models and ChatGPT, used through its API for text generation, embeddings and agents.',
+  'Platform engineering':
+    'Building internal developer platforms and paved paths so product teams can ship and run services themselves.',
   Observability:
     'Understanding a running system from its logs, metrics and traces.',
   PHP: 'Server-side scripting language behind WordPress, Laravel and much of the web.',
@@ -127,6 +139,8 @@ export const SKILL_DESCRIPTIONS: Record<string, string> = {
     "Microsoft's business intelligence tool for dashboards and reports.",
   PowerShell:
     "Microsoft's object-based shell and scripting language for Windows and cross-platform automation.",
+  'Prompt engineering':
+    'Designing and iterating the instructions, examples and context given to an LLM so it produces reliable output.',
   Python:
     'General-purpose language popular for backends, scripting, data science and machine learning.',
   PyTorch:

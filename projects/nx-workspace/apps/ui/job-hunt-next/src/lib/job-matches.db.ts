@@ -62,11 +62,12 @@ const ensureTable = () => {
   return db;
 };
 
-export const listMatchPostings = (): StoredJobMatchesPosting[] =>
+// With `deleted`, the soft-deleted postings instead, newest deletion first.
+export const listMatchPostings = (deleted = false): StoredJobMatchesPosting[] =>
   (
     ensureTable()
       .prepare(
-        `SELECT url, title, text, posted, easy_apply, archived, applied, captured_at FROM ${MATCHES_TABLE} WHERE deleted_at IS NULL ORDER BY rowid`,
+        `SELECT url, title, text, posted, easy_apply, archived, applied, captured_at FROM ${MATCHES_TABLE} WHERE deleted_at IS ${deleted ? 'NOT NULL ORDER BY deleted_at DESC' : 'NULL ORDER BY rowid'}`,
       )
       .all() as unknown as MatchRow[]
   ).map(({ captured_at, easy_apply, archived, applied, ...row }) => ({
@@ -201,14 +202,31 @@ export const listMatchSkips = (): MatchSkipRow[] =>
     }[]
   ).map(({ logged_at, ...row }) => ({ ...row, loggedAt: logged_at }));
 
-export const clearMatchSkips = () => {
-  ensureSkipsTable().exec(`DELETE FROM ${SKIPS_TABLE}`);
-};
-
 export const deleteMatchPosting = (url: string) => {
   ensureTable().prepare(`DELETE FROM ${MATCHES_TABLE} WHERE url = ?`).run(url);
 };
 
-export const clearMatchPostings = () => {
-  ensureTable().exec(`DELETE FROM ${MATCHES_TABLE}`);
+// Soft-deletes every live posting at once and returns their urls, so the caller
+// can restore exactly these and not postings deleted earlier.
+export const softDeleteAllMatchPostings = () => {
+  const db = ensureTable();
+  const urls = (
+    db
+      .prepare(`SELECT url FROM ${MATCHES_TABLE} WHERE deleted_at IS NULL`)
+      .all() as unknown as { url: string }[]
+  ).map(({ url }) => url);
+  db.prepare(
+    `UPDATE ${MATCHES_TABLE} SET deleted_at = ? WHERE deleted_at IS NULL`,
+  ).run(new Date().toISOString());
+  return urls;
+};
+
+export const restoreMatchPostings = (urls: string[]) => {
+  const restore = ensureTable().prepare(
+    `UPDATE ${MATCHES_TABLE} SET deleted_at = NULL WHERE url = ? AND deleted_at IS NOT NULL`,
+  );
+  return urls.reduce(
+    (restored, url) => restored + Number(restore.run(url).changes),
+    0,
+  );
 };

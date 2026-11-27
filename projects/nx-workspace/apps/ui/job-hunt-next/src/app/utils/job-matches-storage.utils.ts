@@ -26,6 +26,9 @@ const readPostings = async (response: Response) => {
 export const fetchMatchPostings = () =>
   fetch(API_ENDPOINTS.JOB_MATCHES).then(readPostings);
 
+export const fetchDeletedMatchPostings = () =>
+  fetch(`${API_ENDPOINTS.JOB_MATCHES}?deleted=true`).then(readPostings);
+
 // Adds to the stored postings; ones captured before stay.
 export const addMatchPostings = async (
   postings: JobMatchesBookmarkletPosting[],
@@ -40,14 +43,19 @@ export const addMatchPostings = async (
   return stored;
 };
 
-// Soft-deletes one posting, or removes all of them without a `url`.
-export const removeMatchPostings = (url?: string) =>
-  fetch(
-    url
-      ? `${API_ENDPOINTS.JOB_MATCHES}?url=${encodeURIComponent(url)}`
-      : API_ENDPOINTS.JOB_MATCHES,
-    { method: HTTP_METHOD.DELETE },
-  ).then(readPostings);
+export const removeMatchPosting = (url: string) =>
+  fetch(`${API_ENDPOINTS.JOB_MATCHES}?url=${encodeURIComponent(url)}`, {
+    method: HTTP_METHOD.DELETE,
+  }).then(readPostings);
+
+// Soft-deletes every live posting; `deleted` lists their urls for the undo.
+export const clearMatchPostings = async () => {
+  const response = await fetch(API_ENDPOINTS.JOB_MATCHES, {
+    method: HTTP_METHOD.DELETE,
+  });
+  if (!response.ok) throw new Error('Job matches request failed');
+  return (await response.json()) as PostingsResponse & { deleted: string[] };
+};
 
 export const setMatchPostingArchived = (
   url: string,
@@ -65,6 +73,13 @@ export const restoreMatchPosting = (url: string) =>
     method: HTTP_METHOD.PATCH,
     headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
     body: JSON.stringify({ url, deleted: false }),
+  }).then(readPostings);
+
+export const restoreMatchPostings = (urls: string[]) =>
+  fetch(API_ENDPOINTS.JOB_MATCHES, {
+    method: HTTP_METHOD.PATCH,
+    headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
+    body: JSON.stringify({ urls, deleted: false }),
   }).then(readPostings);
 
 type SkillsResponse = { skills: MatchSkill[] };

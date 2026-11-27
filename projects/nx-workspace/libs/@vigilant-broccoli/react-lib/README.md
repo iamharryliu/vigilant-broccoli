@@ -21,9 +21,11 @@ Shared React component library.
 | Card | [View](https://components.vigilant-broccoli.app/card) |
 | Checkbox | [View](https://components.vigilant-broccoli.app/checkbox) |
 | Clearable Input | [View](https://components.vigilant-broccoli.app/clearable-input) |
+| Collapsible Card | [View](https://components.vigilant-broccoli.app/collapsible-card) |
 | Collapsible List Item | [View](https://components.vigilant-broccoli.app/collapsible-list-item) |
 | Context Menu | [View](https://components.vigilant-broccoli.app/context-menu) |
 | Copy Pastable | [View](https://components.vigilant-broccoli.app/copy-pastable) |
+| Danger Card | [View](https://components.vigilant-broccoli.app/danger-card) |
 | Delete Item Confirmation Dialog | [View](https://components.vigilant-broccoli.app/delete-item-confirmation-dialog) |
 | Dialog | [View](https://components.vigilant-broccoli.app/dialog) |
 | Download Button | [View](https://components.vigilant-broccoli.app/download-button) |

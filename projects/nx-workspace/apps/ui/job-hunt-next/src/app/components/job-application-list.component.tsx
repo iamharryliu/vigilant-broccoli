@@ -10,21 +10,24 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { CircleCheck, ExternalLink, Trash2, Undo2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import {
+  CircleCheck,
+  ExternalLink,
+  Sparkles,
+  Trash2,
+  Undo2,
+} from 'lucide-react';
+import {
+  CONTENT_TYPE_HEADER,
   FILE_ENTRY_KIND,
   FileEntry,
   HTTP_METHOD,
+  JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
 import {
+  Badge,
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Input,
   Tabs,
   TabsContent,
   TabsList,
@@ -39,8 +42,10 @@ import {
 } from './application-brief.component';
 import { CoverLetterTab } from './cover-letter-tab.component';
 import { applicationResumeSource, ResumeTab } from './resume-tab.component';
+import { TabbedListContainer } from './tabbed-list-container.component';
 import { CRUDItemList } from '@vigilant-broccoli/react-lib-crud-list';
-import { EXPAND_LATEST, EXPAND_PARAM } from '../app.const';
+import { EXPAND_LATEST, EXPAND_PARAM, RUNS_TAB_URL } from '../app.const';
+import { RUN_STATUS } from '../constants/runs';
 import {
   APPLICATION_STATUS,
   APPLICATION_STATUSES,
@@ -52,18 +57,25 @@ import { IS_DEMO } from '../constants/demo';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { useTranslation } from '../i18n';
 import {
+  fetchMatchPostings,
+  type StoredMatchPosting,
+} from '../utils/job-matches-storage.utils';
+import {
   APPLICATION_FILE,
   Brief,
   findApplicationFile,
+  formatMatchTitle,
   parseApplicationFolder,
   parseBrief,
   parseGaps,
   readJobApplicationText,
 } from '../utils/job-application-files.utils';
 import {
+  extractJobPosting,
   JobDescription,
   parseJobDescription,
 } from '../utils/job-posting.utils';
+import { MatchBriefDetails, MatchBriefSummary } from './match-brief.component';
 
 const POSTING_URL_LINE = /^Posting URL:\s*(\S+)\s*\n?/;
 const HTTP_URL = /^https?:\/\//i;
@@ -73,6 +85,7 @@ const POSTING_TAB = {
   RESUME: 'resume',
   COVER_LETTER: 'cover-letter',
 } as const;
+const LIST_VIEW = 'list';
 const TITLE_SEPARATOR = ' · ';
 const STATUS_LABEL_KEYS = {
   [APPLICATION_STATUS.APPLIED]: 'APPLICATIONS.STATUS_APPLIED',
@@ -99,7 +112,12 @@ type ApplicationItem = {
   date: string;
   created: string;
   status: ApplicationStatus | null;
+  // Set on an applied match that has no application folder yet: it has a
+  // posting and a brief but no resume or cover letter until one is generated.
+  match?: StoredMatchPosting;
 };
+
+const MATCH_ID_PREFIX = 'match:';
 
 type ApplicationDetails = {
   hasResumeSource: boolean;
@@ -112,6 +130,8 @@ type ApplicationDetails = {
   // The gaps file older applications have instead of a brief; null when
   // missing too.
   gaps: string[] | null;
+  // The brief of an applied match, which is shaped differently.
+  matchBrief?: StoredMatchPosting['brief'];
 };
 
 type ExpansionContextValue = {
@@ -134,6 +154,15 @@ const listStatuses = async (): Promise<
   const data = await response.json();
   if (!response.ok) throw new Error(data.error);
   return data.statuses;
+};
+
+const listPostingUrls = async (): Promise<string[]> => {
+  const response = await fetch(
+    `${API_ENDPOINTS.JOB_APPLICATIONS}?postingUrls=true`,
+  );
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error);
+  return data.urls;
 };
 
 const listFiles = async (folder: string) =>
@@ -281,10 +310,13 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
                 <TabsTrigger value={POSTING_TAB.BRIEF}>
                   {t('APPLICATIONS.TAB_BRIEF')}
                 </TabsTrigger>
-                <TabsTrigger value={POSTING_TAB.RESUME}>
+                <TabsTrigger value={POSTING_TAB.RESUME} disabled={!!item.match}>
                   {t('APPLICATIONS.TAB_RESUME')}
                 </TabsTrigger>
-                <TabsTrigger value={POSTING_TAB.COVER_LETTER}>
+                <TabsTrigger
+                  value={POSTING_TAB.COVER_LETTER}
+                  disabled={!!item.match}
+                >
                   {t('APPLICATIONS.TAB_COVER_LETTER')}
                 </TabsTrigger>
               </TabsList>
@@ -298,7 +330,16 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
                 />
               </TabsContent>
               <TabsContent value={POSTING_TAB.BRIEF} className="pt-3">
-                {details.brief ? (
+                {details.matchBrief ? (
+                  // The match brief's blocks bleed 12px past their container.
+                  <div className="flex flex-col gap-2 px-3">
+                    <MatchBriefSummary
+                      brief={details.matchBrief}
+                      generating={false}
+                    />
+                    <MatchBriefDetails brief={details.matchBrief} />
+                  </div>
+                ) : details.brief ? (
                   <BriefView brief={details.brief} />
                 ) : (
                   <GapsList gaps={details.gaps} />
@@ -374,6 +415,11 @@ const ApplicationRow = ({ item }: { item: ApplicationItem }) => {
       <span className="block min-w-0 truncate text-sm font-medium">
         {item.title}
       </span>
+      {item.match && (
+        <Badge color="amber" variant="soft" size="1" className="shrink-0">
+          {t('APPLICATIONS.NO_DOCUMENTS')}
+        </Badge>
+      )}
       {item.status && (
         <span
           className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_CLASSES[item.status]}`}
@@ -387,24 +433,44 @@ const ApplicationRow = ({ item }: { item: ApplicationItem }) => {
 
 export const JobApplicationList = () => {
   const { t } = useTranslation();
+  const router = useRouter();
   const [items, setItems] = useState<ApplicationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [defaultExpandedIds, setDefaultExpandedIds] = useState<string[]>([]);
   const [search, setSearch] = useState('');
-  const [confirmingClear, setConfirmingClear] = useState(false);
+  const [view, setView] = useState(LIST_VIEW);
 
   const load = useCallback(
     async (expandLatest: boolean) => {
       try {
-        const [entries, statuses] = await Promise.all([
+        const [entries, statuses, postingUrls, postings] = await Promise.all([
           listFolder(''),
           listStatuses(),
+          IS_DEMO ? [] : listPostingUrls(),
+          IS_DEMO ? [] : fetchMatchPostings().catch(() => []),
         ]);
         const folders = entries.filter(
           entry => entry.kind === FILE_ENTRY_KIND.FOLDER,
         );
-        const sorted = folders
-          .map(folder => ({
+        const generated = new Set(postingUrls);
+        const appliedMatches = postings
+          .filter(posting => posting.applied && !generated.has(posting.url))
+          .map((posting): ApplicationItem => {
+            const { role, company } = parseJobDescription(
+              extractJobPosting(posting.title, posting.text),
+            );
+            return {
+              id: `${MATCH_ID_PREFIX}${posting.url}`,
+              created: posting.capturedAt,
+              date: posting.capturedAt.slice(0, 10),
+              status: null,
+              label: [company, role].filter(Boolean).join(' '),
+              title: formatMatchTitle(posting.capturedAt, company, role),
+              match: posting,
+            };
+          });
+        const sorted = [
+          ...folders.map((folder): ApplicationItem => ({
             id: folder.path,
             created: folder.created,
             status: statuses[folder.path] ?? null,
@@ -413,12 +479,12 @@ export const JobApplicationList = () => {
               folder.modified,
               folder.created,
             ),
-          }))
-          .sort(
-            (a, b) =>
-              b.date.localeCompare(a.date) ||
-              b.created.localeCompare(a.created),
-          );
+          })),
+          ...appliedMatches,
+        ].sort(
+          (a, b) =>
+            b.date.localeCompare(a.date) || b.created.localeCompare(a.created),
+        );
         setItems(sorted);
         const wantsLatest =
           expandLatest &&
@@ -448,7 +514,20 @@ export const JobApplicationList = () => {
   }, [load]);
 
   const loadDetails = useCallback(
-    async (item: ApplicationItem) => {
+    async (item: ApplicationItem): Promise<ApplicationDetails> => {
+      if (item.match) {
+        return {
+          description: parseJobDescription(
+            extractJobPosting(item.match.title, item.match.text),
+          ),
+          postingUrl: item.match.url,
+          brief: null,
+          gaps: null,
+          matchBrief: item.match.brief,
+          hasResumeSource: false,
+          hasCoverLetter: false,
+        };
+      }
       const files = await listFiles(item.id);
       const posting = findFileOrThrow(
         files,
@@ -481,7 +560,47 @@ export const JobApplicationList = () => {
     [t],
   );
 
-  const itemActions = (item: ApplicationItem): EllipsisAction[] => [
+  // The same run the Add application dialog starts, fed the stored posting.
+  const generateDocuments = async ({ match }: ApplicationItem) => {
+    if (!match) return;
+    try {
+      const response = await fetch(API_ENDPOINTS.JOB_APPLICATIONS_RUN, {
+        method: HTTP_METHOD.POST,
+        headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
+        body: JSON.stringify({ url: match.url, text: match.text }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      toast.success(
+        t(
+          data.status === RUN_STATUS.QUEUED
+            ? 'DIALOG.QUEUED'
+            : 'DIALOG.STARTED',
+        ),
+        {
+          action: {
+            label: t('DIALOG.VIEW_PROGRESS'),
+            onClick: () => router.push(RUNS_TAB_URL),
+          },
+        },
+      );
+    } catch (error) {
+      toast.error(errorMessage(error, t('DIALOG.RUN_FAILED')));
+    }
+  };
+
+  const itemActions = (item: ApplicationItem): EllipsisAction[] =>
+    item.match
+      ? [
+          {
+            label: t('APPLICATIONS.GENERATE_DOCUMENTS'),
+            icon: <Sparkles size={16} />,
+            onSelect: () => generateDocuments(item),
+          },
+        ]
+      : folderActions(item);
+
+  const folderActions = (item: ApplicationItem): EllipsisAction[] => [
     ...APPLICATION_STATUSES.filter(status => status !== item.status).map(
       (status): EllipsisAction => ({
         label: t('APPLICATIONS.MARK_STATUS', {
@@ -557,17 +676,25 @@ export const JobApplicationList = () => {
     }
   };
 
-  const restoreApplication = async (trashed: string) => {
-    try {
-      const response = await fetch(
-        `${API_ENDPOINTS.JOB_APPLICATIONS}?path=${encodeURIComponent(trashed)}`,
-        { method: HTTP_METHOD.PATCH },
+  const restoreApplications = async (trashed: string[]) => {
+    const results = await Promise.allSettled(
+      trashed.map(async name => {
+        const response = await fetch(
+          `${API_ENDPOINTS.JOB_APPLICATIONS}?path=${encodeURIComponent(name)}`,
+          { method: HTTP_METHOD.PATCH },
+        );
+        if (!response.ok) throw new Error((await response.json()).error);
+      }),
+    );
+    const failed = results.find(
+      (result): result is PromiseRejectedResult => result.status === 'rejected',
+    );
+    if (failed) {
+      toast.error(
+        errorMessage(failed.reason, t('APPLICATIONS.RESTORE_FAILED')),
       );
-      if (!response.ok) throw new Error((await response.json()).error);
-      load(false);
-    } catch (error) {
-      toast.error(errorMessage(error, t('APPLICATIONS.RESTORE_FAILED')));
     }
+    load(false);
   };
 
   const deleteApplication = async (item: ApplicationItem) => {
@@ -580,7 +707,7 @@ export const JobApplicationList = () => {
       if (!response.ok) throw new Error(data.error);
       setItems(previous => previous.filter(entry => entry.id !== item.id));
       undoToast(t('APPLICATIONS.DELETED'), t('APPLICATIONS.UNDO'), () =>
-        restoreApplication(data.trashed),
+        restoreApplications([data.trashed]),
       );
     } catch (error) {
       toast.error(errorMessage(error, t('APPLICATIONS.DELETE_FAILED')));
@@ -588,20 +715,25 @@ export const JobApplicationList = () => {
   };
 
   const clearApplications = async () => {
-    setConfirmingClear(false);
     try {
       const response = await fetch(
         `${API_ENDPOINTS.JOB_APPLICATIONS}?all=true`,
         { method: HTTP_METHOD.DELETE },
       );
-      if (!response.ok) throw new Error((await response.json()).error);
-      setItems([]);
-      toast.success(t('APPLICATIONS.CLEARED'));
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      // Applied matches have no folder, so they stay.
+      setItems(previous => previous.filter(entry => entry.match));
+      setView(LIST_VIEW);
+      undoToast(t('APPLICATIONS.CLEARED'), t('APPLICATIONS.UNDO'), () =>
+        restoreApplications(data.trashed),
+      );
     } catch (error) {
       toast.error(errorMessage(error, t('APPLICATIONS.CLEAR_FAILED')));
     }
   };
 
+  const folderCount = items.filter(item => !item.match).length;
   const query = search.trim().toLowerCase();
   const visibleItems = useMemo(
     () =>
@@ -633,62 +765,54 @@ export const JobApplicationList = () => {
   return (
     <>
       <ExpansionContext.Provider value={{ loadDetails }}>
-        {loaded && items.length > 0 && (
-          <div className="mb-2 flex gap-2">
-            <Input
-              type="search"
-              value={search}
-              onChange={event => setSearch(event.target.value)}
-              placeholder={t('APPLICATIONS.SEARCH_PLACEHOLDER')}
+        <TabbedListContainer
+          showTabs={loaded && items.length > 0 && !IS_DEMO}
+          view={view}
+          onViewChange={setView}
+          settingsLabel={t('APPLICATIONS.SECTION_SETTINGS')}
+          tabs={[
+            {
+              value: LIST_VIEW,
+              label: t('APPLICATIONS.SECTION_LIST', {
+                count: String(items.length),
+              }),
+            },
+          ]}
+          clearAll={{
+            title: t('APPLICATIONS.CLEAR'),
+            description: t('APPLICATIONS.CLEAR_DESCRIPTION', {
+              count: String(folderCount),
+            }),
+            disabled: folderCount === 0,
+            actionLabel: t('APPLICATIONS.CLEAR'),
+            confirmTitle: t('APPLICATIONS.CLEAR_TITLE'),
+            cancelLabel: t('APPLICATIONS.CANCEL'),
+            onConfirm: clearApplications,
+          }}
+        >
+          {loaded && (
+            <CRUDItemList
+              items={visibleItems}
+              defaultExpandedIds={defaultExpandedIds}
+              setItems={setItems}
+              ListItemComponent={ApplicationRow}
+              itemActions={visibleItemActions}
+              ExpandedComponent={ExpandedDetails}
+              copy={copy}
+              search={
+                items.length > 0
+                  ? {
+                      value: search,
+                      onChange: setSearch,
+                      placeholder: t('APPLICATIONS.SEARCH_PLACEHOLDER'),
+                    }
+                  : undefined
+              }
+              isCards
+              chevronAfterActions
             />
-            {!IS_DEMO && (
-              <Button
-                variant="outline"
-                className="shrink-0"
-                onClick={() => setConfirmingClear(true)}
-              >
-                <Trash2 />
-                {t('APPLICATIONS.CLEAR')}
-              </Button>
-            )}
-          </div>
-        )}
-        <Dialog open={confirmingClear} onOpenChange={setConfirmingClear}>
-          <DialogContent className="max-w-[480px]">
-            <DialogHeader>
-              <DialogTitle>{t('APPLICATIONS.CLEAR_TITLE')}</DialogTitle>
-              <DialogDescription>
-                {t('APPLICATIONS.CLEAR_DESCRIPTION', {
-                  count: String(items.length),
-                })}
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setConfirmingClear(false)}
-              >
-                {t('APPLICATIONS.CANCEL')}
-              </Button>
-              <Button variant="destructive" onClick={clearApplications}>
-                <Trash2 />
-                {t('APPLICATIONS.CLEAR')}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-        {loaded && (
-          <CRUDItemList
-            items={visibleItems}
-            defaultExpandedIds={defaultExpandedIds}
-            setItems={setItems}
-            ListItemComponent={ApplicationRow}
-            itemActions={visibleItemActions}
-            ExpandedComponent={ExpandedDetails}
-            copy={copy}
-            isCards
-          />
-        )}
+          )}
+        </TabbedListContainer>
       </ExpansionContext.Provider>
     </>
   );

@@ -42,5 +42,5 @@ export const useSkillMatches = () => {
     [postings, ownedSkills],
   );
 
-  return { matches, ownedSkills: ownedSkills ?? [], loadFailed };
+  return { matches, postings, ownedSkills: ownedSkills ?? [], loadFailed };
 };

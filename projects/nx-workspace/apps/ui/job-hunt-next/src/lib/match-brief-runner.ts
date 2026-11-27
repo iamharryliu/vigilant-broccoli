@@ -46,7 +46,7 @@ const buildPrompt = (runDir: string) =>
       '- Use only what the posting states. Write an empty string or empty list for anything it does not say; never guess.',
       '- Skip company marketing, culture slogans, benefits and event promotion unless they change what the job is.',
       '- `summary` is one or two plain sentences on what the role actually is and who it is for.',
-      '- `level` is the seniority the posting asks for in a few words, such as "Graduate", "Senior" or "Staff", with years of experience when stated.',
+      '- `level` is the seniority the posting asks for in a few words, such as "Graduate", "Senior" or "Staff", with years of experience only when stated. Never add a note that something is not stated.',
       '- `location` and `workMode` (remote, hybrid or on-site) as stated. `compensation` only when the posting gives pay.',
       '- `employmentType` is the engagement type as stated, such as "Permanent", "Fixed-term", "Independent contractor", "Freelance", "Consultant", "Part-time" or "Internship".',
       '- `workAuthorization` quotes briefly any visa, work permit or right-to-work requirement.',

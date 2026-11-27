@@ -117,6 +117,7 @@ export const SkillsGraphPage = () => {
           forces={settings.appliedForces}
           showNodeGlow={settings.showNodeGlow}
           linkStyles={LINK_STYLES}
+          settleBeforeDraw
           keyboardLabel={t('SKILLS_GRAPH.GRAPH_LABEL')}
           zoomControls={{
             zoomIn: t('SKILLS_GRAPH.ZOOM_IN'),

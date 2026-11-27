@@ -133,6 +133,8 @@ import {
 } from './demos/ReactLibMoreDemo';
 import { CheckListDemo } from './demos/CheckListDemo';
 import { KanbanBoardDemo } from './demos/KanbanBoardDemo';
+import { CollapsibleCardDemo } from './demos/CollapsibleCardDemo';
+import { DangerCardDemo } from './demos/DangerCardDemo';
 import { CollapsibleListItemDemo } from './demos/CollapsibleListItemDemo';
 import { CRUDListNoImagesDemo } from './demos/CRUDListNoImagesDemo';
 import { WeatherClockCardDemo } from './demos/WeatherClockCardDemo';
@@ -394,6 +396,22 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Swimlane board with drag-and-drop cards across and within lanes; the caller owns card data and applies each reported move.',
     lib: LIB.CHECKLIST,
     content: <KanbanBoardDemo />,
+  },
+  {
+    id: 'danger-card',
+    label: 'Danger Card',
+    description:
+      'A red-outlined card for a destructive action: heading and warning text on the left, a red outline button on the right.',
+    lib: LIB.REACT_LIB,
+    content: <DangerCardDemo />,
+  },
+  {
+    id: 'collapsible-card',
+    label: 'Collapsible Card',
+    description:
+      'A collapsible section drawn as one bordered card: a tinted header bar with the open content continuing below it with no background.',
+    lib: LIB.REACT_LIB,
+    content: <CollapsibleCardDemo />,
   },
   {
     id: 'collapsible-list-item',

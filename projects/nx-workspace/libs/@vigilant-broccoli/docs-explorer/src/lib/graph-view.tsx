@@ -58,6 +58,8 @@ const CFG = {
   DRAG_THRESHOLD_PX: 4,
   ALPHA_DRAG: 0.3,
   ALPHA_FORCE_UPDATE: 0.6,
+  // d3's default alpha decay reaches rest in about 300 ticks.
+  SETTLE_TICKS: 300,
   // Glow radius is in world units so it scales with zoom, floored to stay visible zoomed out.
   ACTIVE_GLOW_RADIUS: 160,
   ACTIVE_GLOW_MIN_PX: 48,
@@ -299,6 +301,9 @@ export interface GraphViewProps {
   // pan, +/-/0 zoom and reset, Tab/Shift+Tab step through nodes by name,
   // Enter/Space select, Escape clears node focus.
   keyboardLabel?: string;
+  // Runs the first layout to rest before the first paint, so the graph opens
+  // already laid out instead of expanding from a clump.
+  settleBeforeDraw?: boolean;
 }
 
 export interface GraphZoomControlLabels {
@@ -358,7 +363,10 @@ export function GraphView({
   directed = false,
   linkStyles,
   keyboardLabel,
+  settleBeforeDraw = false,
 }: GraphViewProps) {
+  const settleBeforeDrawRef = useRef(settleBeforeDraw);
+  settleBeforeDrawRef.current = settleBeforeDraw;
   const directedRef = useRef(directed);
   directedRef.current = directed;
   const linkStylesRef = useRef(linkStyles);
@@ -710,6 +718,12 @@ export function GraphView({
         followLayout = false;
       });
     simRef.current = sim;
+    if (settleBeforeDrawRef.current) {
+      sim.stop();
+      sim.tick(CFG.SETTLE_TICKS);
+      fitToView();
+      followLayout = false;
+    }
 
     const stepGrow = (ts: number) => {
       const reduceMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
