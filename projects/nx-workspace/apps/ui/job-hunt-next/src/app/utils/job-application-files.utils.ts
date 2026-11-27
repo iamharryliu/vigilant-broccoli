@@ -56,6 +56,18 @@ const DATE_FORMAT: Intl.DateTimeFormatOptions = {
 const formatDate = (isoDate: string) =>
   new Date(isoDate).toLocaleDateString('en-US', DATE_FORMAT);
 
+// The title a folder would get, for an applied match that has no folder yet.
+export const formatMatchTitle = (
+  capturedAt: string,
+  company: string,
+  role: string,
+) =>
+  `${formatDate(capturedAt.slice(0, 10))} ${new Date(
+    capturedAt,
+  ).toLocaleTimeString(undefined, TIME_FORMAT)} ${[company, role]
+    .filter(Boolean)
+    .join(' ')}`;
+
 // `2026-10-22-Capgemini-Senior-Backend-Developer` created at 11:44:03 ->
 // `October 22, 2026 11:44:03 Capgemini Senior Backend Developer`. The time is
 // when the folder was created, so same-day applications are told apart in the

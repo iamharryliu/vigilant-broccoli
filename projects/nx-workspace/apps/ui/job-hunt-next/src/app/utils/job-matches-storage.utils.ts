@@ -26,6 +26,9 @@ const readPostings = async (response: Response) => {
 export const fetchMatchPostings = () =>
   fetch(API_ENDPOINTS.JOB_MATCHES).then(readPostings);
 
+export const fetchDeletedMatchPostings = () =>
+  fetch(`${API_ENDPOINTS.JOB_MATCHES}?deleted=true`).then(readPostings);
+
 // Adds to the stored postings; ones captured before stay.
 export const addMatchPostings = async (
   postings: JobMatchesBookmarkletPosting[],

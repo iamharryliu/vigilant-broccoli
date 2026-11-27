@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readdir, rename, rm, stat } from 'fs/promises';
+import { readdir, readFile, rename, rm, stat } from 'fs/promises';
 import { dirname, join, normalize } from 'path';
 import {
   FILE_ENTRY_KIND,
@@ -18,6 +18,8 @@ import {
 } from '../../../lib/paths.server';
 
 const HIDDEN_FILE_PREFIX = '.';
+// Matches APPLICATION_FILE.POSTING in the client's file utils.
+const POSTING_MARKER = '-job-posting-';
 const NOT_FOUND = 'ENOENT';
 const CURRENT_DIR = '.';
 const ALL_PARAM = 'all';
@@ -53,7 +55,40 @@ const purgeExpiredApplications = async () => {
   );
 };
 
+const POSTING_URLS_PARAM = 'postingUrls';
+const POSTING_URL_LINE = /^Posting URL:\s*(\S+)/;
+
+// The `Posting URL:` first line of each application's posting file, so the list
+// can tell which applied matches already have a generated application.
+const listPostingUrls = async () => {
+  const dirents = await readdir(JOB_APPLICATIONS_ROOT, {
+    withFileTypes: true,
+  }).catch(() => []);
+  const urls = await Promise.all(
+    dirents
+      .filter(
+        dirent =>
+          dirent.isDirectory() && !dirent.name.startsWith(HIDDEN_FILE_PREFIX),
+      )
+      .map(async dirent => {
+        const folder = join(JOB_APPLICATIONS_ROOT, dirent.name);
+        const posting = (await readdir(folder).catch(() => [])).find(
+          name => name.includes(POSTING_MARKER) && name.endsWith('.txt'),
+        );
+        if (!posting) return null;
+        const text = await readFile(join(folder, posting), 'utf-8').catch(
+          () => '',
+        );
+        return POSTING_URL_LINE.exec(text)?.[1] ?? null;
+      }),
+  );
+  return urls.filter((url): url is string => !!url);
+};
+
 export async function GET(req: NextRequest) {
+  if (req.nextUrl.searchParams.has(POSTING_URLS_PARAM)) {
+    return NextResponse.json({ urls: await listPostingUrls() });
+  }
   const relativePath = req.nextUrl.searchParams.get(PATH_PARAM) ?? '';
   const directory = resolveJobApplicationsPath(relativePath);
   if (!directory) {

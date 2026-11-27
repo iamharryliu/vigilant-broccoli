@@ -62,11 +62,12 @@ const ensureTable = () => {
   return db;
 };
 
-export const listMatchPostings = (): StoredJobMatchesPosting[] =>
+// With `deleted`, the soft-deleted postings instead, newest deletion first.
+export const listMatchPostings = (deleted = false): StoredJobMatchesPosting[] =>
   (
     ensureTable()
       .prepare(
-        `SELECT url, title, text, posted, easy_apply, archived, applied, captured_at FROM ${MATCHES_TABLE} WHERE deleted_at IS NULL ORDER BY rowid`,
+        `SELECT url, title, text, posted, easy_apply, archived, applied, captured_at FROM ${MATCHES_TABLE} WHERE deleted_at IS ${deleted ? 'NOT NULL ORDER BY deleted_at DESC' : 'NULL ORDER BY rowid'}`,
       )
       .all() as unknown as MatchRow[]
   ).map(({ captured_at, easy_apply, archived, applied, ...row }) => ({

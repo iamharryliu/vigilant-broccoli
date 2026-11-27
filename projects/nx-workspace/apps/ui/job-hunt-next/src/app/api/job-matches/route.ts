@@ -27,6 +27,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const URL_PARAM = 'url';
+const DELETED_PARAM = 'deleted';
 const MAX_POSTING_TEXT = 30000;
 const MAX_POSTED_LENGTH = 40;
 
@@ -56,8 +57,11 @@ const parseSkips = (value: unknown): JobMatchesBookmarkletSkip[] =>
 
 // The skips are also readable here so a scan that stored fewer postings than
 // the page showed can be explained without the LinkedIn tab's console.
-export async function GET() {
+export async function GET(req: NextRequest) {
   purgeExpiredMatchPostings();
+  if (req.nextUrl.searchParams.get(DELETED_PARAM) === 'true') {
+    return NextResponse.json({ postings: listPostingsWithBriefs(true) });
+  }
   return NextResponse.json({
     postings: listPostingsWithBriefs(),
     skips: listMatchSkips(),

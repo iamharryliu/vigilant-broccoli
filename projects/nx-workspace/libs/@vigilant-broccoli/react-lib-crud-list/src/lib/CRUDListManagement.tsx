@@ -125,6 +125,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   search,
   createLabel,
   compact,
+  chevronAfterActions = false,
 }: {
   items: T[];
   setItems: Dispatch<SetStateAction<T[]>>;
@@ -154,6 +155,8 @@ export const CRUDItemList = <T extends CRUDItem>({
   search?: ListSearch;
   createLabel?: string;
   compact?: boolean;
+  // Puts the expand chevron at the far right, after the ellipsis menu.
+  chevronAfterActions?: boolean;
 }) => {
   const [expandedIds, setExpandedIds] = useState<Set<T['id']>>(
     () => new Set(defaultExpandedIds),
@@ -226,21 +229,23 @@ export const CRUDItemList = <T extends CRUDItem>({
     );
 
     const isExpanded = expandedIds.has(item.id);
+    const chevron = ExpandedComponent && (
+      <ChevronDown
+        size={16}
+        className={cn(
+          'shrink-0 self-center transition-transform duration-300',
+          isExpanded && 'rotate-180',
+        )}
+      />
+    );
     const contentWithEllipsis = (alignClass: string) => (
       <div
         className={`flex-1 min-w-0 flex justify-between gap-2 ${alignClass}`}
       >
         <div className="flex-1 min-w-0">{content}</div>
-        {ExpandedComponent && (
-          <ChevronDown
-            size={16}
-            className={cn(
-              'shrink-0 self-center transition-transform duration-300',
-              isExpanded && 'rotate-180',
-            )}
-          />
-        )}
+        {!chevronAfterActions && chevron}
         {ellipsis && <div className="shrink-0">{ellipsis}</div>}
+        {chevronAfterActions && chevron}
       </div>
     );
 

@@ -161,6 +161,28 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
   { name: 'Salesforce', aliases: ['Apex', 'Salesforce Lightning'] },
   { name: 'NetSuite', aliases: ['SuiteScript', 'SuiteFlow', 'SuiteTalk'] },
   { name: 'WordPress' },
+  {
+    name: 'Headless CMS',
+    aliases: [
+      'headless content management',
+      'Contentful',
+      'Strapi',
+      'Sanity',
+      'Storyblok',
+      'Contentstack',
+      'Directus',
+      'Payload CMS',
+    ],
+  },
+  {
+    name: 'Cloudflare',
+    aliases: [
+      'Cloudflare Workers',
+      'Cloudflare Pages',
+      'Cloudflare R2',
+      'Cloudflare Tunnel',
+    ],
+  },
   { name: 'Docker' },
   { name: 'Kubernetes', aliases: ['K8s', 'Helm'] },
   {
@@ -175,6 +197,7 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
       'CloudFormation',
     ],
   },
+  { name: 'Platform engineering' },
   {
     name: 'Site Reliability Engineering',
     aliases: [
@@ -285,6 +308,15 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
     caseSensitive: ['Cursor'],
   },
   {
+    name: 'Agentic coding',
+    aliases: [
+      'agentic development',
+      'agentic software engineering',
+      'agentic workflows',
+      'vibe coding',
+    ],
+  },
+  {
     name: 'Version control',
     aliases: [
       'Git',
@@ -368,6 +400,20 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
     aliases: ['3D computer vision', '3D CV', 'OpenCV', 'image recognition'],
   },
   { name: 'LLM', aliases: ['LLMs', 'generative AI', 'GenAI'] },
+  {
+    name: 'Prompt engineering',
+    aliases: [
+      'prompt design',
+      'prompt engineer',
+      'prompting',
+      'context engineering',
+    ],
+  },
+  { name: 'Claude', aliases: ['Anthropic', 'Claude API'] },
+  {
+    name: 'OpenAI',
+    aliases: ['Open AI', 'ChatGPT', 'GPT-4', 'GPT-5', 'OpenAI API'],
+  },
   { name: 'Vector databases', aliases: ['vector database', 'vector DB'] },
   {
     name: 'RAG',
@@ -612,11 +658,32 @@ export type MatchFilters = {
   languages: string[];
   hideInternships: boolean;
   hideGraduate: boolean;
-  // Archived postings are hidden unless this swaps the list to only them.
-  archivedOnly: boolean;
-  // Within the archived list, keep only postings the user applied for.
-  appliedOnly: boolean;
+  view: PostingsView;
 };
+
+export const MATCHES_VIEW = {
+  MATCHES: 'matches',
+  APPLIED: 'applied',
+  ARCHIVED: 'archived',
+  DELETED: 'deleted',
+  SETTINGS: 'settings',
+} as const;
+
+export type MatchesView = (typeof MATCHES_VIEW)[keyof typeof MATCHES_VIEW];
+
+// Deleted postings come from their own list and Settings lists none, so the
+// filters only ever see these views.
+export type PostingsView = Exclude<
+  MatchesView,
+  typeof MATCHES_VIEW.DELETED | typeof MATCHES_VIEW.SETTINGS
+>;
+
+// Applying archives a posting and flags it, so Applied and Archived split the
+// archived postings by that flag.
+const inView = (match: JobMatch, view: PostingsView) =>
+  view === MATCHES_VIEW.MATCHES
+    ? !match.archived
+    : match.archived && match.applied === (view === MATCHES_VIEW.APPLIED);
 
 // A posting passes when every spoken language it names is one of the user's,
 // so "Swedish and English" is hidden for an English-only user; one naming none
@@ -629,14 +696,12 @@ export const filterMatches = (
     languages,
     hideInternships,
     hideGraduate,
-    archivedOnly,
-    appliedOnly,
+    view,
   }: MatchFilters,
 ) =>
   matches.filter(
     match =>
-      match.archived === archivedOnly &&
-      (!archivedOnly || !appliedOnly || match.applied) &&
+      inView(match, view) &&
       !(hideInternships && match.internship) &&
       !(hideGraduate && match.graduate) &&
       (level === LEVEL_FILTER_ALL || match.level === level) &&

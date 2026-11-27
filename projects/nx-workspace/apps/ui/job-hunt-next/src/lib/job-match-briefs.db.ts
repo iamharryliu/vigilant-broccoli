@@ -54,13 +54,14 @@ export const clearMatchBriefs = () => {
 // Briefs stored before abbreviations existed lack that field, so it defaults
 // to empty. A brief belongs to the text it was written from: a recapture that changed
 // the posting leaves it stale, so it is not returned.
-export const listPostingsWithBriefs = (): (StoredJobMatchesPosting &
-  MatchBriefState)[] => {
+export const listPostingsWithBriefs = (
+  deleted = false,
+): (StoredJobMatchesPosting & MatchBriefState)[] => {
   const rows = ensureTable()
     .prepare(`SELECT url, text_hash, brief FROM ${BRIEFS_TABLE}`)
     .all() as unknown as BriefRow[];
   const byUrl = new Map(rows.map(row => [row.url, row]));
-  return listMatchPostings().map(posting => {
+  return listMatchPostings(deleted).map(posting => {
     const row = byUrl.get(posting.url);
     return {
       ...posting,

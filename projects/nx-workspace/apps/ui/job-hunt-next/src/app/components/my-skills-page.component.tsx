@@ -1,19 +1,31 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 import { Badge, Button, Card, Progress } from '@vigilant-broccoli/react-lib';
+import { IS_DEMO } from '../constants/demo';
+import { MATCH_SKILL_STATUS, type MatchSkill } from '../constants/matches';
+import { useMatchSkills } from '../hooks/use-match-skills';
 import { useSkillMatches } from '../hooks/use-skill-matches';
 import { useTranslation } from '../i18n';
+import {
+  removeMatchSkill,
+  setMatchSkillStatus,
+} from '../utils/job-matches-storage.utils';
+import {
+  isInVocabulary,
+  postingMentionsSkill,
+} from '../utils/job-matches.utils';
 import { buildSkillCoverage } from '../utils/skill-coverage.utils';
 import { SECTION_HEADING_CLASS } from './application-brief.component';
+import { JobMatchSkillsPanel } from './job-match-skills-panel.component';
 import {
   SKILL_BADGE_BUTTON_CLASS,
   SkillPostingsDialog,
   type SkillPostings,
 } from './skill-postings-dialog.component';
 
-const TOP_GAP_COUNT = 3;
+const TOP_GAP_COUNT = 12;
 const PERCENT = 100;
 
 const Stat = ({ label, value }: { label: string; value: string }) => (
@@ -25,9 +37,32 @@ const Stat = ({ label, value }: { label: string; value: string }) => (
 
 export const MySkillsPage = () => {
   const { t } = useTranslation();
-  const { matches, ownedSkills, loadFailed } = useSkillMatches();
+  const { matches, postings, ownedSkills, loadFailed } = useSkillMatches();
+  const { skills, update, suggest, suggesting } = useMatchSkills();
   const [gapsOnly, setGapsOnly] = useState(false);
   const [selection, setSelection] = useState<SkillPostings | null>(null);
+
+  const panelSkills = useMemo(
+    () =>
+      skills.filter(
+        skill =>
+          skill.status !== MATCH_SKILL_STATUS.SUGGESTED ||
+          !isInVocabulary(skill),
+      ),
+    [skills],
+  );
+
+  const showSuggestedPostings = (skill: MatchSkill) => {
+    const mentioning = new Set(
+      postings
+        .filter(posting => postingMentionsSkill(posting, skill))
+        .map(posting => posting.url),
+    );
+    setSelection({
+      skill: skill.name,
+      matches: matches.filter(match => mentioning.has(match.url)),
+    });
+  };
 
   const coverage = useMemo(
     () => buildSkillCoverage(matches, ownedSkills),
@@ -92,15 +127,36 @@ export const MySkillsPage = () => {
             ))}
           </div>
         )}
-        <Button
-          variant={gapsOnly ? 'default' : 'outline'}
-          className="self-start"
-          aria-pressed={gapsOnly}
-          onClick={() => setGapsOnly(!gapsOnly)}
-        >
-          {t('MY_SKILLS.GAPS_ONLY')}
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant={gapsOnly ? 'default' : 'outline'}
+            aria-pressed={gapsOnly}
+            onClick={() => setGapsOnly(!gapsOnly)}
+          >
+            {t('MY_SKILLS.GAPS_ONLY')}
+          </Button>
+          <Button
+            variant="outline"
+            loading={suggesting}
+            disabled={IS_DEMO}
+            onClick={suggest}
+          >
+            <Sparkles />
+            {t('MATCHES.SUGGEST')}
+          </Button>
+        </div>
       </Card>
+      <JobMatchSkillsPanel
+        skills={panelSkills}
+        onAccept={name =>
+          update(setMatchSkillStatus(name, MATCH_SKILL_STATUS.ACCEPTED))
+        }
+        onDismiss={name =>
+          update(setMatchSkillStatus(name, MATCH_SKILL_STATUS.DISMISSED))
+        }
+        onRemove={name => update(removeMatchSkill(name))}
+        onSelect={showSuggestedPostings}
+      />
       <div className="grid gap-3 md:grid-cols-2">
         {visibleGroups.map(({ group, skills, total, ownedCount: owned }) => (
           <Card key={group} className="flex flex-col gap-2 p-4">

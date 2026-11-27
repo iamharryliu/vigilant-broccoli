@@ -199,6 +199,15 @@
       "WITH_ACTION": "With Action",
       "PROMISE": "Promise"
     },
+    "DANGER_CARD": {
+      "WITH_DESCRIPTION": "With Description",
+      "DISABLED": "Disabled"
+    },
+    "COLLAPSIBLE_CARD": {
+      "DEFAULT": "Default",
+      "OPEN_BY_DEFAULT": "Open by Default",
+      "CHEVRON_RIGHT": "Chevron Right"
+    },
     "COLLAPSIBLE_LIST_ITEM": {
       "WITH_RICH_CONTENT": "With Rich Content",
       "SECTION_1": "Section 1",

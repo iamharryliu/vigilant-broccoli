@@ -7,10 +7,9 @@ import {
   ArchiveRestore,
   ArrowUpDown,
   CheckCheck,
-  ClipboardPaste,
   Filter,
   Loader2,
-  Sparkles,
+  RefreshCw,
   Trash2,
 } from 'lucide-react';
 import {
@@ -18,12 +17,6 @@ import {
   Button,
   Card,
   EllipsisCTA,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   Select,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
@@ -32,57 +25,51 @@ import { RUNS_TAB_URL } from '../app.const';
 import { CAREER_FILE_KIND } from '../constants/career';
 import { IS_DEMO } from '../constants/demo';
 import {
-  JOB_MATCH_SKILLS_CHANGED_EVENT,
   JOB_MATCHES_CHANGED_EVENT,
   JOB_MATCHES_PROGRESS_EVENT,
   MATCH_SKILL_STATUS,
-  type MatchSkill,
 } from '../constants/matches';
 import { isActiveRunStatus, RUN_KIND } from '../constants/runs';
+import { useMatchSkills } from '../hooks/use-match-skills';
 import { useRuns } from '../hooks/use-runs';
 import { useTranslation } from '../i18n';
 import { undoToast } from '../utils/undo-toast.utils';
 import { getMatchesProgress } from '../utils/job-matches-progress.utils';
 import {
+  fetchDeletedMatchPostings,
   fetchMatchPostings,
   fetchMatchSkills,
   removeMatchPostings,
   restoreMatchPosting,
-  removeMatchSkill,
   setMatchPostingArchived,
-  setMatchSkillStatus,
   startMatchBrief,
-  startSkillSuggestions,
   type StoredMatchPosting,
 } from '../utils/job-matches-storage.utils';
 import {
   LEVEL_FILTER_ALL,
   MATCH_LEVEL,
+  MATCHES_VIEW,
   SORT_OPTION,
   type JobMatch,
   type LevelFilter,
+  type MatchesView,
   type MatchLevel,
   type SortOption,
-  countGaps,
   filterMatches,
-  isInVocabulary,
   matchPosting,
   parseOwnedSkills,
-  postingMentionsSkill,
   sortMatches,
 } from '../utils/job-matches.utils';
 import { SECTION_HEADING_CLASS } from './application-brief.component';
 import { RedoMatchingDialog } from './redo-matching-dialog.component';
 import { MatchFiltersDialog } from './match-filters-dialog.component';
 import {
-  SKILL_BADGE_BUTTON_CLASS,
-  SkillPostingsDialog,
-  type SkillPostings,
-} from './skill-postings-dialog.component';
-import { MatchBriefDetails, MatchBriefSummary } from './match-brief.component';
-import { JobMatchSkillsPanel } from './job-match-skills-panel.component';
+  BLOCK_CLASS,
+  MatchBriefDetails,
+  MatchBriefSummary,
+} from './match-brief.component';
+import { TabbedListContainer } from './tabbed-list-container.component';
 
-const TOP_GAP_COUNT = 12;
 const SORT_STORAGE_KEY = 'job-hunt-matches-sort';
 const LANGUAGES_STORAGE_KEY = 'job-hunt-matches-languages';
 // Matches the card's `duration-300` exit transition.
@@ -102,6 +89,7 @@ const MatchCard = ({
   onRemove,
   onArchive,
   onRedo,
+  onRestore,
   onGenerateBrief,
   leaving,
 }: {
@@ -110,6 +98,8 @@ const MatchCard = ({
   onRemove: () => void;
   onArchive: (archived: boolean, applied: boolean) => void;
   onRedo?: () => void;
+  // Set on a soft-deleted posting, whose only action is restoring it.
+  onRestore?: () => void;
   leaving: boolean;
   onGenerateBrief?: () => void;
 }) => {
@@ -169,61 +159,73 @@ const MatchCard = ({
                   {t('MATCHES.APPLIED')}
                 </Badge>
               )}
-              <EllipsisCTA
-                actions={[
-                  ...(match.applied
-                    ? []
-                    : [
-                        {
-                          label: t('MATCHES.MARK_APPLIED'),
-                          icon: <CheckCheck size={16} />,
-                          onSelect: () => onArchive(true, true),
-                        },
-                      ]),
-                  ...(match.applied
-                    ? [
-                        {
-                          label: t('MATCHES.MOVE_TO_ARCHIVED'),
-                          icon: <Archive size={16} />,
-                          onSelect: () => onArchive(true, false),
-                        },
-                      ]
-                    : []),
-                  {
-                    label: match.archived
-                      ? t('MATCHES.UNARCHIVE')
-                      : t('MATCHES.ARCHIVE'),
-                    icon: match.archived ? (
-                      <ArchiveRestore size={16} />
-                    ) : (
-                      <Archive size={16} />
-                    ),
-                    onSelect: () => onArchive(!match.archived, false),
-                  },
-                  ...(onRedo
-                    ? [
-                        {
-                          label: t('MATCHES.REDO'),
-                          icon: <ClipboardPaste size={16} />,
-                          onSelect: onRedo,
-                        },
-                      ]
-                    : []),
-                  {
-                    label: t('MATCHES.REMOVE'),
-                    icon: <Trash2 size={16} />,
-                    color: 'red',
-                    onSelect: onRemove,
-                    confirm: {
-                      title: t('MATCHES.REMOVE_TITLE'),
-                      description: t('MATCHES.REMOVE_DESCRIPTION', {
-                        role: match.role,
-                      }),
-                      confirmLabel: t('MATCHES.REMOVE'),
+              {onRestore ? (
+                <EllipsisCTA
+                  actions={[
+                    {
+                      label: t('MATCHES.RESTORE_DELETED'),
+                      icon: <ArchiveRestore size={16} />,
+                      onSelect: onRestore,
                     },
-                  },
-                ]}
-              />
+                  ]}
+                />
+              ) : (
+                <EllipsisCTA
+                  actions={[
+                    ...(match.applied
+                      ? []
+                      : [
+                          {
+                            label: t('MATCHES.MARK_APPLIED'),
+                            icon: <CheckCheck size={16} />,
+                            onSelect: () => onArchive(true, true),
+                          },
+                        ]),
+                    ...(match.applied
+                      ? [
+                          {
+                            label: t('MATCHES.MOVE_TO_ARCHIVED'),
+                            icon: <Archive size={16} />,
+                            onSelect: () => onArchive(true, false),
+                          },
+                        ]
+                      : []),
+                    {
+                      label: match.archived
+                        ? t('MATCHES.UNARCHIVE')
+                        : t('MATCHES.ARCHIVE'),
+                      icon: match.archived ? (
+                        <ArchiveRestore size={16} />
+                      ) : (
+                        <Archive size={16} />
+                      ),
+                      onSelect: () => onArchive(!match.archived, false),
+                    },
+                    ...(onRedo
+                      ? [
+                          {
+                            label: t('MATCHES.REDO'),
+                            icon: <RefreshCw size={16} />,
+                            onSelect: onRedo,
+                          },
+                        ]
+                      : []),
+                    {
+                      label: t('MATCHES.REMOVE'),
+                      icon: <Trash2 size={16} />,
+                      color: 'red',
+                      onSelect: onRemove,
+                      confirm: {
+                        title: t('MATCHES.REMOVE_TITLE'),
+                        description: t('MATCHES.REMOVE_DESCRIPTION', {
+                          role: match.role,
+                        }),
+                        confirmLabel: t('MATCHES.REMOVE'),
+                      },
+                    },
+                  ]}
+                />
+              )}
             </div>
           </div>
           <MatchBriefSummary
@@ -231,33 +233,46 @@ const MatchCard = ({
             generating={generating}
             onGenerate={onGenerateBrief}
           />
-          {match.matched.length > 0 && (
-            <div className="flex flex-wrap items-center gap-1">
-              <span className={SECTION_HEADING_CLASS}>
-                {t('MATCHES.MATCHED')}
-              </span>
-              {match.matched.map(skill => (
-                <Badge key={skill} color="green" variant="soft" size="1">
-                  {skill}
-                </Badge>
-              ))}
+          {(match.matched.length > 0 || match.gaps.length > 0) && (
+            <div
+              className={`-mx-3 grid gap-2 ${match.matched.length > 0 && match.gaps.length > 0 ? 'sm:grid-cols-2' : ''}`}
+            >
+              {match.matched.length > 0 && (
+                <div className={`flex flex-col gap-1 ${BLOCK_CLASS}`}>
+                  <span className={SECTION_HEADING_CLASS}>
+                    {t('MATCHES.MATCHED')}
+                  </span>
+                  <div className="flex flex-wrap items-center gap-1">
+                    {match.matched.map(skill => (
+                      <Badge key={skill} color="green" variant="soft" size="1">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {match.gaps.length > 0 && (
+                <div className={`flex flex-col gap-1 ${BLOCK_CLASS}`}>
+                  <span className={SECTION_HEADING_CLASS}>
+                    {t('MATCHES.GAPS')}
+                  </span>
+                  <div className="flex flex-wrap items-center gap-1">
+                    {match.gaps.map(skill => (
+                      <Badge
+                        key={skill}
+                        color="orange"
+                        variant="outline"
+                        size="1"
+                      >
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
-          {match.gaps.length > 0 && (
-            <div className="flex flex-wrap items-center gap-1">
-              <span className={SECTION_HEADING_CLASS}>{t('MATCHES.GAPS')}</span>
-              {match.gaps.map(skill => (
-                <Badge key={skill} color="orange" variant="outline" size="1">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          )}
-          <MatchBriefDetails
-            brief={match.brief}
-            generating={generating}
-            onGenerate={onGenerateBrief}
-          />
+          <MatchBriefDetails brief={match.brief} />
         </Card>
       </div>
     </div>
@@ -275,18 +290,15 @@ export const JobMatchesPage = () => {
   const [languages, setLanguages] = useState<string[]>([]);
   const [hideInternships, setHideInternships] = useState(false);
   const [hideGraduate, setHideGraduate] = useState(false);
-  const [archivedOnly, setArchivedOnly] = useState(false);
-  const [appliedOnly, setAppliedOnly] = useState(false);
+  const [view, setView] = useState<MatchesView>(MATCHES_VIEW.MATCHES);
+  const [deletedPostings, setDeletedPostings] = useState<StoredMatchPosting[]>(
+    [],
+  );
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [leaving, setLeaving] = useState<Set<string>>(new Set());
   const [redoing, setRedoing] = useState<StoredMatchPosting | null>(null);
-  const [skills, setSkills] = useState<MatchSkill[]>([]);
-  const [suggesting, setSuggesting] = useState(false);
-  const [confirmingClear, setConfirmingClear] = useState(false);
-  const [skillPostings, setSkillPostings] = useState<SkillPostings | null>(
-    null,
-  );
+  const { skills, setSkills } = useMatchSkills();
   const { runs } = useRuns();
   const activeBriefRuns =
     runs?.filter(
@@ -331,8 +343,10 @@ export const JobMatchesPage = () => {
       setEasyApplyOnly(stored.easyApplyOnly === true);
       setHideInternships(stored.hideInternships === true);
       setHideGraduate(stored.hideGraduate === true);
-      setArchivedOnly(stored.archivedOnly === true);
-      setAppliedOnly(stored.appliedOnly === true);
+      const savedView = Object.values(MATCHES_VIEW).find(
+        option => option === stored.view,
+      );
+      if (savedView) setView(savedView);
     } catch {
       // Blocked or corrupt storage: the filters start cleared.
     }
@@ -351,8 +365,7 @@ export const JobMatchesPage = () => {
           easyApplyOnly,
           hideInternships,
           hideGraduate,
-          archivedOnly,
-          appliedOnly,
+          view,
         }),
       );
     } catch {
@@ -364,8 +377,7 @@ export const JobMatchesPage = () => {
     easyApplyOnly,
     hideInternships,
     hideGraduate,
-    archivedOnly,
-    appliedOnly,
+    view,
   ]);
 
   const changeLanguages = (next: string[]) => {
@@ -394,10 +406,14 @@ export const JobMatchesPage = () => {
   }, []);
 
   useEffect(() => {
-    const reload = () =>
+    const reload = () => {
       fetchMatchPostings()
         .then(setPostings)
         .catch(() => setLoadFailed(true));
+      fetchDeletedMatchPostings()
+        .then(setDeletedPostings)
+        .catch(() => setLoadFailed(true));
+    };
     reload();
     window.addEventListener(JOB_MATCHES_CHANGED_EVENT, reload);
     return () => window.removeEventListener(JOB_MATCHES_CHANGED_EVENT, reload);
@@ -409,36 +425,6 @@ export const JobMatchesPage = () => {
       .then(data => setOwnedSkills(parseOwnedSkills(data.content)))
       .catch(() => setLoadFailed(true));
   }, []);
-
-  useEffect(() => {
-    const reload = () => fetchMatchSkills().then(setSkills, () => undefined);
-    reload();
-    window.addEventListener(JOB_MATCH_SKILLS_CHANGED_EVENT, reload);
-    return () =>
-      window.removeEventListener(JOB_MATCH_SKILLS_CHANGED_EVENT, reload);
-  }, []);
-
-  const updateSkills = (request: Promise<MatchSkill[]>) =>
-    request.then(setSkills).catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
-
-  const suggest = async () => {
-    setSuggesting(true);
-    try {
-      await startSkillSuggestions();
-      toast.success(t('MATCHES.SUGGEST_STARTED'), {
-        action: {
-          label: t('DIALOG.VIEW_PROGRESS'),
-          onClick: () => router.push(RUNS_TAB_URL),
-        },
-      });
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : t('MATCHES.SUGGEST_FAILED'),
-      );
-    } finally {
-      setSuggesting(false);
-    }
-  };
 
   const generateBrief = async (url: string) => {
     try {
@@ -473,15 +459,21 @@ export const JobMatchesPage = () => {
       );
   };
 
+  const restoreDeleted = (url: string) =>
+    restoreMatchPosting(url)
+      .then(setPostings)
+      .then(fetchDeletedMatchPostings)
+      .then(setDeletedPostings)
+      .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
+
   const remove = (url?: string) =>
     exitThen(url, () => removeMatchPostings(url))
       .then(next => {
         setPostings(next);
+        fetchDeletedMatchPostings().then(setDeletedPostings);
         if (url) {
           undoToast(t('MATCHES.UNDO_DELETED'), t('MATCHES.UNDO'), () =>
-            restoreMatchPosting(url)
-              .then(setPostings)
-              .catch(() => toast.error(t('MATCHES.SAVE_FAILED'))),
+            restoreDeleted(url),
           );
         }
       })
@@ -512,25 +504,14 @@ export const JobMatchesPage = () => {
   };
 
   // Clearing also drops the suggested skills, which the postings produced.
-  const clearAll = () => {
-    setConfirmingClear(false);
-    return remove()
+  const clearAll = () =>
+    remove()
       .then(fetchMatchSkills)
       .then(setSkills)
       .catch(() => undefined);
-  };
 
   const customTerms = useMemo(
     () => skills.filter(skill => skill.status === MATCH_SKILL_STATUS.ACCEPTED),
-    [skills],
-  );
-  const panelSkills = useMemo(
-    () =>
-      skills.filter(
-        skill =>
-          skill.status !== MATCH_SKILL_STATUS.SUGGESTED ||
-          !isInVocabulary(skill),
-      ),
     [skills],
   );
   const briefRunning = useMemo(
@@ -564,12 +545,13 @@ export const JobMatchesPage = () => {
         languages,
         hideInternships,
         hideGraduate,
-        archivedOnly,
-        appliedOnly,
+        view:
+          view === MATCHES_VIEW.DELETED || view === MATCHES_VIEW.SETTINGS
+            ? MATCHES_VIEW.MATCHES
+            : view,
       }),
     [
-      archivedOnly,
-      appliedOnly,
+      view,
       allMatches,
       levelFilter,
       easyApplyOnly,
@@ -578,32 +560,23 @@ export const JobMatchesPage = () => {
       hideGraduate,
     ],
   );
+  const deletedMatches = useMemo(
+    () =>
+      ownedSkills
+        ? deletedPostings.map(posting =>
+            matchPosting(posting, ownedSkills, customTerms),
+          )
+        : [],
+    [deletedPostings, ownedSkills, customTerms],
+  );
+  const isDeletedView = view === MATCHES_VIEW.DELETED;
+  const shown = isDeletedView ? deletedMatches : matches;
   const activeFilterCount = [
     levelFilter !== LEVEL_FILTER_ALL,
     languages.length > 0,
     hideInternships,
     hideGraduate,
   ].filter(Boolean).length;
-  const archivedCount = allMatches.filter(match => match.archived).length;
-  const viewCount = archivedOnly
-    ? archivedCount
-    : allMatches.length - archivedCount;
-  const topGaps = useMemo(
-    () => countGaps(matches).slice(0, TOP_GAP_COUNT),
-    [matches],
-  );
-
-  const showSuggestedPostings = (skill: MatchSkill) => {
-    const mentioning = new Set(
-      postings
-        .filter(posting => postingMentionsSkill(posting, skill))
-        .map(posting => posting.url),
-    );
-    setSkillPostings({
-      skill: skill.name,
-      matches: allMatches.filter(match => mentioning.has(match.url)),
-    });
-  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -616,47 +589,48 @@ export const JobMatchesPage = () => {
           })}
         </div>
       )}
-      {allMatches.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-2">
+      <TabbedListContainer
+        showTabs={allMatches.length > 0 || deletedMatches.length > 0}
+        view={view}
+        onViewChange={next => setView(next as MatchesView)}
+        settingsLabel={t('MATCHES.SECTION_SETTINGS')}
+        tabs={[
+          {
+            value: MATCHES_VIEW.MATCHES,
+            label: t('MATCHES.SECTION_MATCHES', {
+              count: String(allMatches.filter(match => !match.archived).length),
+            }),
+          },
+          {
+            value: MATCHES_VIEW.APPLIED,
+            icon: <CheckCheck size={14} />,
+            label: t('MATCHES.SECTION_APPLIED', {
+              count: String(
+                allMatches.filter(match => match.archived && match.applied)
+                  .length,
+              ),
+            }),
+          },
+          {
+            value: MATCHES_VIEW.ARCHIVED,
+            icon: <Archive size={14} />,
+            label: t('MATCHES.SECTION_ARCHIVED', {
+              count: String(
+                allMatches.filter(match => match.archived && !match.applied)
+                  .length,
+              ),
+            }),
+          },
+          {
+            value: MATCHES_VIEW.DELETED,
+            icon: <Trash2 size={14} />,
+            label: t('MATCHES.SECTION_DELETED', {
+              count: String(deletedMatches.length),
+            }),
+          },
+        ]}
+        toolbar={
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant={archivedOnly ? 'outline' : 'default'}
-              aria-pressed={!archivedOnly}
-              onClick={() => setArchivedOnly(false)}
-            >
-              {t('MATCHES.SECTION_MATCHES', {
-                count: String(allMatches.length - archivedCount),
-              })}
-            </Button>
-            <Button
-              variant={archivedOnly ? 'default' : 'outline'}
-              aria-pressed={archivedOnly}
-              onClick={() => setArchivedOnly(true)}
-            >
-              <Archive />
-              {t('MATCHES.SECTION_ARCHIVED', {
-                count: String(archivedCount),
-              })}
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              {matches.length !== viewCount &&
-                t('MATCHES.COUNT_FILTERED', {
-                  shown: String(matches.length),
-                  count: String(viewCount),
-                })}
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {archivedOnly && (
-              <Button
-                variant={appliedOnly ? 'default' : 'outline'}
-                aria-pressed={appliedOnly}
-                onClick={() => setAppliedOnly(!appliedOnly)}
-              >
-                <CheckCheck />
-                {t('MATCHES.APPLIED_ONLY')}
-              </Button>
-            )}
             <ArrowUpDown aria-hidden className="size-4 text-muted-foreground" />
             <Select
               aria-label={t('MATCHES.SORT')}
@@ -686,133 +660,77 @@ export const JobMatchesPage = () => {
             >
               {t('MATCHES.EASY_APPLY')}
             </Button>
-            <Button
-              variant="outline"
-              loading={suggesting}
-              disabled={IS_DEMO}
-              onClick={suggest}
-            >
-              <Sparkles />
-              {t('MATCHES.SUGGEST')}
-            </Button>
-            <Button variant="outline" onClick={() => setConfirmingClear(true)}>
-              <Trash2 />
-              {t('MATCHES.CLEAR')}
-            </Button>
           </div>
-        </div>
-      )}
-      {loadFailed && (
-        <p className="text-sm text-destructive">{t('MATCHES.LOAD_FAILED')}</p>
-      )}
-      {!loadFailed && ownedSkills?.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          {t('MATCHES.NO_SKILLS')}
-        </p>
-      )}
-      {allMatches.length === 0 && !loadFailed && !progress && (
-        <p className="text-sm text-muted-foreground">{t('MATCHES.EMPTY')}</p>
-      )}
-      <JobMatchSkillsPanel
-        skills={panelSkills}
-        onAccept={name =>
-          updateSkills(setMatchSkillStatus(name, MATCH_SKILL_STATUS.ACCEPTED))
         }
-        onDismiss={name =>
-          updateSkills(setMatchSkillStatus(name, MATCH_SKILL_STATUS.DISMISSED))
-        }
-        onRemove={name => updateSkills(removeMatchSkill(name))}
-        onSelect={showSuggestedPostings}
-      />
-      <MatchFiltersDialog
-        open={filtersOpen}
-        onOpenChange={setFiltersOpen}
-        level={levelFilter}
-        onLevelChange={setLevelFilter}
-        languages={languages}
-        onLanguagesChange={changeLanguages}
-        hideInternships={hideInternships}
-        onHideInternshipsChange={setHideInternships}
-        hideGraduate={hideGraduate}
-        onHideGraduateChange={setHideGraduate}
-      />
-      <SkillPostingsDialog
-        selection={skillPostings}
-        onClose={() => setSkillPostings(null)}
-      />
-      {topGaps.length > 0 && (
-        <section className="flex shrink-0 flex-col gap-1">
-          <h2 className={SECTION_HEADING_CLASS}>{t('MATCHES.TOP_GAPS')}</h2>
-          <div className="flex flex-wrap gap-1">
-            {topGaps.map(([skill, count]) => (
-              <Badge key={skill} color="orange" variant="outline" size="1">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSkillPostings({
-                      skill,
-                      matches: matches.filter(match =>
-                        match.gaps.includes(skill),
-                      ),
-                    })
-                  }
-                  className={SKILL_BADGE_BUTTON_CLASS}
-                >
-                  {skill} × {count}
-                </button>
-              </Badge>
-            ))}
-          </div>
-        </section>
-      )}
-      {allMatches.length > 0 && matches.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          {t('MATCHES.NO_FILTER_MATCHES')}
-        </p>
-      )}
-      <Dialog open={confirmingClear} onOpenChange={setConfirmingClear}>
-        <DialogContent className="max-w-[480px]">
-          <DialogHeader>
-            <DialogTitle>{t('MATCHES.CLEAR_TITLE')}</DialogTitle>
-            <DialogDescription>
-              {t('MATCHES.CLEAR_DESCRIPTION', {
-                count: String(allMatches.length),
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmingClear(false)}>
-              {t('MATCHES.CANCEL')}
-            </Button>
-            <Button variant="destructive" onClick={clearAll}>
-              <Trash2 />
-              {t('MATCHES.CLEAR')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      <RedoMatchingDialog posting={redoing} onClose={() => setRedoing(null)} />
-      {matches.map(match => (
-        <MatchCard
-          key={match.url}
-          match={match}
-          generating={briefRunning.has(match.url)}
-          leaving={leaving.has(match.url)}
-          onRemove={() => remove(match.url)}
-          onArchive={(archived, applied) =>
-            archive(match.url, archived, applied)
-          }
-          onRedo={
-            IS_DEMO
-              ? undefined
-              : () =>
-                  setRedoing(
-                    postings.find(posting => posting.url === match.url) ?? null,
-                  )
-          }
-          onGenerateBrief={IS_DEMO ? undefined : () => generateBrief(match.url)}
+        clearAll={{
+          title: t('MATCHES.CLEAR'),
+          description: t('MATCHES.CLEAR_DESCRIPTION', {
+            count: String(allMatches.length),
+          }),
+          actionLabel: t('MATCHES.CLEAR'),
+          confirmTitle: t('MATCHES.CLEAR_TITLE'),
+          cancelLabel: t('MATCHES.CANCEL'),
+          disabled: allMatches.length === 0,
+          onConfirm: clearAll,
+        }}
+      >
+        {loadFailed && (
+          <p className="text-sm text-destructive">{t('MATCHES.LOAD_FAILED')}</p>
+        )}
+        {!loadFailed && ownedSkills?.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            {t('MATCHES.NO_SKILLS')}
+          </p>
+        )}
+        <MatchFiltersDialog
+          open={filtersOpen}
+          onOpenChange={setFiltersOpen}
+          level={levelFilter}
+          onLevelChange={setLevelFilter}
+          languages={languages}
+          onLanguagesChange={changeLanguages}
+          hideInternships={hideInternships}
+          onHideInternshipsChange={setHideInternships}
+          hideGraduate={hideGraduate}
+          onHideGraduateChange={setHideGraduate}
         />
-      ))}
+        {!isDeletedView && allMatches.length > 0 && matches.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            {t('MATCHES.NO_FILTER_MATCHES')}
+          </p>
+        )}
+        <RedoMatchingDialog
+          posting={redoing}
+          onClose={() => setRedoing(null)}
+        />
+        {shown.map(match => (
+          <MatchCard
+            key={match.url}
+            match={match}
+            onRestore={
+              isDeletedView ? () => restoreDeleted(match.url) : undefined
+            }
+            generating={briefRunning.has(match.url)}
+            leaving={leaving.has(match.url)}
+            onRemove={() => remove(match.url)}
+            onArchive={(archived, applied) =>
+              archive(match.url, archived, applied)
+            }
+            onRedo={
+              IS_DEMO
+                ? undefined
+                : () =>
+                    setRedoing(
+                      postings.find(posting => posting.url === match.url) ??
+                        null,
+                    )
+            }
+            onGenerateBrief={
+              IS_DEMO ? undefined : () => generateBrief(match.url)
+            }
+          />
+        ))}
+      </TabbedListContainer>
     </div>
   );
 };

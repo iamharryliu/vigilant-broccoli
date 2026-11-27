@@ -20,13 +20,16 @@ export type SkillGraphOptions = {
 
 // A vocabulary term missing here lands in "Other" rather than vanishing.
 const SKILL_GROUPS: Record<string, string[]> = {
-  AI: ['AI-assisted development'],
+  AI: ['Agentic coding', 'AI-assisted development'],
   'LLM frameworks': [
     'AI Agents',
+    'Claude',
     'LangChain',
     'LangGraph',
     'LLM',
     'Model Context Protocol',
+    'OpenAI',
+    'Prompt engineering',
     'RAG',
   ],
   'Machine learning': [
@@ -56,6 +59,7 @@ const SKILL_GROUPS: Record<string, string[]> = {
   ],
   'Business platforms': [
     'Dynamics 365 & Power Platform',
+    'Headless CMS',
     'Integration platforms',
     'Microsoft 365',
     'NetSuite',
@@ -66,6 +70,7 @@ const SKILL_GROUPS: Record<string, string[]> = {
     'AWS',
     'Azure',
     'Bash',
+    'Cloudflare',
     'Docker',
     'GCP',
     'HashiCorp Vault',
@@ -95,6 +100,7 @@ const SKILL_GROUPS: Record<string, string[]> = {
     'CI/CD',
     'DevOps',
     'Observability',
+    'Platform engineering',
     'Site Reliability Engineering',
     'Version control',
   ],
