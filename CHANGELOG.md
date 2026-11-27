@@ -14,6 +14,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- New `CheckboxCardGroup` (a row of bordered checkbox cards for choosing any number of options) and `Hyperlink` (a text link with an optional leading icon that opens absolute URLs in a new tab with an external arrow) components ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 - New `KanbanBoard` swimlane component in `react-lib-checklist` with drag-and-drop cards and lane reordering, header slots and CheckList-style rows, shown in the component library ([#1780](https://github.com/iamharryliu/vigilant-broccoli/pull/1780)).
 
 ### hearth
@@ -41,6 +42,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### tasks-next
 
+- Tasks moved to tasks.vigilant-broccoli.app (staging at staging-tasks.vigilant-broccoli.app), and the manager apps embed it from there; the old harryliu.dev hostnames no longer resolve and do not redirect ([#1794](https://github.com/iamharryliu/vigilant-broccoli/pull/1794)).
 - A search icon in the list header and the board header opens a dialog that finds a task in any list (any list with a lane, on the board) and jumps to it, switching list or board and highlighting the task. A kanban lane's title, drag grip, sort and remove button share one header row pair, so a list's name shows once ([#1782](https://github.com/iamharryliu/vigilant-broccoli/pull/1782)).
 - Kanban boards can be framed by other apps at `/embed/board`, which borrows the embedding page's session, and the board sidebar's left padding is tighter ([#1779](https://github.com/iamharryliu/vigilant-broccoli/pull/1779)).
 - New Google Tasks app at tasks.harryliu.dev, which the manager apps also embed. Sign-in from an embed opens a popup and hands the session back to the frame ([#1600](https://github.com/iamharryliu/vigilant-broccoli/pull/1600), [#1601](https://github.com/iamharryliu/vigilant-broccoli/pull/1601)).
@@ -57,6 +59,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### job-hunt-next
 
+- Archive, Mark as applied, Delete and application status changes show an Undo toast in the bottom-left, and cards animate out. Deletes are soft: postings and application folders are held for 7 days, then purged on the next list read. Matches also gain Redo matching (paste new posting text to re-score it), Move to archived for applied postings, an employment type in each brief, filters that persist across refreshes, "Postgraduate" in the graduate filter, NoSQL, Cursor, RTOS, Modbus and Profinet skills with a Hardware group, a top-level Glossary page, a Skills graph URL with an icon tab strip, and sidebar search results for the Skills graph ([#1793](https://github.com/iamharryliu/vigilant-broccoli/pull/1793)).
 - Skills gets a Glossary tab that lists every skill with a short description, and NetSuite joins the tracked skills ([#1760](https://github.com/iamharryliu/vigilant-broccoli/pull/1760)).
 - Skills groups split AI into LLM frameworks, Machine learning and a smaller AI group, add Game development, and track PyTorch, TensorFlow, LangChain, LangGraph, MATLAB, Gradle, Unity, Unreal Engine, Salesforce and WordPress, with AWS CDK, CloudFormation and Argo CD matching their existing skills ([#1759](https://github.com/iamharryliu/vigilant-broccoli/pull/1759)).
 - Matches gets a Filters dialog (match level, hide internships or graduate roles, the spoken languages you speak), archiving and Mark as applied from each card's ellipsis menu with a separate Archived section, clickable skill badges that list the postings naming them, and a broader skill vocabulary with grouped skills. A new Skills page under Career profile shows your coverage by skill group and a skills graph, and Notes can preview its markdown ([#1754](https://github.com/iamharryliu/vigilant-broccoli/pull/1754)).
@@ -71,6 +74,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - New public app that shows each Grind 75 problem's Go, Python and TypeScript solutions side by side, as language tabs on mobile ([#1471](https://github.com/iamharryliu/vigilant-broccoli/pull/1471), [#1478](https://github.com/iamharryliu/vigilant-broccoli/pull/1478), [#1487](https://github.com/iamharryliu/vigilant-broccoli/pull/1487)).
 - Browser back and forward now move through the app's URL state ([#1594](https://github.com/iamharryliu/vigilant-broccoli/pull/1594)).
+- Solutions show only the languages ticked in a row of checkbox cards (Python by default) instead of every language at once, and each problem's title links to its LeetCode page above a walkthrough with its type, technique and time and space complexity from the Grind 75 table. Java and C# solutions were added for the first 12 problems ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 
 ### photography-react
 
@@ -79,6 +83,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### project-overview
 
+- The Deployments page stacks each pull request's details above its app links at every width, matching the phone layout, instead of a details-left, apps-right row ([#1788](https://github.com/iamharryliu/vigilant-broccoli/pull/1788)).
 - The Deployments page keeps each pull request as a row with details left and app links right on phones too, wrapping long branch names and links ([#1781](https://github.com/iamharryliu/vigilant-broccoli/pull/1781)).
 - The Deployments page lists pull requests one per row at every width, and from medium screens up each row puts the title, branch and author on the left and the app links on the right ([#1772](https://github.com/iamharryliu/vigilant-broccoli/pull/1772)).
 - The Deployments page shows the commit and deploy age once per pull request next to the author, makes each app name the link to its preview with the same icon as its project-overview card, adds a copy button beside the branch name and tightens the card spacing ([#1768](https://github.com/iamharryliu/vigilant-broccoli/pull/1768)).
@@ -165,6 +170,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 ### component-library
 
 - New Calendar, Toggle Chip Group and Task Schedule Fields pages; the recurring-schedule picker now lives in `react-lib-tasks` ([#1767](https://github.com/iamharryliu/vigilant-broccoli/pull/1767)).
+- New Graph page draws how the components depend on one another, sharing its layout and behavior with project-overview's Project Graph, and each component page's "Built with" list is now "Depends on" with a new "Used by" list. The sidebar groups Overview and Graph under Components, and new Checkbox Card Group and Hyperlink pages demo the new components ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 
 ### react-lib-tasks
 
@@ -257,6 +263,11 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - Notes in the Docs Explorer can be shared: a Share item in the note's ellipsis menu (when the host supplies a link) opens a dialog with a copyable link and a QR code ([#1726](https://github.com/iamharryliu/vigilant-broccoli/pull/1726)).
 - The graph camera glides when using the zoom buttons, keys and reset ([#1721](https://github.com/iamharryliu/vigilant-broccoli/pull/1721)).
 - The sticky bar keeps a note's title for collapsed and list aggregate views ([#1723](https://github.com/iamharryliu/vigilant-broccoli/pull/1723)).
+- The top bar also names the subsection you have scrolled into after the note's title, such as "Leet Code › Notes" ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
+
+### sidebar
+
+- A long sidebar smooth-scrolls the current page's row to the top of the list when the page loads or changes and when its group finishes expanding ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 
 ### entry-directory
 

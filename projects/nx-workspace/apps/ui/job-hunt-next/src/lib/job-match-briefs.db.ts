@@ -3,7 +3,8 @@ import type { StoredJobMatchesPosting } from '@vigilant-broccoli/common-js';
 import type { MatchBrief, MatchBriefState } from '../app/constants/matches';
 import { getJobHuntDb } from './job-application-runs.db';
 import { isMatchBriefRunning } from './match-brief-inflight';
-import { listMatchPostings } from './job-matches.db';
+import { listMatchPostings, purgeDeletedMatchPostings } from './job-matches.db';
+import { softDeleteCutoff } from './soft-delete';
 
 const BRIEFS_TABLE = 'job_match_briefs';
 
@@ -65,9 +66,20 @@ export const listPostingsWithBriefs = (): (StoredJobMatchesPosting &
       ...posting,
       brief:
         row && row.text_hash === hashPostingText(posting.text)
-          ? ({ abbreviations: [], ...JSON.parse(row.brief) } as MatchBrief)
+          ? ({
+              abbreviations: [],
+              employmentType: '',
+              ...JSON.parse(row.brief),
+            } as MatchBrief)
           : null,
       briefRunning: isMatchBriefRunning(posting.url),
     };
   });
 };
+
+// Cleanup for soft-deleted postings: runs when the list is read, so no
+// scheduler is needed.
+export const purgeExpiredMatchPostings = () =>
+  purgeDeletedMatchPostings(softDeleteCutoff().toISOString()).forEach(
+    deleteMatchBrief,
+  );

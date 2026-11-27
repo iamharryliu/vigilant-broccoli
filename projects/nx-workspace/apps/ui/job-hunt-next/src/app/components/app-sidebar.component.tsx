@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Activity,
   Briefcase,
+  BookA,
   ClipboardList,
   FileUser,
   LayoutGrid,
@@ -26,7 +27,12 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { Sidebar } from '@vigilant-broccoli/sidebar';
-import { APP_TAB, AppTab, toTabFromPath } from '../app.const';
+import {
+  APP_TAB,
+  AppTab,
+  SKILLS_GRAPH_PATH,
+  toTabFromPath,
+} from '../app.const';
 import { OPEN_HELP_EVENT } from '../constants/career';
 import { useTranslation } from '../i18n';
 import { readBookmarkletTarget } from '../utils/bookmarklet.utils';
@@ -41,6 +47,7 @@ const TAB_ICON: Record<AppTab, LucideIcon> = {
   [APP_TAB.RESUME.value]: FileUser,
   [APP_TAB.MATCHES.value]: Target,
   [APP_TAB.SKILLS.value]: Network,
+  [APP_TAB.SKILLS_GLOSSARY.value]: BookA,
   [APP_TAB.NOTES.value]: NotebookPen,
   [APP_TAB.TASKS.value]: ListChecks,
   [APP_TAB.RUNS.value]: Activity,
@@ -93,6 +100,16 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
     href: path,
     isActive: value === activeTab.value,
   });
+  const searchEntries = useMemo(
+    () => [
+      {
+        label: t('SKILLS.GRAPH_SEARCH'),
+        href: SKILLS_GRAPH_PATH,
+        description: t(APP_TAB.SKILLS.titleKey),
+      },
+    ],
+    [t],
+  );
   const [helpOpen, setHelpOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const router = useRouter();
@@ -143,6 +160,7 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
       <Sidebar
         LinkComponent={Link}
         searchable
+        searchEntries={searchEntries}
         onNavigate={router.push}
         className="max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-30"
         mobileOpen={mobileOpen}
@@ -156,6 +174,7 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
             isActive: group === activeGroup,
             children: group.tabs.map(toItem),
           })),
+          toItem(APP_TAB.SKILLS_GLOSSARY),
           toItem(APP_TAB.SETTINGS),
         ]}
       />

@@ -91,6 +91,8 @@ const SECTION_SCROLL_MAX_FRAMES = 60;
 const SMOOTH_SCROLL_MS = 900;
 // A section counts as current once its start is within this of the bar.
 const SECTION_EDGE_PX = 8;
+const SUBSECTION_HEADINGS_SELECTOR = 'h2, h3, h4, h5, h6';
+const SUBSECTION_SEPARATOR = ' › ';
 
 const parseStoredPaths = (raw: string | null): string[] => {
   if (!raw) return [];
@@ -466,18 +468,40 @@ export const DocsExplorer = ({
       if (markers.length > 0 && sectionIndex === -1) sectionIndex = 0;
       const section = markers[sectionIndex];
       const nextSection = markers[sectionIndex + 1];
-      const heading = section
-        ? Array.from(body.querySelectorAll('h1')).find(
-            h1 =>
-              section.compareDocumentPosition(h1) &
-                Node.DOCUMENT_POSITION_FOLLOWING &&
-              !(
-                nextSection &&
-                nextSection.compareDocumentPosition(h1) &
-                  Node.DOCUMENT_POSITION_FOLLOWING
-              ),
+      const isInSection = (el: Element) =>
+        !section ||
+        (section.compareDocumentPosition(el) &
+          Node.DOCUMENT_POSITION_FOLLOWING &&
+          !(
+            nextSection &&
+            nextSection.compareDocumentPosition(el) &
+              Node.DOCUMENT_POSITION_FOLLOWING
+          ));
+      const heading = Array.from(body.querySelectorAll('h1')).find(isInSection);
+      // Subsections the reader has scrolled into: the last heading of each
+      // level at or above the bar's edge, dropping any deeper one a later
+      // shallower heading has since closed.
+      const trail: string[] = [];
+      const trailLevels: number[] = [];
+      body
+        .querySelectorAll<HTMLElement>(SUBSECTION_HEADINGS_SELECTOR)
+        .forEach(sub => {
+          if (
+            !isInSection(sub) ||
+            sub.getBoundingClientRect().top > barBottom + SECTION_EDGE_PX
           )
-        : body.querySelector('h1');
+            return;
+          const level = Number(sub.tagName[1]);
+          while (
+            trailLevels.length &&
+            trailLevels[trailLevels.length - 1] >= level
+          ) {
+            trailLevels.pop();
+            trail.pop();
+          }
+          trailLevels.push(level);
+          trail.push(sub.textContent ?? '');
+        });
       const sectionPath = section?.getAttribute(AGGREGATE_SECTION_ATTR);
       if (
         sectionPath &&
@@ -492,10 +516,13 @@ export const DocsExplorer = ({
       const fallbackTitle = heading
         ? null
         : section?.getAttribute(AGGREGATE_TITLE_ATTR);
-      const text = heading?.textContent ?? fallbackTitle ?? '';
+      const title = heading?.textContent ?? fallbackTitle ?? '';
+      const text = title
+        ? [title, ...trail].join(SUBSECTION_SEPARATOR)
+        : trail.join(SUBSECTION_SEPARATOR);
       if (label.textContent !== text) label.textContent = text;
       if (!heading) {
-        label.style.opacity = fallbackTitle ? '1' : '0';
+        label.style.opacity = text ? '1' : '0';
         label.style.transform = 'none';
         return;
       }

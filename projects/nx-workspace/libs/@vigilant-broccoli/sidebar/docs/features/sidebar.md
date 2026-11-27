@@ -23,6 +23,7 @@
 - An item with `children` renders as a toggle button + collapsible list, one group open at a time per nesting level (`openId` at the top level, a separate `openChildId` per parent for deeper nesting), keyed by `id` ?? `href` ?? `label`
 - `defaultOpenId` only seeds/re-applies the open group **while the sidebar is already fully expanded** (`forceExpanded`: mobile drawer open, or icon-less always-expanded) — a collapsed desktop rail stays closed (on mount _and_ on any later `defaultOpenId` change) until hovered, so the active group never renders "open" (active styling and all) before the user interacts with it. `forceExpanded` is read inside the re-sync effect rather than listed as its dependency, so a drawer merely opening/closing (without `defaultOpenId` itself changing) can't retrigger it and stomp a manually-expanded _different_ group — see #471's regression test. On a collapsed desktop rail specifically, `defaultOpenId` plays no role at all once mounted — see hover interaction below
 - Otherwise (fully expanded), a consumer that recomputes `defaultOpenId` from its own selection state (e.g. "open the group containing the active item") gets it re-expanded automatically without extra wiring
+- The active leaf row (`isActive`, no children) gets `aria-current="page"` and is smooth-scrolled to the top of the list (as far as its scroll range allows; only the list scrolls, never ancestors) when the active selection changes and again when a group containing it finishes its open transition (`data-open` on the group wrapper, `transitionend` on the list), so a long list lands on the current page. Rows inside a still-collapsed group are skipped
 - Deeper levels have no `defaultOpenId`: each parent opens (on mount and whenever it changes) the child group marked `isActive`, so a consumer marking the active path gets every level expanded
 - Group toggle buttons carry `aria-expanded`
 - Icon-less items/groups always show their label (no icon to fall back to when collapsed)
@@ -38,7 +39,7 @@
 ## Search
 
 - `searchable` adds a "Search..." row (with a `/` hint) that opens react-lib's [`SearchDialog`](../../../react-lib/docs/features/search-dialog.md); `/` opens it too, through `useFocusSearchShortcut`
-- Results are every item with an `href`, flattened out of its groups and fuzzy-matched on label; a nested item's description is its parent group label. Items with only an `onClick` are not searchable
+- Results are every item with an `href`, flattened out of its groups and fuzzy-matched on label; a nested item's description is its parent group label. Items with only an `onClick` are not searchable. `searchEntries` (`{ label, href, description? }`) adds search-only results with no sidebar row; pass a stable array, since it is a memo dependency
 - Picking a result calls `onNavigate(href)` (hearth passes `router.push`; the default is `window.location.assign`) and `onMobileClose`, which closes the drawer and is a no-op on desktop
 - Selecting a normal item also calls `onMobileClose`
 

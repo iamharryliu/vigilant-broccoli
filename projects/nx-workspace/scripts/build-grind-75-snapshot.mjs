@@ -2,10 +2,15 @@ import fs from 'fs';
 import path from 'path';
 
 const LANGUAGES = [
+  { id: 'csharp', label: 'C#', dir: 'csharp', ext: '.cs', isPascalCase: true },
   { id: 'go', label: 'Go', dir: 'go', ext: '.go' },
+  { id: 'java', label: 'Java', dir: 'java', ext: '.java', isPascalCase: true },
   { id: 'python', label: 'Python', dir: 'python', ext: '.py' },
   { id: 'typescript', label: 'TypeScript', dir: 'typescript', ext: '.ts' },
 ];
+
+// Which language's category folder names a problem's category, first match wins.
+const CATEGORY_SOURCE_ORDER = ['python', 'go', 'typescript', 'java', 'csharp'];
 
 const PATH_SEP = '/';
 const NODE_TYPE_FILE = 'file';
@@ -20,6 +25,8 @@ const EXCLUDED_DIRS = new Set([
   'node_modules',
   '__pycache__',
   'dist',
+  // Java and C# keep shared ListNode/TreeNode helpers here.
+  'common',
 ]);
 const EXCLUDED_FILES = new Set(['__init__.py', 'common.py', 'common.ts']);
 const EXCLUDED_FILE_RE = /(_test\.go|\.test\.ts|\.spec\.ts|\.d\.ts)$/;
@@ -37,6 +44,8 @@ const PROBLEM_ALIASES = {
   'first-bad-verison': 'first-bad-version',
   'minumum-window-substring': 'minimum-window-substring',
   'maximum-depth-of-bt': 'maximum-depth-of-binary-tree',
+  'invert-binary-tree': 'invert-bt',
+  'valid-parentheses': 'valid-parenthesis',
 };
 
 const CATEGORY_LABELS = { hashmap: 'Hash Map' };
@@ -89,8 +98,16 @@ const categorySlug = dirName => {
   return aliased.replace(/_/g, '-');
 };
 
-const problemSlug = fileName => {
-  const slug = slugify(fileName);
+// Java and C# name files after the class (TwoSum.java), so split the words
+// before slugifying; other languages already separate them with `_` or `-`.
+const PASCAL_WORD_BOUNDARY_RE = /([a-z0-9])([A-Z])/g;
+
+const problemSlug = (fileName, language) => {
+  const slug = slugify(
+    language?.isPascalCase
+      ? fileName.replace(PASCAL_WORD_BOUNDARY_RE, '$1-$2')
+      : fileName,
+  );
   return PROBLEM_ALIASES[slug] ?? slug;
 };
 
@@ -142,7 +159,7 @@ const buildProblems = (root, repoRoot) => {
     collectSolutions(root, language),
   );
   for (const solution of solutions) {
-    const slug = problemSlug(solution.fileName);
+    const slug = problemSlug(solution.fileName, solution.language);
     const problem = problems.get(slug) ?? { slug, solutions: [] };
     problem.solutions.push({
       ...solution,
@@ -166,11 +183,9 @@ const buildProblems = (root, repoRoot) => {
 
     // Python's category is the reference; go and typescript only fill in
     // problems python lacks.
-    const preferred = LANGUAGES.map(l =>
-      problem.solutions.find(s => s.language.id === l.id),
-    );
-    const [goSolution, pythonSolution, tsSolution] = preferred;
-    const chosen = pythonSolution ?? goSolution ?? tsSolution;
+    const chosen = CATEGORY_SOURCE_ORDER.map(id =>
+      problem.solutions.find(s => s.language.id === id),
+    ).find(Boolean);
     const categories = new Set(problem.solutions.map(s => s.categorySlug));
     if (categories.size > 1) {
       conflicts.push(
@@ -180,6 +195,7 @@ const buildProblems = (root, repoRoot) => {
     return {
       category:
         CATEGORY_LABELS[chosen.categorySlug] ?? toWords(chosen.categorySlug),
+      slug: problem.slug,
       name: toWords(problem.slug),
       languages: byLanguage,
     };
@@ -234,6 +250,55 @@ const repoRoot = path.resolve(root, '..', '..');
 const { problems, conflicts } = buildProblems(root, repoRoot);
 for (const conflict of conflicts) console.log(`category conflict: ${conflict}`);
 
+const TABLE_ROW_RE = /^\|\s*\d+\s*\|/;
+// Cells may contain `\|`, so split only on unescaped pipes.
+const CELL_SPLIT_RE = /(?<!\\)\|/;
+const QUESTION_LINK_RE = /\[([^\]]+)\]\([^)]*[?&]file=([^)&]+)[^)]*\)/;
+const LEETCODE_LINK_RE = /<([^>]+)>/;
+const unescapeCell = cell => cell.trim().replace(/\\\|/g, '|');
+
+// Rows are matched to problems by the file name in the question link, since
+// the displayed question names differ from the solution file names.
+const buildQuestionInfo = notePath => {
+  const info = new Map();
+  const lines = fs
+    .readFileSync(path.join(repoRoot, notePath), 'utf8')
+    .split('\n')
+    .filter(line => TABLE_ROW_RE.test(line));
+  for (const line of lines) {
+    const cells = line.split(CELL_SPLIT_RE).slice(1, -1).map(unescapeCell);
+    const [, question, type, technique, time, space, walkthrough, link] = cells;
+    const linkMatch = question.match(QUESTION_LINK_RE);
+    if (!linkMatch) continue;
+    const fileName = decodeURIComponent(linkMatch[2]).split(PATH_SEP).pop();
+    info.set(problemSlug(fileName), {
+      question: linkMatch[1],
+      type,
+      technique,
+      time,
+      space,
+      walkthrough,
+      leetcode: link.match(LEETCODE_LINK_RE)?.[1] ?? link,
+    });
+  }
+  return info;
+};
+
+if (config.questionTable) {
+  const questionInfo = buildQuestionInfo(config.questionTable);
+  for (const problem of problems) {
+    // Source files abbreviate some names (e.g. `bt`), which only the
+    // expanded display name matches.
+    const key = [problem.slug, slugify(problem.name)].find(candidate =>
+      questionInfo.has(candidate),
+    );
+    problem.info = questionInfo.get(key);
+    questionInfo.delete(key);
+  }
+  for (const slug of questionInfo.keys())
+    console.log(`unmatched question row: ${slug}`);
+}
+
 // Markdown notes shown at the explorer root, as raw markdown rather than the
 // JSON payload problems use; config paths are repo-relative.
 const rootNotes = (config.rootNotes ?? []).map(notePath => ({
@@ -248,7 +313,11 @@ for (const problem of problems) {
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.writeFileSync(
     dest,
-    JSON.stringify({ name: problem.name, languages: problem.languages }),
+    JSON.stringify({
+      name: problem.name,
+      info: problem.info,
+      languages: problem.languages,
+    }),
   );
 }
 

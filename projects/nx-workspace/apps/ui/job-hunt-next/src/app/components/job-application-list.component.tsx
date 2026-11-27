@@ -32,6 +32,7 @@ import {
   EllipsisAction,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
+import { undoToast } from '../utils/undo-toast.utils';
 import {
   BriefView,
   SECTION_HEADING_CLASS,
@@ -517,30 +518,55 @@ export const JobApplicationList = () => {
   const visibleItemActions = (item: ApplicationItem) =>
     IS_DEMO ? [] : itemActions(item);
 
+  const writeStatus = async (
+    item: ApplicationItem,
+    status: ApplicationStatus | null,
+  ) => {
+    const response = await fetch(
+      `${API_ENDPOINTS.JOB_APPLICATIONS_STATUS}?path=${encodeURIComponent(item.id)}&status=${status ?? CLEAR_STATUS}`,
+      { method: HTTP_METHOD.PUT },
+    );
+    if (!response.ok) throw new Error((await response.json()).error);
+    setItems(previous =>
+      previous.map(entry =>
+        entry.id === item.id ? { ...entry, status } : entry,
+      ),
+    );
+  };
+
   const setStatus = async (
     item: ApplicationItem,
     status: ApplicationStatus | null,
   ) => {
     try {
-      const response = await fetch(
-        `${API_ENDPOINTS.JOB_APPLICATIONS_STATUS}?path=${encodeURIComponent(item.id)}&status=${status ?? CLEAR_STATUS}`,
-        { method: HTTP_METHOD.PUT },
-      );
-      if (!response.ok) throw new Error((await response.json()).error);
-      setItems(previous =>
-        previous.map(entry =>
-          entry.id === item.id ? { ...entry, status } : entry,
-        ),
-      );
-      toast.success(
+      await writeStatus(item, status);
+      undoToast(
         t(
           status
             ? 'APPLICATIONS.STATUS_UPDATED'
             : 'APPLICATIONS.STATUS_CLEARED',
         ),
+        t('APPLICATIONS.UNDO'),
+        () =>
+          writeStatus(item, item.status).catch(error =>
+            toast.error(errorMessage(error, t('APPLICATIONS.STATUS_FAILED'))),
+          ),
       );
     } catch (error) {
       toast.error(errorMessage(error, t('APPLICATIONS.STATUS_FAILED')));
+    }
+  };
+
+  const restoreApplication = async (trashed: string) => {
+    try {
+      const response = await fetch(
+        `${API_ENDPOINTS.JOB_APPLICATIONS}?path=${encodeURIComponent(trashed)}`,
+        { method: HTTP_METHOD.PATCH },
+      );
+      if (!response.ok) throw new Error((await response.json()).error);
+      load(false);
+    } catch (error) {
+      toast.error(errorMessage(error, t('APPLICATIONS.RESTORE_FAILED')));
     }
   };
 
@@ -550,9 +576,12 @@ export const JobApplicationList = () => {
         `${API_ENDPOINTS.JOB_APPLICATIONS}?path=${encodeURIComponent(item.id)}`,
         { method: HTTP_METHOD.DELETE },
       );
-      if (!response.ok) throw new Error((await response.json()).error);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
       setItems(previous => previous.filter(entry => entry.id !== item.id));
-      toast.success(t('APPLICATIONS.DELETED'));
+      undoToast(t('APPLICATIONS.DELETED'), t('APPLICATIONS.UNDO'), () =>
+        restoreApplication(data.trashed),
+      );
     } catch (error) {
       toast.error(errorMessage(error, t('APPLICATIONS.DELETE_FAILED')));
     }

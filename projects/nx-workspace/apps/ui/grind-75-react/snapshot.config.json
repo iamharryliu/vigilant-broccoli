@@ -1,5 +1,6 @@
 {
   "root": "../../../../grind-75",
   "outDir": "public",
+  "questionTable": "notes/tech/software/leetcode.md",
   "rootNotes": ["notes/tech/software/leetcode.md"]
 }
