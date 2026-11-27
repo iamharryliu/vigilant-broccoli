@@ -14,6 +14,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- `DangerCard` takes Hearth's delete-home design (a red border with a filled red action button) and can hold its confirmation dialog as children; Hearth's Delete home card now uses it (PR: pending).
 - New `CollapsibleCard` (one collapsible section drawn as a single bordered card, with a tinted header bar and an unstyled body) and `DangerCard` (a red-outlined card with a heading, warning text and a red outline action button) components, shown in the component library ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
 - New `CheckboxCardGroup` (a row of bordered checkbox cards for choosing any number of options) and `Hyperlink` (a text link with an optional leading icon that opens absolute URLs in a new tab with an external arrow) components ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 - New `KanbanBoard` swimlane component in `react-lib-checklist` with drag-and-drop cards and lane reordering, header slots and CheckList-style rows, shown in the component library ([#1780](https://github.com/iamharryliu/vigilant-broccoli/pull/1780)).
