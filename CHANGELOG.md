@@ -8,6 +8,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 <details>
 <summary>November 2026</summary>
 
+### vb-express
+
+- A daily `cron-check-elevenlabs-quota` workflow emails when the ElevenLabs character quota reaches 80% and again when it runs out, once per level per quota cycle ([#1802](https://github.com/iamharryliu/vigilant-broccoli/pull/1802)).
+
 ### notepad-react
 
 - New Notepad app at notepad.vigilant-broccoli.app: multiple notes saved in the browser, with no sign-in or server ([#1785](https://github.com/iamharryliu/vigilant-broccoli/pull/1785)).
