@@ -19,6 +19,12 @@ const DEFAULT_PREVIEW_LABEL = 'Show markdown preview';
 const DEFAULT_EDIT_LABEL = 'Back to editing';
 const ICON_SIZE = 16;
 const EDITABLE_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
+// The pane draws the card border, so the editor's own textarea border and
+// radius are stripped; `!` beats SyncedTextEditor's inline border style.
+const PANE_CLASS =
+  'flex min-h-0 flex-col overflow-hidden rounded-md border border-border [&_textarea]:!rounded-none [&_textarea]:!border-0 [&_textarea]:!shadow-none';
+const TOP_BAR_CLASS =
+  'flex h-9 shrink-0 items-center justify-end gap-1.5 border-b border-border bg-muted px-1.5';
 
 interface MarkdownPreviewPaneProps {
   content: string;
@@ -119,12 +125,8 @@ export function MarkdownPreviewPane({
   const showPreview = markdownPreview && isPreview;
 
   return (
-    <div
-      ref={paneRef}
-      className={cn('flex min-h-0 flex-col gap-1', className)}
-      style={style}
-    >
-      <div className="flex h-8 shrink-0 items-center justify-end gap-1.5">
+    <div ref={paneRef} className={cn(PANE_CLASS, className)} style={style}>
+      <div className={TOP_BAR_CLASS}>
         {markdownPreview && (
           <PreviewToggle
             {...toggleProps}
@@ -135,7 +137,7 @@ export function MarkdownPreviewPane({
         {actions}
       </div>
       {showPreview ? (
-        <div className="min-h-0 flex-1 overflow-auto">
+        <div className="min-h-0 flex-1 overflow-auto p-3">
           <MarkdownViewer content={content} />
         </div>
       ) : (
