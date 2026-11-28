@@ -85,8 +85,9 @@ jobs:
           drifted=""
           for dir in infrastructure/terraform infrastructure/terraform/vault; do
             terraform -chdir="$dir" init -input=false > /dev/null || exit 1
-            terraform -chdir="$dir" plan -input=false -lock=false -detailed-exitcode -out=drift.tfplan > /dev/null
-            PLAN_EXIT=$?
+            # Steps run under `bash -e`: a bare plan exiting 2 (drift) would end the step before $? is read.
+            PLAN_EXIT=0
+            terraform -chdir="$dir" plan -input=false -lock=false -detailed-exitcode -out=drift.tfplan > /dev/null || PLAN_EXIT=$?
             if [ "$PLAN_EXIT" -eq 1 ]; then
               echo "::error::terraform plan failed in $dir"
               exit 1
