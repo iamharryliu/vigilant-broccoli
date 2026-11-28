@@ -179,6 +179,7 @@
     "gh:actions:run-tests": "gh workflow run manual-run-tests --repo iamharryliu/vigilant-broccoli",
     "cheatsheet": "node scripts/node/cheatsheet.mjs docs/cheatsheet.md --prefix 'pnpm run'",
     "cheatsheet:tmux-nvim": "./scripts/shell/cheatsheet-tmux-nvim.sh",
+    "worktree:prep": "bash scripts/shell/prep-worktree.sh",
     "cheatsheet:aliases": "node scripts/node/cheatsheet.mjs docs/cheatsheet-aliases.md --print",
     "dockerhub:descriptions": "cd projects/nx-workspace && env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file scripts/.env.dockerhub.example 'tsx scripts/update-dockerhub-descriptions.ts'",
     "repo-stats": "node scripts/node/repo-stats.mjs",
