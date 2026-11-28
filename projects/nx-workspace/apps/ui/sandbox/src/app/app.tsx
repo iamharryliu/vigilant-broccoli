@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import {
-  Button,
   CardContainer,
   GoogleSigninButton,
+  SignOutButton,
   Skeleton,
   ThemeProvider,
   useDocumentTitle,
@@ -77,9 +77,11 @@ const GoogleSignIn = () => {
             </dt>
             <dd>{new Date(data.session.expiresAt).toLocaleString()}</dd>
           </dl>
-          <Button variant="outline" className="w-fit" onClick={signOut}>
-            {t('GOOGLE_SIGN_IN.SIGN_OUT')}
-          </Button>
+          <SignOutButton
+            className="w-fit"
+            label={t('GOOGLE_SIGN_IN.SIGN_OUT')}
+            onClick={signOut}
+          />
         </div>
       ) : (
         <div className="flex flex-col gap-3">

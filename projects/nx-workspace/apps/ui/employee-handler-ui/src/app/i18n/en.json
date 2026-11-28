@@ -14,7 +14,7 @@
     "AUTH_CALLBACK": "Signing In"
   },
   "SIDEBAR": {
-    "LOGOUT": "Logout"
+    "LOGOUT": "Sign out"
   },
   "SETTINGS": {
     "TITLE": "Settings",
