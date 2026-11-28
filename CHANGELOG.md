@@ -18,6 +18,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - The note editor has an eye button, and Cmd/Ctrl+Shift+V, that toggles a rendered markdown preview of the selected note ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - New Notepad app at notepad.vigilant-broccoli.app: multiple notes saved in the browser, with no sign-in or server ([#1785](https://github.com/iamharryliu/vigilant-broccoli/pull/1785)).
 
+### react-lib-calendar
+
+- The Create calendar event dialog's link reads "Add to calendar" instead of "Bookmarklet", so the bookmark dragged from it has a clear name ([#1807](https://github.com/iamharryliu/vigilant-broccoli/pull/1807)).
+
 ### react-lib
 
 - `SyncedTextEditor` fills its container's height again inside the markdown preview pane, so the Notepad in local-manager, mobile-manager and the Notepad app is no longer stuck at a short textarea ([#1805](https://github.com/iamharryliu/vigilant-broccoli/pull/1805)).
@@ -77,6 +81,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### job-hunt-next
 
+- The new application and search-results bookmarklet links are named "Job Hunt: Save posting" and "Job Hunt: Scan postings" (Swedish "Job Hunt: Spara annons" and "Job Hunt: Skanna annonser"), so the bookmarks dragged to the bar read clearly ([#1807](https://github.com/iamharryliu/vigilant-broccoli/pull/1807)).
 - Notes and the Career experience editor toggle their markdown preview with Cmd/Ctrl+Shift+V as well as the corner eye/pencil button, which replaces the career editor's Edit/Preview switch; the career preview now renders like Notes ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - Matches and Applications use tabs that end in Settings, where Clear all sits in a red danger card (it soft-deletes with an Undo toast: Matches postings stay restorable from Deleted and application folders go to the trash for 7 days). Matches splits into Matches, Applied, Archived and Deleted tabs (Deleted lists soft-deleted postings with a Restore action), the card shows a labelled summary with a More information section, and Redo matching and the brief's Regenerate become one Regenerate matching action ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
 - Applications also lists postings marked as applied that have no generated application, with a "No resume or letter" badge, disabled Resume and Cover letter tabs and a Generate resume and cover letter action, and the expand caret moves to the right ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
@@ -225,6 +230,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### local-manager-next
 
+- The Create calendar event link is named "Add to calendar" and the Event calendars link "Subscribe to calendar", so the bookmarks dragged to the bar are told apart ([#1807](https://github.com/iamharryliu/vigilant-broccoli/pull/1807)).
 - The notepad (its page, dialog and home tab) has an eye button, and Cmd/Ctrl+Shift+V, that toggles a rendered markdown preview ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - The Kanban page frames the board from Tasks, signed in with the manager's own session, so it shows the same boards and no longer has a separate native board ([#1779](https://github.com/iamharryliu/vigilant-broccoli/pull/1779)).
 - The embedded calendar now shows event times in your current timezone instead of always Copenhagen time ([#1751](https://github.com/iamharryliu/vigilant-broccoli/pull/1751)).

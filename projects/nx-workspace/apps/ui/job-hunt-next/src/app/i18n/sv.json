@@ -93,7 +93,7 @@
     "LABEL": "Hjälp",
     "TITLE": "Lägg till en jobbansökan",
     "DESCRIPTION_BEFORE": "Dra",
-    "BOOKMARKLET": "Skicka till Job Hunt",
+    "BOOKMARKLET": "Job Hunt: Spara annons",
     "DESCRIPTION_AFTER": "till bokmärkesfältet och klicka sedan på den på en jobbannons för att öppna formuläret för en ny ansökan med uppgifter från sidan.",
     "MANUAL": "Eller klistra in en annons eller fråga från en ansökan själv.",
     "PASTE_MANUALLY": "Klistra in manuellt"
@@ -294,7 +294,7 @@
     "HELP_LABEL": "Hjälp",
     "HELP_TITLE": "Hitta matchningar",
     "DESCRIPTION_BEFORE": "Öppna en jobbsökning på LinkedIn och klicka på",
-    "BOOKMARKLET": "bokmärket för jobbmatchningar",
+    "BOOKMARKLET": "Job Hunt: Skanna annonser",
     "DESCRIPTION_AFTER": "(dra det till bokmärkesfältet). Det öppnar varje träff och jämför annonsens kompetenser med din karriärerfarenhet.",
     "NO_SKILLS": "Din karriärerfarenhet listar inga kompetenser, så varje annons räknas som lucka.",
     "LOAD_FAILED": "Kunde inte läsa din karriärerfarenhet",

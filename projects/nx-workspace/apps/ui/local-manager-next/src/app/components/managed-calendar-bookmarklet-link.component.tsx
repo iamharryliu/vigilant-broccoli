@@ -28,7 +28,7 @@ export const ManagedCalendarBookmarkletLink = () => {
         onClick={event => event.preventDefault()}
         className="underline"
       >
-        Add to calendar bookmarklet
+        Subscribe to calendar
       </a>{' '}
       — drag it to your bookmarks bar. On a page with events, it adds the page
       to an event calendar (or creates one) so the calendar keeps syncing from
