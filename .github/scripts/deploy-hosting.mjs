@@ -103,3 +103,12 @@ export const appRows = (projects, environment) =>
     const url = urlFor(project, environment);
     return `| ${project} | ${url ? `[${url}](${url})` : NO_URL} |`;
   });
+
+export const environmentRows = projects =>
+  projects.map(project => {
+    const cell = environment => {
+      const url = urlFor(project, environment);
+      return url ? `[${url}](${url})` : NO_URL;
+    };
+    return `| ${project} | ${cell('staging')} | ${cell('production')} |`;
+  });
