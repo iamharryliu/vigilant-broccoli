@@ -3,6 +3,7 @@ export * from './lib/PreviewDeployments';
 export * from './lib/useNotepad';
 export type * from './lib/notepad.types';
 export * from './lib/NotepadLoadError';
+export * from './lib/MarkdownPreviewPane';
 export * from './lib/chat-room';
 export * from './lib/SecurityNewsList';
 export * from './lib/WeatherEmbedCard';

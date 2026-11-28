@@ -15,6 +15,7 @@ Collaborative drawing and brainstorming canvas.
 - Internal libs
   - `common-browser`
   - `react-lib`
+  - `react-lib-higher-level`
   - `realtime`
 - Cloud services
   - Supabase

@@ -240,6 +240,10 @@
       "TITLE_ROW": "Title row",
       "CARD_HEADER_ACTION": "Card header action",
       "LIST_TITLE": "Groceries"
+    },
+    "NOTEPAD": {
+      "PREVIEW_OFF": "markdownPreview off (default)",
+      "PREVIEW_ON": "markdownPreview on (Cmd/Ctrl+Shift+V toggles)"
     }
   }
 }

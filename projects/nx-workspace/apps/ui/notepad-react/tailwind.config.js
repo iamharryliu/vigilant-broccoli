@@ -11,9 +11,9 @@ module.exports = {
     join(__dirname, 'src/**/!(*.stories|*.spec).{ts,tsx,html}'),
     join(
       __dirname,
-      '../../../libs/@vigilant-broccoli/{react-lib,react-utility,react-music-lib}/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+      '../../../libs/@vigilant-broccoli/{react-lib,react-lib-higher-level,docs-explorer,react-utility,react-music-lib}/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
   ],
   theme: { extend: {} },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 };

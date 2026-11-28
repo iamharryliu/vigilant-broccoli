@@ -10,6 +10,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### notepad-react
 
+- The note editor has an eye button, and Cmd/Ctrl+Shift+V, that toggles a rendered markdown preview of the selected note ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - New Notepad app at notepad.vigilant-broccoli.app: multiple notes saved in the browser, with no sign-in or server ([#1785](https://github.com/iamharryliu/vigilant-broccoli/pull/1785)).
 
 ### react-lib
@@ -20,9 +21,13 @@ One collapsible section per month, newest first. Agentic pull requests add their
 - New `CheckboxCardGroup` (a row of bordered checkbox cards for choosing any number of options) and `Hyperlink` (a text link with an optional leading icon that opens absolute URLs in a new tab with an external arrow) components ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 - New `KanbanBoard` swimlane component in `react-lib-checklist` with drag-and-drop cards and lane reordering, header slots and CheckList-style rows, shown in the component library ([#1780](https://github.com/iamharryliu/vigilant-broccoli/pull/1780)).
 
+### react-lib-higher-level
+
+- New `MarkdownPreviewPane` gives any notepad-style editor an opt-in markdown preview toggle (an eye/pencil button and Cmd/Ctrl+Shift+V), with a slot for extra buttons ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
+
 ### hearth
 
-- The whiteboard editor toggles between editing and markdown preview with Cmd/Ctrl+Shift+V on the home, activity notes, kitchen notes and whiteboard pages; the toggle button's tooltip shows the shortcut ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
+- The whiteboard editor toggles between editing and markdown preview with Cmd/Ctrl+Shift+V on the home, activity notes, kitchen notes and whiteboard pages, through the shared preview pane now used by every notepad; the toggle button's tooltip shows the shortcut ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - The user menu's Sign out has a logout icon and the menu's normal color instead of red ([#1800](https://github.com/iamharryliu/vigilant-broccoli/pull/1800)).
 - The whiteboard and notepad text editors support Cmd/Ctrl+Shift+K to delete the selected lines (or the caret's line), keeping the caret in the same column on the line that takes its place ([#1778](https://github.com/iamharryliu/vigilant-broccoli/pull/1778)).
 - The recurring-task schedule is one Repeat select: Does not repeat (the default, a single date that stays pending until completed), Daily, Weekdays, Weekends, Every week, Weekday of month, Date of month and Annually (a month and day each year, with Feb 29 landing on Feb 28 in common years). Each mode starts from today's weekday, week of the month or date, and the calendar preview opens from a Preview button ([#1771](https://github.com/iamharryliu/vigilant-broccoli/pull/1771)).
@@ -65,6 +70,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### job-hunt-next
 
+- Notes and the Career experience editor toggle their markdown preview with Cmd/Ctrl+Shift+V as well as the corner eye/pencil button, which replaces the career editor's Edit/Preview switch; the career preview now renders like Notes ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - Matches and Applications use tabs that end in Settings, where Clear all sits in a red danger card (it soft-deletes with an Undo toast: Matches postings stay restorable from Deleted and application folders go to the trash for 7 days). Matches splits into Matches, Applied, Archived and Deleted tabs (Deleted lists soft-deleted postings with a Restore action), the card shows a labelled summary with a More information section, and Redo matching and the brief's Regenerate become one Regenerate matching action ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
 - Applications also lists postings marked as applied that have no generated application, with a "No resume or letter" badge, disabled Resume and Cover letter tabs and a Generate resume and cover letter action, and the expand caret moves to the right ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
 - The Skills page takes over Suggest skills, the suggested skills and the most common gaps, and tracks Headless CMS, Cloudflare, Claude, OpenAI, Agentic coding, Platform engineering and Prompt engineering; the skills graph opens already laid out instead of expanding from a clump ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
@@ -178,6 +184,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### component-library
 
+- The Notepad page shows the editor with the markdown preview toggle off and on ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - The Sign Out Button page adds a menu showing `SignOutLabel`, and the mobile home demo's sidebar uses it ([#1800](https://github.com/iamharryliu/vigilant-broccoli/pull/1800)).
 - New Calendar, Toggle Chip Group and Task Schedule Fields pages; the recurring-schedule picker now lives in `react-lib-tasks` ([#1767](https://github.com/iamharryliu/vigilant-broccoli/pull/1767)).
 - New Graph page draws how the components depend on one another, sharing its layout and behavior with project-overview's Project Graph, and each component page's "Built with" list is now "Depends on" with a new "Used by" list. The sidebar groups Overview and Graph under Components, and new Checkbox Card Group and Hyperlink pages demo the new components ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
@@ -211,6 +218,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### local-manager-next
 
+- The notepad (its page, dialog and home tab) has an eye button, and Cmd/Ctrl+Shift+V, that toggles a rendered markdown preview ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - The Kanban page frames the board from Tasks, signed in with the manager's own session, so it shows the same boards and no longer has a separate native board ([#1779](https://github.com/iamharryliu/vigilant-broccoli/pull/1779)).
 - The embedded calendar now shows event times in your current timezone instead of always Copenhagen time ([#1751](https://github.com/iamharryliu/vigilant-broccoli/pull/1751)).
 - Local services now live under vigilant-broccoli.internal (manager, grafana, loki, images, headlamp, argocd and job-hunt), so they no longer share names with the public vigilant-broccoli.app hosts; update `/etc/hosts` from `infrastructure/local/hosts` and rerun the k3s apply ([#1715](https://github.com/iamharryliu/vigilant-broccoli/pull/1715)).
@@ -233,6 +241,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### mobile-manager-next
 
+- The home Notepad tab has an eye button, and Cmd/Ctrl+Shift+V, that toggles a rendered markdown preview ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - The sidebar's Sign out row uses the shared sign-out icon and label, still collapsing to its icon on the desktop rail ([#1800](https://github.com/iamharryliu/vigilant-broccoli/pull/1800)).
 - The Language tab's word-type bar is a toggle group with a new Seen option that holds the seen words and Clear all, and the Opposite button is an outline button below the words ([#1797](https://github.com/iamharryliu/vigilant-broccoli/pull/1797)).
 - The embedded calendar now shows event times in your current timezone instead of always Copenhagen time ([#1751](https://github.com/iamharryliu/vigilant-broccoli/pull/1751)).
@@ -256,6 +265,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### whiteboard
 
+- The shared board has an eye button, and Cmd/Ctrl+Shift+V, that toggles a rendered markdown preview of the room's text ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - Whiteboard and its staging site moved from `harryliu.dev` to `whiteboard.vigilant-broccoli.app` and `staging-whiteboard.vigilant-broccoli.app` with no redirect from the old addresses ([#1686](https://github.com/iamharryliu/vigilant-broccoli/pull/1686)).
 
 ### findme

@@ -2,7 +2,10 @@
 
 import { CSSProperties } from 'react';
 import { SyncedTextEditor } from '@vigilant-broccoli/react-lib';
-import { NotepadLoadError } from '@vigilant-broccoli/react-lib-higher-level';
+import {
+  MarkdownPreviewPane,
+  NotepadLoadError,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { useNotepad } from '../context/NotepadContext';
 
 interface NotepadEditorProps {
@@ -16,13 +19,20 @@ export const NotepadEditorComponent = ({ style }: NotepadEditorProps) => {
   return (
     <>
       <NotepadLoadError loadError={loadError} onRetry={retryLoad} />
-      <SyncedTextEditor
+      <MarkdownPreviewPane
+        markdownPreview
         content={content}
-        onChange={setContent}
         isLoading={isLoading}
-        onUndo={undo}
-        onRedo={redo}
         style={style}
+        renderEditor={() => (
+          <SyncedTextEditor
+            content={content}
+            onChange={setContent}
+            isLoading={isLoading}
+            onUndo={undo}
+            onRedo={redo}
+          />
+        )}
       />
     </>
   );

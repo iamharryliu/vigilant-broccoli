@@ -7,6 +7,7 @@ import {
   Text,
   useDocumentTitle,
 } from '@vigilant-broccoli/react-lib';
+import { MarkdownPreviewPane } from '@vigilant-broccoli/react-lib-higher-level';
 import { useTranslation } from './i18n';
 import { getNoteTitle } from './notepad.storage';
 import { useNotes } from './use-notes';
@@ -57,12 +58,21 @@ export const NotepadPage = () => {
             {t('NOTEPAD.DELETE_NOTE')}
           </Button>
         </div>
-        <SyncedTextEditor
-          key={selected.id}
+        <MarkdownPreviewPane
+          markdownPreview
+          className="flex-1"
           content={selected.content}
-          onChange={updateSelected}
-          isLoading={false}
-          placeholder={t('NOTEPAD.PLACEHOLDER')}
+          previewLabel={t('NOTEPAD.SHOW_PREVIEW')}
+          editLabel={t('NOTEPAD.BACK_TO_EDITING')}
+          renderEditor={() => (
+            <SyncedTextEditor
+              key={selected.id}
+              content={selected.content}
+              onChange={updateSelected}
+              isLoading={false}
+              placeholder={t('NOTEPAD.PLACEHOLDER')}
+            />
+          )}
         />
       </section>
       <DeleteItemConfirmationDialog

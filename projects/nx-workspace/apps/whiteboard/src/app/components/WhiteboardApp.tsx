@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ThemeProvider, useDocumentTitle } from '@vigilant-broccoli/react-lib';
+import { MarkdownPreviewPane } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   cursorColor,
   PeerCaretsOverlay,
@@ -258,33 +259,42 @@ function Whiteboard() {
             </span>
           </div>
 
-          <div
-            ref={boardRef}
-            onMouseMove={handleBoardMouseMove}
-            onMouseLeave={handleBoardMouseLeave}
-            className="relative flex-1 min-h-0 overflow-hidden"
-          >
-            <textarea
-              ref={textareaRef}
-              value={content}
-              onChange={e => {
-                setContent(e.target.value);
-                sendTextCursorIndex();
-              }}
-              onSelect={sendTextCursorIndex}
-              onBlur={handleTextBlur}
-              placeholder={t('BOARD.PLACEHOLDER')}
-              disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
-              className="h-full w-full resize-none rounded border border-gray-300 bg-white p-3 font-mono text-sm leading-relaxed text-gray-800 focus:outline-none disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800"
-            />
-            <PeerCaretsOverlay
-              cursors={cursors}
-              currentUserId={userId}
-              content={content}
-              textareaRef={textareaRef}
-            />
-            <PeerCursorsOverlay cursors={cursors} currentUserId={userId} />
-          </div>
+          <MarkdownPreviewPane
+            markdownPreview
+            className="flex-1"
+            content={content}
+            previewLabel={t('BOARD.SHOW_PREVIEW')}
+            editLabel={t('BOARD.BACK_TO_EDITING')}
+            renderEditor={() => (
+              <div
+                ref={boardRef}
+                onMouseMove={handleBoardMouseMove}
+                onMouseLeave={handleBoardMouseLeave}
+                className="relative flex-1 min-h-0 overflow-hidden"
+              >
+                <textarea
+                  ref={textareaRef}
+                  value={content}
+                  onChange={e => {
+                    setContent(e.target.value);
+                    sendTextCursorIndex();
+                  }}
+                  onSelect={sendTextCursorIndex}
+                  onBlur={handleTextBlur}
+                  placeholder={t('BOARD.PLACEHOLDER')}
+                  disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
+                  className="h-full w-full resize-none rounded border border-gray-300 bg-white p-3 font-mono text-sm leading-relaxed text-gray-800 focus:outline-none disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800"
+                />
+                <PeerCaretsOverlay
+                  cursors={cursors}
+                  currentUserId={userId}
+                  content={content}
+                  textareaRef={textareaRef}
+                />
+                <PeerCursorsOverlay cursors={cursors} currentUserId={userId} />
+              </div>
+            )}
+          />
 
           <p className="text-xs text-gray-400 dark:text-gray-500">
             {t('ROOM.SHARE_HINT')}
