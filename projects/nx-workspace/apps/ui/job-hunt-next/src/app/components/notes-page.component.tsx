@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Eye, Pencil } from 'lucide-react';
-import { Button, Textarea } from '@vigilant-broccoli/react-lib';
-import { MarkdownViewer } from '@vigilant-broccoli/docs-explorer';
+import { Textarea } from '@vigilant-broccoli/react-lib';
+import { MarkdownPreviewPane } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   CONTENT_TYPE_HEADER,
   HTTP_METHOD,
@@ -44,7 +43,6 @@ export const NotesPage = () => {
   const [content, setContent] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
-  const [isPreview, setIsPreview] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>(SAVE_STATE.IDLE);
   const pending = useRef<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -90,20 +88,20 @@ export const NotesPage = () => {
     timer.current = setTimeout(() => flush(), SAVE_DEBOUNCE_MS);
   };
 
-  const previewLabel = t(isPreview ? 'NOTES.EDIT' : 'NOTES.PREVIEW');
-
   const labelKey = loadFailed
     ? 'NOTES.LOAD_FAILED'
     : STATE_LABEL_KEY[saveState];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2">
-      <div className="relative flex min-h-0 flex-1 flex-col">
-        {isPreview ? (
-          <div className="min-h-0 flex-1 overflow-auto pt-10">
-            <MarkdownViewer content={content} />
-          </div>
-        ) : (
+      <MarkdownPreviewPane
+        markdownPreview
+        className="flex-1"
+        content={content}
+        isLoading={!loaded}
+        previewLabel={t('NOTES.PREVIEW')}
+        editLabel={t('NOTES.EDIT')}
+        renderEditor={() => (
           <Textarea
             value={content}
             disabled={!loaded}
@@ -113,18 +111,7 @@ export const NotesPage = () => {
             className="min-h-0 flex-1 resize-none"
           />
         )}
-        <Button
-          size="sm"
-          variant="outline"
-          className="absolute right-3 top-3"
-          aria-label={previewLabel}
-          title={previewLabel}
-          disabled={!loaded}
-          onClick={() => setIsPreview(prev => !prev)}
-        >
-          {isPreview ? <Pencil size={16} /> : <Eye size={16} />}
-        </Button>
-      </div>
+      />
       <p className="h-4 text-xs text-muted-foreground">
         {labelKey ? t(labelKey) : ''}
       </p>

@@ -1,15 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { Eye, Pencil, RotateCcw, Save } from 'lucide-react';
-import {
-  Button,
-  Callout,
-  SegmentedControl,
-  Textarea,
-} from '@vigilant-broccoli/react-lib';
+import { RotateCcw, Save } from 'lucide-react';
+import { Button, Callout, Textarea } from '@vigilant-broccoli/react-lib';
+import { MarkdownPreviewPane } from '@vigilant-broccoli/react-lib-higher-level';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import {
   CONTENT_TYPE_HEADER,
@@ -29,16 +23,13 @@ import { PageContainer } from './page-container.component';
 import { useTranslation } from '../i18n';
 import { validateCareerExperience } from '../utils/career-experience.utils';
 
-const VIEW = { EDIT: 'edit', PREVIEW: 'preview' } as const;
-
-type View = (typeof VIEW)[keyof typeof VIEW];
-
 const careerFileUrl = (kind: CareerFileKind) =>
   `${API_ENDPOINTS.CAREER}?kind=${kind}`;
 
-// Fills the space under the toolbar; the floor keeps it usable in short windows.
 const ICON_SIZE = 14;
 
+// Fills the space under the toolbar; the floor keeps it usable in short windows.
+const PANE_CLASS = 'min-h-[200px] flex-1';
 const EDITOR_CLASS = 'min-h-[200px] flex-1 resize-none font-mono text-xs';
 
 type FileEditorProps = {
@@ -54,9 +45,6 @@ const FileEditor = ({ kind, validate, preview }: FileEditorProps) => {
   const [content, setContent] = useState('');
   const [serverErrors, setServerErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
-  const [view, setView] = useState<View>(
-    IS_DEMO && preview ? VIEW.PREVIEW : VIEW.EDIT,
-  );
   const [resetOpen, setResetOpen] = useState(false);
   const label = t(toTab(kind).titleKey);
 
@@ -122,25 +110,6 @@ const FileEditor = ({ kind, validate, preview }: FileEditorProps) => {
       title={label}
       actions={
         <div className="flex shrink-0 items-center gap-2">
-          {preview && (
-            <SegmentedControl<View>
-              label={t('CAREER.VIEW_MODE')}
-              value={view}
-              onChange={setView}
-              options={[
-                {
-                  value: VIEW.EDIT,
-                  label: t('CAREER.EDIT'),
-                  icon: <Pencil size={ICON_SIZE} />,
-                },
-                {
-                  value: VIEW.PREVIEW,
-                  label: t('CAREER.PREVIEW'),
-                  icon: <Eye size={ICON_SIZE} />,
-                },
-              ]}
-            />
-          )}
           <Button
             variant="outline"
             disabled={IS_DEMO}
@@ -168,19 +137,23 @@ const FileEditor = ({ kind, validate, preview }: FileEditorProps) => {
           </ul>
         </Callout>
       )}
-      {view === VIEW.PREVIEW ? (
-        <div className="prose prose-sm min-h-0 max-w-none flex-1 overflow-y-auto dark:prose-invert">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
-        </div>
-      ) : (
-        <Textarea
-          readOnly={IS_DEMO}
-          value={content}
-          onChange={event => setContent(event.target.value)}
-          spellCheck={false}
-          className={EDITOR_CLASS}
-        />
-      )}
+      <MarkdownPreviewPane
+        markdownPreview={preview}
+        defaultPreview={IS_DEMO}
+        className={PANE_CLASS}
+        content={content}
+        previewLabel={t('CAREER.PREVIEW')}
+        editLabel={t('CAREER.EDIT')}
+        renderEditor={() => (
+          <Textarea
+            readOnly={IS_DEMO}
+            value={content}
+            onChange={event => setContent(event.target.value)}
+            spellCheck={false}
+            className={EDITOR_CLASS}
+          />
+        )}
+      />
       <CareerResetDialog
         kind={kind}
         label={label}

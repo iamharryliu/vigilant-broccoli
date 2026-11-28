@@ -52,7 +52,8 @@ where home_id = 2 and board_key = 'kitchen';
 
 ## Markdown Preview
 
-- An eye icon button beside the chat icon toggles a read-only markdown rendering of the document using `MarkdownViewer` from `docs-explorer` (the same renderer as docs-md: GFM via `marked`, sanitized with DOMPurify, Tailwind typography `prose` styling); the pencil icon returns to the editor. The AI edit dialog's document pane has the same toggle (without the chat button), with its own preview state. Content still syncs while previewing
+- `WhiteboardEditor` wraps its editors in react-lib-higher-level's [`MarkdownPreviewPane`](../../../../libs/@vigilant-broccoli/react-lib-higher-level/docs/features/markdown-preview-pane.md) with `markdownPreview` on: an eye icon button beside the chat icon (passed as the pane's `actions`) toggles a read-only `MarkdownViewer` rendering of the document (GFM via `marked`, sanitized with DOMPurify, Tailwind typography `prose` styling); the pencil icon returns to the editor. The AI edit dialog's document pane has the same toggle (without the chat button), with its own preview state. Content still syncs while previewing
+- Cmd/Ctrl+Shift+V toggles between editing and preview in both directions on every board (home, activity notes, kitchen notes, `/whiteboard`); the shortcut, its paste-as-plain-text trade-off and the inputs it ignores are described in the pane's doc. The inline pane passes `shortcutEnabled={!assistantOpen}`, so while the AI edit dialog is open only the dialog's pane responds
 
 ## AI Edit
 

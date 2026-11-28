@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { SyncedTextEditor } from '@vigilant-broccoli/react-lib';
+import { MarkdownPreviewPane } from '@vigilant-broccoli/react-lib-higher-level';
 
 const DEFAULT_CONTENT = `function greet(name) {
 console.log('Hello, ' + name);
@@ -15,11 +16,17 @@ export function NotepadEditorDemo() {
   const [content, setContent] = useState(DEFAULT_CONTENT);
 
   return (
-    <SyncedTextEditor
+    <MarkdownPreviewPane
+      markdownPreview
       content={content}
-      onChange={setContent}
-      isLoading={false}
       style={EDITOR_STYLE}
+      renderEditor={() => (
+        <SyncedTextEditor
+          content={content}
+          onChange={setContent}
+          isLoading={false}
+        />
+      )}
     />
   );
 }

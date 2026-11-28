@@ -1,6 +1,6 @@
 # React Lib Higher Level
 
-Composed React components built on `react-lib`: tabbed view, notepad, chat room, preview deployments, security news and weather embed.
+Composed React components built on `react-lib`: tabbed view, notepad, markdown preview pane, chat room, preview deployments, security news and weather embed.
 
 ## Table of Contents
 
@@ -21,6 +21,7 @@ Composed React components built on `react-lib`: tabbed view, notepad, chat room,
 ## Features
 
 - [Chat Room](./docs/features/chat-room.md)
+- [Markdown Preview Pane](./docs/features/markdown-preview-pane.md)
 
 ## Stack
 
@@ -28,9 +29,11 @@ Composed React components built on `react-lib`: tabbed view, notepad, chat room,
 - Framework - React
 - External libs
   - `@supabase/supabase-js`
+  - Lucide
   - `socket.io-client`
 - Internal libs
   - `common-js`
+  - `docs-explorer`
   - `github-workspace-js`
   - `react-lib`
   - `realtime`

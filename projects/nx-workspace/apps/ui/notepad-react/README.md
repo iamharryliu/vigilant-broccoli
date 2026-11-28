@@ -15,5 +15,6 @@ Browser-saved notepad with multiple notes, stored in `localStorage`.
   - Tailwind CSS
 - Internal libs
   - `react-lib`
+  - `react-lib-higher-level`
 - Cloud services
   - Cloudflare Pages

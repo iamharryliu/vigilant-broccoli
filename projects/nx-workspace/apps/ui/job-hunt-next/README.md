@@ -17,8 +17,6 @@ Tailors a resume and cover letter to each job posting with Claude Code, from car
   - esbuild
   - Lucide
   - Playwright
-  - React Markdown
-  - remark-gfm
   - Tailwind CSS
 - Internal libs
   - `common-js`
@@ -26,6 +24,7 @@ Tailors a resume and cover letter to each job posting with Claude Code, from car
   - `react-lib`
   - `react-lib-checklist`
   - `react-lib-crud-list`
+  - `react-lib-higher-level`
   - `resume`
   - `sidebar`
 - Cloud services

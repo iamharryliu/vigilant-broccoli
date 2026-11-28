@@ -5,6 +5,7 @@ module.exports = {
     '!./{src,pages,components,app}/**/*.{stories,spec}.{ts,tsx,js,jsx,html}',
     '../../libs/@vigilant-broccoli/common-js/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/common-node/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../libs/@vigilant-broccoli/docs-explorer/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/react-lib-calendar/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/entry-directory/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/*.{tsx,ts,jsx,js,html}',
@@ -74,5 +75,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 };

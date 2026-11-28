@@ -156,7 +156,7 @@ import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
 import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
 import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
 import { MobileHomeDemo } from './demos/MobileHomeDemo';
-import { NotepadDemo } from './demos/NotepadDemo';
+import { NotepadDemos } from './demos/NotepadDemo';
 import { QuickLinksDemo } from './demos/QuickLinksDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 import { TaskScheduleFieldsDemo } from './demos/TaskScheduleFieldsDemo';
@@ -709,9 +709,9 @@ const ALL_ENTRIES: SandboxEntry[] = [
     id: 'notepad',
     label: 'Notepad',
     description:
-      'A synced text editor with syntax highlighting, standing in for the notepad surface.',
+      'A synced text editor with syntax highlighting, standing in for the notepad surface. Wrapped in MarkdownPreviewPane with markdownPreview on, an Eye button and Cmd/Ctrl+Shift+V toggle a rendered markdown preview; off (the default) renders only the editor.',
     lib: LIB.REACT_LIB,
-    content: <NotepadDemo />,
+    content: <NotepadDemos />,
   },
   {
     id: 'quick-links',
