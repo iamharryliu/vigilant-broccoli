@@ -10,6 +10,7 @@ import {
   Filter,
   Loader2,
   RefreshCw,
+  Sparkles,
   Trash2,
 } from 'lucide-react';
 import {
@@ -22,55 +23,64 @@ import {
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { RUNS_TAB_URL } from '../app.const';
-import { CAREER_FILE_KIND } from '../constants/career';
+import {
+  CAREER_FILE_KIND,
+  JOB_APPLICATIONS_CHANGED_EVENT,
+} from '../constants/career';
 import { IS_DEMO } from '../constants/demo';
 import {
-  JOB_MATCHES_CHANGED_EVENT,
-  JOB_MATCHES_PROGRESS_EVENT,
-  MATCH_SKILL_STATUS,
-} from '../constants/matches';
+  CAPTURE_PROGRESS_EVENT,
+  POSTING_SKILL_STATUS,
+  SAVED_POSTINGS_CHANGED_EVENT,
+} from '../constants/saved-postings';
 import { isActiveRunStatus, RUN_KIND } from '../constants/runs';
-import { useMatchSkills } from '../hooks/use-match-skills';
+import { usePostingSkills } from '../hooks/use-posting-skills';
 import { useRuns } from '../hooks/use-runs';
+import {
+  listApplicationPostingUrls,
+  useStartApplicationRun,
+} from '../hooks/use-start-application-run';
 import { useTranslation } from '../i18n';
 import { undoToast } from '../utils/undo-toast.utils';
-import { getMatchesProgress } from '../utils/job-matches-progress.utils';
+import { getCaptureProgress } from '../utils/capture-progress.utils';
 import {
-  fetchDeletedMatchPostings,
-  fetchMatchPostings,
-  clearMatchPostings,
-  removeMatchPosting,
-  restoreMatchPosting,
-  restoreMatchPostings,
-  setMatchPostingArchived,
-  startMatchBrief,
-  type StoredMatchPosting,
-} from '../utils/job-matches-storage.utils';
+  fetchDeletedSavedPostings,
+  fetchSavedPostings,
+  clearSavedPostings,
+  removeSavedPosting,
+  restoreSavedPosting,
+  restoreSavedPostings,
+  setSavedPostingArchived,
+  startPostingBrief,
+  type SavedPosting,
+} from '../utils/saved-postings-storage.utils';
 import {
   LEVEL_FILTER_ALL,
   MATCH_LEVEL,
-  MATCHES_VIEW,
+  JOB_POSTINGS_VIEW,
   SORT_OPTION,
   type JobMatch,
   type LevelFilter,
-  type MatchesView,
+  type JobPostingsView,
   type MatchLevel,
   type SortOption,
   filterMatches,
   matchPosting,
   parseOwnedSkills,
   sortMatches,
-} from '../utils/job-matches.utils';
+} from '../utils/posting-match.utils';
 import { SECTION_HEADING_CLASS } from './application-brief.component';
-import { RedoMatchingDialog } from './redo-matching-dialog.component';
-import { MatchFiltersDialog } from './match-filters-dialog.component';
+import { RecapturePostingDialog } from './recapture-posting-dialog.component';
+import { JobPostingsFiltersDialog } from './job-postings-filters-dialog.component';
 import {
   BLOCK_CLASS,
-  MatchBriefDetails,
-  MatchBriefSummary,
-} from './match-brief.component';
+  PostingBriefDetails,
+  PostingBriefSummary,
+} from './posting-brief.component';
 import { TabbedListContainer } from './tabbed-list-container.component';
 
+// Stored choices from before the Job postings rename keep their keys, so
+// they survive it.
 const SORT_STORAGE_KEY = 'job-hunt-matches-sort';
 const LANGUAGES_STORAGE_KEY = 'job-hunt-matches-languages';
 // Matches the card's `duration-300` exit transition.
@@ -78,13 +88,13 @@ const EXIT_ANIMATION_MS = 300;
 const FILTERS_STORAGE_KEY = 'job-hunt-matches-filters';
 
 const LEVEL_BADGE = {
-  [MATCH_LEVEL.STRONG]: { color: 'green', key: 'MATCHES.STRONG' },
-  [MATCH_LEVEL.OKAY]: { color: 'amber', key: 'MATCHES.OKAY' },
-  [MATCH_LEVEL.WEAK]: { color: 'red', key: 'MATCHES.WEAK' },
-  [MATCH_LEVEL.UNKNOWN]: { color: 'gray', key: 'MATCHES.UNKNOWN' },
+  [MATCH_LEVEL.STRONG]: { color: 'green', key: 'JOB_POSTINGS.STRONG' },
+  [MATCH_LEVEL.OKAY]: { color: 'amber', key: 'JOB_POSTINGS.OKAY' },
+  [MATCH_LEVEL.WEAK]: { color: 'red', key: 'JOB_POSTINGS.WEAK' },
+  [MATCH_LEVEL.UNKNOWN]: { color: 'gray', key: 'JOB_POSTINGS.UNKNOWN' },
 } as const satisfies Record<MatchLevel, { color: string; key: string }>;
 
-const MatchCard = ({
+const JobPostingCard = ({
   match,
   generating,
   onRemove,
@@ -92,6 +102,7 @@ const MatchCard = ({
   onRedo,
   onRestore,
   onGenerateBrief,
+  onCreateApplication,
   leaving,
 }: {
   match: JobMatch;
@@ -103,6 +114,8 @@ const MatchCard = ({
   onRestore?: () => void;
   leaving: boolean;
   onGenerateBrief?: () => void;
+  // Unset in the demo and once the posting has an application.
+  onCreateApplication?: () => void;
 }) => {
   const { t } = useTranslation();
   const badge = LEVEL_BADGE[match.level];
@@ -132,7 +145,7 @@ const MatchCard = ({
                   {[
                     match.company,
                     match.postedAt &&
-                      t('MATCHES.POSTED', {
+                      t('JOB_POSTINGS.POSTED', {
                         date: new Date(match.postedAt).toLocaleDateString(
                           undefined,
                           { month: 'short', day: 'numeric' },
@@ -147,7 +160,7 @@ const MatchCard = ({
             <div className="flex shrink-0 items-center gap-1">
               {match.easyApply && (
                 <Badge color="blue" variant="soft" size="1">
-                  {t('MATCHES.EASY_APPLY')}
+                  {t('JOB_POSTINGS.EASY_APPLY')}
                 </Badge>
               )}
               <Badge color={badge.color} variant="soft" size="1">
@@ -157,14 +170,14 @@ const MatchCard = ({
               </Badge>
               {match.applied && (
                 <Badge color="green" variant="solid" size="1">
-                  {t('MATCHES.APPLIED')}
+                  {t('JOB_POSTINGS.APPLIED')}
                 </Badge>
               )}
               {onRestore ? (
                 <EllipsisCTA
                   actions={[
                     {
-                      label: t('MATCHES.RESTORE_DELETED'),
+                      label: t('JOB_POSTINGS.RESTORE_DELETED'),
                       icon: <ArchiveRestore size={16} />,
                       onSelect: onRestore,
                     },
@@ -173,11 +186,20 @@ const MatchCard = ({
               ) : (
                 <EllipsisCTA
                   actions={[
+                    ...(onCreateApplication
+                      ? [
+                          {
+                            label: t('JOB_POSTINGS.CREATE_APPLICATION'),
+                            icon: <Sparkles size={16} />,
+                            onSelect: onCreateApplication,
+                          },
+                        ]
+                      : []),
                     ...(match.applied
                       ? []
                       : [
                           {
-                            label: t('MATCHES.MARK_APPLIED'),
+                            label: t('JOB_POSTINGS.MARK_APPLIED'),
                             icon: <CheckCheck size={16} />,
                             onSelect: () => onArchive(true, true),
                           },
@@ -185,7 +207,7 @@ const MatchCard = ({
                     ...(match.applied
                       ? [
                           {
-                            label: t('MATCHES.MOVE_TO_ARCHIVED'),
+                            label: t('JOB_POSTINGS.MOVE_TO_ARCHIVED'),
                             icon: <Archive size={16} />,
                             onSelect: () => onArchive(true, false),
                           },
@@ -193,8 +215,8 @@ const MatchCard = ({
                       : []),
                     {
                       label: match.archived
-                        ? t('MATCHES.UNARCHIVE')
-                        : t('MATCHES.ARCHIVE'),
+                        ? t('JOB_POSTINGS.UNARCHIVE')
+                        : t('JOB_POSTINGS.ARCHIVE'),
                       icon: match.archived ? (
                         <ArchiveRestore size={16} />
                       ) : (
@@ -205,23 +227,23 @@ const MatchCard = ({
                     ...(onRedo
                       ? [
                           {
-                            label: t('MATCHES.REDO'),
+                            label: t('JOB_POSTINGS.RECAPTURE'),
                             icon: <RefreshCw size={16} />,
                             onSelect: onRedo,
                           },
                         ]
                       : []),
                     {
-                      label: t('MATCHES.REMOVE'),
+                      label: t('JOB_POSTINGS.REMOVE'),
                       icon: <Trash2 size={16} />,
                       color: 'red',
                       onSelect: onRemove,
                       confirm: {
-                        title: t('MATCHES.REMOVE_TITLE'),
-                        description: t('MATCHES.REMOVE_DESCRIPTION', {
+                        title: t('JOB_POSTINGS.REMOVE_TITLE'),
+                        description: t('JOB_POSTINGS.REMOVE_DESCRIPTION', {
                           role: match.role,
                         }),
-                        confirmLabel: t('MATCHES.REMOVE'),
+                        confirmLabel: t('JOB_POSTINGS.REMOVE'),
                       },
                     },
                   ]}
@@ -229,7 +251,7 @@ const MatchCard = ({
               )}
             </div>
           </div>
-          <MatchBriefSummary
+          <PostingBriefSummary
             brief={match.brief}
             generating={generating}
             onGenerate={onGenerateBrief}
@@ -241,7 +263,7 @@ const MatchCard = ({
               {match.matched.length > 0 && (
                 <div className={`flex flex-col gap-1 ${BLOCK_CLASS}`}>
                   <span className={SECTION_HEADING_CLASS}>
-                    {t('MATCHES.MATCHED')}
+                    {t('JOB_POSTINGS.MATCHED')}
                   </span>
                   <div className="flex flex-wrap items-center gap-1">
                     {match.matched.map(skill => (
@@ -255,7 +277,7 @@ const MatchCard = ({
               {match.gaps.length > 0 && (
                 <div className={`flex flex-col gap-1 ${BLOCK_CLASS}`}>
                   <span className={SECTION_HEADING_CLASS}>
-                    {t('MATCHES.GAPS')}
+                    {t('JOB_POSTINGS.GAPS')}
                   </span>
                   <div className="flex flex-wrap items-center gap-1">
                     {match.gaps.map(skill => (
@@ -273,37 +295,42 @@ const MatchCard = ({
               )}
             </div>
           )}
-          <MatchBriefDetails brief={match.brief} />
+          <PostingBriefDetails brief={match.brief} />
         </Card>
       </div>
     </div>
   );
 };
 
-export const JobMatchesPage = () => {
+export const JobPostingsPage = () => {
   const { t } = useTranslation();
-  const [postings, setPostings] = useState<StoredMatchPosting[]>([]);
+  const [postings, setPostings] = useState<SavedPosting[]>([]);
   const [ownedSkills, setOwnedSkills] = useState<string[] | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
-  const [progress, setProgress] = useState(getMatchesProgress);
+  const [progress, setProgress] = useState(getCaptureProgress);
   const [levelFilter, setLevelFilter] = useState<LevelFilter>(LEVEL_FILTER_ALL);
   const [easyApplyOnly, setEasyApplyOnly] = useState(false);
   const [languages, setLanguages] = useState<string[]>([]);
   const [hideInternships, setHideInternships] = useState(false);
   const [hideGraduate, setHideGraduate] = useState(false);
-  const [view, setView] = useState<MatchesView>(MATCHES_VIEW.MATCHES);
-  const [deletedPostings, setDeletedPostings] = useState<StoredMatchPosting[]>(
-    [],
-  );
+  const [view, setView] = useState<JobPostingsView>(JOB_POSTINGS_VIEW.ACTIVE);
+  const [deletedPostings, setDeletedPostings] = useState<SavedPosting[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [leaving, setLeaving] = useState<Set<string>>(new Set());
-  const [redoing, setRedoing] = useState<StoredMatchPosting | null>(null);
-  const { skills } = useMatchSkills();
+  const [redoing, setRedoing] = useState<SavedPosting | null>(null);
+  // Posting URLs that already have an application, which hides Create
+  // application; null until loaded so the action never flashes in.
+  const [applicationUrls, setApplicationUrls] = useState<Set<string> | null>(
+    null,
+  );
+  const { skills } = usePostingSkills();
   const { runs } = useRuns();
+  const startApplicationRun = useStartApplicationRun();
   const activeBriefRuns =
     runs?.filter(
-      run => run.kind === RUN_KIND.MATCH_BRIEF && isActiveRunStatus(run.status),
+      run =>
+        run.kind === RUN_KIND.POSTING_BRIEF && isActiveRunStatus(run.status),
     ).length ?? 0;
   const router = useRouter();
   const [sortOption, setSortOption] = useState<SortOption>(
@@ -344,7 +371,7 @@ export const JobMatchesPage = () => {
       setEasyApplyOnly(stored.easyApplyOnly === true);
       setHideInternships(stored.hideInternships === true);
       setHideGraduate(stored.hideGraduate === true);
-      const savedView = Object.values(MATCHES_VIEW).find(
+      const savedView = Object.values(JOB_POSTINGS_VIEW).find(
         option => option === stored.view,
       );
       if (savedView) setView(savedView);
@@ -400,24 +427,38 @@ export const JobMatchesPage = () => {
   };
 
   useEffect(() => {
-    const update = () => setProgress(getMatchesProgress());
+    const update = () => setProgress(getCaptureProgress());
     update();
-    window.addEventListener(JOB_MATCHES_PROGRESS_EVENT, update);
-    return () => window.removeEventListener(JOB_MATCHES_PROGRESS_EVENT, update);
+    window.addEventListener(CAPTURE_PROGRESS_EVENT, update);
+    return () => window.removeEventListener(CAPTURE_PROGRESS_EVENT, update);
   }, []);
 
   useEffect(() => {
     const reload = () => {
-      fetchMatchPostings()
+      fetchSavedPostings()
         .then(setPostings)
         .catch(() => setLoadFailed(true));
-      fetchDeletedMatchPostings()
+      fetchDeletedSavedPostings()
         .then(setDeletedPostings)
         .catch(() => setLoadFailed(true));
     };
     reload();
-    window.addEventListener(JOB_MATCHES_CHANGED_EVENT, reload);
-    return () => window.removeEventListener(JOB_MATCHES_CHANGED_EVENT, reload);
+    window.addEventListener(SAVED_POSTINGS_CHANGED_EVENT, reload);
+    return () =>
+      window.removeEventListener(SAVED_POSTINGS_CHANGED_EVENT, reload);
+  }, []);
+
+  // A finished application run writes the posting file this list reads.
+  useEffect(() => {
+    if (IS_DEMO) return;
+    const reload = () =>
+      listApplicationPostingUrls()
+        .then(urls => setApplicationUrls(new Set(urls)))
+        .catch(() => setApplicationUrls(new Set()));
+    reload();
+    window.addEventListener(JOB_APPLICATIONS_CHANGED_EVENT, reload);
+    return () =>
+      window.removeEventListener(JOB_APPLICATIONS_CHANGED_EVENT, reload);
   }, []);
 
   useEffect(() => {
@@ -429,9 +470,9 @@ export const JobMatchesPage = () => {
 
   const generateBrief = async (url: string) => {
     try {
-      await startMatchBrief(url);
-      window.dispatchEvent(new Event(JOB_MATCHES_CHANGED_EVENT));
-      toast.success(t('MATCHES.BRIEF_STARTED'), {
+      await startPostingBrief(url);
+      window.dispatchEvent(new Event(SAVED_POSTINGS_CHANGED_EVENT));
+      toast.success(t('JOB_POSTINGS.BRIEF_STARTED'), {
         action: {
           label: t('DIALOG.VIEW_PROGRESS'),
           onClick: () => router.push(RUNS_TAB_URL),
@@ -439,7 +480,7 @@ export const JobMatchesPage = () => {
       });
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : t('MATCHES.BRIEF_FAILED'),
+        err instanceof Error ? err.message : t('JOB_POSTINGS.BRIEF_FAILED'),
       );
     }
   };
@@ -459,64 +500,73 @@ export const JobMatchesPage = () => {
   };
 
   const restoreDeleted = (url: string) =>
-    restoreMatchPosting(url)
+    restoreSavedPosting(url)
       .then(setPostings)
-      .then(fetchDeletedMatchPostings)
+      .then(fetchDeletedSavedPostings)
       .then(setDeletedPostings)
-      .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
+      .catch(() => toast.error(t('JOB_POSTINGS.SAVE_FAILED')));
 
   const remove = (url: string) =>
-    exitThen(url, () => removeMatchPosting(url))
+    exitThen(url, () => removeSavedPosting(url))
       .then(next => {
         setPostings(next);
-        fetchDeletedMatchPostings().then(setDeletedPostings);
-        undoToast(t('MATCHES.UNDO_DELETED'), t('MATCHES.UNDO'), () =>
+        fetchDeletedSavedPostings().then(setDeletedPostings);
+        undoToast(t('JOB_POSTINGS.UNDO_DELETED'), t('JOB_POSTINGS.UNDO'), () =>
           restoreDeleted(url),
         );
       })
-      .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
+      .catch(() => toast.error(t('JOB_POSTINGS.SAVE_FAILED')));
 
   const archive = (url: string, archived: boolean, applied: boolean) => {
     const previous = postings.find(posting => posting.url === url);
-    return exitThen(url, () => setMatchPostingArchived(url, archived, applied))
+    return exitThen(url, () => setSavedPostingArchived(url, archived, applied))
       .then(next => {
         setPostings(next);
         if (!previous) return;
         undoToast(
           t(
             applied
-              ? 'MATCHES.UNDO_APPLIED'
+              ? 'JOB_POSTINGS.UNDO_APPLIED'
               : archived
-                ? 'MATCHES.UNDO_ARCHIVED'
-                : 'MATCHES.UNDO_RESTORED',
+                ? 'JOB_POSTINGS.UNDO_ARCHIVED'
+                : 'JOB_POSTINGS.UNDO_RESTORED',
           ),
-          t('MATCHES.UNDO'),
+          t('JOB_POSTINGS.UNDO'),
           () =>
-            setMatchPostingArchived(url, previous.archived, previous.applied)
+            setSavedPostingArchived(url, previous.archived, previous.applied)
               .then(setPostings)
-              .catch(() => toast.error(t('MATCHES.SAVE_FAILED'))),
+              .catch(() => toast.error(t('JOB_POSTINGS.SAVE_FAILED'))),
         );
       })
-      .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
+      .catch(() => toast.error(t('JOB_POSTINGS.SAVE_FAILED')));
+  };
+
+  // Marks the posting applied only once the run has started, so a refused
+  // run (such as a missing resume identity) leaves it where it was.
+  const createApplication = async (posting: SavedPosting) => {
+    if (!(await startApplicationRun(posting))) return;
+    setApplicationUrls(previous => new Set(previous).add(posting.url));
+    if (!posting.applied) archive(posting.url, true, true);
   };
 
   const clearAll = () =>
-    clearMatchPostings()
+    clearSavedPostings()
       .then(({ postings: next, deleted }) => {
         setPostings(next);
-        fetchDeletedMatchPostings().then(setDeletedPostings);
-        undoToast(t('MATCHES.UNDO_CLEARED'), t('MATCHES.UNDO'), () =>
-          restoreMatchPostings(deleted)
+        fetchDeletedSavedPostings().then(setDeletedPostings);
+        undoToast(t('JOB_POSTINGS.UNDO_CLEARED'), t('JOB_POSTINGS.UNDO'), () =>
+          restoreSavedPostings(deleted)
             .then(setPostings)
-            .then(fetchDeletedMatchPostings)
+            .then(fetchDeletedSavedPostings)
             .then(setDeletedPostings)
-            .catch(() => toast.error(t('MATCHES.SAVE_FAILED'))),
+            .catch(() => toast.error(t('JOB_POSTINGS.SAVE_FAILED'))),
         );
       })
-      .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
+      .catch(() => toast.error(t('JOB_POSTINGS.SAVE_FAILED')));
 
   const customTerms = useMemo(
-    () => skills.filter(skill => skill.status === MATCH_SKILL_STATUS.ACCEPTED),
+    () =>
+      skills.filter(skill => skill.status === POSTING_SKILL_STATUS.ACCEPTED),
     [skills],
   );
   const briefRunning = useMemo(
@@ -527,7 +577,7 @@ export const JobMatchesPage = () => {
   // Briefs start on their own after a capture, so the page learns of a run
   // starting or ending from the run list rather than from its own click.
   useEffect(() => {
-    window.dispatchEvent(new Event(JOB_MATCHES_CHANGED_EVENT));
+    window.dispatchEvent(new Event(SAVED_POSTINGS_CHANGED_EVENT));
   }, [activeBriefRuns]);
 
   const allMatches = useMemo(
@@ -551,8 +601,9 @@ export const JobMatchesPage = () => {
         hideInternships,
         hideGraduate,
         view:
-          view === MATCHES_VIEW.DELETED || view === MATCHES_VIEW.SETTINGS
-            ? MATCHES_VIEW.MATCHES
+          view === JOB_POSTINGS_VIEW.DELETED ||
+          view === JOB_POSTINGS_VIEW.SETTINGS
+            ? JOB_POSTINGS_VIEW.ACTIVE
             : view,
       }),
     [
@@ -574,7 +625,7 @@ export const JobMatchesPage = () => {
         : [],
     [deletedPostings, ownedSkills, customTerms],
   );
-  const isDeletedView = view === MATCHES_VIEW.DELETED;
+  const isDeletedView = view === JOB_POSTINGS_VIEW.DELETED;
   const shown = isDeletedView ? deletedMatches : matches;
   const activeFilterCount = [
     levelFilter !== LEVEL_FILTER_ALL,
@@ -582,13 +633,15 @@ export const JobMatchesPage = () => {
     hideInternships,
     hideGraduate,
   ].filter(Boolean).length;
+  const findPosting = (url: string) =>
+    postings.find(posting => posting.url === url);
 
   return (
     <div className="flex flex-col gap-3">
       {progress && (
         <div className="flex shrink-0 items-center gap-2 rounded-md bg-muted p-3 text-sm">
           <Loader2 className="size-4 animate-spin" />
-          {t('MATCHES.CAPTURING', {
+          {t('JOB_POSTINGS.CAPTURING', {
             captured: String(progress.captured),
             seen: String(progress.seen),
           })}
@@ -597,19 +650,19 @@ export const JobMatchesPage = () => {
       <TabbedListContainer
         showTabs={allMatches.length > 0 || deletedMatches.length > 0}
         view={view}
-        onViewChange={next => setView(next as MatchesView)}
-        settingsLabel={t('MATCHES.SECTION_SETTINGS')}
+        onViewChange={next => setView(next as JobPostingsView)}
+        settingsLabel={t('JOB_POSTINGS.SECTION_SETTINGS')}
         tabs={[
           {
-            value: MATCHES_VIEW.MATCHES,
-            label: t('MATCHES.SECTION_MATCHES', {
+            value: JOB_POSTINGS_VIEW.ACTIVE,
+            label: t('JOB_POSTINGS.SECTION_ACTIVE', {
               count: String(allMatches.filter(match => !match.archived).length),
             }),
           },
           {
-            value: MATCHES_VIEW.APPLIED,
+            value: JOB_POSTINGS_VIEW.APPLIED,
             icon: <CheckCheck size={14} />,
-            label: t('MATCHES.SECTION_APPLIED', {
+            label: t('JOB_POSTINGS.SECTION_APPLIED', {
               count: String(
                 allMatches.filter(match => match.archived && match.applied)
                   .length,
@@ -617,9 +670,9 @@ export const JobMatchesPage = () => {
             }),
           },
           {
-            value: MATCHES_VIEW.ARCHIVED,
+            value: JOB_POSTINGS_VIEW.ARCHIVED,
             icon: <Archive size={14} />,
-            label: t('MATCHES.SECTION_ARCHIVED', {
+            label: t('JOB_POSTINGS.SECTION_ARCHIVED', {
               count: String(
                 allMatches.filter(match => match.archived && !match.applied)
                   .length,
@@ -627,9 +680,9 @@ export const JobMatchesPage = () => {
             }),
           },
           {
-            value: MATCHES_VIEW.DELETED,
+            value: JOB_POSTINGS_VIEW.DELETED,
             icon: <Trash2 size={14} />,
-            label: t('MATCHES.SECTION_DELETED', {
+            label: t('JOB_POSTINGS.SECTION_DELETED', {
               count: String(deletedMatches.length),
             }),
           },
@@ -638,16 +691,16 @@ export const JobMatchesPage = () => {
           <div className="flex flex-wrap items-center gap-2">
             <ArrowUpDown aria-hidden className="size-4 text-muted-foreground" />
             <Select
-              aria-label={t('MATCHES.SORT')}
+              aria-label={t('JOB_POSTINGS.SORT')}
               options={Object.values(SORT_OPTION)}
               value={sortOption}
               onValueChange={changeSort}
               displayMapper={{
-                [SORT_OPTION.BEST_MATCH]: t('MATCHES.SORT_BEST_MATCH'),
-                [SORT_OPTION.FEWEST_GAPS]: t('MATCHES.SORT_FEWEST_GAPS'),
-                [SORT_OPTION.MOST_MATCHED]: t('MATCHES.SORT_MOST_MATCHED'),
-                [SORT_OPTION.POSTED]: t('MATCHES.SORT_POSTED'),
-                [SORT_OPTION.NEWEST]: t('MATCHES.SORT_NEWEST'),
+                [SORT_OPTION.BEST_MATCH]: t('JOB_POSTINGS.SORT_BEST_MATCH'),
+                [SORT_OPTION.FEWEST_GAPS]: t('JOB_POSTINGS.SORT_FEWEST_GAPS'),
+                [SORT_OPTION.MOST_MATCHED]: t('JOB_POSTINGS.SORT_MOST_MATCHED'),
+                [SORT_OPTION.POSTED]: t('JOB_POSTINGS.SORT_POSTED'),
+                [SORT_OPTION.NEWEST]: t('JOB_POSTINGS.SORT_NEWEST'),
               }}
             />
             <Button
@@ -655,7 +708,7 @@ export const JobMatchesPage = () => {
               onClick={() => setFiltersOpen(true)}
             >
               <Filter />
-              {t('MATCHES.FILTERS')}
+              {t('JOB_POSTINGS.FILTERS')}
               {activeFilterCount > 0 && ` · ${activeFilterCount}`}
             </Button>
             <Button
@@ -663,31 +716,33 @@ export const JobMatchesPage = () => {
               aria-pressed={easyApplyOnly}
               onClick={() => setEasyApplyOnly(!easyApplyOnly)}
             >
-              {t('MATCHES.EASY_APPLY')}
+              {t('JOB_POSTINGS.EASY_APPLY')}
             </Button>
           </div>
         }
         clearAll={{
-          title: t('MATCHES.CLEAR'),
-          description: t('MATCHES.CLEAR_DESCRIPTION', {
+          title: t('JOB_POSTINGS.CLEAR'),
+          description: t('JOB_POSTINGS.CLEAR_DESCRIPTION', {
             count: String(allMatches.length),
           }),
-          actionLabel: t('MATCHES.CLEAR'),
-          confirmTitle: t('MATCHES.CLEAR_TITLE'),
-          cancelLabel: t('MATCHES.CANCEL'),
+          actionLabel: t('JOB_POSTINGS.CLEAR'),
+          confirmTitle: t('JOB_POSTINGS.CLEAR_TITLE'),
+          cancelLabel: t('JOB_POSTINGS.CANCEL'),
           disabled: allMatches.length === 0,
           onConfirm: clearAll,
         }}
       >
         {loadFailed && (
-          <p className="text-sm text-destructive">{t('MATCHES.LOAD_FAILED')}</p>
+          <p className="text-sm text-destructive">
+            {t('JOB_POSTINGS.LOAD_FAILED')}
+          </p>
         )}
         {!loadFailed && ownedSkills?.length === 0 && (
           <p className="text-sm text-muted-foreground">
-            {t('MATCHES.NO_SKILLS')}
+            {t('JOB_POSTINGS.NO_SKILLS')}
           </p>
         )}
-        <MatchFiltersDialog
+        <JobPostingsFiltersDialog
           open={filtersOpen}
           onOpenChange={setFiltersOpen}
           level={levelFilter}
@@ -701,40 +756,40 @@ export const JobMatchesPage = () => {
         />
         {!isDeletedView && allMatches.length > 0 && matches.length === 0 && (
           <p className="text-sm text-muted-foreground">
-            {t('MATCHES.NO_FILTER_MATCHES')}
+            {t('JOB_POSTINGS.NO_FILTER_MATCHES')}
           </p>
         )}
-        <RedoMatchingDialog
+        <RecapturePostingDialog
           posting={redoing}
           onClose={() => setRedoing(null)}
         />
-        {shown.map(match => (
-          <MatchCard
-            key={match.url}
-            match={match}
-            onRestore={
-              isDeletedView ? () => restoreDeleted(match.url) : undefined
-            }
-            generating={briefRunning.has(match.url)}
-            leaving={leaving.has(match.url)}
-            onRemove={() => remove(match.url)}
-            onArchive={(archived, applied) =>
-              archive(match.url, archived, applied)
-            }
-            onRedo={
-              IS_DEMO
-                ? undefined
-                : () =>
-                    setRedoing(
-                      postings.find(posting => posting.url === match.url) ??
-                        null,
-                    )
-            }
-            onGenerateBrief={
-              IS_DEMO ? undefined : () => generateBrief(match.url)
-            }
-          />
-        ))}
+        {shown.map(match => {
+          const posting = findPosting(match.url);
+          return (
+            <JobPostingCard
+              key={match.url}
+              match={match}
+              onRestore={
+                isDeletedView ? () => restoreDeleted(match.url) : undefined
+              }
+              generating={briefRunning.has(match.url)}
+              leaving={leaving.has(match.url)}
+              onRemove={() => remove(match.url)}
+              onArchive={(archived, applied) =>
+                archive(match.url, archived, applied)
+              }
+              onRedo={IS_DEMO ? undefined : () => setRedoing(posting ?? null)}
+              onGenerateBrief={
+                IS_DEMO ? undefined : () => generateBrief(match.url)
+              }
+              onCreateApplication={
+                posting && applicationUrls && !applicationUrls.has(match.url)
+                  ? () => createApplication(posting)
+                  : undefined
+              }
+            />
+          );
+        })}
       </TabbedListContainer>
     </div>
   );

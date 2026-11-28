@@ -1,7 +1,7 @@
 import {
   JOB_APPLICATION_BOOKMARKLET,
-  JOB_MATCHES_PROGRESS_STATE,
-  JOB_MATCHES_SKIP_REASON,
+  JOB_POSTINGS_PROGRESS_STATE,
+  JOB_POSTINGS_SKIP_REASON,
 } from '@vigilant-broccoli/common-js';
 import { APP_TAB, ROOT_PATH } from '../app.const';
 
@@ -89,23 +89,23 @@ export const buildBookmarklet = (target: string) => {
   return `javascript:(function(){var o=${escapeUnsafeJsChars(JSON.stringify(origin))};var w=window.open(${escapeUnsafeJsChars(JSON.stringify(target))});document.querySelectorAll('[aria-expanded="false"]').forEach(function(b){if(${BOOKMARKLET_EXPANDER_PATTERN}.test(b.innerText))b.click()});setTimeout(function(){var m={source:'${JOB_APPLICATION_BOOKMARKLET.MESSAGE_SOURCE}',url:location.href,title:document.title,text:document.body.innerText.slice(0,${BOOKMARKLET_TEXT_LIMIT})};var t=setInterval(function(){w.postMessage(m,o)},${BOOKMARKLET_RETRY_MS});window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${JOB_APPLICATION_BOOKMARKLET.ACK}')clearInterval(t)});setTimeout(function(){clearInterval(t)},${BOOKMARKLET_GIVE_UP_MS})},${BOOKMARKLET_EXPAND_WAIT_MS})})()`;
 };
 
-const MATCHES_MAX_POSTINGS = 40;
-const MATCHES_OPEN_WAIT_MS = 3000;
+const SEARCH_MAX_POSTINGS = 40;
+const SEARCH_OPEN_WAIT_MS = 3000;
 // Separate from the application bookmarklet's wait, which reads one page.
-const MATCHES_EXPAND_WAIT_MS = 1500;
+const SEARCH_EXPAND_WAIT_MS = 1500;
 // Consecutive scrolls that reveal no new card before it stops.
-const MATCHES_STUCK_ROUNDS = 3;
-const MATCHES_SCROLL_WAIT_MS = 800;
-const MATCHES_BACK_POLLS = 20;
-const MATCHES_BACK_POLL_MS = 300;
+const SEARCH_STUCK_ROUNDS = 3;
+const SEARCH_SCROLL_WAIT_MS = 800;
+const SEARCH_BACK_POLLS = 20;
+const SEARCH_BACK_POLL_MS = 300;
 // Longer than a scan, since the app may sit on a login page first.
-const MATCHES_HELLO_GIVE_UP_MS = 300000;
+const SEARCH_HELLO_GIVE_UP_MS = 300000;
 // How far above "About the job" to look for the posting's age.
-const MATCHES_AGE_LOOKBACK = 1500;
+const SEARCH_AGE_LOOKBACK = 1500;
 // How far above "About the job" the detail pane's Easy Apply button sits.
-const MATCHES_EASY_APPLY_LOOKBACK = 800;
-const MATCHES_DESCRIPTION_LIMIT = 20000;
-const MATCHES_DESCRIPTION_MARKER = 'About the job';
+const SEARCH_EASY_APPLY_LOOKBACK = 800;
+const SEARCH_DESCRIPTION_LIMIT = 20000;
+const SEARCH_DESCRIPTION_MARKER = 'About the job';
 
 // Runs on a LinkedIn job search page. The results list only holds each job's
 // title and renders only the cards near the viewport, so it opens the cards on
@@ -117,16 +117,16 @@ const MATCHES_DESCRIPTION_MARKER = 'About the job';
 // markup, and the job id comes from the address bar after each click, which
 // may also have routed to the full posting page. It opens the target first, inside the click, so popup blockers
 // allow it, and posts the batch to the target's origin until it acknowledges.
-export const buildMatchesBookmarklet = (appTarget: string) => {
+export const buildJobPostingsBookmarklet = (appTarget: string) => {
   const url = new URL(appTarget);
   const { origin } = url;
-  // Opened directly, the app shows Matches itself; an embedding page is asked
+  // Opened directly, the app shows Job postings itself; an embedding page is asked
   // to open its frame there.
-  if (url.pathname === ROOT_PATH) url.pathname = APP_TAB.MATCHES.path;
+  if (url.pathname === ROOT_PATH) url.pathname = APP_TAB.JOB_POSTINGS.path;
   else
     url.searchParams.set(
       JOB_APPLICATION_BOOKMARKLET.PATH_PARAM,
-      APP_TAB.MATCHES.path,
+      APP_TAB.JOB_POSTINGS.path,
     );
   const target = url.toString();
   const script = [
@@ -147,9 +147,9 @@ export const buildMatchesBookmarklet = (appTarget: string) => {
     'var flush=function(){while(queue.length)w.postMessage(queue.shift(),o)};',
     // Skips ride on the next queued message, so they reach the app in order.
     'var skips=[];var send=function(m){m.skipped=skips.splice(0);queue.push(m);if(ready)flush()};',
-    `var hello=setInterval(function(){w.postMessage(msg([],'${JOB_MATCHES_PROGRESS_STATE.RUNNING}'),o)},${BOOKMARKLET_RETRY_MS});`,
+    `var hello=setInterval(function(){w.postMessage(msg([],'${JOB_POSTINGS_PROGRESS_STATE.RUNNING}'),o)},${BOOKMARKLET_RETRY_MS});`,
     `window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${JOB_APPLICATION_BOOKMARKLET.ACK}'&&!ready){ready=true;clearInterval(hello);flush()}});`,
-    `setTimeout(function(){clearInterval(hello)},${MATCHES_HELLO_GIVE_UP_MS});`,
+    `setTimeout(function(){clearInterval(hello)},${SEARCH_HELLO_GIVE_UP_MS});`,
     // Commands come from the app (or its embedding page); a cancel is final.
     'var findBox=function(){var f=cards()[0];var b=f&&f.el.parentElement;while(b&&b.scrollHeight<=b.clientHeight+10)b=b.parentElement;return b};',
     'var box=findBox();if(box)box.scrollTop=0;',
@@ -157,31 +157,31 @@ export const buildMatchesBookmarklet = (appTarget: string) => {
     // A click can route to the full posting page, which has no list; go back
     // to the results and the scroll position, one card at a time since the
     // old card elements are gone after that.
-    `var ensureList=async function(){if(!/\\/jobs\\/view\\//.test(location.pathname))return;history.back();for(var k=0;k<${MATCHES_BACK_POLLS}&&!cards().length;k++)await sleep(${MATCHES_BACK_POLL_MS});box=findBox();if(box)box.scrollTop=pos};`,
-    `while(stuck<${MATCHES_STUCK_ROUNDS}&&postings.length<${MATCHES_MAX_POSTINGS}){`,
+    `var ensureList=async function(){if(!/\\/jobs\\/view\\//.test(location.pathname))return;history.back();for(var k=0;k<${SEARCH_BACK_POLLS}&&!cards().length;k++)await sleep(${SEARCH_BACK_POLL_MS});box=findBox();if(box)box.scrollTop=pos};`,
+    `while(stuck<${SEARCH_STUCK_ROUNDS}&&postings.length<${SEARCH_MAX_POSTINGS}){`,
     'await ensureList();',
     'var fresh=cards().filter(function(c){return !seen[c.key]});',
-    `if(!fresh.length){if(box)box.scrollTop+=box.clientHeight*0.8;await sleep(${MATCHES_SCROLL_WAIT_MS});stuck++;continue}`,
+    `if(!fresh.length){if(box)box.scrollTop+=box.clientHeight*0.8;await sleep(${SEARCH_SCROLL_WAIT_MS});stuck++;continue}`,
     'stuck=0;',
     `var c=fresh[0];seen[c.key]=1;pos=box?box.scrollTop:0;`,
     'var head=c.el;',
     "var lines=head.innerText.split('\\n').map(function(s){return s.trim()}).filter(Boolean);var name=lines[0].replace(/\\s*\\(Verified job\\)/,'');var company=lines.slice(1).find(function(l){return l.indexOf(name.slice(0,15))!==0});",
     "c.el.scrollIntoView({block:'center'});(c.id?link(c.el)||c.el:c.el).click();",
-    `await sleep(${MATCHES_OPEN_WAIT_MS});`,
+    `await sleep(${SEARCH_OPEN_WAIT_MS});`,
     `document.querySelectorAll('[aria-expanded="false"]').forEach(function(b){if(${BOOKMARKLET_EXPANDER_PATTERN}.test(b.innerText))b.click()});`,
-    `await sleep(${MATCHES_EXPAND_WAIT_MS});`,
+    `await sleep(${SEARCH_EXPAND_WAIT_MS});`,
     'var t=document.body.innerText;',
-    `var at=t.indexOf(${escapeUnsafeJsChars(JSON.stringify(MATCHES_DESCRIPTION_MARKER))});`,
+    `var at=t.indexOf(${escapeUnsafeJsChars(JSON.stringify(SEARCH_DESCRIPTION_MARKER))});`,
     // Easy Apply shows as a label on the card and as the detail pane's button.
-    `var easy=/Easy Apply/i.test(lines.join(' '))||/Easy Apply/i.test(t.slice(Math.max(0,at-${MATCHES_EASY_APPLY_LOOKBACK}),at));`,
+    `var easy=/Easy Apply/i.test(lines.join(' '))||/Easy Apply/i.test(t.slice(Math.max(0,at-${SEARCH_EASY_APPLY_LOOKBACK}),at));`,
     // LinkedIn shows the age ("Reposted 2 days ago") above the description.
-    `var ages=t.slice(Math.max(0,at-${MATCHES_AGE_LOOKBACK}),at).match(/\\d+\\s+(?:minute|hour|day|week|month)s?\\s+ago/gi);`,
-    `if(at<0){log('skipped: no About the job text after click',name,'| card key:',c.key);skips.push({title:name,reason:'${JOB_MATCHES_SKIP_REASON.NO_DESCRIPTION}',detail:String(c.key)});continue}`,
-    `var url=c.id?location.origin+'/jobs/view/'+c.id+'/':(location.href.match(/(?:currentJobId=|\\/jobs\\/view\\/)(\\d+)/)?location.origin+'/jobs/view/'+RegExp.$1+'/':location.href+'#'+c.key);if(postings.some(function(p){return p.url===url})){log('skipped: duplicate url (detail pane may not have changed)',name,url);skips.push({title:name,reason:'${JOB_MATCHES_SKIP_REASON.DUPLICATE_URL}',detail:url});continue}postings.push({url:url,title:[name,company].filter(Boolean).join(' | '),posted:ages?ages[ages.length-1]:'',easyApply:easy,text:t.slice(at,at+${MATCHES_DESCRIPTION_LIMIT})});send(msg([postings[postings.length-1]],'${JOB_MATCHES_PROGRESS_STATE.RUNNING}'))}`,
+    `var ages=t.slice(Math.max(0,at-${SEARCH_AGE_LOOKBACK}),at).match(/\\d+\\s+(?:minute|hour|day|week|month)s?\\s+ago/gi);`,
+    `if(at<0){log('skipped: no About the job text after click',name,'| card key:',c.key);skips.push({title:name,reason:'${JOB_POSTINGS_SKIP_REASON.NO_DESCRIPTION}',detail:String(c.key)});continue}`,
+    `var url=c.id?location.origin+'/jobs/view/'+c.id+'/':(location.href.match(/(?:currentJobId=|\\/jobs\\/view\\/)(\\d+)/)?location.origin+'/jobs/view/'+RegExp.$1+'/':location.href+'#'+c.key);if(postings.some(function(p){return p.url===url})){log('skipped: duplicate url (detail pane may not have changed)',name,url);skips.push({title:name,reason:'${JOB_POSTINGS_SKIP_REASON.DUPLICATE_URL}',detail:url});continue}postings.push({url:url,title:[name,company].filter(Boolean).join(' | '),posted:ages?ages[ages.length-1]:'',easyApply:easy,text:t.slice(at,at+${SEARCH_DESCRIPTION_LIMIT})});send(msg([postings[postings.length-1]],'${JOB_POSTINGS_PROGRESS_STATE.RUNNING}'))}`,
     'await ensureList();',
     "log('done: captured',postings.length,'of',Object.keys(seen).length,'cards seen; cards visible now:',cards().length,'; stopped by',postings.length>=" +
-      `${MATCHES_MAX_POSTINGS}?'posting cap':'no new cards');`,
-    `send(msg([],'${JOB_MATCHES_PROGRESS_STATE.DONE}'));`,
+      `${SEARCH_MAX_POSTINGS}?'posting cap':'no new cards');`,
+    `send(msg([],'${JOB_POSTINGS_PROGRESS_STATE.DONE}'));`,
   ].join('');
   // The async wrapper returns a promise, which a `javascript:` URL would
   // otherwise render as the new page.

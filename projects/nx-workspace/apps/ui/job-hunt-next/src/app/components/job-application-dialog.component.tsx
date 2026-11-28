@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Button,
   Dialog,
@@ -10,20 +9,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
-import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import {
-  CONTENT_TYPE_HEADER,
-  HTTP_METHOD,
   JOB_APPLICATION_BOOKMARKLET,
-  JSON_CONTENT_TYPE,
   isJobApplicationBookmarkletMessage,
-  isJobMatchesBookmarkletMessage,
+  isJobPostingsBookmarkletMessage,
 } from '@vigilant-broccoli/common-js';
 import { extractJobPosting } from '../utils/job-posting.utils';
-import { RUNS_TAB_URL } from '../app.const';
 import { IS_DEMO } from '../constants/demo';
-import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { RUN_STATUS } from '../constants/runs';
+import { useStartApplicationRun } from '../hooks/use-start-application-run';
 import { useTranslation } from '../i18n';
 
 const INPUT_CLASS_NAME =
@@ -42,13 +35,13 @@ export const JobApplicationDialog = ({
   const [url, setUrl] = useState('');
   const [text, setText] = useState('');
   const [running, setRunning] = useState(false);
-  const router = useRouter();
+  const startApplicationRun = useStartApplicationRun();
 
   useEffect(() => {
     const prefill = (event: MessageEvent) => {
       if (
         !isJobApplicationBookmarkletMessage(event.data) ||
-        isJobMatchesBookmarkletMessage(event.data)
+        isJobPostingsBookmarkletMessage(event.data)
       )
         return;
       (event.source as Window | null)?.postMessage(
@@ -65,29 +58,12 @@ export const JobApplicationDialog = ({
 
   const run = async () => {
     setRunning(true);
-    try {
-      const response = await fetch(API_ENDPOINTS.JOB_APPLICATIONS_RUN, {
-        method: HTTP_METHOD.POST,
-        headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
-        body: JSON.stringify({ url, text }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
-      setUrl('');
-      setText('');
-      onOpenChange(false);
-      const queued = data.status === RUN_STATUS.QUEUED;
-      toast.success(t(queued ? 'DIALOG.QUEUED' : 'DIALOG.STARTED'), {
-        action: {
-          label: t('DIALOG.VIEW_PROGRESS'),
-          onClick: () => router.push(RUNS_TAB_URL),
-        },
-      });
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : t('DIALOG.RUN_FAILED'));
-    } finally {
-      setRunning(false);
-    }
+    const started = await startApplicationRun({ url, text });
+    setRunning(false);
+    if (!started) return;
+    setUrl('');
+    setText('');
+    onOpenChange(false);
   };
 
   return (

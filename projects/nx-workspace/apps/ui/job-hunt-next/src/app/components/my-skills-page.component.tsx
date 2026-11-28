@@ -4,21 +4,24 @@ import { useMemo, useState } from 'react';
 import { Check, Sparkles } from 'lucide-react';
 import { Badge, Button, Card, Progress } from '@vigilant-broccoli/react-lib';
 import { IS_DEMO } from '../constants/demo';
-import { MATCH_SKILL_STATUS, type MatchSkill } from '../constants/matches';
-import { useMatchSkills } from '../hooks/use-match-skills';
-import { useSkillMatches } from '../hooks/use-skill-matches';
+import {
+  POSTING_SKILL_STATUS,
+  type PostingSkill,
+} from '../constants/saved-postings';
+import { usePostingMatches } from '../hooks/use-posting-matches';
+import { usePostingSkills } from '../hooks/use-posting-skills';
 import { useTranslation } from '../i18n';
 import {
-  removeMatchSkill,
-  setMatchSkillStatus,
-} from '../utils/job-matches-storage.utils';
+  removePostingSkill,
+  setPostingSkillStatus,
+} from '../utils/saved-postings-storage.utils';
 import {
   isInVocabulary,
   postingMentionsSkill,
-} from '../utils/job-matches.utils';
+} from '../utils/posting-match.utils';
 import { buildSkillCoverage } from '../utils/skill-coverage.utils';
 import { SECTION_HEADING_CLASS } from './application-brief.component';
-import { JobMatchSkillsPanel } from './job-match-skills-panel.component';
+import { PostingSkillsPanel } from './posting-skills-panel.component';
 import {
   SKILL_BADGE_BUTTON_CLASS,
   SkillPostingsDialog,
@@ -37,8 +40,8 @@ const Stat = ({ label, value }: { label: string; value: string }) => (
 
 export const MySkillsPage = () => {
   const { t } = useTranslation();
-  const { matches, postings, ownedSkills, loadFailed } = useSkillMatches();
-  const { skills, update, suggest, suggesting } = useMatchSkills();
+  const { matches, postings, ownedSkills, loadFailed } = usePostingMatches();
+  const { skills, update, suggest, suggesting } = usePostingSkills();
   const [gapsOnly, setGapsOnly] = useState(false);
   const [selection, setSelection] = useState<SkillPostings | null>(null);
 
@@ -46,13 +49,13 @@ export const MySkillsPage = () => {
     () =>
       skills.filter(
         skill =>
-          skill.status !== MATCH_SKILL_STATUS.SUGGESTED ||
+          skill.status !== POSTING_SKILL_STATUS.SUGGESTED ||
           !isInVocabulary(skill),
       ),
     [skills],
   );
 
-  const showSuggestedPostings = (skill: MatchSkill) => {
+  const showSuggestedPostings = (skill: PostingSkill) => {
     const mentioning = new Set(
       postings
         .filter(posting => postingMentionsSkill(posting, skill))
@@ -95,7 +98,9 @@ export const MySkillsPage = () => {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto">
       {loadFailed && (
-        <p className="text-sm text-destructive">{t('MATCHES.LOAD_FAILED')}</p>
+        <p className="text-sm text-destructive">
+          {t('JOB_POSTINGS.LOAD_FAILED')}
+        </p>
       )}
       <Card className="flex shrink-0 flex-col gap-3 p-4">
         <div className="flex flex-wrap items-center gap-6">
@@ -142,19 +147,19 @@ export const MySkillsPage = () => {
             onClick={suggest}
           >
             <Sparkles />
-            {t('MATCHES.SUGGEST')}
+            {t('JOB_POSTINGS.SUGGEST')}
           </Button>
         </div>
       </Card>
-      <JobMatchSkillsPanel
+      <PostingSkillsPanel
         skills={panelSkills}
         onAccept={name =>
-          update(setMatchSkillStatus(name, MATCH_SKILL_STATUS.ACCEPTED))
+          update(setPostingSkillStatus(name, POSTING_SKILL_STATUS.ACCEPTED))
         }
         onDismiss={name =>
-          update(setMatchSkillStatus(name, MATCH_SKILL_STATUS.DISMISSED))
+          update(setPostingSkillStatus(name, POSTING_SKILL_STATUS.DISMISSED))
         }
-        onRemove={name => update(removeMatchSkill(name))}
+        onRemove={name => update(removePostingSkill(name))}
         onSelect={showSuggestedPostings}
       />
       <div className="grid gap-3 md:grid-cols-2">

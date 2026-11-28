@@ -16,17 +16,17 @@ import {
   MATCH_LEVEL,
   SPOKEN_LANGUAGES,
   type LevelFilter,
-} from '../utils/job-matches.utils';
+} from '../utils/posting-match.utils';
 import { SECTION_HEADING_CLASS } from './application-brief.component';
 
 const LEVEL_KEYS = {
-  [MATCH_LEVEL.STRONG]: 'MATCHES.STRONG',
-  [MATCH_LEVEL.OKAY]: 'MATCHES.OKAY',
-  [MATCH_LEVEL.WEAK]: 'MATCHES.WEAK',
-  [MATCH_LEVEL.UNKNOWN]: 'MATCHES.UNKNOWN',
+  [MATCH_LEVEL.STRONG]: 'JOB_POSTINGS.STRONG',
+  [MATCH_LEVEL.OKAY]: 'JOB_POSTINGS.OKAY',
+  [MATCH_LEVEL.WEAK]: 'JOB_POSTINGS.WEAK',
+  [MATCH_LEVEL.UNKNOWN]: 'JOB_POSTINGS.UNKNOWN',
 } as const;
 
-type MatchFiltersDialogProps = {
+type JobPostingsFiltersDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   level: LevelFilter;
@@ -39,7 +39,7 @@ type MatchFiltersDialogProps = {
   onHideGraduateChange: (hide: boolean) => void;
 };
 
-export const MatchFiltersDialog = ({
+export const JobPostingsFiltersDialog = ({
   open,
   onOpenChange,
   level,
@@ -50,7 +50,7 @@ export const MatchFiltersDialog = ({
   onHideInternshipsChange,
   hideGraduate,
   onHideGraduateChange,
-}: MatchFiltersDialogProps) => {
+}: JobPostingsFiltersDialogProps) => {
   const { t } = useTranslation();
   const toggleLanguage = (language: string) =>
     onLanguagesChange(
@@ -63,23 +63,23 @@ export const MatchFiltersDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[520px]">
         <DialogHeader>
-          <DialogTitle>{t('MATCHES.FILTERS_TITLE')}</DialogTitle>
+          <DialogTitle>{t('JOB_POSTINGS.FILTERS_TITLE')}</DialogTitle>
           <DialogDescription>
-            {t('MATCHES.FILTERS_DESCRIPTION')}
+            {t('JOB_POSTINGS.FILTERS_DESCRIPTION')}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <h2 className={SECTION_HEADING_CLASS}>
-              {t('MATCHES.FILTER_LEVEL')}
+              {t('JOB_POSTINGS.FILTER_LEVEL')}
             </h2>
             <Select
-              aria-label={t('MATCHES.FILTER_LEVEL')}
+              aria-label={t('JOB_POSTINGS.FILTER_LEVEL')}
               options={[LEVEL_FILTER_ALL, ...Object.values(MATCH_LEVEL)]}
               value={level}
               onValueChange={onLevelChange}
               displayMapper={{
-                [LEVEL_FILTER_ALL]: t('MATCHES.FILTER_ALL_LEVELS'),
+                [LEVEL_FILTER_ALL]: t('JOB_POSTINGS.FILTER_ALL_LEVELS'),
                 ...Object.fromEntries(
                   Object.entries(LEVEL_KEYS).map(([key, label]) => [
                     key,
@@ -91,10 +91,10 @@ export const MatchFiltersDialog = ({
           </div>
           <div className="flex flex-col gap-1">
             <h2 className={SECTION_HEADING_CLASS}>
-              {t('MATCHES.FILTER_ROLE_TYPES')}
+              {t('JOB_POSTINGS.FILTER_ROLE_TYPES')}
             </h2>
             <p className="text-xs text-muted-foreground">
-              {t('MATCHES.FILTER_ROLE_TYPES_HINT')}
+              {t('JOB_POSTINGS.FILTER_ROLE_TYPES_HINT')}
             </p>
             <div className="flex flex-wrap gap-2">
               <Button
@@ -102,23 +102,23 @@ export const MatchFiltersDialog = ({
                 aria-pressed={hideInternships}
                 onClick={() => onHideInternshipsChange(!hideInternships)}
               >
-                {t('MATCHES.HIDE_INTERNSHIPS')}
+                {t('JOB_POSTINGS.HIDE_INTERNSHIPS')}
               </Button>
               <Button
                 variant={hideGraduate ? 'default' : 'outline'}
                 aria-pressed={hideGraduate}
                 onClick={() => onHideGraduateChange(!hideGraduate)}
               >
-                {t('MATCHES.HIDE_GRADUATE')}
+                {t('JOB_POSTINGS.HIDE_GRADUATE')}
               </Button>
             </div>
           </div>
           <div className="flex flex-col gap-1">
             <h2 className={SECTION_HEADING_CLASS}>
-              {t('MATCHES.FILTER_LANGUAGES')}
+              {t('JOB_POSTINGS.FILTER_LANGUAGES')}
             </h2>
             <p className="text-xs text-muted-foreground">
-              {t('MATCHES.FILTER_LANGUAGES_HINT')}
+              {t('JOB_POSTINGS.FILTER_LANGUAGES_HINT')}
             </p>
             <div className="flex flex-wrap gap-1">
               {SPOKEN_LANGUAGES.map(language => {

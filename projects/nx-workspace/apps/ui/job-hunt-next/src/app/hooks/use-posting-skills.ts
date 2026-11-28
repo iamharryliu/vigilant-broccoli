@@ -5,39 +5,41 @@ import { useRouter } from 'next/navigation';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { RUNS_TAB_URL } from '../app.const';
 import {
-  JOB_MATCH_SKILLS_CHANGED_EVENT,
-  type MatchSkill,
-} from '../constants/matches';
+  POSTING_SKILLS_CHANGED_EVENT,
+  type PostingSkill,
+} from '../constants/saved-postings';
 import { useTranslation } from '../i18n';
 import {
-  fetchMatchSkills,
+  fetchPostingSkills,
   startSkillSuggestions,
-} from '../utils/job-matches-storage.utils';
+} from '../utils/saved-postings-storage.utils';
 
 // The skills Claude suggested from the postings and the ones accepted into the
 // matching; `suggest` starts the run that finds new suggestions.
-export const useMatchSkills = () => {
+export const usePostingSkills = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const [skills, setSkills] = useState<MatchSkill[]>([]);
+  const [skills, setSkills] = useState<PostingSkill[]>([]);
   const [suggesting, setSuggesting] = useState(false);
 
   useEffect(() => {
-    const reload = () => fetchMatchSkills().then(setSkills, () => undefined);
+    const reload = () => fetchPostingSkills().then(setSkills, () => undefined);
     reload();
-    window.addEventListener(JOB_MATCH_SKILLS_CHANGED_EVENT, reload);
+    window.addEventListener(POSTING_SKILLS_CHANGED_EVENT, reload);
     return () =>
-      window.removeEventListener(JOB_MATCH_SKILLS_CHANGED_EVENT, reload);
+      window.removeEventListener(POSTING_SKILLS_CHANGED_EVENT, reload);
   }, []);
 
-  const update = (request: Promise<MatchSkill[]>) =>
-    request.then(setSkills).catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
+  const update = (request: Promise<PostingSkill[]>) =>
+    request
+      .then(setSkills)
+      .catch(() => toast.error(t('JOB_POSTINGS.SAVE_FAILED')));
 
   const suggest = async () => {
     setSuggesting(true);
     try {
       await startSkillSuggestions();
-      toast.success(t('MATCHES.SUGGEST_STARTED'), {
+      toast.success(t('JOB_POSTINGS.SUGGEST_STARTED'), {
         action: {
           label: t('DIALOG.VIEW_PROGRESS'),
           onClick: () => router.push(RUNS_TAB_URL),
@@ -45,7 +47,7 @@ export const useMatchSkills = () => {
       });
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : t('MATCHES.SUGGEST_FAILED'),
+        err instanceof Error ? err.message : t('JOB_POSTINGS.SUGGEST_FAILED'),
       );
     } finally {
       setSuggesting(false);

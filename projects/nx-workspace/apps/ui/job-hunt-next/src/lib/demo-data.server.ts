@@ -398,9 +398,9 @@ export const demoResponse = (request: NextRequest): NextResponse => {
       return coverLetterResponse(path);
     case API_ENDPOINTS.TASKS:
       return NextResponse.json({ tasks: [] });
-    case API_ENDPOINTS.JOB_MATCHES_SKILLS:
+    case API_ENDPOINTS.JOB_POSTINGS_SKILLS:
       return NextResponse.json({ skills: [] });
-    case API_ENDPOINTS.JOB_MATCHES:
+    case API_ENDPOINTS.JOB_POSTINGS:
       return NextResponse.json({ postings: [] });
     case API_ENDPOINTS.NOTES:
       return NextResponse.json({ content: '', updatedAt: null });

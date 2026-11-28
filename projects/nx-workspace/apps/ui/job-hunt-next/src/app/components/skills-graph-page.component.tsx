@@ -9,7 +9,7 @@ import {
   type GraphLinkStyle,
 } from '@vigilant-broccoli/docs-explorer';
 import { Switch } from '@vigilant-broccoli/react-lib';
-import { useSkillMatches } from '../hooks/use-skill-matches';
+import { usePostingMatches } from '../hooks/use-posting-matches';
 import { useTranslation } from '../i18n';
 import {
   DEFAULT_MIN_SHARED_POSTINGS,
@@ -55,7 +55,7 @@ export const SkillsGraphPage = () => {
   const settings = useGraphSettings(SETTINGS_STORAGE_PREFIX);
   // The dialog's percentage is the share of a posting's skills that the career
   // file lists, so the postings are scored against the owned skills.
-  const { matches, loadFailed } = useSkillMatches();
+  const { matches, loadFailed } = usePostingMatches();
   const [selection, setSelection] = useState<SkillPostings | null>(null);
   const [showPairings, setShowPairings] = useState(false);
   const [minSharedPostings, setMinSharedPostings] = useState(
@@ -107,7 +107,9 @@ export const SkillsGraphPage = () => {
         })}
       </p>
       {loadFailed && (
-        <p className="text-sm text-destructive">{t('MATCHES.LOAD_FAILED')}</p>
+        <p className="text-sm text-destructive">
+          {t('JOB_POSTINGS.LOAD_FAILED')}
+        </p>
       )}
       <div className="relative min-h-64 flex-1 overflow-hidden rounded-lg border border-border bg-card">
         <GraphView

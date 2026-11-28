@@ -3,28 +3,29 @@
 import { useEffect, useMemo, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { CAREER_FILE_KIND } from '../constants/career';
-import { JOB_MATCHES_CHANGED_EVENT } from '../constants/matches';
+import { SAVED_POSTINGS_CHANGED_EVENT } from '../constants/saved-postings';
 import {
-  fetchMatchPostings,
-  type StoredMatchPosting,
-} from '../utils/job-matches-storage.utils';
-import { matchPosting, parseOwnedSkills } from '../utils/job-matches.utils';
+  fetchSavedPostings,
+  type SavedPosting,
+} from '../utils/saved-postings-storage.utils';
+import { matchPosting, parseOwnedSkills } from '../utils/posting-match.utils';
 
 // The captured postings scored against the career file's skills; `matches` is
 // empty until both have loaded.
-export const useSkillMatches = () => {
-  const [postings, setPostings] = useState<StoredMatchPosting[]>([]);
+export const usePostingMatches = () => {
+  const [postings, setPostings] = useState<SavedPosting[]>([]);
   const [ownedSkills, setOwnedSkills] = useState<string[] | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
 
   useEffect(() => {
     const reload = () =>
-      fetchMatchPostings()
+      fetchSavedPostings()
         .then(setPostings)
         .catch(() => setLoadFailed(true));
     reload();
-    window.addEventListener(JOB_MATCHES_CHANGED_EVENT, reload);
-    return () => window.removeEventListener(JOB_MATCHES_CHANGED_EVENT, reload);
+    window.addEventListener(SAVED_POSTINGS_CHANGED_EVENT, reload);
+    return () =>
+      window.removeEventListener(SAVED_POSTINGS_CHANGED_EVENT, reload);
   }, []);
 
   useEffect(() => {

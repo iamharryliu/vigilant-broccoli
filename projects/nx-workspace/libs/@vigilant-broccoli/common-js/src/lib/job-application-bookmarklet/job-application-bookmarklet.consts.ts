@@ -26,7 +26,7 @@ export const isJobApplicationBookmarkletMessage = (
   (data as JobApplicationBookmarkletMessage).source ===
     JOB_APPLICATION_BOOKMARKLET.MESSAGE_SOURCE;
 
-export type JobMatchesBookmarkletPosting = {
+export type JobPostingsBookmarkletPosting = {
   url: string;
   title: string;
   text: string;
@@ -39,32 +39,32 @@ export type JobMatchesBookmarkletPosting = {
 };
 
 // A posting as the app stores it: the capture time is added on save.
-export type StoredJobMatchesPosting = JobMatchesBookmarkletPosting & {
+export type StoredBookmarkletPosting = JobPostingsBookmarkletPosting & {
   capturedAt: string;
   archived: boolean;
   // Set when the user archived the posting after applying to it.
   applied: boolean;
 };
 
-export const JOB_MATCHES_PROGRESS_STATE = {
+export const JOB_POSTINGS_PROGRESS_STATE = {
   RUNNING: 'running',
   DONE: 'done',
 } as const;
 
-export const JOB_MATCHES_SKIP_REASON = {
+export const JOB_POSTINGS_SKIP_REASON = {
   NO_DESCRIPTION: 'no-description',
   DUPLICATE_URL: 'duplicate-url',
 } as const;
 
-export type JobMatchesBookmarkletSkip = {
+export type JobPostingsBookmarkletSkip = {
   title: string;
-  reason: (typeof JOB_MATCHES_SKIP_REASON)[keyof typeof JOB_MATCHES_SKIP_REASON];
+  reason: (typeof JOB_POSTINGS_SKIP_REASON)[keyof typeof JOB_POSTINGS_SKIP_REASON];
   // The card's key, or the address the click resolved to.
   detail: string;
 };
 
-export type JobMatchesBookmarkletProgress = {
-  state: (typeof JOB_MATCHES_PROGRESS_STATE)[keyof typeof JOB_MATCHES_PROGRESS_STATE];
+export type JobPostingsBookmarkletProgress = {
+  state: (typeof JOB_POSTINGS_PROGRESS_STATE)[keyof typeof JOB_POSTINGS_PROGRESS_STATE];
   // Postings sent so far, and cards opened so far.
   captured: number;
   seen: number;
@@ -75,16 +75,16 @@ export type JobMatchesBookmarkletProgress = {
 // score the postings instead of opening the application dialog.
 // It streams: one message per captured posting, then one with the state
 // `done`, so the app shows results and progress while the page is scanned.
-export type JobMatchesBookmarkletMessage = {
+export type JobPostingsBookmarkletMessage = {
   source: typeof JOB_APPLICATION_BOOKMARKLET.MESSAGE_SOURCE;
-  postings: JobMatchesBookmarkletPosting[];
-  progress: JobMatchesBookmarkletProgress;
+  postings: JobPostingsBookmarkletPosting[];
+  progress: JobPostingsBookmarkletProgress;
   // Cards opened since the last message that produced no posting.
-  skipped?: JobMatchesBookmarkletSkip[];
+  skipped?: JobPostingsBookmarkletSkip[];
 };
 
-export const isJobMatchesBookmarkletMessage = (
+export const isJobPostingsBookmarkletMessage = (
   data: unknown,
-): data is JobMatchesBookmarkletMessage =>
+): data is JobPostingsBookmarkletMessage =>
   isJobApplicationBookmarkletMessage(data) &&
-  Array.isArray((data as Partial<JobMatchesBookmarkletMessage>).postings);
+  Array.isArray((data as Partial<JobPostingsBookmarkletMessage>).postings);

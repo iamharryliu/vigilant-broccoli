@@ -6,7 +6,7 @@ const globalStore = globalThis as typeof globalThis & {
 
 const getInFlight = () => (globalStore.jobHuntBriefsInFlight ??= new Set());
 
-export const isMatchBriefRunning = (url: string) => getInFlight().has(url);
-export const markMatchBriefRunning = (url: string) => getInFlight().add(url);
-export const unmarkMatchBriefRunning = (url: string) =>
+export const isPostingBriefRunning = (url: string) => getInFlight().has(url);
+export const markPostingBriefRunning = (url: string) => getInFlight().add(url);
+export const unmarkPostingBriefRunning = (url: string) =>
   getInFlight().delete(url);

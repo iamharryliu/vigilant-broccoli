@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
-  startMatchBriefRun,
-  startMissingMatchBriefRuns,
-} from '../../../../lib/match-brief-runner';
+  startPostingBriefRun,
+  startMissingPostingBriefRuns,
+} from '../../../../lib/posting-brief-runner';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -15,9 +15,9 @@ const URL_PARAM = 'url';
 export async function POST(req: NextRequest) {
   const url = req.nextUrl.searchParams.get(URL_PARAM);
   if (!url) {
-    return NextResponse.json({ started: await startMissingMatchBriefRuns() });
+    return NextResponse.json({ started: await startMissingPostingBriefRuns() });
   }
-  const run = await startMatchBriefRun(url);
+  const run = await startPostingBriefRun(url);
   if (!run) {
     return NextResponse.json(
       { error: 'Posting not found or already being briefed' },

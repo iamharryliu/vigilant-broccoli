@@ -3,7 +3,7 @@ import {
   ownedSkillsOutsideVocabulary,
   ownsSkill,
   type JobMatch,
-} from './job-matches.utils';
+} from './posting-match.utils';
 import { OTHER_SKILL_GROUP, groupOfSkill } from './skill-graph.utils';
 
 export type CoverageSkill = {

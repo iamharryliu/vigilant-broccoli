@@ -3,7 +3,7 @@
 import { Table } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
 import { SKILL_DESCRIPTIONS } from '../utils/skill-descriptions.utils';
-import { SKILL_VOCABULARY } from '../utils/job-matches.utils';
+import { SKILL_VOCABULARY } from '../utils/posting-match.utils';
 
 const GLOSSARY = SKILL_VOCABULARY.map(term => ({
   name: term.name,

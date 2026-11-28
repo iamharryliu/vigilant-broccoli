@@ -22,6 +22,12 @@ const nextConfig = {
   distDir: '../../../dist/apps/ui/job-hunt-next/.next',
   agentRules: false,
   output: 'standalone',
+  // Bookmarklets installed before the Job postings rename, and embedding
+  // pages' `?path=` links, still open the old path; the query string carries
+  // over.
+  redirects: async () => [
+    { source: '/matches', destination: '/job-postings', permanent: false },
+  ],
   outputFileTracingExcludes: {
     '*': ['../../../../../package.json'],
   },

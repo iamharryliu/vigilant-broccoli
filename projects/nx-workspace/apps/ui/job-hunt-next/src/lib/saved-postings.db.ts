@@ -1,13 +1,15 @@
 import type {
-  JobMatchesBookmarkletPosting,
-  JobMatchesBookmarkletSkip,
-  StoredJobMatchesPosting,
+  JobPostingsBookmarkletPosting,
+  JobPostingsBookmarkletSkip,
+  StoredBookmarkletPosting,
 } from '@vigilant-broccoli/common-js';
 import { getJobHuntDb } from './job-application-runs.db';
 
-const MATCHES_TABLE = 'job_matches';
+// The page was called Matches when these tables were created; renaming them
+// would need a migration of existing databases, so the old names stay.
+const SAVED_POSTINGS_TABLE = 'job_matches';
 
-interface MatchRow {
+interface SavedPostingRow {
   url: string;
   title: string;
   text: string;
@@ -22,7 +24,7 @@ interface MatchRow {
 const ensureTable = () => {
   const db = getJobHuntDb();
   db.exec(`
-    CREATE TABLE IF NOT EXISTS ${MATCHES_TABLE} (
+    CREATE TABLE IF NOT EXISTS ${SAVED_POSTINGS_TABLE} (
       url TEXT PRIMARY KEY,
       title TEXT NOT NULL,
       text TEXT NOT NULL,
@@ -31,45 +33,49 @@ const ensureTable = () => {
   `);
   // Databases created before these columns existed lack them.
   const columns = (
-    db.prepare(`PRAGMA table_info(${MATCHES_TABLE})`).all() as {
+    db.prepare(`PRAGMA table_info(${SAVED_POSTINGS_TABLE})`).all() as {
       name: string;
     }[]
   ).map(column => column.name);
   if (!columns.includes('posted')) {
     db.exec(
-      `ALTER TABLE ${MATCHES_TABLE} ADD COLUMN posted TEXT NOT NULL DEFAULT ''`,
+      `ALTER TABLE ${SAVED_POSTINGS_TABLE} ADD COLUMN posted TEXT NOT NULL DEFAULT ''`,
     );
   }
   // Null marks a posting captured before Easy Apply was recorded.
   if (!columns.includes('easy_apply')) {
-    db.exec(`ALTER TABLE ${MATCHES_TABLE} ADD COLUMN easy_apply INTEGER`);
+    db.exec(
+      `ALTER TABLE ${SAVED_POSTINGS_TABLE} ADD COLUMN easy_apply INTEGER`,
+    );
   }
   if (!columns.includes('applied')) {
     db.exec(
-      `ALTER TABLE ${MATCHES_TABLE} ADD COLUMN applied INTEGER NOT NULL DEFAULT 0`,
+      `ALTER TABLE ${SAVED_POSTINGS_TABLE} ADD COLUMN applied INTEGER NOT NULL DEFAULT 0`,
     );
   }
   if (!columns.includes('archived')) {
     db.exec(
-      `ALTER TABLE ${MATCHES_TABLE} ADD COLUMN archived INTEGER NOT NULL DEFAULT 0`,
+      `ALTER TABLE ${SAVED_POSTINGS_TABLE} ADD COLUMN archived INTEGER NOT NULL DEFAULT 0`,
     );
   }
   // Null while the posting is live; a timestamp marks a soft delete awaiting
   // purge.
   if (!columns.includes('deleted_at')) {
-    db.exec(`ALTER TABLE ${MATCHES_TABLE} ADD COLUMN deleted_at TEXT`);
+    db.exec(`ALTER TABLE ${SAVED_POSTINGS_TABLE} ADD COLUMN deleted_at TEXT`);
   }
   return db;
 };
 
 // With `deleted`, the soft-deleted postings instead, newest deletion first.
-export const listMatchPostings = (deleted = false): StoredJobMatchesPosting[] =>
+export const listSavedPostings = (
+  deleted = false,
+): StoredBookmarkletPosting[] =>
   (
     ensureTable()
       .prepare(
-        `SELECT url, title, text, posted, easy_apply, archived, applied, captured_at FROM ${MATCHES_TABLE} WHERE deleted_at IS ${deleted ? 'NOT NULL ORDER BY deleted_at DESC' : 'NULL ORDER BY rowid'}`,
+        `SELECT url, title, text, posted, easy_apply, archived, applied, captured_at FROM ${SAVED_POSTINGS_TABLE} WHERE deleted_at IS ${deleted ? 'NOT NULL ORDER BY deleted_at DESC' : 'NULL ORDER BY rowid'}`,
       )
-      .all() as unknown as MatchRow[]
+      .all() as unknown as SavedPostingRow[]
   ).map(({ captured_at, easy_apply, archived, applied, ...row }) => ({
     ...row,
     easyApply: easy_apply === null ? undefined : easy_apply === 1,
@@ -78,56 +84,58 @@ export const listMatchPostings = (deleted = false): StoredJobMatchesPosting[] =>
     applied: applied === 1,
   }));
 
-export const softDeleteMatchPosting = (url: string) =>
+export const softDeleteSavedPosting = (url: string) =>
   ensureTable()
     .prepare(
-      `UPDATE ${MATCHES_TABLE} SET deleted_at = ? WHERE url = ? AND deleted_at IS NULL`,
+      `UPDATE ${SAVED_POSTINGS_TABLE} SET deleted_at = ? WHERE url = ? AND deleted_at IS NULL`,
     )
     .run(new Date().toISOString(), url).changes > 0;
 
-export const restoreMatchPosting = (url: string) =>
+export const restoreSavedPosting = (url: string) =>
   ensureTable()
     .prepare(
-      `UPDATE ${MATCHES_TABLE} SET deleted_at = NULL WHERE url = ? AND deleted_at IS NOT NULL`,
+      `UPDATE ${SAVED_POSTINGS_TABLE} SET deleted_at = NULL WHERE url = ? AND deleted_at IS NOT NULL`,
     )
     .run(url).changes > 0;
 
 // Hard-deletes postings soft-deleted before `cutoff` (ISO time) and returns
 // their urls so the caller can drop the briefs.
-export const purgeDeletedMatchPostings = (cutoff: string) => {
+export const purgeDeletedSavedPostings = (cutoff: string) => {
   const db = ensureTable();
   const urls = (
     db
       .prepare(
-        `SELECT url FROM ${MATCHES_TABLE} WHERE deleted_at IS NOT NULL AND deleted_at < ?`,
+        `SELECT url FROM ${SAVED_POSTINGS_TABLE} WHERE deleted_at IS NOT NULL AND deleted_at < ?`,
       )
       .all(cutoff) as unknown as { url: string }[]
   ).map(({ url }) => url);
   db.prepare(
-    `DELETE FROM ${MATCHES_TABLE} WHERE deleted_at IS NOT NULL AND deleted_at < ?`,
+    `DELETE FROM ${SAVED_POSTINGS_TABLE} WHERE deleted_at IS NOT NULL AND deleted_at < ?`,
   ).run(cutoff);
   return urls;
 };
 
 // A recapture leaves both flags alone: the upsert below does not update them.
 // Applied is only meaningful while archived, so restoring clears it.
-export const setMatchPostingArchived = (
+export const setSavedPostingArchived = (
   url: string,
   archived: boolean,
   applied: boolean,
 ) =>
   ensureTable()
     .prepare(
-      `UPDATE ${MATCHES_TABLE} SET archived = ?, applied = ? WHERE url = ?`,
+      `UPDATE ${SAVED_POSTINGS_TABLE} SET archived = ?, applied = ? WHERE url = ?`,
     )
     .run(Number(archived), Number(archived && applied), url).changes > 0;
 
 // A posting captured again replaces its earlier copy, so a later search that
 // overlaps an earlier one refreshes it instead of duplicating it.
-export const saveMatchPostings = (postings: JobMatchesBookmarkletPosting[]) => {
+export const saveSavedPostings = (
+  postings: JobPostingsBookmarkletPosting[],
+) => {
   const db = ensureTable();
   const upsert = db.prepare(
-    `INSERT INTO ${MATCHES_TABLE} (url, title, text, posted, easy_apply, captured_at) VALUES (?, ?, ?, ?, ?, ?)
+    `INSERT INTO ${SAVED_POSTINGS_TABLE} (url, title, text, posted, easy_apply, captured_at) VALUES (?, ?, ?, ?, ?, ?)
      ON CONFLICT(url) DO UPDATE SET title = excluded.title, text = excluded.text, posted = excluded.posted, easy_apply = excluded.easy_apply, captured_at = excluded.captured_at, deleted_at = NULL`,
   );
   const capturedAt = new Date().toISOString();
@@ -155,7 +163,7 @@ export const saveMatchPostings = (postings: JobMatchesBookmarkletPosting[]) => {
 const SKIPS_TABLE = 'job_match_skips';
 const MAX_SKIPS = 500;
 
-export interface MatchSkipRow extends JobMatchesBookmarkletSkip {
+export interface CaptureSkipRow extends JobPostingsBookmarkletSkip {
   loggedAt: string;
 }
 
@@ -173,7 +181,7 @@ const ensureSkipsTable = () => {
   return db;
 };
 
-export const saveMatchSkips = (skips: JobMatchesBookmarkletSkip[]) => {
+export const saveCaptureSkips = (skips: JobPostingsBookmarkletSkip[]) => {
   if (!skips.length) return;
   const db = ensureSkipsTable();
   const insert = db.prepare(
@@ -188,7 +196,7 @@ export const saveMatchSkips = (skips: JobMatchesBookmarkletSkip[]) => {
   ).run(MAX_SKIPS);
 };
 
-export const listMatchSkips = (): MatchSkipRow[] =>
+export const listCaptureSkips = (): CaptureSkipRow[] =>
   (
     ensureSkipsTable()
       .prepare(
@@ -196,34 +204,38 @@ export const listMatchSkips = (): MatchSkipRow[] =>
       )
       .all() as unknown as {
       title: string;
-      reason: MatchSkipRow['reason'];
+      reason: CaptureSkipRow['reason'];
       detail: string;
       logged_at: string;
     }[]
   ).map(({ logged_at, ...row }) => ({ ...row, loggedAt: logged_at }));
 
-export const deleteMatchPosting = (url: string) => {
-  ensureTable().prepare(`DELETE FROM ${MATCHES_TABLE} WHERE url = ?`).run(url);
+export const deleteSavedPosting = (url: string) => {
+  ensureTable()
+    .prepare(`DELETE FROM ${SAVED_POSTINGS_TABLE} WHERE url = ?`)
+    .run(url);
 };
 
 // Soft-deletes every live posting at once and returns their urls, so the caller
 // can restore exactly these and not postings deleted earlier.
-export const softDeleteAllMatchPostings = () => {
+export const softDeleteAllSavedPostings = () => {
   const db = ensureTable();
   const urls = (
     db
-      .prepare(`SELECT url FROM ${MATCHES_TABLE} WHERE deleted_at IS NULL`)
+      .prepare(
+        `SELECT url FROM ${SAVED_POSTINGS_TABLE} WHERE deleted_at IS NULL`,
+      )
       .all() as unknown as { url: string }[]
   ).map(({ url }) => url);
   db.prepare(
-    `UPDATE ${MATCHES_TABLE} SET deleted_at = ? WHERE deleted_at IS NULL`,
+    `UPDATE ${SAVED_POSTINGS_TABLE} SET deleted_at = ? WHERE deleted_at IS NULL`,
   ).run(new Date().toISOString());
   return urls;
 };
 
-export const restoreMatchPostings = (urls: string[]) => {
+export const restoreSavedPostings = (urls: string[]) => {
   const restore = ensureTable().prepare(
-    `UPDATE ${MATCHES_TABLE} SET deleted_at = NULL WHERE url = ? AND deleted_at IS NOT NULL`,
+    `UPDATE ${SAVED_POSTINGS_TABLE} SET deleted_at = NULL WHERE url = ? AND deleted_at IS NOT NULL`,
   );
   return urls.reduce(
     (restored, url) => restored + Number(restore.run(url).changes),
