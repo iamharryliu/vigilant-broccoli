@@ -537,7 +537,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     id: 'sign-out-button',
     label: 'Sign Out Button',
     description:
-      'Standard sign-out action with a logout icon; an async handler shows the pending state.',
+      'Standard sign-out action with a logout icon and "Sign out" label; an async handler shows the pending state. SignOutLabel renders the same icon and label inside non-Button hosts such as menu items.',
     lib: LIB.REACT_LIB,
     content: <SignOutButtonDemo />,
   },

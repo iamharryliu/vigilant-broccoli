@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { House, LayoutGrid, LogOut, Settings } from 'lucide-react';
+import { House, LayoutGrid, Settings } from 'lucide-react';
+import { SignOutLabel } from '@vigilant-broccoli/react-lib';
 import { Sidebar, SidebarCTA } from '@vigilant-broccoli/sidebar';
 import { signOut } from '../providers/auth-provider';
 import { APP_ROUTE, PAGE_TITLE } from '../app.const';
@@ -50,14 +51,10 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
             onClick={() => signOut()}
             className={FOOTER_ROW}
           >
-            <span className="shrink-0">
-              <LogOut size={18} />
-            </span>
-            <span
-              className={`${FOOTER_LABEL_BASE} ${mobileOpen ? FOOTER_LABEL_VISIBLE : FOOTER_LABEL_COLLAPSIBLE}`}
-            >
-              Sign out
-            </span>
+            <SignOutLabel
+              iconSize={18}
+              labelClassName={`${FOOTER_LABEL_BASE} ${mobileOpen ? FOOTER_LABEL_VISIBLE : FOOTER_LABEL_COLLAPSIBLE}`}
+            />
           </button>
         }
       />

@@ -15,6 +15,7 @@ import {
   DropdownMenu,
   IconButton,
   Select,
+  SignOutLabel,
   Text,
   UserAvatar,
 } from '@vigilant-broccoli/react-lib';
@@ -167,11 +168,10 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             </DropdownMenu.Item>
             <DropdownMenu.Separator />
             <DropdownMenu.Item
-              color="red"
-              className="cursor-pointer"
+              className="flex cursor-pointer items-center gap-2"
               onClick={() => supabase.auth.signOut()}
             >
-              Sign out
+              <SignOutLabel iconSize={14} />
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Root>

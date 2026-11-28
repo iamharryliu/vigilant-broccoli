@@ -8,6 +8,7 @@ import {
   Checkbox,
   GoogleSigninButton,
   IconButton,
+  SignOutButton,
   Tabs,
   TabsContent,
   TabsList,
@@ -316,9 +317,10 @@ export function SettingsView() {
           account={
             <>
               <CardContainer title={t('SETTINGS.ACCOUNT.TITLE')}>
-                <Button variant="outline" onClick={() => void handleSignOut()}>
-                  {t('AUTH.SIGN_OUT')}
-                </Button>
+                <SignOutButton
+                  label={t('AUTH.SIGN_OUT')}
+                  onClick={handleSignOut}
+                />
               </CardContainer>
             </>
           }
