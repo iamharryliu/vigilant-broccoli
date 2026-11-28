@@ -334,6 +334,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 - The embedded calendar now shows event times in the viewer's timezone instead of always Copenhagen time ([#1751](https://github.com/iamharryliu/vigilant-broccoli/pull/1751)).
 
+### ci-pr-security-review
+
+- When Claude's reply cannot be used as a verdict, the run's log and Summary page now say why (for example, hit the turn limit, replied in prose, or returned the wrong shape) using only codes, counts and yes/no facts, never the reply itself, and the failure line names the reason ([#1804](https://github.com/iamharryliu/vigilant-broccoli/pull/1804)).
+
 </details>
 
 <details>
