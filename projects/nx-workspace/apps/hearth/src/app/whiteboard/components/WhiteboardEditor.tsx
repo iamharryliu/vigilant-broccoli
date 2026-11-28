@@ -1,6 +1,13 @@
 'use client';
 
-import { CSSProperties, ReactNode, useRef, useState, RefObject } from 'react';
+import {
+  CSSProperties,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+  RefObject,
+} from 'react';
 import { MessageSquare, Eye, Pencil } from 'lucide-react';
 import { Button, SyncedTextEditor } from '@vigilant-broccoli/react-lib';
 import { NotepadLoadError } from '@vigilant-broccoli/react-lib-higher-level';
@@ -23,8 +30,10 @@ interface WhiteboardEditorProps {
 
 const DEFAULT_BOARD_KEY = 'family';
 const AI_EDIT_LABEL = 'AI edit';
-const MARKDOWN_PREVIEW_LABEL = 'Show markdown preview';
-const EDIT_MODE_LABEL = 'Back to editing';
+const PREVIEW_SHORTCUT_LABEL = 'Cmd+Shift+V';
+const MARKDOWN_PREVIEW_LABEL = `Show markdown preview (${PREVIEW_SHORTCUT_LABEL})`;
+const EDIT_MODE_LABEL = `Back to editing (${PREVIEW_SHORTCUT_LABEL})`;
+const PREVIEW_TOGGLE_CODE = 'KeyV';
 const ICON_SIZE = 16;
 const PREVIEW_CLASS_NAME = 'overflow-auto pt-10';
 const PANE_STYLE: CSSProperties = { flex: 1, minHeight: 0 };
@@ -45,7 +54,13 @@ interface WhiteboardPaneProps {
   renderEditor: () => ReactNode;
   onOpenChat?: () => void;
   chatDisabled?: boolean;
+  shortcutEnabled?: boolean;
 }
+
+const isEditableTarget = (target: EventTarget | null) =>
+  target instanceof HTMLElement &&
+  (target.isContentEditable ||
+    ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
 
 function WhiteboardPane({
   content,
@@ -53,12 +68,33 @@ function WhiteboardPane({
   renderEditor,
   onOpenChat,
   chatDisabled,
+  shortcutEnabled = true,
 }: WhiteboardPaneProps) {
   const [isPreview, setIsPreview] = useState(false);
+  const paneRef = useRef<HTMLDivElement>(null);
+
+  // The textarea is unmounted while previewing, so the listener lives on
+  // document to toggle back. Fields elsewhere on the page are ignored.
+  useEffect(() => {
+    if (!shortcutEnabled) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey) || !e.shiftKey) return;
+      if (e.code !== PREVIEW_TOGGLE_CODE) return;
+      if (
+        isEditableTarget(e.target) &&
+        !paneRef.current?.contains(e.target as Node)
+      )
+        return;
+      e.preventDefault();
+      setIsPreview(prev => !prev);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [shortcutEnabled]);
   const previewLabel = isPreview ? EDIT_MODE_LABEL : MARKDOWN_PREVIEW_LABEL;
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col">
+    <div ref={paneRef} className="relative flex min-h-0 flex-1 flex-col">
       {isPreview ? (
         <div className={PREVIEW_CLASS_NAME} style={PANE_STYLE}>
           <MarkdownViewer content={content} />
@@ -189,6 +225,7 @@ export function WhiteboardEditor({
         renderEditor={() => renderEditor(textareaRef, INLINE_TEXTAREA_STYLE)}
         onOpenChat={() => setAssistantOpen(true)}
         chatDisabled={!homeId}
+        shortcutEnabled={!assistantOpen}
       />
       <WhiteboardAssistantDialog
         open={assistantOpen}

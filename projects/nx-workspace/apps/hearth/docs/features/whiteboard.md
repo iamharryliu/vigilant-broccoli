@@ -53,6 +53,7 @@ where home_id = 2 and board_key = 'kitchen';
 ## Markdown Preview
 
 - An eye icon button beside the chat icon toggles a read-only markdown rendering of the document using `MarkdownViewer` from `docs-explorer` (the same renderer as docs-md: GFM via `marked`, sanitized with DOMPurify, Tailwind typography `prose` styling); the pencil icon returns to the editor. The AI edit dialog's document pane has the same toggle (without the chat button), with its own preview state. Content still syncs while previewing
+- Cmd/Ctrl+Shift+V toggles between editing and preview in both directions, on every board (home, activity notes, kitchen notes, `/whiteboard`). It is a `document` `keydown` listener (the textarea is unmounted while previewing) that ignores events from inputs outside the board, and while the AI edit dialog is open only the dialog's pane responds. Plain Cmd/Ctrl+V paste is untouched. Trade-off: Cmd/Ctrl+Shift+V is the browser's paste-as-plain-text, which `preventDefault` disables on the board
 
 ## AI Edit
 
