@@ -196,8 +196,8 @@
   },
   "NOTES": {
     "PLACEHOLDER": "Write notes here…",
-    "PREVIEW": "Show markdown preview",
-    "EDIT": "Back to editing",
+    "PREVIEW": "Preview",
+    "EDIT": "Edit",
     "SAVING": "Saving…",
     "SAVED": "Saved",
     "SAVE_FAILED": "Failed to save notes",

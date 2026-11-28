@@ -196,8 +196,8 @@
   },
   "NOTES": {
     "PLACEHOLDER": "Skriv anteckningar här…",
-    "PREVIEW": "Visa markdown-förhandsgranskning",
-    "EDIT": "Tillbaka till redigering",
+    "PREVIEW": "Förhandsgranska",
+    "EDIT": "Redigera",
     "SAVING": "Sparar…",
     "SAVED": "Sparat",
     "SAVE_FAILED": "Det gick inte att spara anteckningarna",

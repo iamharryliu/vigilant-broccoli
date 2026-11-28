@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import {
   Button,
   cn,
-  DeleteItemConfirmationDialog,
+  EllipsisCTA,
   SyncedTextEditor,
   Text,
   useDocumentTitle,
@@ -16,7 +15,6 @@ export const NotepadPage = () => {
   const { t } = useTranslation();
   const { notes, selected, select, addNote, updateSelected, deleteNote } =
     useNotes();
-  const [deleteOpen, setDeleteOpen] = useState(false);
 
   useDocumentTitle(`${t('NOTEPAD.PAGE_TITLE')} | ${t('NOTEPAD.APP_NAME')}`);
 
@@ -33,37 +31,35 @@ export const NotepadPage = () => {
         </div>
         <ul className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
           {notes.map(note => (
-            <li key={note.id}>
+            <li
+              key={note.id}
+              className={cn(
+                'flex items-center rounded-md hover:bg-accent',
+                note.id === selected.id && 'bg-accent font-medium',
+              )}
+            >
               <button
                 type="button"
                 onClick={() => select(note.id)}
-                className={cn(
-                  'w-full truncate rounded-md px-3 py-2 text-left text-sm hover:bg-accent',
-                  note.id === selected.id && 'bg-accent font-medium',
-                )}
+                className="min-w-0 flex-1 truncate px-3 py-2 text-left text-sm"
               >
                 {getNoteTitle(note, t('NOTEPAD.UNTITLED'))}
               </button>
+              <EllipsisCTA
+                deleteLabel={t('NOTEPAD.DELETE')}
+                confirmTitle={t('NOTEPAD.DELETE_TITLE')}
+                confirmDescription={t('NOTEPAD.DELETE_DESCRIPTION')}
+                onDelete={() => deleteNote(note.id)}
+              />
             </li>
           ))}
         </ul>
       </aside>
       <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-2">
-        <div className="flex justify-end">
-          <Button
-            variant="destructive-ghost"
-            size="sm"
-            onClick={() => setDeleteOpen(true)}
-          >
-            {t('NOTEPAD.DELETE_NOTE')}
-          </Button>
-        </div>
         <MarkdownPreviewPane
           markdownPreview
           className="flex-1"
           content={selected.content}
-          previewLabel={t('NOTEPAD.SHOW_PREVIEW')}
-          editLabel={t('NOTEPAD.BACK_TO_EDITING')}
           renderEditor={() => (
             <SyncedTextEditor
               key={selected.id}
@@ -75,15 +71,6 @@ export const NotepadPage = () => {
           )}
         />
       </section>
-      <DeleteItemConfirmationDialog
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
-        title={t('NOTEPAD.DELETE_TITLE')}
-        description={t('NOTEPAD.DELETE_DESCRIPTION')}
-        confirmLabel={t('NOTEPAD.DELETE')}
-        cancelLabel={t('NOTEPAD.CANCEL')}
-        deleteItem={async () => deleteNote(selected.id)}
-      />
     </div>
   );
 };

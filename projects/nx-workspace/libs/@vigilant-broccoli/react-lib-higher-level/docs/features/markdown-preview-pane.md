@@ -1,18 +1,18 @@
 # Markdown Preview Pane
 
-Opt-in edit/preview toggle for notepad-style editors, rendering the text with docs-explorer's `MarkdownViewer`.
+Opt-in edit/preview segmented control for notepad-style editors, rendering the text with docs-explorer's `MarkdownViewer`.
 
 ## Props
 
 | Prop | Purpose |
 | --- | --- |
-| `actions` | Extra buttons rendered after the toggle in the pane's top bar (hearth's AI edit button). |
+| `actions` | Extra buttons rendered after the mode control in the pane's top bar (hearth's AI edit button). |
 | `className`, `style` | Size the pane; it is a bordered, rounded `flex min-h-0 flex-col` card, so the editor and preview flex-fill the space under its top bar. |
 | `content` | Text the preview renders. |
 | `defaultPreview` | Start in preview (job-hunt-next's demo build). |
-| `isLoading` | Disables the toggle button. |
-| `markdownPreview` | Default `false`: renders only `renderEditor()`, with no wrapper (unless `actions` is set), button, listener or shortcut. |
-| `previewLabel`, `editLabel` | Translated button labels; `(Cmd+Shift+V)` is appended to the `title`/`aria-label`. |
+| `isLoading` | Dims and disables the mode control. |
+| `markdownPreview` | Default `false`: renders only `renderEditor()`, with no wrapper (unless `actions` is set), mode control, listener or shortcut. |
+| `previewLabel`, `editLabel` | Translated segment names, default `Edit` and `Preview` (mode names, not actions); `(Cmd+Shift+V)` is appended to the control's `aria-label`. |
 | `renderEditor` | Returns the editor (`SyncedTextEditor`, a plain `Textarea`, or any element); unmounted while previewing. |
 | `shortcutEnabled` | Default `true`; turn off while another pane owns the shortcut (hearth's whiteboard while the AI edit dialog is open). |
 

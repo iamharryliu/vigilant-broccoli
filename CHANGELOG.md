@@ -14,6 +14,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### notepad-react
 
+- Each note in the sidebar has an ellipsis menu with Delete (and its confirmation), replacing the Delete note button above the editor ([#1805](https://github.com/iamharryliu/vigilant-broccoli/pull/1805)).
 - The note editor has an eye button, and Cmd/Ctrl+Shift+V, that toggles a rendered markdown preview of the selected note ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - New Notepad app at notepad.vigilant-broccoli.app: multiple notes saved in the browser, with no sign-in or server ([#1785](https://github.com/iamharryliu/vigilant-broccoli/pull/1785)).
 
@@ -28,7 +29,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib-higher-level
 
-- `MarkdownPreviewPane` moves its eye/pencil toggle and extra buttons from an overlay into a thin, tinted, right-aligned header bar that shares one border with the editor or preview below it, like `CollapsibleCard`, so the rendered preview no longer starts below a blank gap and the buttons stay put when toggling, in every notepad and whiteboard that uses it ([#1805](https://github.com/iamharryliu/vigilant-broccoli/pull/1805)).
+- `MarkdownPreviewPane` moves its mode switch and extra buttons from an overlay into a thin, tinted, right-aligned header bar that shares one border with the editor or preview below it, like `CollapsibleCard`; the switch is an Edit/Preview segmented control, and the rendered preview starts at the same inset as the editor text, so nothing shifts when toggling, in every notepad and whiteboard that uses it ([#1805](https://github.com/iamharryliu/vigilant-broccoli/pull/1805)).
 - New `MarkdownPreviewPane` gives any notepad-style editor an opt-in markdown preview toggle (an eye/pencil button and Cmd/Ctrl+Shift+V), with a slot for extra buttons ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 
 ### hearth
