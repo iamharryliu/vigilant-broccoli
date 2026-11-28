@@ -1,0 +1,150 @@
+name: cron-check-elevenlabs-quota
+
+# Emails the owner when the ElevenLabs character quota crosses the threshold or
+# runs out. The last alerted level is kept as a cache entry keyed by the quota
+# reset time, so each level alerts once per cycle and the state resets itself.
+on:
+  schedule:
+    - cron: '35 2 * * *'
+  workflow_dispatch:
+    inputs:
+      threshold_percent:
+        description: Usage percent at or above which the warning email is sent
+        required: false
+        default: '80'
+      force:
+        description: Send the email regardless of level or earlier alerts
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: cron-check-elevenlabs-quota
+  cancel-in-progress: false
+
+env:
+  DEFAULT_THRESHOLD_PERCENT: '80'
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets ELEVENLABS_API_KEY | ELEVENLABS_API_KEY ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - name: Read quota
+        id: quota
+        env:
+          ELEVENLABS_API_KEY: ${{ env.ELEVENLABS_API_KEY }}
+          THRESHOLD_PERCENT: ${{ inputs.threshold_percent || env.DEFAULT_THRESHOLD_PERCENT }}
+        run: node .github/scripts/elevenlabs-quota.mjs check
+
+      - name: Look up earlier warning alert
+        id: warned
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .quota-alert
+          key: elevenlabs-quota-${{ steps.quota.outputs.reset_unix }}-warning
+          lookup-only: true
+
+      - name: Look up earlier exhausted alert
+        id: exhausted
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .quota-alert
+          key: elevenlabs-quota-${{ steps.quota.outputs.reset_unix }}-exhausted
+          lookup-only: true
+
+      # Alert only when the level rises within the cycle: none -> warning -> exhausted.
+      - name: Decide whether to alert
+        id: decide
+        env:
+          LEVEL: ${{ steps.quota.outputs.level }}
+          WARNED: ${{ steps.warned.outputs.cache-hit }}
+          EXHAUSTED: ${{ steps.exhausted.outputs.cache-hit }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          send=false
+          if [ "$FORCE" = "true" ]; then
+            send=true
+          elif [ "$LEVEL" = "warning" ] && [ "$WARNED" != "true" ] && [ "$EXHAUSTED" != "true" ]; then
+            send=true
+          elif [ "$LEVEL" = "exhausted" ] && [ "$EXHAUSTED" != "true" ]; then
+            send=true
+          fi
+          echo "send=$send" >> "$GITHUB_OUTPUT"
+
+      - name: Tunnel to email service
+        if: steps.decide.outputs.send == 'true'
+        uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: staging-vb-email-service
+
+      - name: Send quota email
+        if: steps.decide.outputs.send == 'true'
+        env:
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+          LEVEL: ${{ steps.quota.outputs.level }}
+          TIER: ${{ steps.quota.outputs.tier }}
+          USED: ${{ steps.quota.outputs.used }}
+          LIMIT: ${{ steps.quota.outputs.limit }}
+          PERCENT: ${{ steps.quota.outputs.percent }}
+          REMAINING: ${{ steps.quota.outputs.remaining }}
+          REFRESH_PERIOD: ${{ steps.quota.outputs.refresh_period }}
+          RESET_DATE: ${{ steps.quota.outputs.reset_date }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node .github/scripts/elevenlabs-quota.mjs email
+
+      - name: Record alerted level
+        if: steps.decide.outputs.send == 'true' && !inputs.force
+        run: echo "${{ steps.quota.outputs.level }}" > .quota-alert
+
+      - name: Save alerted level
+        if: hashFiles('.quota-alert') != ''
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .quota-alert
+          key: elevenlabs-quota-${{ steps.quota.outputs.reset_unix }}-${{ steps.quota.outputs.level }}
+
+      - name: Summarize
+        if: always()
+        env:
+          SENT: ${{ steps.decide.outputs.send }}
+          LEVEL: ${{ steps.quota.outputs.level }}
+          TIER: ${{ steps.quota.outputs.tier }}
+          USED: ${{ steps.quota.outputs.used }}
+          LIMIT: ${{ steps.quota.outputs.limit }}
+          PERCENT: ${{ steps.quota.outputs.percent }}
+          REMAINING: ${{ steps.quota.outputs.remaining }}
+          REFRESH_PERIOD: ${{ steps.quota.outputs.refresh_period }}
+          RESET_DATE: ${{ steps.quota.outputs.reset_date }}
+          THRESHOLD_PERCENT: ${{ inputs.threshold_percent || env.DEFAULT_THRESHOLD_PERCENT }}
+        run: |
+          {
+            echo "## ElevenLabs quota"
+            echo
+            echo "| Field | Value |"
+            echo "| --- | --- |"
+            echo "| Tier | ${TIER} |"
+            echo "| Used | ${USED} / ${LIMIT} (${PERCENT}%) |"
+            echo "| Remaining | ${REMAINING} |"
+            echo "| Refresh period | ${REFRESH_PERIOD} |"
+            echo "| Resets (UTC) | ${RESET_DATE} |"
+            echo "| Threshold | ${THRESHOLD_PERCENT}% |"
+            echo "| Level | ${LEVEL} |"
+            echo
+            if [ "$SENT" = "true" ]; then echo "Alert sent."; else echo "No alert."; fi
+          } >> "$GITHUB_STEP_SUMMARY"

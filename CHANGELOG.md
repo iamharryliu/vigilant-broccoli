@@ -8,6 +8,10 @@ One collapsible section per month, newest first. Agentic pull requests add their
 <details>
 <summary>November 2026</summary>
 
+### vb-express
+
+- A daily `cron-check-elevenlabs-quota` workflow emails when the ElevenLabs character quota reaches 80% and again when it runs out, once per level per quota cycle ([#1802](https://github.com/iamharryliu/vigilant-broccoli/pull/1802)).
+
 ### notepad-react
 
 - The note editor has an eye button, and Cmd/Ctrl+Shift+V, that toggles a rendered markdown preview of the selected note ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
