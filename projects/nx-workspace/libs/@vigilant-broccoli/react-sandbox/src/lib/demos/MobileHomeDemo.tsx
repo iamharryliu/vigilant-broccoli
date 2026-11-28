@@ -7,7 +7,6 @@ import {
   LayoutGrid,
   Link2,
   ListTodo,
-  LogOut,
   Menu,
   Rows3,
   StickyNote,
@@ -22,6 +21,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  SignOutLabel,
   VisuallyHidden,
 } from '@vigilant-broccoli/react-lib';
 import { WeatherClockCardUtilityContent } from '@vigilant-broccoli/react-utility';
@@ -489,10 +489,10 @@ export const MobileHomeDemo = () => {
                 onClick={closeDrawer}
                 className={SIGN_OUT_ROW_CLASS}
               >
-                <span className="shrink-0">
-                  <LogOut size={18} />
-                </span>
-                <span className="flex-1 whitespace-nowrap">Sign out</span>
+                <SignOutLabel
+                  iconSize={18}
+                  labelClassName="flex-1 whitespace-nowrap"
+                />
               </button>
             }
           />

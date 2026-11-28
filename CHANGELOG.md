@@ -14,6 +14,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib
 
+- `SignOutButton` now reads "Sign out", and a new `SignOutLabel` gives menus and sidebars the same logout icon and label, so every app's sign-out control looks alike (PR: pending).
 - `DangerCard` takes Hearth's delete-home design (a red border with a filled red action button) and can hold its confirmation dialog as children; Hearth's Delete home card now uses it ([#1798](https://github.com/iamharryliu/vigilant-broccoli/pull/1798)).
 - New `CollapsibleCard` (one collapsible section drawn as a single bordered card, with a tinted header bar and an unstyled body) and `DangerCard` (a red-outlined card with a heading, warning text and a red outline action button) components, shown in the component library ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
 - New `CheckboxCardGroup` (a row of bordered checkbox cards for choosing any number of options) and `Hyperlink` (a text link with an optional leading icon that opens absolute URLs in a new tab with an external arrow) components ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
@@ -21,6 +22,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### hearth
 
+- The user menu's Sign out has a logout icon and the menu's normal color instead of red (PR: pending).
 - The whiteboard and notepad text editors support Cmd/Ctrl+Shift+K to delete the selected lines (or the caret's line), keeping the caret in the same column on the line that takes its place ([#1778](https://github.com/iamharryliu/vigilant-broccoli/pull/1778)).
 - The recurring-task schedule is one Repeat select: Does not repeat (the default, a single date that stays pending until completed), Daily, Weekdays, Weekends, Every week, Weekday of month, Date of month and Annually (a month and day each year, with Feb 29 landing on Feb 28 in common years). Each mode starts from today's weekday, week of the month or date, and the calendar preview opens from a Preview button ([#1771](https://github.com/iamharryliu/vigilant-broccoli/pull/1771)).
 - Recurring tasks can repeat on chosen days of the month (such as the 1st and 15th, with the 29th-31st landing on a short month's last day) as well as every week or on chosen weekdays of the month. The schedule picker is regrouped as Every week, Weekday of month and Date of month with weekday presets, round chips, and a calendar and next-occurrence summary that show the schedule before saving ([#1767](https://github.com/iamharryliu/vigilant-broccoli/pull/1767)).
@@ -44,6 +46,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### tasks-next
 
+- Settings' Sign out button has a logout icon and shows a spinner while signing out (PR: pending).
 - Tasks moved to tasks.vigilant-broccoli.app (staging at staging-tasks.vigilant-broccoli.app), and the manager apps embed it from there; the old harryliu.dev hostnames no longer resolve and do not redirect ([#1794](https://github.com/iamharryliu/vigilant-broccoli/pull/1794)).
 - A search icon in the list header and the board header opens a dialog that finds a task in any list (any list with a lane, on the board) and jumps to it, switching list or board and highlighting the task. A kanban lane's title, drag grip, sort and remove button share one header row pair, so a list's name shows once ([#1782](https://github.com/iamharryliu/vigilant-broccoli/pull/1782)).
 - Kanban boards can be framed by other apps at `/embed/board`, which borrows the embedding page's session, and the board sidebar's left padding is tighter ([#1779](https://github.com/iamharryliu/vigilant-broccoli/pull/1779)).
@@ -174,6 +177,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### component-library
 
+- The Sign Out Button page adds a menu showing `SignOutLabel`, and the mobile home demo's sidebar uses it (PR: pending).
 - New Calendar, Toggle Chip Group and Task Schedule Fields pages; the recurring-schedule picker now lives in `react-lib-tasks` ([#1767](https://github.com/iamharryliu/vigilant-broccoli/pull/1767)).
 - New Graph page draws how the components depend on one another, sharing its layout and behavior with project-overview's Project Graph, and each component page's "Built with" list is now "Depends on" with a new "Used by" list. The sidebar groups Overview and Graph under Components, and new Checkbox Card Group and Hyperlink pages demo the new components ([#1792](https://github.com/iamharryliu/vigilant-broccoli/pull/1792)).
 
@@ -223,10 +227,12 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### employee-handler
 
+- The sidebar's sign-out item reads "Sign out" instead of "Logout" (PR: pending).
 - The sidebar dark mode toggle is gone; the theme is picked (System/Light/Dark) on the Settings page instead ([#1692](https://github.com/iamharryliu/vigilant-broccoli/pull/1692)).
 
 ### mobile-manager-next
 
+- The sidebar's Sign out row uses the shared sign-out icon and label, still collapsing to its icon on the desktop rail (PR: pending).
 - The Language tab's word-type bar is a toggle group with a new Seen option that holds the seen words and Clear all, and the Opposite button is an outline button below the words ([#1797](https://github.com/iamharryliu/vigilant-broccoli/pull/1797)).
 - The embedded calendar now shows event times in your current timezone instead of always Copenhagen time ([#1751](https://github.com/iamharryliu/vigilant-broccoli/pull/1751)).
 - A Settings page in the sidebar lets you choose the System, Light or Dark theme ([#1748](https://github.com/iamharryliu/vigilant-broccoli/pull/1748)).
@@ -262,6 +268,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### sandbox
 
+- Sign out on the Google sign-in page has a logout icon (PR: pending).
 - The Google sign-in test page moved to sandbox.vigilant-broccoli.app so it stays same-site with the staging API; the old harryliu.dev host no longer resolves ([#1712](https://github.com/iamharryliu/vigilant-broccoli/pull/1712)).
 
 ### docs-explorer

@@ -12,6 +12,7 @@ import {
   Popover,
   SearchInput,
   SignOutButton,
+  SignOutLabel,
   SpeechToTextToggleButton,
   Text,
   ThemePreferenceControl,
@@ -155,6 +156,19 @@ export const SignOutButtonDemo = () => (
           toast('Signed out');
         }}
       />
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <Button variant="outline">Menu with SignOutLabel</Button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content size="1">
+          <DropdownMenu.Item
+            className="flex cursor-pointer items-center gap-2"
+            onClick={notify('Signed out')}
+          >
+            <SignOutLabel iconSize={14} />
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
     </div>
   </>
 );
