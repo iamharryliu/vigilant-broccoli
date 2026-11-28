@@ -10,15 +10,29 @@ import {
   useState,
 } from 'react';
 import { Eye, Pencil } from 'lucide-react';
-import { Button, cn } from '@vigilant-broccoli/react-lib';
+import { cn, SegmentedControl } from '@vigilant-broccoli/react-lib';
 import { MarkdownViewer } from '@vigilant-broccoli/docs-explorer';
 
 const PREVIEW_SHORTCUT_LABEL = 'Cmd+Shift+V';
 const PREVIEW_TOGGLE_CODE = 'KeyV';
-const DEFAULT_PREVIEW_LABEL = 'Show markdown preview';
-const DEFAULT_EDIT_LABEL = 'Back to editing';
+const MODE_CONTROL_LABEL = 'Markdown view';
+const DEFAULT_PREVIEW_LABEL = 'Preview';
+const DEFAULT_EDIT_LABEL = 'Edit';
+const PREVIEW_MODE = { EDIT: 'edit', PREVIEW: 'preview' } as const;
+
+type PreviewMode = (typeof PREVIEW_MODE)[keyof typeof PREVIEW_MODE];
 const ICON_SIZE = 16;
 const EDITABLE_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
+// The pane draws the card border, so the editor's own textarea border and
+// radius are stripped; `!` beats SyncedTextEditor's inline border style.
+const PANE_CLASS =
+  'flex min-h-0 flex-col overflow-hidden rounded-md border border-border [&_textarea]:!rounded-none [&_textarea]:!border-0 [&_textarea]:!shadow-none';
+// MarkdownViewer pads its prose wider than the textarea (12px, 24px from `sm`
+// up), so the rendered text starts where the editor's text does.
+const PREVIEW_CLASS =
+  'min-h-0 flex-1 overflow-auto [&_.prose]:!px-3 [&_.prose]:!py-3';
+const TOP_BAR_CLASS =
+  'flex h-9 shrink-0 items-center justify-end gap-1.5 border-b border-border bg-muted px-1.5';
 
 interface MarkdownPreviewPaneProps {
   content: string;
@@ -68,35 +82,41 @@ const usePreviewShortcut = (
   }, [enabled, paneRef, toggle]);
 };
 
-interface PreviewToggleProps {
+interface PreviewModeControlProps {
   showPreview: boolean;
   isLoading?: boolean;
   previewLabel?: string;
   editLabel?: string;
-  onToggle: () => void;
+  onChange: (showPreview: boolean) => void;
 }
 
-const PreviewToggle = ({
+const PreviewModeControl = ({
   showPreview,
   isLoading = false,
   previewLabel = DEFAULT_PREVIEW_LABEL,
   editLabel = DEFAULT_EDIT_LABEL,
-  onToggle,
-}: PreviewToggleProps) => {
-  const label = `${showPreview ? editLabel : previewLabel} (${PREVIEW_SHORTCUT_LABEL})`;
-  return (
-    <Button
-      size="sm"
-      variant="outline"
-      aria-label={label}
-      title={label}
-      disabled={isLoading}
-      onClick={onToggle}
-    >
-      {showPreview ? <Pencil size={ICON_SIZE} /> : <Eye size={ICON_SIZE} />}
-    </Button>
-  );
-};
+  onChange,
+}: PreviewModeControlProps) => (
+  <SegmentedControl<PreviewMode>
+    label={`${MODE_CONTROL_LABEL} (${PREVIEW_SHORTCUT_LABEL})`}
+    size="sm"
+    value={showPreview ? PREVIEW_MODE.PREVIEW : PREVIEW_MODE.EDIT}
+    onChange={mode => onChange(mode === PREVIEW_MODE.PREVIEW)}
+    className={isLoading ? 'pointer-events-none opacity-50' : undefined}
+    options={[
+      {
+        value: PREVIEW_MODE.EDIT,
+        label: editLabel,
+        icon: <Pencil size={ICON_SIZE} />,
+      },
+      {
+        value: PREVIEW_MODE.PREVIEW,
+        label: previewLabel,
+        icon: <Eye size={ICON_SIZE} />,
+      },
+    ]}
+  />
+);
 
 export function MarkdownPreviewPane({
   content,
@@ -119,28 +139,24 @@ export function MarkdownPreviewPane({
   const showPreview = markdownPreview && isPreview;
 
   return (
-    <div
-      ref={paneRef}
-      className={cn('relative flex min-h-0 flex-col', className)}
-      style={style}
-    >
+    <div ref={paneRef} className={cn(PANE_CLASS, className)} style={style}>
+      <div className={TOP_BAR_CLASS}>
+        {markdownPreview && (
+          <PreviewModeControl
+            {...toggleProps}
+            showPreview={showPreview}
+            onChange={setIsPreview}
+          />
+        )}
+        {actions}
+      </div>
       {showPreview ? (
-        <div className="min-h-0 flex-1 overflow-auto pt-10">
+        <div className={PREVIEW_CLASS}>
           <MarkdownViewer content={content} />
         </div>
       ) : (
         renderEditor()
       )}
-      <div className="absolute right-3 top-3 flex gap-2">
-        {markdownPreview && (
-          <PreviewToggle
-            {...toggleProps}
-            showPreview={showPreview}
-            onToggle={toggle}
-          />
-        )}
-        {actions}
-      </div>
     </div>
   );
 }

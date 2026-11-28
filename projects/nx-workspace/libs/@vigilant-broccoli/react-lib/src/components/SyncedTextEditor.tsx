@@ -374,7 +374,13 @@ export const SyncedTextEditor = ({
   return (
     <div
       className="flex flex-col gap-2"
-      style={{ display: 'flex', flexDirection: 'column', ...style }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        minHeight: 0,
+        ...style,
+      }}
     >
       <div
         style={styles.board}

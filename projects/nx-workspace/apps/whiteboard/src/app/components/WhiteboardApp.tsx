@@ -263,8 +263,6 @@ function Whiteboard() {
             markdownPreview
             className="flex-1"
             content={content}
-            previewLabel={t('BOARD.SHOW_PREVIEW')}
-            editLabel={t('BOARD.BACK_TO_EDITING')}
             renderEditor={() => (
               <div
                 ref={boardRef}

@@ -20,9 +20,7 @@
   },
   "BOARD": {
     "PLACEHOLDER": "Start typing… everyone in this room sees it live.",
-    "TITLE": "Shared board",
-    "SHOW_PREVIEW": "Show markdown preview",
-    "BACK_TO_EDITING": "Back to editing"
+    "TITLE": "Shared board"
   },
   "MEMBERS": {
     "TITLE": "In this room",

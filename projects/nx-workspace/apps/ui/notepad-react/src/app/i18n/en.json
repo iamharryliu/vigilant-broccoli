@@ -6,13 +6,9 @@
     "NOTES": "Notes",
     "UNTITLED": "Untitled note",
     "PLACEHOLDER": "Start typing...",
-    "SHOW_PREVIEW": "Show markdown preview",
-    "BACK_TO_EDITING": "Back to editing",
     "EMPTY_LIST": "No notes yet",
-    "DELETE_NOTE": "Delete note",
     "DELETE_TITLE": "Delete note",
     "DELETE_DESCRIPTION": "This note is saved only in this browser and cannot be recovered.",
-    "DELETE": "Delete",
-    "CANCEL": "Cancel"
+    "DELETE": "Delete"
   }
 }

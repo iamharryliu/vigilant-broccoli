@@ -14,11 +14,13 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### notepad-react
 
+- Each note in the sidebar has an ellipsis menu with Delete (and its confirmation), replacing the Delete note button above the editor ([#1805](https://github.com/iamharryliu/vigilant-broccoli/pull/1805)).
 - The note editor has an eye button, and Cmd/Ctrl+Shift+V, that toggles a rendered markdown preview of the selected note ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 - New Notepad app at notepad.vigilant-broccoli.app: multiple notes saved in the browser, with no sign-in or server ([#1785](https://github.com/iamharryliu/vigilant-broccoli/pull/1785)).
 
 ### react-lib
 
+- `SyncedTextEditor` fills its container's height again inside the markdown preview pane, so the Notepad in local-manager, mobile-manager and the Notepad app is no longer stuck at a short textarea ([#1805](https://github.com/iamharryliu/vigilant-broccoli/pull/1805)).
 - `SignOutButton` now reads "Sign out", and a new `SignOutLabel` gives menus and sidebars the same logout icon and label, so every app's sign-out control looks alike ([#1800](https://github.com/iamharryliu/vigilant-broccoli/pull/1800)).
 - `DangerCard` takes Hearth's delete-home design (a red border with a filled red action button) and can hold its confirmation dialog as children; Hearth's Delete home card now uses it ([#1798](https://github.com/iamharryliu/vigilant-broccoli/pull/1798)).
 - New `CollapsibleCard` (one collapsible section drawn as a single bordered card, with a tinted header bar and an unstyled body) and `DangerCard` (a red-outlined card with a heading, warning text and a red outline action button) components, shown in the component library ([#1796](https://github.com/iamharryliu/vigilant-broccoli/pull/1796)).
@@ -27,6 +29,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib-higher-level
 
+- `MarkdownPreviewPane` moves its mode switch and extra buttons from an overlay into a thin, tinted, right-aligned header bar that shares one border with the editor or preview below it, like `CollapsibleCard`; the switch is an Edit/Preview segmented control, and the rendered preview starts at the same inset as the editor text, so nothing shifts when toggling, in every notepad and whiteboard that uses it ([#1805](https://github.com/iamharryliu/vigilant-broccoli/pull/1805)).
 - New `MarkdownPreviewPane` gives any notepad-style editor an opt-in markdown preview toggle (an eye/pencil button and Cmd/Ctrl+Shift+V), with a slot for extra buttons ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 
 ### hearth
