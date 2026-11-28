@@ -641,9 +641,9 @@ export const DocsExplorer = ({
   const openFile = useCallback(
     async (
       pathWithHash: string,
-      { recordHistory = true, syncUrl = true, keepGraph = false } = {},
+      { recordHistory = true, syncUrl = true } = {},
     ) => {
-      if (!keepGraph) setShowGraph(false);
+      setShowGraph(false);
       const [path, hash] = pathWithHash.split(HASH_SEP);
       const previous = selectedPathRef.current;
       if (recordHistory && previous !== path) {
@@ -692,9 +692,7 @@ export const DocsExplorer = ({
   );
 
   // A sidebar click on a file that is part of a multi-file selection jumps to
-  // its section of the combined view instead of opening it alone. With the
-  // graph open, either kind of click keeps the graph and only moves its focus
-  // to the file; clicking a node inside the graph still opens the note.
+  // its section of the combined view instead of opening it alone.
   const selectSidebarFile = (path: string) => {
     if (
       multiSelectMode &&
@@ -711,7 +709,7 @@ export const DocsExplorer = ({
       urlSync?.set(path, { replace: true });
       return;
     }
-    openFile(path, { keepGraph: showGraph });
+    openFile(path);
   };
 
   useEffect(() => {
