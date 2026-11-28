@@ -57,7 +57,7 @@ where home_id = 2 and board_key = 'kitchen';
 
 ## AI Edit
 
-- The chat icon button (label "AI edit") in the top-right of the editor shows only at the `md` breakpoint and up (hidden on mobile) and opens a large dialog: the editable document on the left, the chat on the right (side by side at `md` and up)
+- The chat icon button (label "AI edit") in the preview pane's top bar, right of the eye/pencil toggle, shows only at the `md` breakpoint and up (hidden on mobile) and opens a large dialog: the editable document on the left, the chat on the right (side by side at `md` and up)
 - The dialog editor and the inline editor render the same synced `content`, so closing the dialog returns to the latest text
 - The assistant receives the current document and the conversation; it replies conversationally and may propose a full updated document
 - A proposal is shown as a line diff with Apply and Dismiss. Apply calls the same `setContent` as typing, so autosave, collaboration and undo/redo all work (undo reverts an applied edit)

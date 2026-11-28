@@ -121,17 +121,10 @@ export function MarkdownPreviewPane({
   return (
     <div
       ref={paneRef}
-      className={cn('relative flex min-h-0 flex-col', className)}
+      className={cn('flex min-h-0 flex-col gap-1', className)}
       style={style}
     >
-      {showPreview ? (
-        <div className="min-h-0 flex-1 overflow-auto pt-10">
-          <MarkdownViewer content={content} />
-        </div>
-      ) : (
-        renderEditor()
-      )}
-      <div className="absolute right-3 top-3 flex gap-2">
+      <div className="flex h-8 shrink-0 items-center justify-end gap-1.5">
         {markdownPreview && (
           <PreviewToggle
             {...toggleProps}
@@ -141,6 +134,13 @@ export function MarkdownPreviewPane({
         )}
         {actions}
       </div>
+      {showPreview ? (
+        <div className="min-h-0 flex-1 overflow-auto">
+          <MarkdownViewer content={content} />
+        </div>
+      ) : (
+        renderEditor()
+      )}
     </div>
   );
 }

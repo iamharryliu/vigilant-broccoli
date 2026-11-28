@@ -28,6 +28,7 @@ One collapsible section per month, newest first. Agentic pull requests add their
 
 ### react-lib-higher-level
 
+- `MarkdownPreviewPane` moves its eye/pencil toggle and extra buttons from an overlay into a thin right-aligned bar above the editor, so the rendered preview no longer starts below a blank gap and the buttons stay put when toggling, in every notepad and whiteboard that uses it ([#1805](https://github.com/iamharryliu/vigilant-broccoli/pull/1805)).
 - New `MarkdownPreviewPane` gives any notepad-style editor an opt-in markdown preview toggle (an eye/pencil button and Cmd/Ctrl+Shift+V), with a slot for extra buttons ([#1801](https://github.com/iamharryliu/vigilant-broccoli/pull/1801)).
 
 ### hearth
