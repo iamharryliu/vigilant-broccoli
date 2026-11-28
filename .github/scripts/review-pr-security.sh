@@ -9,13 +9,14 @@
 #            Env: GH_TOKEN, REPO, RUN_PRS, RUN_HEAD_SHA, WORK_DIR.
 #   review   ask a read-only Claude, confined to the main checkout, for a JSON
 #            verdict, then validate, cap and redact it into verdict.json. Only
-#            the severity and diff-validated flagged paths leave the job; the
-#            model's text goes to the private email alone. Env:
+#            the severity, diff-validated flagged paths and, on an unusable
+#            reply, a fixed reason code leave the job; the model's text goes
+#            to the private email alone. Env:
 #            CLAUDE_CODE_OAUTH_TOKEN, MODEL, WORK_DIR, REPO_DIR.
 #   report   below high: a severity-only job summary, and clear a stale alert
 #            comment; high or critical: upsert the structured marker comment.
 #            Env: GH_TOKEN, REPO, STATUS, PR, META, SEVERITY, FLAGGED,
-#            EMAIL_RESULT, RUN_URL.
+#            EMAIL_RESULT, RUN_URL, VERDICT_ERROR.
 #
 # The repo is public: PR comments, job summaries and run logs are
 # world-readable, so nothing written there may contain model free text.
@@ -34,6 +35,15 @@ STATUS_DOCS_ONLY=docs-only
 STATUS_REVIEW=review
 COMMENT_FLAGGED=flagged
 COMMENT_CLEARED=cleared
+
+VERDICT_ERROR_CLI_FAILED=cli-failed
+VERDICT_ERROR_INVALID_ENVELOPE=invalid-envelope
+VERDICT_ERROR_CLI_ERROR=cli-error
+VERDICT_ERROR_EMPTY_RESULT=empty-result
+VERDICT_ERROR_NO_JSON_OBJECT=no-json-object
+VERDICT_ERROR_INVALID_JSON=invalid-json
+VERDICT_ERROR_WRONG_SHAPE=wrong-shape
+VERDICT_ERROR_UNKNOWN=unknown
 
 # 90KB keeps the prompt near 25k tokens; one file may take at most a quarter
 # so a single lockfile cannot crowd out the workflow change beside it.
@@ -282,6 +292,63 @@ parse_verdict() {
       else error("unexpected verdict shape") end' "$1"
 }
 
+# Why the reply was unusable, from types, lengths, booleans and CLI envelope
+# scalars only: the log is public, so no part of .result or any other
+# model-controlled string may appear. -R with try/fromjson keeps a malformed
+# file's content out of jq's error messages.
+verdict_diagnostic() {
+  local cli_exit=$1 meta=null
+  [ ! -s "$WORK_DIR/meta.json" ] || meta=$(jq -c '{truncated, file_count, diff_bytes}' "$WORK_DIR/meta.json")
+  jq -rRs --argjson cli_exit "$cli_exit" --argjson allowed "$SEVERITIES" --argjson meta "$meta" \
+    --argjson prompt_bytes "$(wc -c < "$WORK_DIR/prompt.txt")" \
+    --arg cli_failed "$VERDICT_ERROR_CLI_FAILED" --arg invalid_envelope "$VERDICT_ERROR_INVALID_ENVELOPE" \
+    --arg cli_error "$VERDICT_ERROR_CLI_ERROR" --arg empty_result "$VERDICT_ERROR_EMPTY_RESULT" \
+    --arg no_json_object "$VERDICT_ERROR_NO_JSON_OBJECT" --arg invalid_json "$VERDICT_ERROR_INVALID_JSON" \
+    --arg wrong_shape "$VERDICT_ERROR_WRONG_SHAPE" --arg unknown "$VERDICT_ERROR_UNKNOWN" '
+    def code: if . == null then null elif type == "string" and test("^[a-z_]{1,40}$") then . else "unrecognized" end;
+    def typed($t): if type == $t then . else null end;
+    (try fromjson catch null) as $raw
+    | ($raw | type == "object") as $envelope
+    | (if $envelope then $raw else {} end) as $e
+    | ($e.result | typed("string")) as $r
+    | (if $r == null then null else [$r | capture("(?s)(?<json>\\{.*\\})")][0].json end) as $c
+    | (if $c == null then null else (try ($c | fromjson) catch null) end) as $v
+    | ($v != null and ($v.severity | IN($allowed[]))) as $severity_allowed
+    | {
+        cli_exit: $cli_exit,
+        envelope_json: $envelope,
+        is_error: ($e.is_error | typed("boolean")),
+        subtype: ($e.subtype | code),
+        stop_reason: ($e.stop_reason | code),
+        num_turns: ($e.num_turns | typed("number")),
+        result_type: ($e.result | type),
+        result_length: ($r | if . == null then null else length end),
+        result_has_open_brace: ($r != null and ($r | contains("{"))),
+        result_has_close_brace: ($r != null and ($r | contains("}"))),
+        candidate_found: ($c != null),
+        candidate_json: ($v != null),
+        severity_type: (if $v == null then null else $v.severity | type end),
+        severity_allowed: $severity_allowed,
+        severity: (if $severity_allowed then $v.severity else null end),
+        summary_type: (if $v == null then null else $v.summary | type end),
+        findings_type: (if $v == null then null else $v.findings | type end),
+        prompt_bytes: $prompt_bytes,
+        truncated: $meta.truncated,
+        file_count: $meta.file_count,
+        diff_bytes: $meta.diff_bytes
+      }
+    | {reason: (
+        if .cli_exit != 0 then $cli_failed
+        elif (.envelope_json | not) then $invalid_envelope
+        elif .is_error == true or (.subtype != null and .subtype != "success") then $cli_error
+        elif (.result_length // 0) == 0 then $empty_result
+        elif (.candidate_found | not) then $no_json_object
+        elif (.candidate_json | not) then $invalid_json
+        elif .severity_allowed and .summary_type == "string" and .findings_type == "array" then $unknown
+        else $wrong_shape end)} + .
+    | [to_entries[] | select(.value != null) | "\(.key)=\(.value)"] | join(" ")' "$WORK_DIR/claude.json"
+}
+
 # Defense in depth only: the verdict text reaches nothing but the owner's
 # email, and the file-tool confinement in review() is what keeps secrets out.
 redact() {
@@ -341,13 +408,24 @@ review() {
   # paths and GitHub tokens away from the agent, and an empty HOME holds no
   # runner config; stdin avoids the 128KB argv cap. --restricted also ignores
   # the checkout's own .claude settings.
+  local cli_exit=0
   (cd "$REPO_DIR" && env -i PATH="$PATH" HOME="$home" CLAUDE_CODE_OAUTH_TOKEN="$CLAUDE_CODE_OAUTH_TOKEN" \
     claude -p --model "$MODEL" --output-format json --max-turns 30 \
     --restricted --strict-mcp-config --tools Read,Grep,Glob --permission-mode dontAsk \
     --settings "$WORK_DIR/claude-settings.json" \
-    < "$WORK_DIR/prompt.txt" > "$WORK_DIR/claude.json")
+    < "$WORK_DIR/prompt.txt" > "$WORK_DIR/claude.json") || cli_exit=$?
 
-  parse_verdict "$WORK_DIR/claude.json" | redact > "$WORK_DIR/verdict.json"
+  # Inside an if condition set -e and pipefail cannot abort before the
+  # diagnostic runs. jq exits 0 with no output on an empty claude.json.
+  if [ "$cli_exit" -ne 0 ] || ! parse_verdict "$WORK_DIR/claude.json" | redact > "$WORK_DIR/verdict.json" ||
+    [ ! -s "$WORK_DIR/verdict.json" ]; then
+    local diagnostic
+    diagnostic=$(verdict_diagnostic "$cli_exit")
+    echo "Unusable verdict: $diagnostic"
+    [ -z "${GITHUB_STEP_SUMMARY:-}" ] || summary_line "PR security review: unusable verdict (\`$diagnostic\`); the reply itself is withheld because this summary is public."
+    emit verdict_error "$(sed -E 's/^reason=([a-z-]+).*$/\1/' <<<"$diagnostic")"
+    return 1
+  fi
   local severity
   severity=$(jq -r .severity "$WORK_DIR/verdict.json")
   echo "Severity: $severity"
@@ -403,7 +481,7 @@ report() {
   number=$(jq -r .number <<<"$PR")
 
   if [ "$STATUS" != "$STATUS_DOCS_ONLY" ] && [ -z "${SEVERITY:-}" ]; then
-    summary_line "PR security review of #$number failed: no usable verdict. Treat this PR as unreviewed."
+    summary_line "PR security review of #$number failed: no usable verdict (${VERDICT_ERROR:-review step failed}). Treat this PR as unreviewed."
     return 1
   fi
   if [ "$STATUS" = "$STATUS_REVIEW" ] && jq -e --arg s "$SEVERITY" 'IN(.[]; $s)' <<<"$NOTIFY_SEVERITIES" > /dev/null; then

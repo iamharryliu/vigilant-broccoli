@@ -45,6 +45,7 @@ jobs:
       meta: ${{ steps.collect.outputs.meta }}
       severity: ${{ steps.review.outputs.severity }}
       flagged: ${{ steps.review.outputs.flagged }}
+      verdict_error: ${{ steps.review.outputs.verdict_error }}
       email: ${{ steps.email.outcome }}
     steps:
       # main, not the PR head: Claude reads it for context. No persisted
@@ -161,5 +162,6 @@ jobs:
           SEVERITY: ${{ needs.review.outputs.severity }}
           FLAGGED: ${{ needs.review.outputs.flagged }}
           EMAIL_RESULT: ${{ needs.review.outputs.email }}
+          VERDICT_ERROR: ${{ needs.review.outputs.verdict_error }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: bash .github/scripts/review-pr-security.sh report
