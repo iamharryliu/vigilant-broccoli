@@ -7,6 +7,7 @@ Branching, publishing and synchronization conventions for this repository.
 - [Conventions](#conventions)
 - [Commit message enforcement](#commit-message-enforcement)
 - [Concurrent Agent Sessions](#concurrent-agent-sessions)
+- [Fresh Worktree Prep](#fresh-worktree-prep)
 - [Staying Current With `main`](#staying-current-with-main)
 
 ## Conventions
@@ -36,11 +37,23 @@ Sessions attached to one checkout share `HEAD`, the index and stash. Ownership, 
 - Syncing in place requires a clean, exclusive checkout and does not authorize committing pending work to clean it.
 - Restore the original branch only if your workflow switched it in an exclusive checkout; never switch a peer's branch during cleanup.
 
+## Fresh Worktree Prep
+
+A new worktree has no `node_modules` and none of the gitignored generated files, so the first pre-commit run fails (and installs dependencies as a side effect) unless you prepare first. Do this right after `git worktree add`, before the first commit:
+
+- Run `pnpm worktree:prep` from the worktree root: it runs `pnpm install` (the root `postinstall` also installs `projects/nx-workspace`) and builds the generated files below. Hooks otherwise install lazily and the first commit attempt fails with "Could not find Nx modules".
+- Gitignored generated files (Hearth's `src/lib/generated/in-season-produce.json`, [why](../projects/nx-workspace/apps/hearth/docs/features/in-season-produce.md)) are produced by Nx `generate-*` targets that `typecheck`, `lint` and `build` depend on. `pnpm worktree:prep` builds them up front for editors and ad-hoc `tsc`; add a new `generate-*` target to `scripts/shell/prep-worktree.sh`. A lint-staged hook must therefore run the Nx target (`pnpm nx run hearth:typecheck`), never a bare `tsc`; a `TS2307: Cannot find module './generated/…'` in a hook means a hook bypasses Nx, so fix the hook.
+- Format with the worktree's own Prettier (run it from inside the worktree); the repo config is `.prettierrc.json`, and passing the YAML `.prettierrc` errors.
+- After every `git commit`, check `git log -1` and `git status` before pushing or opening a PR. A failed hook leaves the changes staged with no commit, and piping hook output through `tail` hides that.
+- Fetch and compare with `origin/main` immediately before pushing; slow hooks let main move, and a PR opened first needs an extra merge commit.
+
+If a step here keeps failing for a reason not listed, fix or document it here and tell the user; if the fix is out of scope for the PR, offer a TODO row instead of working around it silently.
+
 ## Staying Current With `main`
 
 Sync when starting work, before pushing and when main moves while a branch is open. `ship-pr` syncs before publishing.
 
 - Fetch first; `git rev-list --left-right --count origin/main...HEAD` reports missing/additional commits.
-- On a feature branch, merge with `git merge --no-edit origin/main`. A branch whose Markdown tables are still padded (cut before [table compaction](./code-quality-tools.md)) merges with `git merge --no-edit -X renormalize origin/main`, which compacts both sides before comparing them. Never rebase: publishing a rewritten branch would require a forbidden force-push. PRs squash-merge, so these integration commits do not enter main's history.
+- On a feature branch, merge with `git merge --no-edit origin/main`; add `--no-ff` when the dotfiles `pull.ff = only` is active, which makes a plain merge of a diverged branch abort with "Not possible to fast-forward". A branch whose Markdown tables are still padded (cut before [table compaction](./code-quality-tools.md)) merges with `git merge --no-edit -X renormalize origin/main`, which compacts both sides before comparing them. Never rebase: publishing a rewritten branch would require a forbidden force-push. PRs squash-merge, so these integration commits do not enter main's history.
 - On main, use `git pull --ff-only origin main`; report divergence instead of merging over it.
 - Enable `git rerere` (`git config rerere.enabled true`) to reuse conflict resolutions.

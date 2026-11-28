@@ -10,6 +10,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`. `pnpm cheatsh
   npm:packages                Open npm packages page
   cheatsheet                  Browse, filter and run these commands
   cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
+  worktree:prep               Install dependencies and build generated files in a fresh git worktree
   cheatsheet:aliases          Print the shell alias cheatsheet
   dockerhub:descriptions      Push every Docker Hub repo's description and overview from the project-overview image registry (Vault DOCKERHUB_TOKEN)
   repo-stats                  Regenerate the managed repo-stats line in README.md and about.md

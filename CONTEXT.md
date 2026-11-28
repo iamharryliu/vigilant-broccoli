@@ -32,7 +32,7 @@ Read the relevant document before working on its subject. Before editing a direc
 | [database-migrations.md](./docs/ci/database-migrations.md) | Database migrations. |
 | [fork-identity-inventory.md](./docs/fork-identity-inventory.md) | Making the repo forkable; update when adding or removing a hardcoded account, domain or identity value. |
 | [free-tier-infrastructure.md](./docs/infrastructure/free-tier-infrastructure.md) | New cloud services or VM sizing; update the affected allowance row. |
-| [git-workflow.md](./docs/git-workflow.md) | Branching, staging, commits, PRs and syncing main. |
+| [git-workflow.md](./docs/git-workflow.md) | Branching, staging, commits, PRs, fresh worktree prep and syncing main. |
 | [github-repo-protection.md](./docs/infrastructure/github-repo-protection.md) | GitHub protection, bypass actors or push rejections. |
 | [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md) | LAN hardware provisioning via Ansible. |
 | [learning-timeline.md](./docs/learning-timeline.md) | Extend the current month when work introduces a new topic. |
@@ -97,6 +97,8 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 
 - Never commit or push unless explicitly instructed. Never force-push, skip hooks or amend existing commits.
 - Stage only files created or edited in this session; never `git add -A`, `git add .`, or files already modified/untracked before the session.
+- Prepare a fresh worktree before its first commit (install, generated files, commit verification): [Fresh Worktree Prep](./docs/git-workflow.md#fresh-worktree-prep).
+- When you hit repeatable tooling friction (a hook, build or publish step that fails for a non-obvious reason, or a workaround you had to rediscover), record the fix in its owning doc or `## Nuances`, and tell the user about it in your reply. If the proper fix is out of scope for the task, offer a TODO row ([todo-pattern.md](./docs/todo-pattern.md)) rather than leaving it only in the conversation.
 - Treat the checkout as shared unless provably exclusive; if not provable, use a separate worktree off fresh `origin/main` with only your changes. Establish ownership before branching, staging, committing, stashing or switching branches. Never stash in a shared or uncertain checkout. If others' work is staged, commit only your paths with `git commit -m "<message>" -- <your paths>`.
 
 ## Responses
