@@ -20,6 +20,8 @@
 - **Seafood**
   - [Caviar](./caviar.md)
 - **Seasonings**
+  - [Basil](./spices-and-herbs/basil.md)
+  - [Basil Care](./spices-and-herbs/basil-care.md)
   - [Italian Seasoning](./spices-and-herbs/italian-seasoning.md)
 - **Substitutes**
   - [Vegetarian Alternatives](./vegetarian-ingredient-alternatives.md)

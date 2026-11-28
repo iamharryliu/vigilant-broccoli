@@ -322,7 +322,7 @@
 
 | Contribution | Role | Description |
 | --- | --- | --- |
-| Build reusable UI components | Frontend Developer | Built a reusable global component library in Storybook with UI designers, improving consistency across banking applications, with extensive base-component work in HTML, CSS and SCSS, developed to meet accessibility compliance requirements (ARIA, WCAG) |
+| Build reusable UI components | Frontend Developer | Built a reusable global component library in Storybook with UI designers, improving consistency across banking applications, with extensive base-component work in HTML, CSS and SCSS, component testing and design tokens, developed to meet accessibility compliance requirements (ARIA, WCAG) |
 | Establish banking test environments and coverage | Software Engineer | Established test environments and wrote unit tests with Jest to meet the banking client's 90% test coverage requirement |
 | Implement banking frontend state management | Frontend Developer | Implemented state management using Redux to maintain consistency and performance across the banking frontend |
 | Implement secure mobile banking login | Fullstack Developer | Worked on a team building the sign-in logic for a cross-platform mobile banking app, including multi-factor authentication, one-time password (OTP) login, challenge questions and session management |

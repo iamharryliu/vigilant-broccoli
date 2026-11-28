@@ -34,6 +34,7 @@
 
 - Cherry shrimp breed readily in stable, mature tanks with no special intervention needed.
 - Berried (egg-carrying) females carry eggs under their abdomen for 2-4 weeks before releasing free-swimming shrimplets.
+- A berried female typically carries 20-30 eggs; young or small females carry fewer (about 10-20) and large, mature females can carry up to 40-50.
 - Keep copper-based medications out of the tank — copper is lethal to shrimp even in trace amounts.
 
 ## Water Changes

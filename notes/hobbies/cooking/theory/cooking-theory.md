@@ -1,4 +1,5 @@
 # Cooking Theory
 
-- [Salt](./salt.md)
+- [Flavour](./flavour.md)
 - [Heat](./heat.md)
+- [Salt](./salt.md)

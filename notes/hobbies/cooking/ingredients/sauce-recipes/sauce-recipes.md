@@ -3,6 +3,7 @@
 - **Asian Sauces**
   - [Base Stir Fry Sauce](./base-stir-fry-sauce.md)
   - [Hoisin Glaze Sauce](./hoisin-glaze-sauce.md)
+  - [Miso Glaze](./miso-glaze.md)
   - [Oyster Stir Fry Sauce](./oyster-stir-fry-sauce.md)
   - [Soy Sauce](./soy-sauce.md)
 - **Western Sauces**
