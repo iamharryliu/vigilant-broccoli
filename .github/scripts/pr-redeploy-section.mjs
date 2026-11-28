@@ -1,8 +1,9 @@
 // Writes a "## Redeploys" section into an agentic PR's body listing the apps
-// deploy.yml will redeploy to staging once the PR merges. merge-pr-body.py keeps
-// sections it does not own, so later agent edits leave this one in place.
+// deploy.yml will redeploy to staging and production once the PR merges.
+// merge-pr-body.py keeps sections it does not own, so later agent edits leave
+// this one in place.
 import { execFileSync } from 'node:child_process';
-import { appRows } from './deploy-hosting.mjs';
+import { environmentRows } from './deploy-hosting.mjs';
 
 const HEADING = '## Redeploys';
 // Inserted before the history table so the section stays with the PR's prose.
@@ -18,12 +19,12 @@ const content =
     ? 'Every app with a `deploy` target, because this PR changes `.github/workflows/deploy.yml`.'
     : projects.length
       ? [
-          '| App | Staging URL |',
-          '| --- | --- |',
-          ...appRows(projects, 'staging'),
+          '| App | Staging URL | Production URL |',
+          '| --- | --- | --- |',
+          ...environmentRows(projects),
         ].join('\n')
       : 'None. No app with a `deploy` target is affected.';
-const section = `${HEADING}\n\n${content}\n\n_Staging on merge to \`main\`; production deploys redeploy every app._`;
+const section = `${HEADING}\n\n${content}\n\n_Staging deploys on merge to \`main\`; production follows once staging is verified unless a release hold is set, and also redeploys any other app changed since the last release._`;
 
 const body = execFileSync('gh', ['api', pullPath, '--jq', '.body // ""'], {
   encoding: 'utf8',
