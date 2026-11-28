@@ -1,16 +1,18 @@
 import {
-  MATCH_SKILL_STATUS,
-  type MatchSkill,
-  type MatchSkillStatus,
-} from '../app/constants/matches';
+  POSTING_SKILL_STATUS,
+  type PostingSkill,
+  type PostingSkillStatus,
+} from '../app/constants/saved-postings';
 import { getJobHuntDb } from './job-application-runs.db';
 
+// Named before the Matches page became Job postings; kept to avoid migrating
+// existing databases.
 const SKILLS_TABLE = 'job_match_skills';
 
 interface SkillRow {
   name: string;
   aliases: string;
-  status: MatchSkillStatus;
+  status: PostingSkillStatus;
   postings: number;
 }
 
@@ -27,7 +29,7 @@ const ensureTable = () => {
   return db;
 };
 
-export const listMatchSkills = (): MatchSkill[] =>
+export const listPostingSkills = (): PostingSkill[] =>
   (
     ensureTable()
       .prepare(`SELECT * FROM ${SKILLS_TABLE} ORDER BY postings DESC, name`)
@@ -37,7 +39,7 @@ export const listMatchSkills = (): MatchSkill[] =>
 // A skill already stored keeps its status, so a dismissed one is not
 // suggested again by a later run.
 export const addSuggestedSkills = (
-  skills: Pick<MatchSkill, 'name' | 'aliases' | 'postings'>[],
+  skills: Pick<PostingSkill, 'name' | 'aliases' | 'postings'>[],
 ) => {
   const insert = ensureTable().prepare(
     `INSERT OR IGNORE INTO ${SKILLS_TABLE} (name, aliases, status, postings) VALUES (?, ?, ?, ?)`,
@@ -46,19 +48,22 @@ export const addSuggestedSkills = (
     insert.run(
       name,
       JSON.stringify(aliases),
-      MATCH_SKILL_STATUS.SUGGESTED,
+      POSTING_SKILL_STATUS.SUGGESTED,
       postings,
     ),
   );
 };
 
-export const setMatchSkillStatus = (name: string, status: MatchSkillStatus) =>
+export const setPostingSkillStatus = (
+  name: string,
+  status: PostingSkillStatus,
+) =>
   Number(
     ensureTable()
       .prepare(`UPDATE ${SKILLS_TABLE} SET status = ? WHERE name = ?`)
       .run(status, name).changes,
   ) > 0;
 
-export const deleteMatchSkill = (name: string) => {
+export const deletePostingSkill = (name: string) => {
   ensureTable().prepare(`DELETE FROM ${SKILLS_TABLE} WHERE name = ?`).run(name);
 };

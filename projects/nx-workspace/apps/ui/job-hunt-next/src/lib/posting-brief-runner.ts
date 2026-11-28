@@ -3,10 +3,10 @@ import { randomUUID } from 'crypto';
 import { join } from 'path';
 import {
   SWEDISH_REQUIREMENT,
-  type MatchAbbreviation,
-  type MatchBrief,
+  type PostingAbbreviation,
+  type PostingBrief,
   type SwedishRequirement,
-} from '../app/constants/matches';
+} from '../app/constants/saved-postings';
 import { RUN_KIND } from '../app/constants/runs';
 import {
   extractJobPosting,
@@ -16,14 +16,14 @@ import { startClaudeRun } from './claude-run.server';
 import {
   hashPostingText,
   listPostingsWithBriefs,
-  saveMatchBrief,
-} from './job-match-briefs.db';
-import { listMatchPostings } from './job-matches.db';
+  savePostingBrief,
+} from './posting-briefs.db';
+import { listSavedPostings } from './saved-postings.db';
 import {
-  isMatchBriefRunning,
-  markMatchBriefRunning,
-  unmarkMatchBriefRunning,
-} from './match-brief-inflight';
+  isPostingBriefRunning,
+  markPostingBriefRunning,
+  unmarkPostingBriefRunning,
+} from './posting-brief-inflight';
 import { IMPORTS_DIR } from './paths.server';
 
 const POSTING_FILE = 'posting.txt';
@@ -68,7 +68,7 @@ const list = (value: unknown) =>
 const SORT_LOCALE = 'en';
 
 // Alphabetical by term, one entry per term.
-const abbreviationList = (value: unknown): MatchAbbreviation[] => {
+const abbreviationList = (value: unknown): PostingAbbreviation[] => {
   if (!Array.isArray(value)) return [];
   const seen = new Set<string>();
   return value
@@ -92,7 +92,7 @@ const isSwedish = (value: unknown): value is SwedishRequirement =>
   typeof value === 'string' && SWEDISH_VALUES.includes(value);
 
 // Checked here rather than trusted: the posting can steer the output.
-const parseBrief = (content: string): MatchBrief => {
+const parseBrief = (content: string): PostingBrief => {
   const raw = JSON.parse(content);
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     throw new Error('The output is not a JSON object');
@@ -119,10 +119,10 @@ const parseBrief = (content: string): MatchBrief => {
 // Null when the posting is no longer stored. A posting whose run is still
 // queued or running returns null too, so a repeat capture or click adds no
 // second run.
-export const startMatchBriefRun = async (url: string) => {
-  const posting = listMatchPostings().find(stored => stored.url === url);
-  if (!posting || isMatchBriefRunning(url)) return null;
-  markMatchBriefRunning(url);
+export const startPostingBriefRun = async (url: string) => {
+  const posting = listSavedPostings().find(stored => stored.url === url);
+  if (!posting || isPostingBriefRunning(url)) return null;
+  markPostingBriefRunning(url);
   const textHash = hashPostingText(posting.text);
   const { role, company, description } = parseJobDescription(
     extractJobPosting(posting.title, posting.text),
@@ -138,12 +138,12 @@ export const startMatchBriefRun = async (url: string) => {
       FILE_ENCODING,
     );
   } catch (error) {
-    unmarkMatchBriefRunning(url);
+    unmarkPostingBriefRunning(url);
     throw error;
   }
 
   return startClaudeRun({
-    kind: RUN_KIND.MATCH_BRIEF,
+    kind: RUN_KIND.POSTING_BRIEF,
     title: `Brief for ${label}`,
     prompt: buildPrompt(runDir),
     addedDirs: [runDir],
@@ -153,11 +153,11 @@ export const startMatchBriefRun = async (url: string) => {
         () => null,
       );
       if (content === null) return 'The run did not write an output file';
-      saveMatchBrief(url, textHash, parseBrief(content));
+      savePostingBrief(url, textHash, parseBrief(content));
       return null;
     },
     cleanup: async () => {
-      unmarkMatchBriefRunning(url);
+      unmarkPostingBriefRunning(url);
       await rm(runDir, { recursive: true, force: true });
     },
   });
@@ -165,12 +165,12 @@ export const startMatchBriefRun = async (url: string) => {
 
 // Briefs every posting that has none or a stale one, skipping those already
 // being written; called after a capture saves postings.
-export const startMissingMatchBriefRuns = async () => {
+export const startMissingPostingBriefRuns = async () => {
   const missing = listPostingsWithBriefs().filter(
     posting => !posting.brief && !posting.briefRunning,
   );
   const runs = await Promise.all(
-    missing.map(posting => startMatchBriefRun(posting.url)),
+    missing.map(posting => startPostingBriefRun(posting.url)),
   );
   return runs.filter(Boolean).length;
 };

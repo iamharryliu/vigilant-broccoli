@@ -4,9 +4,9 @@ import { FileText, Info } from 'lucide-react';
 import { Badge, Button, CollapsibleCard } from '@vigilant-broccoli/react-lib';
 import {
   SWEDISH_REQUIREMENT,
-  type MatchBrief,
+  type PostingBrief,
   type SwedishRequirement,
-} from '../constants/matches';
+} from '../constants/saved-postings';
 import { useTranslation } from '../i18n';
 import { SECTION_HEADING_CLASS } from './application-brief.component';
 
@@ -15,11 +15,11 @@ const ICON_SIZE = 14;
 const SWEDISH_BADGE = {
   [SWEDISH_REQUIREMENT.REQUIRED]: {
     color: 'orange',
-    key: 'MATCHES.SWEDISH_REQUIRED',
+    key: 'JOB_POSTINGS.SWEDISH_REQUIRED',
   },
   [SWEDISH_REQUIREMENT.PREFERRED]: {
     color: 'amber',
-    key: 'MATCHES.SWEDISH_PREFERRED',
+    key: 'JOB_POSTINGS.SWEDISH_PREFERRED',
   },
 } as const satisfies Partial<
   Record<SwedishRequirement, { color: string; key: string }>
@@ -75,20 +75,20 @@ const BriefList = ({ title, items }: { title: string; items: string[] }) =>
     </div>
   );
 
-type MatchBriefProps = {
-  brief: MatchBrief | null;
+type PostingBriefProps = {
+  brief: PostingBrief | null;
   generating: boolean;
   // Absent when briefs cannot be generated (the demo build).
   onGenerate?: () => void;
 };
 
 // The one-line summary and chips stay on the card; the rest opens on demand in
-// `MatchBriefDetails`.
-export const MatchBriefSummary = ({
+// `PostingBriefDetails`.
+export const PostingBriefSummary = ({
   brief,
   generating,
   onGenerate,
-}: MatchBriefProps) => {
+}: PostingBriefProps) => {
   const { t } = useTranslation();
 
   if (!brief) {
@@ -102,7 +102,9 @@ export const MatchBriefSummary = ({
         >
           <FileText size={ICON_SIZE} />
           {t(
-            generating ? 'MATCHES.BRIEF_GENERATING' : 'MATCHES.BRIEF_GENERATE',
+            generating
+              ? 'JOB_POSTINGS.BRIEF_GENERATING'
+              : 'JOB_POSTINGS.BRIEF_GENERATE',
           )}
         </Button>
       )
@@ -117,16 +119,16 @@ export const MatchBriefSummary = ({
   return (
     <div className={`-mx-3 flex flex-col gap-2 ${BLOCK_CLASS}`}>
       <span className={SECTION_HEADING_CLASS}>
-        {t('MATCHES.BRIEF_SUMMARY')}
+        {t('JOB_POSTINGS.BRIEF_SUMMARY')}
       </span>
       {brief.summary && <p className="m-0 text-sm">{brief.summary}</p>}
       <DetailList
         badges
         rows={[
-          [t('MATCHES.BRIEF_LEVEL'), brief.level],
-          [t('MATCHES.BRIEF_LOCATION'), brief.location],
-          [t('MATCHES.BRIEF_WORK_MODE'), brief.workMode],
-          [t('MATCHES.BRIEF_EMPLOYMENT_TYPE'), brief.employmentType],
+          [t('JOB_POSTINGS.BRIEF_LEVEL'), brief.level],
+          [t('JOB_POSTINGS.BRIEF_LOCATION'), brief.location],
+          [t('JOB_POSTINGS.BRIEF_WORK_MODE'), brief.workMode],
+          [t('JOB_POSTINGS.BRIEF_EMPLOYMENT_TYPE'), brief.employmentType],
         ]}
       />
       {swedish && (
@@ -144,15 +146,15 @@ export const MatchBriefSummary = ({
 };
 
 // Rendered at the bottom of the card, below the matched and gap skills.
-export const MatchBriefDetails = ({
+export const PostingBriefDetails = ({
   brief,
-}: Pick<MatchBriefProps, 'brief'>) => {
+}: Pick<PostingBriefProps, 'brief'>) => {
   const { t } = useTranslation();
   if (!brief) return null;
 
   const details = [
-    [t('MATCHES.BRIEF_PAY'), brief.compensation],
-    [t('MATCHES.BRIEF_WORK_PERMIT'), brief.workAuthorization],
+    [t('JOB_POSTINGS.BRIEF_PAY'), brief.compensation],
+    [t('JOB_POSTINGS.BRIEF_WORK_PERMIT'), brief.workAuthorization],
   ] as const;
 
   return (
@@ -160,7 +162,7 @@ export const MatchBriefDetails = ({
       <CollapsibleCard
         title={
           <span className="flex items-center gap-1.5 text-sm text-primary">
-            {t('MATCHES.BRIEF_POSTING')}
+            {t('JOB_POSTINGS.BRIEF_POSTING')}
             <Info size={ICON_SIZE} />
           </span>
         }
@@ -169,40 +171,40 @@ export const MatchBriefDetails = ({
           {details.some(([, value]) => value) && (
             <div className="flex flex-col gap-1">
               <span className={SECTION_HEADING_CLASS}>
-                {t('MATCHES.BRIEF_ROLE')}
+                {t('JOB_POSTINGS.BRIEF_ROLE')}
               </span>
               <DetailList rows={details} />
             </div>
           )}
           <BriefList
-            title={t('MATCHES.BRIEF_RESPONSIBILITIES')}
+            title={t('JOB_POSTINGS.BRIEF_RESPONSIBILITIES')}
             items={brief.responsibilities}
           />
           <BriefList
-            title={t('MATCHES.BRIEF_MUST_HAVE')}
+            title={t('JOB_POSTINGS.BRIEF_MUST_HAVE')}
             items={brief.mustHave}
           />
           <BriefList
-            title={t('MATCHES.BRIEF_NICE_TO_HAVE')}
+            title={t('JOB_POSTINGS.BRIEF_NICE_TO_HAVE')}
             items={brief.niceToHave}
           />
           <BriefList
-            title={t('MATCHES.BRIEF_RED_FLAGS')}
+            title={t('JOB_POSTINGS.BRIEF_RED_FLAGS')}
             items={brief.redFlags}
           />
           {brief.abbreviations.length > 0 && (
             <div className="flex flex-col gap-1 sm:col-span-2">
               <span className={SECTION_HEADING_CLASS}>
-                {t('MATCHES.BRIEF_ABBREVIATIONS')}
+                {t('JOB_POSTINGS.BRIEF_ABBREVIATIONS')}
               </span>
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-muted-foreground">
                     <th className="py-1 pr-4 font-medium">
-                      {t('MATCHES.BRIEF_TERM')}
+                      {t('JOB_POSTINGS.BRIEF_TERM')}
                     </th>
                     <th className="py-1 font-medium">
-                      {t('MATCHES.BRIEF_MEANING')}
+                      {t('JOB_POSTINGS.BRIEF_MEANING')}
                     </th>
                   </tr>
                 </thead>

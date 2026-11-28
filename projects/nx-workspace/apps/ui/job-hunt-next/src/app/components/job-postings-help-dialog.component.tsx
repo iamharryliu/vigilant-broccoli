@@ -10,19 +10,19 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
 import {
-  buildMatchesBookmarklet,
+  buildJobPostingsBookmarklet,
   readBookmarkletTarget,
 } from '../utils/bookmarklet.utils';
 
-type JobMatchesHelpDialogProps = {
+type JobPostingsHelpDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export const JobMatchesHelpDialog = ({
+export const JobPostingsHelpDialog = ({
   open,
   onOpenChange,
-}: JobMatchesHelpDialogProps) => {
+}: JobPostingsHelpDialogProps) => {
   const { t } = useTranslation();
   const bookmarkletRef = useRef<HTMLAnchorElement>(null);
 
@@ -33,7 +33,7 @@ export const JobMatchesHelpDialog = ({
     const id = requestAnimationFrame(() =>
       bookmarkletRef.current?.setAttribute(
         'href',
-        buildMatchesBookmarklet(readBookmarkletTarget()),
+        buildJobPostingsBookmarklet(readBookmarkletTarget()),
       ),
     );
     return () => cancelAnimationFrame(id);
@@ -43,17 +43,17 @@ export const JobMatchesHelpDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[640px]">
         <DialogHeader>
-          <DialogTitle>{t('MATCHES.HELP_TITLE')}</DialogTitle>
+          <DialogTitle>{t('JOB_POSTINGS.HELP_TITLE')}</DialogTitle>
           <DialogDescription>
-            {t('MATCHES.DESCRIPTION_BEFORE')}{' '}
+            {t('JOB_POSTINGS.DESCRIPTION_BEFORE')}{' '}
             <a
               ref={bookmarkletRef}
               onClick={event => event.preventDefault()}
               className="underline"
             >
-              {t('MATCHES.BOOKMARKLET')}
+              {t('JOB_POSTINGS.BOOKMARKLET')}
             </a>{' '}
-            {t('MATCHES.DESCRIPTION_AFTER')}
+            {t('JOB_POSTINGS.DESCRIPTION_AFTER')}
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

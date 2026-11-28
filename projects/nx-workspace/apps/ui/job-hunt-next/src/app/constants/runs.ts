@@ -20,7 +20,8 @@ export const RUN_KIND = {
   CAREER_EXPERIENCE_IMPORT: 'career-experience-import',
   RESUME_IMPORT: 'resume-import',
   SKILL_SUGGESTIONS: 'skill-suggestions',
-  MATCH_BRIEF: 'match-brief',
+  // Stored with each run, so the pre-rename value stays.
+  POSTING_BRIEF: 'match-brief',
 } as const;
 
 export type RunKind = (typeof RUN_KIND)[keyof typeof RUN_KIND];

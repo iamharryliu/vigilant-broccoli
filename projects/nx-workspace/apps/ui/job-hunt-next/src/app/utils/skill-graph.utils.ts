@@ -1,5 +1,5 @@
 import type { NoteGraph } from '@vigilant-broccoli/docs-explorer';
-import { SKILL_VOCABULARY, type JobMatch } from './job-matches.utils';
+import { SKILL_VOCABULARY, type JobMatch } from './posting-match.utils';
 
 export const GROUP_NODE_PREFIX = 'group:';
 export const SKILL_LINK_KIND = {

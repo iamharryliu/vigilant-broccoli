@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
-import { MATCH_LEVEL, type JobMatch } from '../utils/job-matches.utils';
+import { MATCH_LEVEL, type JobMatch } from '../utils/posting-match.utils';
 
 export type SkillPostings = { skill: string; matches: JobMatch[] };
 
@@ -28,12 +28,12 @@ export const SkillPostingsDialog = ({
       <DialogContent className="max-w-[560px]">
         <DialogHeader>
           <DialogTitle>
-            {t('MATCHES.SKILL_POSTINGS_TITLE', {
+            {t('JOB_POSTINGS.SKILL_POSTINGS_TITLE', {
               name: selection?.skill ?? '',
             })}
           </DialogTitle>
           <DialogDescription>
-            {t('MATCHES.SKILL_POSTINGS_DESCRIPTION', {
+            {t('JOB_POSTINGS.SKILL_POSTINGS_DESCRIPTION', {
               count: String(selection?.matches.length ?? 0),
             })}
           </DialogDescription>

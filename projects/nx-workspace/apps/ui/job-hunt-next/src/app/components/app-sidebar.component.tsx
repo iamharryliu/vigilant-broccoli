@@ -22,8 +22,8 @@ import {
 } from 'lucide-react';
 import {
   JOB_APPLICATION_BOOKMARKLET,
-  JOB_MATCHES_PROGRESS_STATE,
-  isJobMatchesBookmarkletMessage,
+  JOB_POSTINGS_PROGRESS_STATE,
+  isJobPostingsBookmarkletMessage,
 } from '@vigilant-broccoli/common-js';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { Sidebar } from '@vigilant-broccoli/sidebar';
@@ -36,8 +36,8 @@ import {
 import { OPEN_HELP_EVENT } from '../constants/career';
 import { useTranslation } from '../i18n';
 import { readBookmarkletTarget } from '../utils/bookmarklet.utils';
-import { setMatchesProgress } from '../utils/job-matches-progress.utils';
-import { addMatchPostings } from '../utils/job-matches-storage.utils';
+import { setCaptureProgress } from '../utils/capture-progress.utils';
+import { addSavedPostings } from '../utils/saved-postings-storage.utils';
 import { JobApplicationDialog } from './job-application-dialog.component';
 import { JobApplicationHelpDialog } from './job-application-help-dialog.component';
 
@@ -45,7 +45,7 @@ const TAB_ICON: Record<AppTab, LucideIcon> = {
   [APP_TAB.APPLICATIONS.value]: ClipboardList,
   [APP_TAB.CAREER_EXPERIENCE.value]: ScrollText,
   [APP_TAB.RESUME.value]: FileUser,
-  [APP_TAB.MATCHES.value]: Target,
+  [APP_TAB.JOB_POSTINGS.value]: Target,
   [APP_TAB.SKILLS.value]: Network,
   [APP_TAB.SKILLS_GLOSSARY.value]: BookA,
   [APP_TAB.NOTES.value]: NotebookPen,
@@ -60,7 +60,7 @@ const NAV_GROUPS = [
     id: 'job-search',
     titleKey: 'NAV.GROUP_JOB_SEARCH',
     icon: Briefcase,
-    tabs: [APP_TAB.MATCHES, APP_TAB.APPLICATIONS, APP_TAB.RUNS],
+    tabs: [APP_TAB.JOB_POSTINGS, APP_TAB.APPLICATIONS, APP_TAB.RUNS],
   },
   {
     id: 'career-profile',
@@ -121,28 +121,28 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
   }, []);
 
   // The search-results bookmarklet streams its postings here whichever tab
-  // was last used: each is stored as it arrives and the Matches tab shown, so
-  // that page can show progress.
+  // was last used: each is stored as it arrives and the Job postings tab
+  // shown, so that page can show progress.
   useEffect(() => {
     const receive = (event: MessageEvent) => {
-      if (!isJobMatchesBookmarkletMessage(event.data)) return;
+      if (!isJobPostingsBookmarkletMessage(event.data)) return;
       const { postings, progress, skipped = [] } = event.data;
       (event.source as Window | null)?.postMessage(
         JOB_APPLICATION_BOOKMARKLET.ACK,
         event.origin,
       );
-      setMatchesProgress(progress);
-      if (window.location.pathname !== APP_TAB.MATCHES.path) {
-        router.push(APP_TAB.MATCHES.path);
+      setCaptureProgress(progress);
+      if (window.location.pathname !== APP_TAB.JOB_POSTINGS.path) {
+        router.push(APP_TAB.JOB_POSTINGS.path);
       }
       if (postings.length || skipped.length) {
-        addMatchPostings(postings, skipped).catch(() =>
-          toast.error(t('MATCHES.SAVE_FAILED')),
+        addSavedPostings(postings, skipped).catch(() =>
+          toast.error(t('JOB_POSTINGS.SAVE_FAILED')),
         );
       }
-      if (progress.state === JOB_MATCHES_PROGRESS_STATE.DONE) {
+      if (progress.state === JOB_POSTINGS_PROGRESS_STATE.DONE) {
         toast.success(
-          t('MATCHES.CAPTURED', { count: String(progress.captured) }),
+          t('JOB_POSTINGS.CAPTURED', { count: String(progress.captured) }),
         );
       }
     };

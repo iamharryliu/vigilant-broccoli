@@ -10,7 +10,6 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   CircleCheck,
   ExternalLink,
@@ -19,11 +18,9 @@ import {
   Undo2,
 } from 'lucide-react';
 import {
-  CONTENT_TYPE_HEADER,
   FILE_ENTRY_KIND,
   FileEntry,
   HTTP_METHOD,
-  JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
 import {
   Badge,
@@ -44,8 +41,7 @@ import { CoverLetterTab } from './cover-letter-tab.component';
 import { applicationResumeSource, ResumeTab } from './resume-tab.component';
 import { TabbedListContainer } from './tabbed-list-container.component';
 import { CRUDItemList } from '@vigilant-broccoli/react-lib-crud-list';
-import { EXPAND_LATEST, EXPAND_PARAM, RUNS_TAB_URL } from '../app.const';
-import { RUN_STATUS } from '../constants/runs';
+import { EXPAND_LATEST, EXPAND_PARAM } from '../app.const';
 import {
   APPLICATION_STATUS,
   APPLICATION_STATUSES,
@@ -57,14 +53,18 @@ import { IS_DEMO } from '../constants/demo';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { useTranslation } from '../i18n';
 import {
-  fetchMatchPostings,
-  type StoredMatchPosting,
-} from '../utils/job-matches-storage.utils';
+  listApplicationPostingUrls,
+  useStartApplicationRun,
+} from '../hooks/use-start-application-run';
+import {
+  fetchSavedPostings,
+  type SavedPosting,
+} from '../utils/saved-postings-storage.utils';
 import {
   APPLICATION_FILE,
   Brief,
   findApplicationFile,
-  formatMatchTitle,
+  formatSavedPostingTitle,
   parseApplicationFolder,
   parseBrief,
   parseGaps,
@@ -75,7 +75,10 @@ import {
   JobDescription,
   parseJobDescription,
 } from '../utils/job-posting.utils';
-import { MatchBriefDetails, MatchBriefSummary } from './match-brief.component';
+import {
+  PostingBriefDetails,
+  PostingBriefSummary,
+} from './posting-brief.component';
 
 const POSTING_URL_LINE = /^Posting URL:\s*(\S+)\s*\n?/;
 const HTTP_URL = /^https?:\/\//i;
@@ -112,12 +115,13 @@ type ApplicationItem = {
   date: string;
   created: string;
   status: ApplicationStatus | null;
-  // Set on an applied match that has no application folder yet: it has a
-  // posting and a brief but no resume or cover letter until one is generated.
-  match?: StoredMatchPosting;
+  // Set on an applied saved posting that has no application folder yet: it
+  // has a posting and a brief but no resume or cover letter until one is
+  // generated.
+  savedPosting?: SavedPosting;
 };
 
-const MATCH_ID_PREFIX = 'match:';
+const SAVED_POSTING_ID_PREFIX = 'saved-posting:';
 
 type ApplicationDetails = {
   hasResumeSource: boolean;
@@ -130,8 +134,8 @@ type ApplicationDetails = {
   // The gaps file older applications have instead of a brief; null when
   // missing too.
   gaps: string[] | null;
-  // The brief of an applied match, which is shaped differently.
-  matchBrief?: StoredMatchPosting['brief'];
+  // The brief of an applied saved posting, which is shaped differently.
+  postingBrief?: SavedPosting['brief'];
 };
 
 type ExpansionContextValue = {
@@ -154,15 +158,6 @@ const listStatuses = async (): Promise<
   const data = await response.json();
   if (!response.ok) throw new Error(data.error);
   return data.statuses;
-};
-
-const listPostingUrls = async (): Promise<string[]> => {
-  const response = await fetch(
-    `${API_ENDPOINTS.JOB_APPLICATIONS}?postingUrls=true`,
-  );
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error);
-  return data.urls;
 };
 
 const listFiles = async (folder: string) =>
@@ -310,12 +305,15 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
                 <TabsTrigger value={POSTING_TAB.BRIEF}>
                   {t('APPLICATIONS.TAB_BRIEF')}
                 </TabsTrigger>
-                <TabsTrigger value={POSTING_TAB.RESUME} disabled={!!item.match}>
+                <TabsTrigger
+                  value={POSTING_TAB.RESUME}
+                  disabled={!!item.savedPosting}
+                >
                   {t('APPLICATIONS.TAB_RESUME')}
                 </TabsTrigger>
                 <TabsTrigger
                   value={POSTING_TAB.COVER_LETTER}
-                  disabled={!!item.match}
+                  disabled={!!item.savedPosting}
                 >
                   {t('APPLICATIONS.TAB_COVER_LETTER')}
                 </TabsTrigger>
@@ -330,14 +328,14 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
                 />
               </TabsContent>
               <TabsContent value={POSTING_TAB.BRIEF} className="pt-3">
-                {details.matchBrief ? (
-                  // The match brief's blocks bleed 12px past their container.
+                {details.postingBrief ? (
+                  // The posting brief's blocks bleed 12px past their container.
                   <div className="flex flex-col gap-2 px-3">
-                    <MatchBriefSummary
-                      brief={details.matchBrief}
+                    <PostingBriefSummary
+                      brief={details.postingBrief}
                       generating={false}
                     />
-                    <MatchBriefDetails brief={details.matchBrief} />
+                    <PostingBriefDetails brief={details.postingBrief} />
                   </div>
                 ) : details.brief ? (
                   <BriefView brief={details.brief} />
@@ -415,7 +413,7 @@ const ApplicationRow = ({ item }: { item: ApplicationItem }) => {
       <span className="block min-w-0 truncate text-sm font-medium">
         {item.title}
       </span>
-      {item.match && (
+      {item.savedPosting && (
         <Badge color="amber" variant="soft" size="1" className="shrink-0">
           {t('APPLICATIONS.NO_DOCUMENTS')}
         </Badge>
@@ -433,7 +431,7 @@ const ApplicationRow = ({ item }: { item: ApplicationItem }) => {
 
 export const JobApplicationList = () => {
   const { t } = useTranslation();
-  const router = useRouter();
+  const startApplicationRun = useStartApplicationRun();
   const [items, setItems] = useState<ApplicationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [defaultExpandedIds, setDefaultExpandedIds] = useState<string[]>([]);
@@ -446,27 +444,27 @@ export const JobApplicationList = () => {
         const [entries, statuses, postingUrls, postings] = await Promise.all([
           listFolder(''),
           listStatuses(),
-          IS_DEMO ? [] : listPostingUrls(),
-          IS_DEMO ? [] : fetchMatchPostings().catch(() => []),
+          IS_DEMO ? [] : listApplicationPostingUrls(),
+          IS_DEMO ? [] : fetchSavedPostings().catch(() => []),
         ]);
         const folders = entries.filter(
           entry => entry.kind === FILE_ENTRY_KIND.FOLDER,
         );
         const generated = new Set(postingUrls);
-        const appliedMatches = postings
+        const appliedPostings = postings
           .filter(posting => posting.applied && !generated.has(posting.url))
           .map((posting): ApplicationItem => {
             const { role, company } = parseJobDescription(
               extractJobPosting(posting.title, posting.text),
             );
             return {
-              id: `${MATCH_ID_PREFIX}${posting.url}`,
+              id: `${SAVED_POSTING_ID_PREFIX}${posting.url}`,
               created: posting.capturedAt,
               date: posting.capturedAt.slice(0, 10),
               status: null,
               label: [company, role].filter(Boolean).join(' '),
-              title: formatMatchTitle(posting.capturedAt, company, role),
-              match: posting,
+              title: formatSavedPostingTitle(posting.capturedAt, company, role),
+              savedPosting: posting,
             };
           });
         const sorted = [
@@ -480,7 +478,7 @@ export const JobApplicationList = () => {
               folder.created,
             ),
           })),
-          ...appliedMatches,
+          ...appliedPostings,
         ].sort(
           (a, b) =>
             b.date.localeCompare(a.date) || b.created.localeCompare(a.created),
@@ -515,15 +513,15 @@ export const JobApplicationList = () => {
 
   const loadDetails = useCallback(
     async (item: ApplicationItem): Promise<ApplicationDetails> => {
-      if (item.match) {
+      if (item.savedPosting) {
         return {
           description: parseJobDescription(
-            extractJobPosting(item.match.title, item.match.text),
+            extractJobPosting(item.savedPosting.title, item.savedPosting.text),
           ),
-          postingUrl: item.match.url,
+          postingUrl: item.savedPosting.url,
           brief: null,
           gaps: null,
-          matchBrief: item.match.brief,
+          postingBrief: item.savedPosting.brief,
           hasResumeSource: false,
           hasCoverLetter: false,
         };
@@ -560,45 +558,21 @@ export const JobApplicationList = () => {
     [t],
   );
 
-  // The same run the Add application dialog starts, fed the stored posting.
-  const generateDocuments = async ({ match }: ApplicationItem) => {
-    if (!match) return;
-    try {
-      const response = await fetch(API_ENDPOINTS.JOB_APPLICATIONS_RUN, {
-        method: HTTP_METHOD.POST,
-        headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
-        body: JSON.stringify({ url: match.url, text: match.text }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
-      toast.success(
-        t(
-          data.status === RUN_STATUS.QUEUED
-            ? 'DIALOG.QUEUED'
-            : 'DIALOG.STARTED',
-        ),
-        {
-          action: {
-            label: t('DIALOG.VIEW_PROGRESS'),
-            onClick: () => router.push(RUNS_TAB_URL),
-          },
-        },
-      );
-    } catch (error) {
-      toast.error(errorMessage(error, t('DIALOG.RUN_FAILED')));
-    }
-  };
-
-  const itemActions = (item: ApplicationItem): EllipsisAction[] =>
-    item.match
+  const itemActions = (item: ApplicationItem): EllipsisAction[] => {
+    const { savedPosting } = item;
+    // The same run the Add application dialog starts, fed the stored posting.
+    return savedPosting
       ? [
           {
             label: t('APPLICATIONS.GENERATE_DOCUMENTS'),
             icon: <Sparkles size={16} />,
-            onSelect: () => generateDocuments(item),
+            onSelect: () => {
+              startApplicationRun(savedPosting);
+            },
           },
         ]
       : folderActions(item);
+  };
 
   const folderActions = (item: ApplicationItem): EllipsisAction[] => [
     ...APPLICATION_STATUSES.filter(status => status !== item.status).map(
@@ -722,8 +696,8 @@ export const JobApplicationList = () => {
       );
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
-      // Applied matches have no folder, so they stay.
-      setItems(previous => previous.filter(entry => entry.match));
+      // Applied saved postings have no folder, so they stay.
+      setItems(previous => previous.filter(entry => entry.savedPosting));
       setView(LIST_VIEW);
       undoToast(t('APPLICATIONS.CLEARED'), t('APPLICATIONS.UNDO'), () =>
         restoreApplications(data.trashed),
@@ -733,7 +707,7 @@ export const JobApplicationList = () => {
     }
   };
 
-  const folderCount = items.filter(item => !item.match).length;
+  const folderCount = items.filter(item => !item.savedPosting).length;
   const query = search.trim().toLowerCase();
   const visibleItems = useMemo(
     () =>

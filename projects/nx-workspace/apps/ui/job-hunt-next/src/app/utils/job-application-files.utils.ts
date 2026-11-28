@@ -56,8 +56,9 @@ const DATE_FORMAT: Intl.DateTimeFormatOptions = {
 const formatDate = (isoDate: string) =>
   new Date(isoDate).toLocaleDateString('en-US', DATE_FORMAT);
 
-// The title a folder would get, for an applied match that has no folder yet.
-export const formatMatchTitle = (
+// The title a folder would get, for an applied saved posting that has no
+// folder yet.
+export const formatSavedPostingTitle = (
   capturedAt: string,
   company: string,
   role: string,

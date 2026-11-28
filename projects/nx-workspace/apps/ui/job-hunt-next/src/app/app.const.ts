@@ -16,7 +16,11 @@ export const APP_TAB = {
     path: `/${CAREER_FILE_KIND.RESUME}`,
     titleKey: 'NAV.RESUME',
   },
-  MATCHES: { value: 'matches', path: '/matches', titleKey: 'NAV.MATCHES' },
+  JOB_POSTINGS: {
+    value: 'job-postings',
+    path: '/job-postings',
+    titleKey: 'NAV.JOB_POSTINGS',
+  },
   SKILLS: { value: 'skills', path: '/skills', titleKey: 'NAV.SKILLS' },
   SKILLS_GLOSSARY: {
     value: 'skills-glossary',

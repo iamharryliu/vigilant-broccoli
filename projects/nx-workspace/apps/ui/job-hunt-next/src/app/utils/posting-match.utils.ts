@@ -1,5 +1,8 @@
-import type { JobMatchesBookmarkletPosting } from '@vigilant-broccoli/common-js';
-import { SWEDISH_REQUIREMENT, type MatchBrief } from '../constants/matches';
+import type { JobPostingsBookmarkletPosting } from '@vigilant-broccoli/common-js';
+import {
+  SWEDISH_REQUIREMENT,
+  type PostingBrief,
+} from '../constants/saved-postings';
 import { extractJobPosting, parseJobDescription } from './job-posting.utils';
 
 export const MATCH_LEVEL = {
@@ -520,7 +523,7 @@ export type JobMatch = {
   postedAt: number | null;
   // Unset for postings captured before Easy Apply was recorded.
   easyApply?: boolean;
-  brief: MatchBrief | null;
+  brief: PostingBrief | null;
   role: string;
   company: string;
   matched: string[];
@@ -566,9 +569,9 @@ const levelFor = (ratio: number, detected: number): MatchLevel => {
 // covers a vocabulary term when its text contains the term or an alias of it; owned skills outside the vocabulary still count when the
 // posting names them verbatim.
 export const matchPosting = (
-  posting: JobMatchesBookmarkletPosting & {
+  posting: JobPostingsBookmarkletPosting & {
     capturedAt?: string;
-    brief?: MatchBrief | null;
+    brief?: PostingBrief | null;
     archived?: boolean;
     applied?: boolean;
   },
@@ -661,29 +664,30 @@ export type MatchFilters = {
   view: PostingsView;
 };
 
-export const MATCHES_VIEW = {
-  MATCHES: 'matches',
+export const JOB_POSTINGS_VIEW = {
+  ACTIVE: 'active',
   APPLIED: 'applied',
   ARCHIVED: 'archived',
   DELETED: 'deleted',
   SETTINGS: 'settings',
 } as const;
 
-export type MatchesView = (typeof MATCHES_VIEW)[keyof typeof MATCHES_VIEW];
+export type JobPostingsView =
+  (typeof JOB_POSTINGS_VIEW)[keyof typeof JOB_POSTINGS_VIEW];
 
 // Deleted postings come from their own list and Settings lists none, so the
 // filters only ever see these views.
 export type PostingsView = Exclude<
-  MatchesView,
-  typeof MATCHES_VIEW.DELETED | typeof MATCHES_VIEW.SETTINGS
+  JobPostingsView,
+  typeof JOB_POSTINGS_VIEW.DELETED | typeof JOB_POSTINGS_VIEW.SETTINGS
 >;
 
 // Applying archives a posting and flags it, so Applied and Archived split the
 // archived postings by that flag.
 const inView = (match: JobMatch, view: PostingsView) =>
-  view === MATCHES_VIEW.MATCHES
+  view === JOB_POSTINGS_VIEW.ACTIVE
     ? !match.archived
-    : match.archived && match.applied === (view === MATCHES_VIEW.APPLIED);
+    : match.archived && match.applied === (view === JOB_POSTINGS_VIEW.APPLIED);
 
 // A posting passes when every spoken language it names is one of the user's,
 // so "Swedish and English" is hidden for an English-only user; one naming none
@@ -787,7 +791,10 @@ const detectLanguages = (description: string) =>
 
 // A posting written in Swedish ("svenska") never contains the English word, so
 // the brief's verdict also counts.
-const withBriefLanguages = (languages: string[], brief?: MatchBrief | null) =>
+const withBriefLanguages = (
+  languages: string[],
+  brief?: PostingBrief | null,
+) =>
   brief?.swedish === SWEDISH_REQUIREMENT.REQUIRED &&
   !languages.includes('Swedish')
     ? [...languages, 'Swedish']

@@ -5,14 +5,14 @@ import { RUN_KIND } from '../app/constants/runs';
 import {
   SKILL_VOCABULARY,
   type SkillTerm,
-} from '../app/utils/job-matches.utils';
+} from '../app/utils/posting-match.utils';
 import {
   extractJobPosting,
   parseJobDescription,
 } from '../app/utils/job-posting.utils';
 import { startClaudeRun } from './claude-run.server';
-import { addSuggestedSkills, listMatchSkills } from './job-match-skills.db';
-import { listMatchPostings } from './job-matches.db';
+import { addSuggestedSkills, listPostingSkills } from './posting-skills.db';
+import { listSavedPostings } from './saved-postings.db';
 import { IMPORTS_DIR } from './paths.server';
 
 const POSTINGS_FILE = 'postings.txt';
@@ -88,8 +88,8 @@ const parseSuggestions = (
 };
 
 export const startSkillSuggestionRun = async () => {
-  const postings = listMatchPostings();
-  const stored = listMatchSkills();
+  const postings = listSavedPostings();
+  const stored = listPostingSkills();
   const customTerms = stored.map(({ name, aliases }) => ({ name, aliases }));
   const terms = [...SKILL_VOCABULARY, ...customTerms];
   const known = new Set(

@@ -18,9 +18,9 @@ import {
   JOB_APPLICATIONS_CHANGED_EVENT,
 } from '../constants/career';
 import {
-  JOB_MATCH_SKILLS_CHANGED_EVENT,
-  JOB_MATCHES_CHANGED_EVENT,
-} from '../constants/matches';
+  POSTING_SKILLS_CHANGED_EVENT,
+  SAVED_POSTINGS_CHANGED_EVENT,
+} from '../constants/saved-postings';
 import {
   isActiveRunStatus,
   JobApplicationRun,
@@ -84,10 +84,10 @@ export const RunNotifications = () => {
         notifyImport(run, importedFile);
         return;
       }
-      if (run.kind === RUN_KIND.MATCH_BRIEF) {
-        window.dispatchEvent(new Event(JOB_MATCHES_CHANGED_EVENT));
+      if (run.kind === RUN_KIND.POSTING_BRIEF) {
+        window.dispatchEvent(new Event(SAVED_POSTINGS_CHANGED_EVENT));
         if (run.status === RUN_STATUS.FAILED) {
-          toast.error(t('MATCHES.BRIEF_RUN_FAILED'), {
+          toast.error(t('JOB_POSTINGS.BRIEF_RUN_FAILED'), {
             description: run.title,
             action: {
               label: t('DIALOG.VIEW_PROGRESS'),
@@ -98,7 +98,7 @@ export const RunNotifications = () => {
         return;
       }
       if (run.kind === RUN_KIND.SKILL_SUGGESTIONS) {
-        window.dispatchEvent(new CustomEvent(JOB_MATCH_SKILLS_CHANGED_EVENT));
+        window.dispatchEvent(new CustomEvent(POSTING_SKILLS_CHANGED_EVENT));
         if (run.status === RUN_STATUS.FAILED) {
           toast.error(t('RUNS.FAILED'), {
             description: run.title,
@@ -109,10 +109,10 @@ export const RunNotifications = () => {
           });
           return;
         }
-        toast.success(t('MATCHES.SUGGESTIONS_READY'), {
+        toast.success(t('JOB_POSTINGS.SUGGESTIONS_READY'), {
           action: {
             label: t('RUNS.VIEW'),
-            onClick: () => router.push(APP_TAB.MATCHES.path),
+            onClick: () => router.push(APP_TAB.JOB_POSTINGS.path),
           },
         });
         return;

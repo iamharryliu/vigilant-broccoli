@@ -1,11 +1,19 @@
 import { createHash } from 'crypto';
-import type { StoredJobMatchesPosting } from '@vigilant-broccoli/common-js';
-import type { MatchBrief, MatchBriefState } from '../app/constants/matches';
+import type { StoredBookmarkletPosting } from '@vigilant-broccoli/common-js';
+import type {
+  PostingBrief,
+  PostingBriefState,
+} from '../app/constants/saved-postings';
 import { getJobHuntDb } from './job-application-runs.db';
-import { isMatchBriefRunning } from './match-brief-inflight';
-import { listMatchPostings, purgeDeletedMatchPostings } from './job-matches.db';
+import { isPostingBriefRunning } from './posting-brief-inflight';
+import {
+  listSavedPostings,
+  purgeDeletedSavedPostings,
+} from './saved-postings.db';
 import { softDeleteCutoff } from './soft-delete';
 
+// Named before the Matches page became Job postings; kept to avoid migrating
+// existing databases.
 const BRIEFS_TABLE = 'job_match_briefs';
 
 interface BriefRow {
@@ -30,10 +38,10 @@ const ensureTable = () => {
 export const hashPostingText = (text: string) =>
   createHash('sha256').update(text).digest('hex');
 
-export const saveMatchBrief = (
+export const savePostingBrief = (
   url: string,
   textHash: string,
-  brief: MatchBrief,
+  brief: PostingBrief,
 ) => {
   ensureTable()
     .prepare(
@@ -43,7 +51,7 @@ export const saveMatchBrief = (
     .run(url, textHash, JSON.stringify(brief), new Date().toISOString());
 };
 
-export const deleteMatchBrief = (url: string) => {
+export const deletePostingBrief = (url: string) => {
   ensureTable().prepare(`DELETE FROM ${BRIEFS_TABLE} WHERE url = ?`).run(url);
 };
 
@@ -52,12 +60,12 @@ export const deleteMatchBrief = (url: string) => {
 // the posting leaves it stale, so it is not returned.
 export const listPostingsWithBriefs = (
   deleted = false,
-): (StoredJobMatchesPosting & MatchBriefState)[] => {
+): (StoredBookmarkletPosting & PostingBriefState)[] => {
   const rows = ensureTable()
     .prepare(`SELECT url, text_hash, brief FROM ${BRIEFS_TABLE}`)
     .all() as unknown as BriefRow[];
   const byUrl = new Map(rows.map(row => [row.url, row]));
-  return listMatchPostings(deleted).map(posting => {
+  return listSavedPostings(deleted).map(posting => {
     const row = byUrl.get(posting.url);
     return {
       ...posting,
@@ -67,16 +75,16 @@ export const listPostingsWithBriefs = (
               abbreviations: [],
               employmentType: '',
               ...JSON.parse(row.brief),
-            } as MatchBrief)
+            } as PostingBrief)
           : null,
-      briefRunning: isMatchBriefRunning(posting.url),
+      briefRunning: isPostingBriefRunning(posting.url),
     };
   });
 };
 
 // Cleanup for soft-deleted postings: runs when the list is read, so no
 // scheduler is needed.
-export const purgeExpiredMatchPostings = () =>
-  purgeDeletedMatchPostings(softDeleteCutoff().toISOString()).forEach(
-    deleteMatchBrief,
+export const purgeExpiredSavedPostings = () =>
+  purgeDeletedSavedPostings(softDeleteCutoff().toISOString()).forEach(
+    deletePostingBrief,
   );

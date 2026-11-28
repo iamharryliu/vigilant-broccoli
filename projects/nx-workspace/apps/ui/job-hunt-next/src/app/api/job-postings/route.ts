@@ -1,25 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   HTTP_STATUS_CODES,
-  JOB_MATCHES_SKIP_REASON,
-  type JobMatchesBookmarkletSkip,
+  JOB_POSTINGS_SKIP_REASON,
+  type JobPostingsBookmarkletSkip,
 } from '@vigilant-broccoli/common-js';
 import {
   listPostingsWithBriefs,
-  purgeExpiredMatchPostings,
-} from '../../../lib/job-match-briefs.db';
-import { startMissingMatchBriefRuns } from '../../../lib/match-brief-runner';
+  purgeExpiredSavedPostings,
+} from '../../../lib/posting-briefs.db';
+import { startMissingPostingBriefRuns } from '../../../lib/posting-brief-runner';
 import { IS_DEMO } from '../../constants/demo';
 import {
-  restoreMatchPosting,
-  restoreMatchPostings,
-  softDeleteAllMatchPostings,
-  softDeleteMatchPosting,
-  listMatchSkips,
-  saveMatchPostings,
-  saveMatchSkips,
-  setMatchPostingArchived,
-} from '../../../lib/job-matches.db';
+  restoreSavedPosting,
+  restoreSavedPostings,
+  softDeleteAllSavedPostings,
+  softDeleteSavedPosting,
+  listCaptureSkips,
+  saveSavedPostings,
+  saveCaptureSkips,
+  setSavedPostingArchived,
+} from '../../../lib/saved-postings.db';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,18 +30,18 @@ const MAX_POSTING_TEXT = 30000;
 const MAX_POSTED_LENGTH = 40;
 
 const MAX_SKIP_TEXT = 300;
-const LOG_PREFIX = '[job-matches]';
+const LOG_PREFIX = '[job-postings]';
 
 const isText = (value: unknown): value is string =>
   typeof value === 'string' && value.trim() !== '';
 
-const SKIP_REASONS: string[] = Object.values(JOB_MATCHES_SKIP_REASON);
+const SKIP_REASONS: string[] = Object.values(JOB_POSTINGS_SKIP_REASON);
 
-const parseSkips = (value: unknown): JobMatchesBookmarkletSkip[] =>
+const parseSkips = (value: unknown): JobPostingsBookmarkletSkip[] =>
   Array.isArray(value)
     ? value
         .filter(
-          (skip): skip is JobMatchesBookmarkletSkip =>
+          (skip): skip is JobPostingsBookmarkletSkip =>
             typeof skip?.title === 'string' &&
             typeof skip?.detail === 'string' &&
             SKIP_REASONS.includes(skip?.reason),
@@ -56,13 +56,13 @@ const parseSkips = (value: unknown): JobMatchesBookmarkletSkip[] =>
 // The skips are also readable here so a scan that stored fewer postings than
 // the page showed can be explained without the LinkedIn tab's console.
 export async function GET(req: NextRequest) {
-  purgeExpiredMatchPostings();
+  purgeExpiredSavedPostings();
   if (req.nextUrl.searchParams.get(DELETED_PARAM) === 'true') {
     return NextResponse.json({ postings: listPostingsWithBriefs(true) });
   }
   return NextResponse.json({
     postings: listPostingsWithBriefs(),
-    skips: listMatchSkips(),
+    skips: listCaptureSkips(),
   });
 }
 
@@ -95,8 +95,8 @@ export async function POST(req: NextRequest) {
     console.warn(`${LOG_PREFIX} skipped (${reason}): ${title} | ${detail}`),
   );
   try {
-    saveMatchSkips(skips);
-    saveMatchPostings(
+    saveCaptureSkips(skips);
+    saveSavedPostings(
       postings.map(
         (posting: {
           url: string;
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
   // Each batch the bookmarklet streams in gets briefs for its new postings;
   // a run's failure must not fail the save.
   if (!IS_DEMO) {
-    startMissingMatchBriefRuns().catch(error =>
+    startMissingPostingBriefRuns().catch(error =>
       console.error(`${LOG_PREFIX} failed to start briefs`, error),
     );
   }
@@ -142,11 +142,11 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (Array.isArray(body?.urls) && body?.deleted === false) {
-    restoreMatchPostings(body.urls.filter(isText));
+    restoreSavedPostings(body.urls.filter(isText));
     return NextResponse.json({ postings: listPostingsWithBriefs() });
   }
   if (isText(body?.url) && body?.deleted === false) {
-    if (!restoreMatchPosting(body.url)) {
+    if (!restoreSavedPosting(body.url)) {
       return NextResponse.json(
         { error: 'Posting not found' },
         { status: HTTP_STATUS_CODES.INVALID_PATH },
@@ -161,7 +161,7 @@ export async function PATCH(req: NextRequest) {
     );
   }
   if (
-    !setMatchPostingArchived(body.url, body.archived, body.applied === true)
+    !setSavedPostingArchived(body.url, body.archived, body.applied === true)
   ) {
     return NextResponse.json(
       { error: 'Posting not found' },
@@ -177,7 +177,7 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const url = req.nextUrl.searchParams.get(URL_PARAM);
   const deleted = url
-    ? (softDeleteMatchPosting(url), [url])
-    : softDeleteAllMatchPostings();
+    ? (softDeleteSavedPosting(url), [url])
+    : softDeleteAllSavedPostings();
   return NextResponse.json({ postings: listPostingsWithBriefs(), deleted });
 }

@@ -14,17 +14,17 @@ import {
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { useTranslation } from '../i18n';
 import {
-  addMatchPostings,
-  type StoredMatchPosting,
-} from '../utils/job-matches-storage.utils';
+  addSavedPostings,
+  type SavedPosting,
+} from '../utils/saved-postings-storage.utils';
 
 // Saving the pasted text replaces the stored posting text, which also makes
 // its brief stale so a new one is generated.
-export const RedoMatchingDialog = ({
+export const RecapturePostingDialog = ({
   posting,
   onClose,
 }: {
-  posting: StoredMatchPosting | null;
+  posting: SavedPosting | null;
   onClose: () => void;
 }) => {
   const { t } = useTranslation();
@@ -39,7 +39,7 @@ export const RedoMatchingDialog = ({
     if (!posting) return;
     setSaving(true);
     try {
-      await addMatchPostings([
+      await addSavedPostings([
         {
           url: posting.url,
           title: posting.title,
@@ -50,7 +50,7 @@ export const RedoMatchingDialog = ({
       ]);
       onClose();
     } catch {
-      toast.error(t('MATCHES.SAVE_FAILED'));
+      toast.error(t('JOB_POSTINGS.SAVE_FAILED'));
     } finally {
       setSaving(false);
     }
@@ -60,21 +60,23 @@ export const RedoMatchingDialog = ({
     <Dialog open={!!posting} onOpenChange={open => !open && onClose()}>
       <DialogContent className="max-w-[640px]">
         <DialogHeader>
-          <DialogTitle>{t('MATCHES.REDO_TITLE')}</DialogTitle>
-          <DialogDescription>{t('MATCHES.REDO_DESCRIPTION')}</DialogDescription>
+          <DialogTitle>{t('JOB_POSTINGS.RECAPTURE_TITLE')}</DialogTitle>
+          <DialogDescription>
+            {t('JOB_POSTINGS.RECAPTURE_DESCRIPTION')}
+          </DialogDescription>
         </DialogHeader>
         <Textarea
           value={text}
           onChange={event => setText(event.target.value)}
-          placeholder={t('MATCHES.REDO_PLACEHOLDER')}
+          placeholder={t('JOB_POSTINGS.RECAPTURE_PLACEHOLDER')}
           className="h-72 resize-none"
         />
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            {t('MATCHES.CANCEL')}
+            {t('JOB_POSTINGS.CANCEL')}
           </Button>
           <Button loading={saving} disabled={!text.trim()} onClick={save}>
-            {t('MATCHES.REDO_SAVE')}
+            {t('JOB_POSTINGS.RECAPTURE_SAVE')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -49,7 +49,7 @@ type TabbedListContainerProps = {
   children: ReactNode;
 };
 
-// The shared frame of the Matches and Applications pages: a tab strip that ends
+// The shared frame of the Job postings and Applications pages: a tab strip that ends
 // in Settings, a toolbar beside it, the list below, and on Settings a danger
 // card whose clear-all action asks for confirmation first.
 export const TabbedListContainer = ({
