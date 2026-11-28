@@ -10,17 +10,22 @@ VAULT_TOKEN=$(gcloud secrets versions access latest \
   --secret=VB_VM_VAULT_ROOT_TOKEN \
   --project="${GCP_PROJECT}")
 
-echo "Capturing currently active token IDs..."
-OLD_TOKEN_IDS=$(fly tokens list --scope org --org personal | awk -F'│' '
+# Only this script's own tokens: the org also holds the log shipper's read-only
+# token (rotate-fly-log-shipper-token.sh) and Fly-managed ones, and revoking
+# those silently breaks their consumers.
+TOKEN_NAME="vb-deploy-token"
+
+echo "Capturing currently active ${TOKEN_NAME} IDs..."
+OLD_TOKEN_IDS=$(fly tokens list --scope org --org personal | awk -F'│' -v name="$TOKEN_NAME" '
 NR > 1 && NF >= 5 {
-  id = $1; revoked = $5
-  gsub(/[[:space:]]/, "", id); gsub(/[[:space:]]/, "", revoked)
-  if (id != "" && revoked == "") print id
+  id = $1; tname = $2; revoked = $5
+  gsub(/[[:space:]]/, "", id); gsub(/[[:space:]]/, "", tname); gsub(/[[:space:]]/, "", revoked)
+  if (id != "" && tname == name && revoked == "") print id
 }')
-echo "Found $(echo "$OLD_TOKEN_IDS" | grep -c . || true) active token(s)"
+echo "Found $(echo "$OLD_TOKEN_IDS" | grep -c . || true) active ${TOKEN_NAME} token(s)"
 
 echo "Creating new Fly.io organization token..."
-NEW_TOKEN=$(fly tokens create org -n vb-deploy-token -o personal 2>&1 | grep -o 'fm2_[^ ]*' | head -1)
+NEW_TOKEN=$(fly tokens create org -n "$TOKEN_NAME" -o personal 2>&1 | grep -o 'fm2_[^ ]*' | head -1)
 
 if [ -z "$NEW_TOKEN" ]; then
   echo "ERROR: Failed to create new Fly.io token"
