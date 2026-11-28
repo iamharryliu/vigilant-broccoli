@@ -58,7 +58,7 @@ The container is stateless and runs as a non-root user; users, sessions and API 
 | `/api/speech-to-text`, `/api/text-to-speech`, `/api/voice-list` | ElevenLabs |
 | `/api/tasks` | Google OAuth with the Tasks scope |
 
-The full contract is served at `/docs`.
+The full contract is served at `/docs`. The ElevenLabs free tier allows 10,000 characters per month; the `cron-check-elevenlabs-quota` workflow emails when usage reaches 80% and again when it is exhausted.
 
 ## Auth Database
 
